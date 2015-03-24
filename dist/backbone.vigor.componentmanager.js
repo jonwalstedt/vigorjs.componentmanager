@@ -50,7 +50,12 @@
       ComponentDefinitionsCollection.prototype.model = ComponentDefinitionModel;
 
       ComponentDefinitionsCollection.prototype.initialize = function() {
-        return console.log('im ComponentDefinitionsCollection');
+        return ComponentDefinitionsCollection.__super__.initialize.apply(this, arguments);
+      };
+
+      ComponentDefinitionsCollection.prototype.parse = function(response, options) {
+        console.log('ComponentDefinitionsCollection:parse', response);
+        return response;
       };
 
       return ComponentDefinitionsCollection;
@@ -61,16 +66,7 @@
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       componentManager = {
         registerComponents: function(componentDefinitions) {
-          var componentDefinition, i, len, results;
-          results = [];
-          for (i = 0, len = componentDefinitions.length; i < len; i++) {
-            componentDefinition = componentDefinitions[i];
-            results.push(this.registerComponent(componentDefinition));
-          }
-          return results;
-        },
-        registerComponent: function(componentDefinition) {
-          return componentDefinitionsCollection.add(componentDefinition);
+          return componentDefinitionsCollection.set(componentDefinitions);
         },
         renderComponents: function() {}
       };
