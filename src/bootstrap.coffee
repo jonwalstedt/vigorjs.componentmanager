@@ -30,6 +30,9 @@
   # COMMON
   #= include ./component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-definitions/ComponentDefinitionsCollection.coffee
+  #= include ./targets/LayoutModel.coffee
+  #= include ./targets/TargetModel.coffee
+  #= include ./targets/TargetsCollection.coffee
   #= include ./index.coffee
 
   return Vigor
