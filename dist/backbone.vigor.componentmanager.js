@@ -19,7 +19,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ComponentDefinitionModel, ComponentDefinitionsCollection, Vigor;
+    var ComponentDefinitionModel, ComponentDefinitionsCollection, LayoutModel, TargetModel, TargetsCollection, Vigor;
     Vigor = Backbone.Vigor = {};
     Vigor.extend = Backbone.Model.extend;
     ComponentDefinitionModel = (function(superClass) {
@@ -31,10 +31,8 @@
 
       ComponentDefinitionModel.prototype.defaults = {
         id: void 0,
-        urlPattern: void 0,
-        filter: void 0,
-        path: void 0,
-        target: void 0
+        source: void 0,
+        attributes: void 0
       };
 
       return ComponentDefinitionModel;
@@ -59,6 +57,60 @@
       };
 
       return ComponentDefinitionsCollection;
+
+    })(Backbone.Collection);
+    LayoutModel = (function(superClass) {
+      extend(LayoutModel, superClass);
+
+      function LayoutModel() {
+        return LayoutModel.__super__.constructor.apply(this, arguments);
+      }
+
+      LayoutModel.prototype.defaults = {
+        args: void 0,
+        order: void 0,
+        filter: void 0,
+        urlPattern: void 0,
+        componentDefinitionId: void 0
+      };
+
+      return LayoutModel;
+
+    })(Backbone.Model);
+    TargetModel = (function(superClass) {
+      extend(TargetModel, superClass);
+
+      function TargetModel() {
+        return TargetModel.__super__.constructor.apply(this, arguments);
+      }
+
+      TargetModel.prototype.defaults = {
+        targetName: void 0,
+        layoutsArray: []
+      };
+
+      return TargetModel;
+
+    })(Backbone.Model);
+    TargetsCollection = (function(superClass) {
+      extend(TargetsCollection, superClass);
+
+      function TargetsCollection() {
+        return TargetsCollection.__super__.constructor.apply(this, arguments);
+      }
+
+      TargetsCollection.prototype.model = TargetModel;
+
+      TargetsCollection.prototype.initialize = function() {
+        return TargetsCollection.__super__.initialize.apply(this, arguments);
+      };
+
+      TargetsCollection.prototype.parse = function(response, options) {
+        console.log('TargetsCollection:parse', response);
+        return response;
+      };
+
+      return TargetsCollection;
 
     })(Backbone.Collection);
     (function() {
