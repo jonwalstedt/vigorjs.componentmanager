@@ -30,9 +30,27 @@
       }
 
       ComponentDefinitionModel.prototype.defaults = {
-        id: void 0,
-        source: void 0,
-        attributes: void 0
+        componentId: void 0,
+        src: void 0,
+        height: void 0,
+        args: void 0,
+        showcount: void 0,
+        conditions: void 0
+      };
+
+      ComponentDefinitionModel.prototype.validate = function(attrs, options) {
+        if (!attrs.componentId) {
+          throw 'componentId cant be undefined';
+        }
+        if (typeof attrs.componentId !== 'string') {
+          throw 'componentId should be a string';
+        }
+        if (!/^.*[^ ].*$/.test(attrs.componentId)) {
+          throw 'componentId can not be an empty string';
+        }
+        if (!attrs.src) {
+          throw 'src should be a url or classname';
+        }
       };
 
       return ComponentDefinitionModel;
@@ -47,15 +65,6 @@
 
       ComponentDefinitionsCollection.prototype.model = ComponentDefinitionModel;
 
-      ComponentDefinitionsCollection.prototype.initialize = function() {
-        return ComponentDefinitionsCollection.__super__.initialize.apply(this, arguments);
-      };
-
-      ComponentDefinitionsCollection.prototype.parse = function(response, options) {
-        console.log('ComponentDefinitionsCollection:parse', response);
-        return response;
-      };
-
       return ComponentDefinitionsCollection;
 
     })(Backbone.Collection);
@@ -67,11 +76,10 @@
       }
 
       LayoutModel.prototype.defaults = {
-        args: void 0,
         order: void 0,
         filter: void 0,
-        urlPattern: void 0,
-        componentDefinitionId: void 0
+        componentDefinitionId: void 0,
+        args: void 0
       };
 
       return LayoutModel;
@@ -114,13 +122,28 @@
 
     })(Backbone.Collection);
     (function() {
-      var componentDefinitionsCollection, componentManager;
+      var componentDefinitionsCollection, componentManager, targetsCollection;
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
+      targetsCollection = new TargetsCollection();
       componentManager = {
-        registerComponents: function(componentDefinitions) {
-          return componentDefinitionsCollection.set(componentDefinitions);
+        parseComponentSettings: function(componentSettings) {
+          var componentsDefinitions, hidden, targets;
+          componentsDefinitions = componentSettings.components || componentSettings.widgets;
+          targets = componentSettings.targets;
+          hidden = componentSettings.hidden;
+          this.registerComponents(componentsDefinitions);
+          return this.registerTargets(targets);
         },
-        renderComponents: function() {}
+        registerComponents: function(componentDefinitions) {
+          return componentDefinitionsCollection.set(componentDefinitions, {
+            validate: true
+          });
+        },
+        registerTargets: function(targets) {
+          return targetsCollection.set(targets, {
+            validate: true
+          });
+        }
       };
       return Vigor.componentManager = componentManager;
     })();

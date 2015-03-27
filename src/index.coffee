@@ -1,13 +1,23 @@
 do ->
 
   componentDefinitionsCollection = new ComponentDefinitionsCollection()
+  targetsCollection = new TargetsCollection()
 
   componentManager =
 
-    registerComponents: (componentDefinitions) ->
-      componentDefinitionsCollection.set componentDefinitions
+    parseComponentSettings: (componentSettings) ->
+      componentsDefinitions = componentSettings.components or componentSettings.widgets
+      targets = componentSettings.targets
+      hidden = componentSettings.hidden
 
-    renderComponents: ->
+      @registerComponents componentsDefinitions
+      @registerTargets targets
+
+    registerComponents: (componentDefinitions) ->
+      componentDefinitionsCollection.set componentDefinitions, validate: true
+
+    registerTargets: (targets) ->
+      targetsCollection.set targets, validate: true
 
 
 
