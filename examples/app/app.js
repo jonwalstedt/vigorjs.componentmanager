@@ -5,7 +5,7 @@ var app = app || {};
 
   app.HelloWorld = {
     initialize: function () {
-      Vigor.componentManager.parseComponentSettings(window.componentSettings);
+      Vigor.componentManager.initialize({componentSettings: window.componentSettings});
     }
   };
 

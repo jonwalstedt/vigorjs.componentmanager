@@ -76,10 +76,14 @@
       }
 
       LayoutModel.prototype.defaults = {
+        componentId: void 0,
         order: void 0,
         filter: void 0,
-        componentDefinitionId: void 0,
         args: void 0
+      };
+
+      LayoutModel.prototype.validate = function(attrs, options) {
+        return console.log('TargetsCollection:validate', attrs);
       };
 
       return LayoutModel;
@@ -97,25 +101,57 @@
         layoutsArray: []
       };
 
+      TargetModel.prototype.validate = function(attrs, options) {
+        if (!attrs.targetName) {
+          throw 'targetName cant be undefined';
+        }
+        if (typeof attrs.targetName !== 'string') {
+          throw 'targetName should be a string';
+        }
+        if (!/^.*[^ ].*$/.test(attrs.targetName)) {
+          throw 'targetName can not be an empty string';
+        }
+        if (!attrs.layoutsArray) {
+          throw 'layoutsArray cant be undefined';
+        }
+        if (!_.isArray(attrs.layoutsArray)) {
+          throw 'layoutsArray must be an array';
+        }
+      };
+
       return TargetModel;
 
     })(Backbone.Model);
     TargetsCollection = (function(superClass) {
+      var TARGET_PREFIX;
+
       extend(TargetsCollection, superClass);
 
       function TargetsCollection() {
         return TargetsCollection.__super__.constructor.apply(this, arguments);
       }
 
+      TARGET_PREFIX = 'component-area';
+
       TargetsCollection.prototype.model = TargetModel;
 
-      TargetsCollection.prototype.initialize = function() {
-        return TargetsCollection.__super__.initialize.apply(this, arguments);
-      };
-
       TargetsCollection.prototype.parse = function(response, options) {
-        console.log('TargetsCollection:parse', response);
-        return response;
+        var i, layout, layoutModel, layouts, layoutsArray, len, targetName, targets;
+        targets = [];
+        for (targetName in response) {
+          layouts = response[targetName];
+          layoutsArray = [];
+          for (i = 0, len = layouts.length; i < len; i++) {
+            layout = layouts[i];
+            layoutModel = new LayoutModel(layout);
+            layoutsArray.push(layoutModel);
+          }
+          targets.push({
+            targetName: TARGET_PREFIX + "-" + targetName,
+            layoutsArray: layoutsArray
+          });
+        }
+        return targets;
       };
 
       return TargetsCollection;
@@ -126,6 +162,11 @@
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       targetsCollection = new TargetsCollection();
       componentManager = {
+        initialize: function(settings) {
+          if (settings.componentSettings) {
+            return this.parseComponentSettings(settings.componentSettings);
+          }
+        },
         parseComponentSettings: function(componentSettings) {
           var componentsDefinitions, hidden, targets;
           componentsDefinitions = componentSettings.components || componentSettings.widgets;
@@ -136,12 +177,14 @@
         },
         registerComponents: function(componentDefinitions) {
           return componentDefinitionsCollection.set(componentDefinitions, {
-            validate: true
+            validate: true,
+            parse: true
           });
         },
         registerTargets: function(targets) {
           return targetsCollection.set(targets, {
-            validate: true
+            validate: true,
+            parse: true
           });
         }
       };
