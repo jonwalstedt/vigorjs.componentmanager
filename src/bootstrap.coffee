@@ -3,7 +3,7 @@
 
     # AMD. Register as an anonymous module.
     define ['backbone', 'underscore'], (Backbone, _) ->
-        return factory(root, Backbone, _)
+      return factory(root, Backbone, _)
     console.log 'amd'
 
   else if typeof exports is "object"
@@ -28,11 +28,11 @@
   Vigor.extend = Backbone.Model.extend
 
   # COMMON
+  #= include ./router/Router.coffee
   #= include ./component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-definitions/ComponentDefinitionsCollection.coffee
   #= include ./targets/LayoutModel.coffee
-  #= include ./targets/TargetModel.coffee
-  #= include ./targets/TargetsCollection.coffee
+  #= include ./targets/LayoutsCollection.coffee
   #= include ./index.coffee
 
   return Vigor

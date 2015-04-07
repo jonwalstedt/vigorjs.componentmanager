@@ -2,9 +2,9 @@ class ComponentDefinitionModel extends Backbone.Model
   defaults:
     componentId: undefined
     src: undefined
+    showcount: undefined
     height: undefined
     args: undefined
-    showcount: undefined
     conditions: undefined
 
   validate: (attrs, options) ->
@@ -19,3 +19,10 @@ class ComponentDefinitionModel extends Backbone.Model
 
     unless attrs.src
       throw 'src should be a url or classname'
+
+    unless _.isString(attrs.src)
+      throw 'src should be a string'
+
+    unless /^.*[^ ].*$/.test(attrs.src)
+      throw 'src can not be an empty string'
+
