@@ -1,21 +1,22 @@
 class TargetsCollection extends Backbone.Collection
 
   TARGET_PREFIX = 'component-area'
-
   model: TargetModel
 
   parse: (response, options) ->
     targets = []
 
-    for targetName, layouts of response
-      layoutsArray = []
+    for targetName, instanceDefinitions of response
+      instanceDefinitionsArray = []
+      targetName = "#{TARGET_PREFIX}-#{targetName}"
 
-      for layout in layouts
-        layoutModel = new LayoutModel layout
-        layoutsArray.push layoutModel
+      for instanceDefinition in instanceDefinitions
+        instanceDefinition.targetName = targetName
+        instanceDefinitionModel = new InstanceDefinitionModel instanceDefinition
+        instanceDefinitionsArray.push instanceDefinitionModel
 
       targets.push
-        targetName: "#{TARGET_PREFIX}-#{targetName}"
-        layoutsArray: layoutsArray
+        targetName: targetName
+        instanceDefinitionsArray: instanceDefinitionsArray
 
     return targets

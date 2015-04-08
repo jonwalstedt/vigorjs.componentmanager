@@ -3,14 +3,22 @@ var componentSettings = {
     {
       "componentId": 'app-component-one',
       "src": "app.ComponentOne",
-      "showcount": 2
+      "maxShowCount": 2
+    },
+    {
+      "componentId": 'app-component-two',
+      "src": "app.ComponentTwo"
+    },
+    {
+      "componentId": 'app-component-three',
+      "src": "app.ComponentThree"
     }
   ],
 
   "hidden": [],
 
   "targets": {
-    "home": [
+    "main": [
       {
         "order": "top",
         "componentId": "app-component-one",
@@ -19,11 +27,31 @@ var componentSettings = {
       },
       {
         "order": 10,
-        "componentId": "app-component-two"
+        "componentId": "app-component-two",
+        "urlPattern": "route2/:id"
+      },
+      {
+        "order": 20,
+        "componentId": "app-component-two",
+        "urlPattern": "route2/:id"
+      },
+      {
+        "order": 9,
+        "componentId": "app-component-three",
+        "urlPattern": "route2/:id"
       }
     ],
-    "header": [
-      {"order": 10, "componentId": "app-component-three"}
+    "sidebar-first": [
+      {
+        "componentId": "app-component-three",
+        "urlPattern": "route2/:id"
+      }
+    ],
+    "sidebar-second": [
+      {
+        "componentId": "app-component-three",
+        "urlPattern": "route3/:id"
+      }
     ]
   }
 }

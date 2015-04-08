@@ -4,8 +4,8 @@ AppRouter = Backbone.Router.extend({
 
   routes: {
     'route1/:id': '_onRouteOne',
-    'route2': '_onRouteTwo',
-    'route3': '_onRouteThree'
+    'route2/:id': '_onRouteTwo',
+    'route3/:id': '_onRouteThree'
   },
 
   _onRouteOne: function () {
@@ -32,8 +32,10 @@ AppRouter = Backbone.Router.extend({
       this.router.on('route', function () {
         var filterOptions = {
           route: Backbone.history.fragment
-        }
-        Vigor.componentManager.renderComponents(filterOptions);
+        };
+
+        Vigor.componentManager.update(filterOptions);
+        // Vigor.componentManager.renderComponents(filterOptions);
       });
       Backbone.history.start({root: '/examples/'});
     },

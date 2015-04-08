@@ -19,7 +19,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ComponentDefinitionModel, ComponentDefinitionsCollection, LayoutCollection, LayoutModel, Router, Vigor, router;
+    var ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = {};
     Vigor.extend = Backbone.Model.extend;
     Router = (function(superClass) {
@@ -41,6 +41,21 @@
       return Router;
 
     })(Backbone.Router);
+    FilterModel = (function(superClass) {
+      extend(FilterModel, superClass);
+
+      function FilterModel() {
+        return FilterModel.__super__.constructor.apply(this, arguments);
+      }
+
+      FilterModel.prototype.defaults = {
+        url: void 0,
+        filterString: void 0
+      };
+
+      return FilterModel;
+
+    })(Backbone.Model);
     ComponentDefinitionModel = (function(superClass) {
       extend(ComponentDefinitionModel, superClass);
 
@@ -54,7 +69,8 @@
         showcount: void 0,
         height: void 0,
         args: void 0,
-        conditions: void 0
+        conditions: void 0,
+        maxShowCount: 0
       };
 
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
@@ -90,153 +106,231 @@
 
       ComponentDefinitionsCollection.prototype.model = ComponentDefinitionModel;
 
+      ComponentDefinitionsCollection.prototype.getByComponentId = function(componentId) {
+        var componentDefinition;
+        componentDefinition = this.findWhere({
+          componentId: componentId
+        });
+        if (!componentDefinition) {
+          throw "Unknown componentId: " + componentId;
+        }
+        return componentDefinition;
+      };
+
       return ComponentDefinitionsCollection;
 
     })(Backbone.Collection);
-    LayoutModel = (function(superClass) {
-      extend(LayoutModel, superClass);
+    InstanceDefinitionModel = (function(superClass) {
+      extend(InstanceDefinitionModel, superClass);
 
-      function LayoutModel() {
-        return LayoutModel.__super__.constructor.apply(this, arguments);
+      function InstanceDefinitionModel() {
+        return InstanceDefinitionModel.__super__.constructor.apply(this, arguments);
       }
 
-      LayoutModel.prototype.defaults = {
+      InstanceDefinitionModel.prototype.defaults = {
         componentId: void 0,
-        order: void 0,
         filter: void 0,
         urlPattern: void 0,
-        args: void 0
+        args: void 0,
+        order: void 0,
+        targetName: void 0,
+        showCount: 0
       };
 
-      return LayoutModel;
+      return InstanceDefinitionModel;
 
     })(Backbone.Model);
     router = new Router();
-    LayoutCollection = (function(superClass) {
+    InstanceDefinitionsCollection = (function(superClass) {
       var TARGET_PREFIX;
 
-      extend(LayoutCollection, superClass);
+      extend(InstanceDefinitionsCollection, superClass);
 
-      function LayoutCollection() {
-        return LayoutCollection.__super__.constructor.apply(this, arguments);
+      function InstanceDefinitionsCollection() {
+        return InstanceDefinitionsCollection.__super__.constructor.apply(this, arguments);
       }
 
       TARGET_PREFIX = 'component-area';
 
-      LayoutCollection.prototype.model = LayoutModel;
+      InstanceDefinitionsCollection.prototype.model = InstanceDefinitionModel;
 
-      LayoutCollection.prototype.parse = function(response, options) {
-        var i, layout, layouts, layoutsArray, len, targetName;
-        layoutsArray = [];
+      InstanceDefinitionsCollection.prototype.parse = function(response, options) {
+        var i, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, len, targetName;
+        instanceDefinitionsArray = [];
         for (targetName in response) {
-          layouts = response[targetName];
-          for (i = 0, len = layouts.length; i < len; i++) {
-            layout = layouts[i];
-            layout.targetName = TARGET_PREFIX + "-" + targetName;
-            layoutsArray.push(layout);
+          instanceDefinitions = response[targetName];
+          for (i = 0, len = instanceDefinitions.length; i < len; i++) {
+            instanceDefinition = instanceDefinitions[i];
+            instanceDefinition.targetName = TARGET_PREFIX + "-" + targetName;
+            instanceDefinitionsArray.push(instanceDefinition);
           }
         }
-        return layoutsArray;
+        return instanceDefinitionsArray;
       };
 
-      LayoutCollection.prototype.getComponents = function(filterOptions) {
-        var components;
-        components = this.models;
+      InstanceDefinitionsCollection.prototype.getInstanceDefinition = function(filterOptions) {
+        var instanceDefinitions;
+        instanceDefinitions = this.models;
         if (filterOptions.route) {
-          components = this.filterComponentsByUrl(components, filterOptions.route);
+          instanceDefinitions = this.filterInstanceDefinitionsByUrl(instanceDefinitions, filterOptions.route);
         }
-        return components;
+        return instanceDefinitions;
       };
 
-      LayoutCollection.prototype.getComponentsByUrl = function(route) {
-        return this.filterComponentsByUrl(this.models, route);
+      InstanceDefinitionsCollection.prototype.getInstanceDefinitionsByUrl = function(route) {
+        return this.filterInstanceDefinitionsByUrl(this.models, route);
       };
 
-      LayoutCollection.prototype.filterComponentsByUrl = function(components, route) {
-        components = _.filter(components, (function(_this) {
-          return function(component) {
+      InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, route) {
+        instanceDefinitions = _.filter(instanceDefinitions, (function(_this) {
+          return function(instanceDefinitionModel) {
             var routeRegEx, urlPattern;
-            urlPattern = component.get('urlPattern');
+            urlPattern = instanceDefinitionModel.get('urlPattern');
             if (urlPattern) {
-              routeRegEx = router._routeToRegExp(component.get('urlPattern'));
+              routeRegEx = router._routeToRegExp(urlPattern);
               return routeRegEx.test(route);
             }
           };
         })(this));
-        return components;
+        return instanceDefinitions;
       };
 
-      return LayoutCollection;
+      return InstanceDefinitionsCollection;
 
     })(Backbone.Collection);
     (function() {
-      var activeComponents, componentDefinitionsCollection, componentManager, layoutsCollection;
+      var _geComponentInstances, _getClass, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
-      layoutsCollection = new LayoutCollection();
+      instanceDefinitionsCollection = new InstanceDefinitionsCollection();
       activeComponents = new Backbone.Collection();
+      filterModel = new FilterModel();
       componentManager = {
         initialize: function(settings) {
           if (settings.componentSettings) {
-            return this._parseComponentSettings(settings.componentSettings);
+            _parseComponentSettings(settings.componentSettings);
           }
+          filterModel.on('change', _updateActiveComponents);
+          componentDefinitionsCollection.on('change', _updateActiveComponents);
+          instanceDefinitionsCollection.on('change', _updateActiveComponents);
+          activeComponents.on('add', _onComponentAdded);
+          activeComponents.on('remove', _onComponentRemoved);
+          return this;
         },
-        registerComponents: function(componentDefinitions) {
-          return componentDefinitionsCollection.set(componentDefinitions, {
-            validate: true,
-            parse: true
-          });
-        },
-        registerLayouts: function(layouts) {
-          layoutsCollection.set(layouts, {
-            validate: true,
-            parse: true
-          });
-          return console.log(layoutsCollection);
-        },
-        renderComponents: function(filterOptions) {
-          var components;
-          components = this._geComponentInstances(filterOptions);
-          return console.log('componentInstances', components);
-        },
-        _geComponentInstances: function(filterOptions) {
-          var component, componentClass, componentDefinition, components, i, instances, len, urlParams;
-          components = layoutsCollection.getComponents(filterOptions);
-          instances = [];
-          for (i = 0, len = components.length; i < len; i++) {
-            component = components[i];
-            console.log('component: ', component);
-            componentDefinition = componentDefinitionsCollection.findWhere({
-              componentId: component.get('componentId')
-            });
-            componentClass = this._getClass(componentDefinition.get('src'));
-            urlParams = router.getArguments(component.get('urlPattern'), filterOptions.route);
-            console.log(componentClass, urlParams);
-          }
-        },
-        _getClass: function(src) {
-          var componentClass, i, len, obj, part, srcObjParts;
-          if (typeof require === "function") {
-            console.log('require stuff');
-            componentClass = require(src);
-          } else {
-            obj = window;
-            srcObjParts = src.split('.');
-            for (i = 0, len = srcObjParts.length; i < len; i++) {
-              part = srcObjParts[i];
-              obj = obj[part];
-            }
-            componentClass = obj;
-          }
-          return componentClass;
-        },
-        _parseComponentSettings: function(componentSettings) {
-          var componentsDefinitions, hidden, layouts;
-          componentsDefinitions = componentSettings.components || componentSettings.widgets;
-          layouts = componentSettings.layouts || componentSettings.targets;
-          hidden = componentSettings.hidden;
-          this.registerComponents(componentsDefinitions);
-          return this.registerLayouts(layouts);
+        update: function(filterOptions) {
+          filterModel.set(filterOptions);
+          return this;
         }
+      };
+      _onComponentAdded = function(model) {
+        var $target, instance, order;
+        $target = $("." + (model.get('target')));
+        order = model.get('order');
+        instance = model.get('instance');
+        instance.render();
+        if (order) {
+          if (order === 'top') {
+            return $target.prepend(instance.$el);
+          } else if (order === 'bottom') {
+            return $target.append(instance.$el);
+          } else {
+            return $target.append(instance.$el);
+          }
+        } else {
+          return $target.append(instance.$el);
+        }
+      };
+      _onComponentRemoved = function(model) {
+        var instance;
+        instance = model.get('instance');
+        return instance.dispose();
+      };
+      _updateActiveComponents = function() {
+        var componentInstances, filterOptions;
+        filterOptions = filterModel.toJSON();
+        componentInstances = _geComponentInstances(filterOptions);
+        return activeComponents.set(componentInstances);
+      };
+      _geComponentInstances = function(filterOptions) {
+        var componentClass, componentDefinition, filter, i, instance, instanceDefinition, instanceDefinitions, instances, isFilteredOut, len, maxShowCount, obj, showCount, urlParams;
+        instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinition(filterOptions);
+        instances = [];
+        for (i = 0, len = instanceDefinitions.length; i < len; i++) {
+          instanceDefinition = instanceDefinitions[i];
+          filter = instanceDefinition.get('filter');
+          componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
+          showCount = instanceDefinition.get('showCount');
+          maxShowCount = componentDefinition.get('maxShowCount');
+          isFilteredOut = false;
+          componentClass = _getClass(componentDefinition.get('src'));
+          urlParams = router.getArguments(instanceDefinition.get('urlPattern'), filterOptions.route);
+          instance = new componentClass({
+            urlParams: urlParams,
+            args: instanceDefinition.get('args')
+          });
+          obj = {
+            instanceDefinitionId: instanceDefinition.cid,
+            instance: instance,
+            target: instanceDefinition.get('targetName'),
+            order: instanceDefinition.get('order')
+          };
+          if (filter && filterOptions.filterString) {
+            isFilteredOut = !filterOptions.filterString.match(new RegExp(filter));
+          } else {
+            isFilteredOut = false;
+          }
+          if (!isFilteredOut) {
+            if (maxShowCount) {
+              if (showCount < maxShowCount) {
+                instanceDefinition.set('showCount', showCount++);
+                instances.push(obj);
+              }
+            } else {
+              instanceDefinition.set('showCount', showCount++);
+              instances.push(obj);
+            }
+          }
+        }
+        return instances;
+      };
+      _getClass = function(src) {
+        var componentClass, i, len, obj, part, srcObjParts;
+        if (typeof require === "function") {
+          console.log('require stuff');
+          componentClass = require(src);
+        } else {
+          obj = window;
+          srcObjParts = src.split('.');
+          for (i = 0, len = srcObjParts.length; i < len; i++) {
+            part = srcObjParts[i];
+            obj = obj[part];
+          }
+          componentClass = obj;
+        }
+        if (typeof componentClass !== "function") {
+          throw "No constructor function found for " + src;
+        }
+        return componentClass;
+      };
+      _parseComponentSettings = function(componentSettings) {
+        var componentsDefinitions, hidden, instanceDefinitions;
+        componentsDefinitions = componentSettings.components || componentSettings.widgets;
+        instanceDefinitions = componentSettings.layouts || componentSettings.targets;
+        hidden = componentSettings.hidden;
+        _registerComponents(componentsDefinitions);
+        return _registerInstanceDefinitons(instanceDefinitions);
+      };
+      _registerComponents = function(componentDefinitions) {
+        return componentDefinitionsCollection.set(componentDefinitions, {
+          validate: true,
+          parse: true
+        });
+      };
+      _registerInstanceDefinitons = function(instanceDefinitions) {
+        instanceDefinitionsCollection.set(instanceDefinitions, {
+          validate: true,
+          parse: true
+        });
+        return console.log(instanceDefinitionsCollection);
       };
       return Vigor.componentManager = componentManager;
     })();

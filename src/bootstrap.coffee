@@ -29,10 +29,11 @@
 
   # COMMON
   #= include ./router/Router.coffee
+  #= include ./filter/FilterModel.coffee
   #= include ./component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-definitions/ComponentDefinitionsCollection.coffee
-  #= include ./targets/LayoutModel.coffee
-  #= include ./targets/LayoutsCollection.coffee
+  #= include ./targets/InstanceDefinitionModel.coffee
+  #= include ./targets/InstanceDefinitionsCollection.coffee
   #= include ./index.coffee
 
   return Vigor

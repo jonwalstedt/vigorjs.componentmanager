@@ -4,17 +4,30 @@
 
   </head>
   <body>
-  Vigorjs componentmanager
-  <div class="navigation">
 
-    <ul class="main-menu">
+  <header>
+    <h1>Vigorjs componentmanager</h1>
+    <nav class="navigation">
+      <ul class="main-menu">
+        <li><a href="#route1/1" class="link">link1</a></li>
+        <li><a href="#route2/2" class="link">link2</a></li>
+        <li><a href="#route3/3" class="link">link3</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <aside class="sidebar">
+    <div class="component-area-sidebar-first"></div>
+    <ul class="sub-menu">
       <li><a href="#route1/1" class="link">link1</a></li>
-      <li><a href="#route2" class="link">link2</a></li>
-      <li><a href="#route3" class="link">link3</a></li>
+      <li><a href="#route1/1" class="link">link2</a></li>
+      <li><a href="#route1/1" class="link">link3</a></li>
+      <li><a href="#route1/1" class="link">link4</a></li>
     </ul>
-  </div>
+    <div class="component-area-sidebar-second"></div>
+  </aside>
 
-  <div class="component-area"></div>
+  <div class="component-area-main"></div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
@@ -23,6 +36,9 @@
   <script src="../dist/backbone.vigor.componentmanager.js"></script>
 
   <script src="./components/ComponentOne.js"></script>
+  <script src="./components/ComponentTwo.js"></script>
+  <script src="./components/ComponentThree.js"></script>
+  <script src="./components/ComponentFour.js"></script>
   <script src="./app/app.js"></script>
   <script src="./components.js"></script>
 

@@ -1,78 +1,129 @@
 do ->
 
   componentDefinitionsCollection = new ComponentDefinitionsCollection()
-  layoutsCollection = new LayoutCollection()
+  instanceDefinitionsCollection = new InstanceDefinitionsCollection()
   activeComponents = new Backbone.Collection()
+  filterModel = new FilterModel()
 
   componentManager =
 
     initialize: (settings) ->
       if settings.componentSettings
-        @_parseComponentSettings settings.componentSettings
+        _parseComponentSettings settings.componentSettings
 
+      filterModel.on 'change', _updateActiveComponents
+      componentDefinitionsCollection.on 'change', _updateActiveComponents
+      instanceDefinitionsCollection.on 'change', _updateActiveComponents
 
-    registerComponents: (componentDefinitions) ->
-      componentDefinitionsCollection.set componentDefinitions, validate: true, parse: true
+      activeComponents.on 'add', _onComponentAdded
+      activeComponents.on 'remove', _onComponentRemoved
+      return @
 
-    registerLayouts: (layouts) ->
-      layoutsCollection.set layouts, validate: true, parse: true
-      console.log layoutsCollection
+    update: (filterOptions) ->
+      filterModel.set filterOptions
+      return @
 
-    renderComponents: (filterOptions) ->
-      components = @_geComponentInstances filterOptions
-      console.log 'componentInstances', components
+  _onComponentAdded = (model) ->
+    $target = $ ".#{model.get('target')}"
+    order = model.get 'order'
+    instance = model.get 'instance'
+    do instance.render
 
-
-    # stringToMatchFiltersAgainst: ->
-    #   # TODO: pass in a getSourceForFiltersMethod to initialize?
-    #   console.log 'stringToMatchFiltersAgainst'
-
-    _geComponentInstances: (filterOptions) ->
-      components = layoutsCollection.getComponents filterOptions
-      instances = []
-      for component in components
-        console.log 'component: ', component
-        componentDefinition = componentDefinitionsCollection.findWhere componentId: component.get('componentId')
-        componentClass = @_getClass componentDefinition.get('src')
-        urlParams = router.getArguments component.get('urlPattern'), filterOptions.route
-        console.log componentClass, urlParams
-
-      return
-
-    # _setActiveComponents: ->
-    #   stringToMatchFiltersAgainst = @stringToMatchFiltersAgainst()
-    #   path = @_getPath()
-    #   urlParams = @_getUrlParams()
-
-    _getClass: (src) ->
-      if typeof require is "function"
-        console.log 'require stuff'
-        componentClass = require src
-
+    if order
+      if order is 'top'
+        $target.prepend instance.$el
+      else if order is 'bottom'
+        $target.append instance.$el
       else
-        obj = window
-        srcObjParts = src.split '.'
+        # debugger
+        # console.log $target
+        # if $target.children().length
+        #   $target = $target.children().filter(":lt(#{order})").last()
+        #   instance.$el.insertAfter $target
+        # else
+        $target.append instance.$el
+    else
+      $target.append instance.$el
 
-        for part in srcObjParts
-          obj = obj[part]
 
-        componentClass = obj
+  _onComponentRemoved = (model) ->
+    instance = model.get 'instance'
+    do instance.dispose
 
-      return componentClass
+  _updateActiveComponents = ->
+    filterOptions = filterModel.toJSON()
+    componentInstances = _geComponentInstances filterOptions
+    activeComponents.set componentInstances
 
-    # _getPath: ->
-    #   console.log '_getPath'
+  _geComponentInstances = (filterOptions) ->
+    instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinition filterOptions
+    instances = []
+    for instanceDefinition in instanceDefinitions
+      filter = instanceDefinition.get 'filter'
+      componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
+      showCount = instanceDefinition.get 'showCount'
+      maxShowCount = componentDefinition.get 'maxShowCount'
+      isFilteredOut = false
+      componentClass = _getClass componentDefinition.get('src')
+      urlParams = router.getArguments instanceDefinition.get('urlPattern'), filterOptions.route
+      instance = new componentClass { urlParams: urlParams, args: instanceDefinition.get('args') }
 
-    # _getUrlParams: ->
-    #  console.log '_getUrlParams'
+      obj = {
+        instanceDefinitionId: instanceDefinition.cid
+        instance: instance
+        target: instanceDefinition.get('targetName')
+        order: instanceDefinition.get('order')
+      }
 
-    _parseComponentSettings: (componentSettings) ->
-      componentsDefinitions = componentSettings.components or componentSettings.widgets
-      layouts = componentSettings.layouts or componentSettings.targets
-      hidden = componentSettings.hidden
+      if filter and filterOptions.filterString
+        isFilteredOut = not filterOptions.filterString.match (new RegExp(filter))
+      else
+        isFilteredOut = false
 
-      @registerComponents componentsDefinitions
-      @registerLayouts layouts
+      unless isFilteredOut
+        if maxShowCount
+          if showCount < maxShowCount
+            instanceDefinition.set 'showCount', showCount++
+            instances.push obj
+        else
+          instanceDefinition.set 'showCount', showCount++
+          instances.push obj
 
+    return instances
+
+
+  _getClass = (src) ->
+    if typeof require is "function"
+      console.log 'require stuff'
+      componentClass = require src
+
+    else
+      obj = window
+      srcObjParts = src.split '.'
+
+      for part in srcObjParts
+        obj = obj[part]
+
+      componentClass = obj
+
+    unless typeof componentClass is "function"
+      throw "No constructor function found for #{src}"
+
+    return componentClass
+
+  _parseComponentSettings = (componentSettings) ->
+    componentsDefinitions = componentSettings.components or componentSettings.widgets
+    instanceDefinitions = componentSettings.layouts or componentSettings.targets
+    hidden = componentSettings.hidden
+
+    _registerComponents componentsDefinitions
+    _registerInstanceDefinitons instanceDefinitions
+
+  _registerComponents = (componentDefinitions) ->
+    componentDefinitionsCollection.set componentDefinitions, validate: true, parse: true
+
+  _registerInstanceDefinitons = (instanceDefinitions) ->
+    instanceDefinitionsCollection.set instanceDefinitions, validate: true, parse: true
+    console.log instanceDefinitionsCollection
 
   Vigor.componentManager = componentManager

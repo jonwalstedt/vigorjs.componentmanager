@@ -2,7 +2,7 @@ class TargetModel extends Backbone.Model
 
   defaults:
     targetName: undefined
-    layoutsArray: []
+    instanceDefinitionsArray: []
 
   validate: (attrs, options) ->
     unless attrs.targetName
@@ -14,8 +14,8 @@ class TargetModel extends Backbone.Model
     unless /^.*[^ ].*$/.test(attrs.targetName)
       throw 'targetName can not be an empty string'
 
-    unless attrs.layoutsArray
-      throw 'layoutsArray cant be undefined'
+    unless attrs.instanceDefinitionsArray
+      throw 'instanceDefinitionsArray cant be undefined'
 
-    unless _.isArray attrs.layoutsArray
-      throw 'layoutsArray must be an array'
+    unless _.isArray attrs.instanceDefinitionsArray
+      throw 'instanceDefinitionsArray must be an array'

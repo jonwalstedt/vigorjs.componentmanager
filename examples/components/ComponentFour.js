@@ -1,12 +1,12 @@
 var app = app || {};
-app.ComponentOne = Backbone.View.extend({
+app.ComponentFour = Backbone.View.extend({
 
   initialize: function () {
-    console.log('im component one');
+    console.log('im component four');
   },
 
   render: function () {
-    this.$el.html('Component One');
+    this.$el.html('Component Four');
     return this;
   },
 
