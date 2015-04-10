@@ -39,6 +39,11 @@ var componentSettings = {
         "order": 9,
         "componentId": "app-component-three",
         "urlPattern": "route2/:id"
+      },
+      {
+        "order": 50,
+        "componentId": "app-component-three",
+        "urlPattern": "route2/:id"
       }
     ],
     "sidebar-first": [

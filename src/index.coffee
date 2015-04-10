@@ -1,5 +1,7 @@
 do ->
 
+  COMPONENT_CLASS = 'vigorjs-component'
+
   componentDefinitionsCollection = new ComponentDefinitionsCollection()
   instanceDefinitionsCollection = new InstanceDefinitionsCollection()
   activeComponents = new Backbone.Collection()
@@ -27,28 +29,38 @@ do ->
     $target = $ ".#{model.get('target')}"
     order = model.get 'order'
     instance = model.get 'instance'
+
     do instance.render
 
     if order
       if order is 'top'
+        instance.$el.data 'order', 0
         $target.prepend instance.$el
       else if order is 'bottom'
+        instance.$el.data 'order', 999
         $target.append instance.$el
       else
-        # debugger
-        # console.log $target
-        # if $target.children().length
-        #   $target = $target.children().filter(":lt(#{order})").last()
-        #   instance.$el.insertAfter $target
-        # else
-        $target.append instance.$el
+        $previousElement = _previousElement $target.children().last(), order
+        instance.$el.data 'order', order
+        instance.$el.attr 'data-order', order
+        unless $previousElement
+          $target.prepend instance.$el
+        else
+          instance.$el.insertAfter $previousElement
     else
       $target.append instance.$el
-
 
   _onComponentRemoved = (model) ->
     instance = model.get 'instance'
     do instance.dispose
+
+  _previousElement = ($el, order = 0) ->
+    if $el.length > 0
+      if $el.data('order') < order
+        return $el
+      else
+        _previousElement $el.prev(), order
+
 
   _updateActiveComponents = ->
     filterOptions = filterModel.toJSON()
@@ -67,6 +79,7 @@ do ->
       componentClass = _getClass componentDefinition.get('src')
       urlParams = router.getArguments instanceDefinition.get('urlPattern'), filterOptions.route
       instance = new componentClass { urlParams: urlParams, args: instanceDefinition.get('args') }
+      instance.$el.addClass COMPONENT_CLASS
 
       obj = {
         instanceDefinitionId: instanceDefinition.cid

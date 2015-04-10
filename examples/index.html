@@ -17,7 +17,8 @@
   </header>
 
   <aside class="sidebar">
-    <div class="component-area-sidebar-first"></div>
+    <div class="component-area-sidebar-first">
+    </div>
     <ul class="sub-menu">
       <li><a href="#route1/1" class="link">link1</a></li>
       <li><a href="#route1/1" class="link">link2</a></li>
@@ -27,7 +28,12 @@
     <div class="component-area-sidebar-second"></div>
   </aside>
 
-  <div class="component-area-main"></div>
+  <div class="component-area-main">
+    <div class="vigorjs-component" data-order="10">1 order 10</div>
+    <div class="vigorjs-component" data-order="30">2 order 30</div>
+    <div class="vigorjs-component">3 order not defined</div>
+    <div class="vigorjs-component" data-order="40">4 order 40</div>
+  </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>

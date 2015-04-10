@@ -199,7 +199,8 @@
 
     })(Backbone.Collection);
     (function() {
-      var _geComponentInstances, _getClass, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var COMPONENT_CLASS, _geComponentInstances, _getClass, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      COMPONENT_CLASS = 'vigorjs-component';
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       instanceDefinitionsCollection = new InstanceDefinitionsCollection();
       activeComponents = new Backbone.Collection();
@@ -222,18 +223,27 @@
         }
       };
       _onComponentAdded = function(model) {
-        var $target, instance, order;
+        var $previousElement, $target, instance, order;
         $target = $("." + (model.get('target')));
         order = model.get('order');
         instance = model.get('instance');
         instance.render();
         if (order) {
           if (order === 'top') {
+            instance.$el.data('order', 0);
             return $target.prepend(instance.$el);
           } else if (order === 'bottom') {
+            instance.$el.data('order', 999);
             return $target.append(instance.$el);
           } else {
-            return $target.append(instance.$el);
+            $previousElement = _previousElement($target.children().last(), order);
+            instance.$el.data('order', order);
+            instance.$el.attr('data-order', order);
+            if (!$previousElement) {
+              return $target.prepend(instance.$el);
+            } else {
+              return instance.$el.insertAfter($previousElement);
+            }
           }
         } else {
           return $target.append(instance.$el);
@@ -243,6 +253,18 @@
         var instance;
         instance = model.get('instance');
         return instance.dispose();
+      };
+      _previousElement = function($el, order) {
+        if (order == null) {
+          order = 0;
+        }
+        if ($el.length > 0) {
+          if ($el.data('order') < order) {
+            return $el;
+          } else {
+            return _previousElement($el.prev(), order);
+          }
+        }
       };
       _updateActiveComponents = function() {
         var componentInstances, filterOptions;
@@ -267,6 +289,7 @@
             urlParams: urlParams,
             args: instanceDefinition.get('args')
           });
+          instance.$el.addClass(COMPONENT_CLASS);
           obj = {
             instanceDefinitionId: instanceDefinition.cid,
             instance: instance,
