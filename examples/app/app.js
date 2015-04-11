@@ -42,6 +42,8 @@ AppRouter = Backbone.Router.extend({
 
         Vigor.componentManager.refresh(filterOptions);
       });
+
+      this.render();
       Backbone.history.start({root: '/examples/'});
     },
 
@@ -50,9 +52,15 @@ AppRouter = Backbone.Router.extend({
     },
 
     _onAddComponentBtnClick: function () {
-      var component = window.componentSettings.targets.main[0];
+      var instanceDefinition = window.componentSettings.targets.main[0],
+          instanceDefinitionObj;
 
-      console.log('im clicked', component);
+      instanceDefinition.id = Date.now();
+      instanceDefinitionObj = {
+        main: [instanceDefinition]
+      };
+
+      Vigor.componentManager.addInstance(instanceDefinitionObj);
     }
   });
 

@@ -8,17 +8,18 @@ do ->
   filterModel = new FilterModel()
 
   componentManager =
+    activeComponents: activeComponents
 
     initialize: (settings) ->
       if settings.componentSettings
         _parseComponentSettings settings.componentSettings
 
-      filterModel.on 'change', _updateActiveComponents
-      componentDefinitionsCollection.on 'change', _updateActiveComponents
-      instanceDefinitionsCollection.on 'change', _updateActiveComponents
+      filterModel.on 'add change remove', _updateActiveComponents
+      componentDefinitionsCollection.on 'add change remove', _updateActiveComponents
+      instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
 
-      activeComponents.on 'add', _onComponentAdded
-      activeComponents.on 'remove', _onComponentRemoved
+      @activeComponents.on 'add', _onComponentAdded
+      @activeComponents.on 'remove', _onComponentRemoved
       return @
 
     refresh: (filterOptions) ->
@@ -52,6 +53,7 @@ do ->
       do instanceDefinitionsCollection.reset
       do activeComponents.reset
       do filterModel.clear
+      return @
 
     dispose: ->
       do @clear
@@ -63,7 +65,15 @@ do ->
       componentDefinitionsCollection = undefined
 
     getComponentInstances: (filterOptions) ->
-      return _getComponentInstances filterOptions
+      instanceDefinitions = _filterInstanceDefinitions filterOptions
+      instances = []
+      for instanceDefinition in instanceDefinitions
+        instance = instanceDefinition.get 'instance'
+        unless instance
+          _addInstanceToModel instanceDefinition
+          instance = instanceDefinition.get 'instance'
+        instances.push instance
+      return instances
 
   #
   # Privat methods
@@ -77,47 +87,25 @@ do ->
 
   _updateActiveComponents = ->
     filterOptions = filterModel.toJSON()
-    componentInstances = _getComponentInstances filterOptions
-    activeComponents.set componentInstances
+    instanceDefinitions = _filterInstanceDefinitions filterOptions
+    activeComponents.set instanceDefinitions
 
-  _getComponentInstances = (filterOptions) ->
-    instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinition filterOptions
-    instances = []
+  _filterInstanceDefinitions = (filterOptions) ->
+    instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinitions filterOptions
+    filteredInstanceDefinitions = []
+
     for instanceDefinition in instanceDefinitions
-      filter = instanceDefinition.get 'filter'
       componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
       showCount = instanceDefinition.get 'showCount'
       maxShowCount = componentDefinition.get 'maxShowCount'
-      isFilteredOut = false
 
-      componentClass = _getClass componentDefinition.get('src')
-      urlParams = router.getArguments instanceDefinition.get('urlPattern'), filterOptions.route
-
-      instance = new componentClass { urlParams: urlParams, args: instanceDefinition.get('args') }
-      instance.$el.addClass COMPONENT_CLASS
-
-      obj = {
-        instance: instance
-        instanceDefinitionId: instanceDefinition.get('id') or instanceDefinition.cid
-        target: instanceDefinition.get('targetName')
-        order: instanceDefinition.get('order')
-      }
-
-      if filter and filterOptions.filterString
-        isFilteredOut = not filterOptions.filterString.match (new RegExp(filter))
+      if maxShowCount
+        if showCount < maxShowCount
+          filteredInstanceDefinitions.push instanceDefinition
       else
-        isFilteredOut = false
+        filteredInstanceDefinitions.push instanceDefinition
 
-      unless isFilteredOut
-        if maxShowCount
-          if showCount < maxShowCount
-            instanceDefinition.set 'showCount', showCount++
-            instances.push obj
-        else
-          instanceDefinition.set 'showCount', showCount++
-          instances.push obj
-
-    return instances
+    return filteredInstanceDefinitions
 
   _getClass = (src) ->
     if typeof require is "function"
@@ -153,15 +141,21 @@ do ->
     _registerInstanceDefinitons instanceDefinitions
 
   _registerComponents = (componentDefinitions) ->
-    componentDefinitionsCollection.set componentDefinitions, validate: true, parse: true
+    componentDefinitionsCollection.set componentDefinitions,
+      validate: true
+      parse: true
 
   _registerInstanceDefinitons = (instanceDefinitions) ->
-    instanceDefinitionsCollection.set instanceDefinitions, validate: true, parse: true
+    instanceDefinitionsCollection.set instanceDefinitions,
+      validate: true
+      parse: true
 
-  _addInstanceToDom = (model, render = true) ->
-    $target = $ ".#{model.get('target')}"
-    order = model.get 'order'
-    instance = model.get 'instance'
+  _addInstanceToDom = (instanceDefinition, render = true) ->
+    $target = $ ".#{instanceDefinition.get('targetName')}"
+    order = instanceDefinition.get 'order'
+    showCount = instanceDefinition.get 'showCount'
+    instance = instanceDefinition.get 'instance'
+    instanceDefinition.set 'showCount', showCount++
 
     if render then do instance.render
 
@@ -183,14 +177,30 @@ do ->
     else
       $target.append instance.$el
 
+  _addInstanceToModel = (instanceDefinition) ->
+    componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
+    componentClass = _getClass componentDefinition.get('src')
+
+    args =
+      urlParams: instanceDefinition.get 'urlParams'
+
+    _.extend args, instanceDefinition.get('args')
+
+    instance = new componentClass args
+    instance.$el.addClass COMPONENT_CLASS
+    instanceDefinition.set 'instance', instance
+    return instanceDefinition
+
+
   #
   # Callbacks
   # ============================================================================
-  _onComponentAdded = (model) ->
-    _addInstanceToDom model
+  _onComponentAdded = (instanceDefinition) ->
+    _addInstanceToModel instanceDefinition
+    _addInstanceToDom instanceDefinition
 
-  _onComponentRemoved = (model) ->
-    instance = model.get 'instance'
+  _onComponentRemoved = (instanceDefinition) ->
+    instance = instanceDefinition.get 'instance'
     do instance.dispose
 
   Vigor.componentManager = componentManager

@@ -23,9 +23,19 @@ var componentSettings = {
         "id": "comp1",
         "order": "top",
         "componentId": "app-component-one",
-        "urlPattern": "route1/:id",
-        "args": { test: [], testTwo: {}}
+        "urlPattern": "global",
+        "args": { title: "Im global", text: "and some text"},
+        "filter": 'testfilter'
       },
+      {
+        "id": "comp21",
+        "order": "top",
+        "componentId": "app-component-one",
+        "urlPattern": "route1/:id",
+        "args": { test: [], testTwo: {}},
+        "filter": 'testfilter2'
+      },
+
       {
         "id": "comp2",
         "order": 10,
