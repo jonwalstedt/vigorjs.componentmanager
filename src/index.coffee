@@ -21,39 +21,53 @@ do ->
       activeComponents.on 'remove', _onComponentRemoved
       return @
 
-    update: (filterOptions) ->
+    refresh: (filterOptions) ->
       filterModel.set filterOptions
       return @
 
-  _onComponentAdded = (model) ->
-    $target = $ ".#{model.get('target')}"
-    order = model.get 'order'
-    instance = model.get 'instance'
+    addComponentDefinition: (componentDefinition) ->
+      componentDefinitionsCollection.set componentDefinition,
+        validate: true,
+        parse: true,
+        remove: false
+      return @
 
-    do instance.render
+    removeComponentDefinition: (componentDefinitionId) ->
+      instanceDefinitionsCollection.remove componentDefinitionId
+      return @
 
-    if order
-      if order is 'top'
-        instance.$el.data 'order', 0
-        $target.prepend instance.$el
-      else if order is 'bottom'
-        instance.$el.data 'order', 999
-        $target.append instance.$el
-      else
-        $previousElement = _previousElement $target.children().last(), order
-        instance.$el.data 'order', order
-        instance.$el.attr 'data-order', order
-        unless $previousElement
-          $target.prepend instance.$el
-        else
-          instance.$el.insertAfter $previousElement
-    else
-      $target.append instance.$el
+    addInstance: (instanceDefinition) ->
+      instanceDefinitionsCollection.set instanceDefinition,
+        validate: true,
+        parse: true,
+        remove: false
+      return @
 
-  _onComponentRemoved = (model) ->
-    instance = model.get 'instance'
-    do instance.dispose
+    removeInstance: (instancecId) ->
+      instanceDefinitionsCollection.remove instancecId
+      return @
 
+    clear: ->
+      do componentDefinitionsCollection.reset
+      do instanceDefinitionsCollection.reset
+      do activeComponents.reset
+      do filterModel.clear
+
+    dispose: ->
+      do @clear
+      do filterModel.off
+      do activeComponents.off
+      do componentDefinitionsCollection.off
+      filterModel = undefined
+      activeComponents = undefined
+      componentDefinitionsCollection = undefined
+
+    getComponentInstances: (filterOptions) ->
+      return _getComponentInstances filterOptions
+
+  #
+  # Privat methods
+  # ============================================================================
   _previousElement = ($el, order = 0) ->
     if $el.length > 0
       if $el.data('order') < order
@@ -61,13 +75,12 @@ do ->
       else
         _previousElement $el.prev(), order
 
-
   _updateActiveComponents = ->
     filterOptions = filterModel.toJSON()
-    componentInstances = _geComponentInstances filterOptions
+    componentInstances = _getComponentInstances filterOptions
     activeComponents.set componentInstances
 
-  _geComponentInstances = (filterOptions) ->
+  _getComponentInstances = (filterOptions) ->
     instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinition filterOptions
     instances = []
     for instanceDefinition in instanceDefinitions
@@ -76,14 +89,16 @@ do ->
       showCount = instanceDefinition.get 'showCount'
       maxShowCount = componentDefinition.get 'maxShowCount'
       isFilteredOut = false
+
       componentClass = _getClass componentDefinition.get('src')
       urlParams = router.getArguments instanceDefinition.get('urlPattern'), filterOptions.route
+
       instance = new componentClass { urlParams: urlParams, args: instanceDefinition.get('args') }
       instance.$el.addClass COMPONENT_CLASS
 
       obj = {
-        instanceDefinitionId: instanceDefinition.cid
         instance: instance
+        instanceDefinitionId: instanceDefinition.get('id') or instanceDefinition.cid
         target: instanceDefinition.get('targetName')
         order: instanceDefinition.get('order')
       }
@@ -103,7 +118,6 @@ do ->
           instances.push obj
 
     return instances
-
 
   _getClass = (src) ->
     if typeof require is "function"
@@ -125,11 +139,17 @@ do ->
     return componentClass
 
   _parseComponentSettings = (componentSettings) ->
-    componentsDefinitions = componentSettings.components or componentSettings.widgets
-    instanceDefinitions = componentSettings.layouts or componentSettings.targets
+    componentDefinitions = componentSettings.components or \
+    componentSettings.widgets or \
+    componentSettings.componentDefinitions
+
+    instanceDefinitions = componentSettings.layoutsArray or \
+    componentSettings.targets or \
+    componentSettings.instanceDefinitions
+
     hidden = componentSettings.hidden
 
-    _registerComponents componentsDefinitions
+    _registerComponents componentDefinitions
     _registerInstanceDefinitons instanceDefinitions
 
   _registerComponents = (componentDefinitions) ->
@@ -137,6 +157,40 @@ do ->
 
   _registerInstanceDefinitons = (instanceDefinitions) ->
     instanceDefinitionsCollection.set instanceDefinitions, validate: true, parse: true
-    console.log instanceDefinitionsCollection
+
+  _addInstanceToDom = (model, render = true) ->
+    $target = $ ".#{model.get('target')}"
+    order = model.get 'order'
+    instance = model.get 'instance'
+
+    if render then do instance.render
+
+    if order
+      if order is 'top'
+        instance.$el.data 'order', 0
+        $target.prepend instance.$el
+      else if order is 'bottom'
+        instance.$el.data 'order', 999
+        $target.append instance.$el
+      else
+        $previousElement = _previousElement $target.children().last(), order
+        instance.$el.data 'order', order
+        instance.$el.attr 'data-order', order
+        unless $previousElement
+          $target.prepend instance.$el
+        else
+          instance.$el.insertAfter $previousElement
+    else
+      $target.append instance.$el
+
+  #
+  # Callbacks
+  # ============================================================================
+  _onComponentAdded = (model) ->
+    _addInstanceToDom model
+
+  _onComponentRemoved = (model) ->
+    instance = model.get 'instance'
+    do instance.dispose
 
   Vigor.componentManager = componentManager

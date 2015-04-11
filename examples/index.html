@@ -5,35 +5,40 @@
   </head>
   <body>
 
-  <header>
-    <h1>Vigorjs componentmanager</h1>
-    <nav class="navigation">
-      <ul class="main-menu">
+  <div class="app-wrapper"></div>
+  <!-- BEGIN: Underscore Template Definition. -->
+  <script type="text/template" class="main-template">
+    <header>
+      <h1>Vigorjs componentmanager</h1>
+      <nav class="navigation">
+        <ul class="main-menu">
+          <li><a href="#route1/1" class="link">link1</a></li>
+          <li><a href="#route2/2" class="link">link2</a></li>
+          <li><a href="#route3/3" class="link">link3</a></li>
+        </ul>
+      </nav>
+      <button class="add-component">Add a component</button>
+    </header>
+
+    <aside class="sidebar">
+      <div class="component-area-sidebar-first">
+      </div>
+      <ul class="sub-menu">
         <li><a href="#route1/1" class="link">link1</a></li>
-        <li><a href="#route2/2" class="link">link2</a></li>
-        <li><a href="#route3/3" class="link">link3</a></li>
+        <li><a href="#route1/1" class="link">link2</a></li>
+        <li><a href="#route1/1" class="link">link3</a></li>
+        <li><a href="#route1/1" class="link">link4</a></li>
       </ul>
-    </nav>
-  </header>
+      <div class="component-area-sidebar-second"></div>
+    </aside>
 
-  <aside class="sidebar">
-    <div class="component-area-sidebar-first">
+    <div class="component-area-main-2">
+      <div class="vigorjs-component" data-order="10">1 order 10</div>
+      <div class="vigorjs-component" data-order="30">2 order 30</div>
+      <div class="vigorjs-component">3 order not defined</div>
+      <div class="vigorjs-component" data-order="40">4 order 40</div>
     </div>
-    <ul class="sub-menu">
-      <li><a href="#route1/1" class="link">link1</a></li>
-      <li><a href="#route1/1" class="link">link2</a></li>
-      <li><a href="#route1/1" class="link">link3</a></li>
-      <li><a href="#route1/1" class="link">link4</a></li>
-    </ul>
-    <div class="component-area-sidebar-second"></div>
-  </aside>
-
-  <div class="component-area-main">
-    <div class="vigorjs-component" data-order="10">1 order 10</div>
-    <div class="vigorjs-component" data-order="30">2 order 30</div>
-    <div class="vigorjs-component">3 order not defined</div>
-    <div class="vigorjs-component" data-order="40">4 order 40</div>
-  </div>
+  </script>
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
@@ -53,7 +58,11 @@
 
     $(document).ready(function () {
       'use strict'
-      helloWorld = new app.HelloWorld();
+      helloWorld = new app.HelloWorld({
+        el: '.app-wrapper'
+      });
+
+      helloWorld.render();
     });
 
   </script>

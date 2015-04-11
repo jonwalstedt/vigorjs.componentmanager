@@ -26,6 +26,12 @@ AppRouter = Backbone.Router.extend({
 
   app.HelloWorld = Backbone.View.extend({
     router: undefined,
+    template: _.template($('script.main-template').html()),
+
+    events: {
+      'click .add-component': '_onAddComponentBtnClick'
+    },
+
     initialize: function () {
       Vigor.componentManager.initialize({componentSettings: window.componentSettings});
       this.router = new AppRouter();
@@ -34,12 +40,20 @@ AppRouter = Backbone.Router.extend({
           route: Backbone.history.fragment
         };
 
-        Vigor.componentManager.update(filterOptions);
-        // Vigor.componentManager.renderComponents(filterOptions);
+        Vigor.componentManager.refresh(filterOptions);
       });
       Backbone.history.start({root: '/examples/'});
     },
 
+    render: function () {
+      this.$el.html(this.template());
+    },
+
+    _onAddComponentBtnClick: function () {
+      var component = window.componentSettings.targets.main[0];
+
+      console.log('im clicked', component);
+    }
   });
 
 })(jQuery);

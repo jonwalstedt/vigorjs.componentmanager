@@ -1,8 +1,8 @@
 var app = app || {};
 app.ComponentOne = Backbone.View.extend({
 
-  initialize: function () {
-    console.log('im component one');
+  initialize: function (arguments) {
+    console.log('im component one', arguments);
   },
 
   render: function () {
