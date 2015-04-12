@@ -13,7 +13,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
         instanceDefinition.targetName = "#{TARGET_PREFIX}-#{targetName}"
 
         if instanceDefinition.urlPattern is 'global'
-          instanceDefinition.urlPattern = '*notFound'
+          instanceDefinition.urlPattern = ['*notFound', '*action']
 
         instanceDefinitionsArray.push instanceDefinition
 
@@ -21,8 +21,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
 
   getInstanceDefinitions: (filterOptions) ->
     instanceDefinitions = @models
-
-    if filterOptions.route
+    if filterOptions.route or filterOptions.route is ''
       instanceDefinitions = @filterInstanceDefinitionsByUrl instanceDefinitions, filterOptions.route
       instanceDefinitions = @addUrlParams instanceDefinitions, filterOptions.route
 
@@ -38,8 +37,16 @@ class InstanceDefinitionsCollection extends Backbone.Collection
     instanceDefinitions = _.filter instanceDefinitions, (instanceDefinitionModel) =>
       urlPattern = instanceDefinitionModel.get 'urlPattern'
       if urlPattern
-        routeRegEx = router._routeToRegExp urlPattern
-        return routeRegEx.test route
+        if _.isArray(urlPattern)
+          match = false
+          for pattern in urlPattern
+            routeRegEx = router._routeToRegExp pattern
+            match = routeRegEx.test route
+            if match then return match
+          return match
+        else
+          routeRegEx = router._routeToRegExp urlPattern
+          return routeRegEx.test route
     return instanceDefinitions
 
   filterInstanceDefinitionsByString: (instanceDefinitions, filterString) ->

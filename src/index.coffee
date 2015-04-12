@@ -101,9 +101,12 @@ do ->
 
       if maxShowCount
         if showCount < maxShowCount
+          _incrementShowCount instanceDefinition
           filteredInstanceDefinitions.push instanceDefinition
+
       else
         filteredInstanceDefinitions.push instanceDefinition
+        _incrementShowCount instanceDefinition
 
     return filteredInstanceDefinitions
 
@@ -153,9 +156,7 @@ do ->
   _addInstanceToDom = (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}"
     order = instanceDefinition.get 'order'
-    showCount = instanceDefinition.get 'showCount'
     instance = instanceDefinition.get 'instance'
-    instanceDefinition.set 'showCount', showCount++
 
     if render then do instance.render
 
@@ -188,9 +189,18 @@ do ->
 
     instance = new componentClass args
     instance.$el.addClass COMPONENT_CLASS
-    instanceDefinition.set 'instance', instance
+
+    instanceDefinition.set
+      'instance': instance
+    , silent: true
+
     return instanceDefinition
 
+  _incrementShowCount = (instanceDefinition, silent = true) ->
+    showCount = instanceDefinition.get 'showCount'
+    instanceDefinition.set
+      'showCount': showCount += 1
+    , silent: silent
 
   #
   # Callbacks

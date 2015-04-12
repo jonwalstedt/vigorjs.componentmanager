@@ -1,7 +1,7 @@
- ☐ Verify filters
- ☐ Verify showCount
- ☐ Verify global components
- ☐ Add ability to have multiple urlpatterns
- ☐ Add ability to set context (if passing element on initialize))
- ☐ Add iframe supports (by checking src)
+ ✔ Verify filters @done (15-04-12 08:09)
+ ✔ Verify global components @done (15-04-12 21:40)
+ ✔ Add ability to have multiple urlpatterns @done (15-04-12 21:48)
+ ✔ Verify showCount @done (15-04-12 22:45)
+ ☐ Add ability to set context (if passing element on initialize)
+ ☐ Add iframe supports (by checking src, have prepared iframe view)
  ☐ Unit test

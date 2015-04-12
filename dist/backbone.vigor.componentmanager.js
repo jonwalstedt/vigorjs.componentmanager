@@ -29,13 +29,30 @@
         return Router.__super__.constructor.apply(this, arguments);
       }
 
-      Router.prototype.getArguments = function(route, fragment) {
+      Router.prototype.getArguments = function(routes, fragment) {
+        var args, i, len, route;
+        if (_.isArray(routes)) {
+          args = [];
+          for (i = 0, len = routes.length; i < len; i++) {
+            route = routes[i];
+            args = this._getArgumentsFromRoute(route, fragment);
+          }
+          return args;
+        } else {
+          return this._getArgumentsFromRoute(routes, fragment);
+        }
+      };
+
+      Router.prototype._getArgumentsFromRoute = function(route, fragment) {
         var args;
         if (!_.isRegExp(route)) {
           route = this._routeToRegExp(route);
         }
-        args = this._extractParameters(route, fragment);
-        return _.compact(args);
+        args = [];
+        if (route.exec(fragment)) {
+          args = _.compact(this._extractParameters(route, fragment));
+        }
+        return args;
       };
 
       return Router;
@@ -49,7 +66,7 @@
       }
 
       FilterModel.prototype.defaults = {
-        url: void 0,
+        route: void 0,
         filterString: void 0
       };
 
@@ -175,7 +192,7 @@
             instanceDefinition = instanceDefinitions[i];
             instanceDefinition.targetName = TARGET_PREFIX + "-" + targetName;
             if (instanceDefinition.urlPattern === 'global') {
-              instanceDefinition.urlPattern = '*notFound';
+              instanceDefinition.urlPattern = ['*notFound', '*action'];
             }
             instanceDefinitionsArray.push(instanceDefinition);
           }
@@ -186,7 +203,7 @@
       InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filterOptions) {
         var instanceDefinitions;
         instanceDefinitions = this.models;
-        if (filterOptions.route) {
+        if (filterOptions.route || filterOptions.route === '') {
           instanceDefinitions = this.filterInstanceDefinitionsByUrl(instanceDefinitions, filterOptions.route);
           instanceDefinitions = this.addUrlParams(instanceDefinitions, filterOptions.route);
         }
@@ -203,11 +220,24 @@
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, route) {
         instanceDefinitions = _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinitionModel) {
-            var routeRegEx, urlPattern;
+            var i, len, match, pattern, routeRegEx, urlPattern;
             urlPattern = instanceDefinitionModel.get('urlPattern');
             if (urlPattern) {
-              routeRegEx = router._routeToRegExp(urlPattern);
-              return routeRegEx.test(route);
+              if (_.isArray(urlPattern)) {
+                match = false;
+                for (i = 0, len = urlPattern.length; i < len; i++) {
+                  pattern = urlPattern[i];
+                  routeRegEx = router._routeToRegExp(pattern);
+                  match = routeRegEx.test(route);
+                  if (match) {
+                    return match;
+                  }
+                }
+                return match;
+              } else {
+                routeRegEx = router._routeToRegExp(urlPattern);
+                return routeRegEx.test(route);
+              }
             }
           };
         })(this));
@@ -245,7 +275,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigorjs-component';
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       instanceDefinitionsCollection = new InstanceDefinitionsCollection();
@@ -353,10 +383,12 @@
           maxShowCount = componentDefinition.get('maxShowCount');
           if (maxShowCount) {
             if (showCount < maxShowCount) {
+              _incrementShowCount(instanceDefinition);
               filteredInstanceDefinitions.push(instanceDefinition);
             }
           } else {
             filteredInstanceDefinitions.push(instanceDefinition);
+            _incrementShowCount(instanceDefinition);
           }
         }
         return filteredInstanceDefinitions;
@@ -401,15 +433,13 @@
         });
       };
       _addInstanceToDom = function(instanceDefinition, render) {
-        var $previousElement, $target, instance, order, showCount;
+        var $previousElement, $target, instance, order;
         if (render == null) {
           render = true;
         }
         $target = $("." + (instanceDefinition.get('targetName')));
         order = instanceDefinition.get('order');
-        showCount = instanceDefinition.get('showCount');
         instance = instanceDefinition.get('instance');
-        instanceDefinition.set('showCount', showCount++);
         if (render) {
           instance.render();
         }
@@ -444,8 +474,24 @@
         _.extend(args, instanceDefinition.get('args'));
         instance = new componentClass(args);
         instance.$el.addClass(COMPONENT_CLASS);
-        instanceDefinition.set('instance', instance);
+        instanceDefinition.set({
+          'instance': instance
+        }, {
+          silent: true
+        });
         return instanceDefinition;
+      };
+      _incrementShowCount = function(instanceDefinition, silent) {
+        var showCount;
+        if (silent == null) {
+          silent = true;
+        }
+        showCount = instanceDefinition.get('showCount');
+        return instanceDefinition.set({
+          'showCount': showCount += 1
+        }, {
+          silent: silent
+        });
       };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);

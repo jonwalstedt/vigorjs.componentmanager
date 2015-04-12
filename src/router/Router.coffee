@@ -1,8 +1,17 @@
 class Router extends Backbone.Router
 
-  getArguments: (route, fragment) ->
+  getArguments: (routes, fragment) ->
+    if _.isArray(routes)
+      args = []
+      for route in routes
+        args = @_getArgumentsFromRoute route, fragment
+      return args
+    else
+      @_getArgumentsFromRoute routes, fragment
+
+  _getArgumentsFromRoute: (route, fragment) ->
     if !_.isRegExp(route) then route = @_routeToRegExp(route)
-    args = @_extractParameters(route, fragment)
-    return _.compact(args)
-
-
+    args = []
+    if route.exec(fragment)
+      args = _.compact @_extractParameters(route, fragment)
+    return args

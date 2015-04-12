@@ -1,5 +1,5 @@
 class FilterModel extends Backbone.Model
 
   defaults:
-    url: undefined
+    route: undefined
     filterString: undefined
