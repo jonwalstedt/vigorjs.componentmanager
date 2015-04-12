@@ -97,7 +97,11 @@ do ->
     for instanceDefinition in instanceDefinitions
       componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
       showCount = instanceDefinition.get 'showCount'
-      maxShowCount = componentDefinition.get 'maxShowCount'
+
+      # maxShowCount on an instance level overrides maxShowCount on a componentDefinition level
+      maxShowCount = instanceDefinition.get 'maxShowCount'
+      unless maxShowCount
+        maxShowCount = componentDefinition.get 'maxShowCount'
 
       if maxShowCount
         if showCount < maxShowCount

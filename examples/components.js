@@ -32,6 +32,7 @@ var componentSettings = {
         "componentId": "app-component-two",
         "urlPattern": ["route1/:id", "route2/:id"],
         "args": { test: [], testTwo: {}}
+        // "filter": 'testfilter2'
       },
 
       // {

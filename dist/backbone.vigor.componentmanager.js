@@ -380,7 +380,10 @@
           instanceDefinition = instanceDefinitions[i];
           componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
           showCount = instanceDefinition.get('showCount');
-          maxShowCount = componentDefinition.get('maxShowCount');
+          maxShowCount = instanceDefinition.get('maxShowCount');
+          if (!maxShowCount) {
+            maxShowCount = componentDefinition.get('maxShowCount');
+          }
           if (maxShowCount) {
             if (showCount < maxShowCount) {
               _incrementShowCount(instanceDefinition);
