@@ -55,7 +55,7 @@ AppRouter = Backbone.Router.extend({
     },
 
     _refreshComponents: function () {
-      filterOptions = {
+      var filterOptions = {
         route: Backbone.history.fragment
       };
       Vigor.componentManager.refresh(filterOptions);
