@@ -26,6 +26,7 @@ do ->
 
       @activeComponents.on 'add', _onComponentAdded
       @activeComponents.on 'remove', _onComponentRemoved
+      @activeComponents.on 'change:order', _onComponentOrderChange
       return @
 
     refresh: (filterOptions) ->
@@ -235,5 +236,8 @@ do ->
   _onComponentRemoved = (instanceDefinition) ->
     instance = instanceDefinition.get 'instance'
     do instance.dispose
+
+  _onComponentOrderChange = (instanceDefinition) ->
+    _addInstanceToDom instanceDefinition
 
   Vigor.componentManager = componentManager

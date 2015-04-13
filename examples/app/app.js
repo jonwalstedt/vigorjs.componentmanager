@@ -34,7 +34,9 @@ AppRouter = Backbone.Router.extend({
     template: _.template($('script.main-template').html()),
 
     events: {
-      'click .add-component': '_onAddComponentBtnClick'
+      'click .add-component': '_onAddComponentBtnClick',
+      'click .remove-component': '_onRemoveComponentBtnClick',
+      'click .change-component': '_onChangeComponentBtnClick'
     },
 
     initialize: function () {
@@ -71,6 +73,19 @@ AppRouter = Backbone.Router.extend({
       };
 
       Vigor.componentManager.addInstance(instanceDefinitionObj);
+    },
+
+    _onRemoveComponentBtnClick: function () {
+      var component = Vigor.componentManager.activeComponents.at(0)
+      Vigor.componentManager.removeInstance(component.get('id'));
+    },
+
+    _onChangeComponentBtnClick: function () {
+      var component = Vigor.componentManager.activeComponents.at(0),
+      order = component.get('order');
+      order++;
+      component.set('order', order);
+      // Vigor.componentManager.removeInstance(component.get('id'));
     }
   });
 

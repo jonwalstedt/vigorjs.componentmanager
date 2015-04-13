@@ -2,8 +2,7 @@ var componentSettings = {
   "components": [
     {
       "componentId": 'app-component-one',
-      "src": "app.ComponentOne",
-      "maxShowCount": 2
+      "src": "app.ComponentOne"
     },
     {
       "componentId": 'app-component-two',
@@ -25,7 +24,7 @@ var componentSettings = {
     "main": [
       {
         "id": "comp1",
-        "order": "top",
+        "order": 0,
         "componentId": "app-component-one",
         "urlPattern": "global",
         "args": { title: "Im global", text: "and some text"},

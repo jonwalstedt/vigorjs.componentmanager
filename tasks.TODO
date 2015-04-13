@@ -8,4 +8,5 @@
  ☐ Change properties on the fly: order, target, urlpattern etc.
  ☐ Hidden widgets and the hidden array
  ☐ Readd hidden widgets
+ ☐ Implement conditions
  ☐ Unit test

@@ -312,7 +312,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isUrl, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigor-component';
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       instanceDefinitionsCollection = new InstanceDefinitionsCollection();
@@ -335,6 +335,7 @@
           instanceDefinitionsCollection.on('add change remove', _updateActiveComponents);
           this.activeComponents.on('add', _onComponentAdded);
           this.activeComponents.on('remove', _onComponentRemoved);
+          this.activeComponents.on('change:order', _onComponentOrderChange);
           return this;
         },
         refresh: function(filterOptions) {
@@ -562,6 +563,9 @@
         var instance;
         instance = instanceDefinition.get('instance');
         return instance.dispose();
+      };
+      _onComponentOrderChange = function(instanceDefinition) {
+        return _addInstanceToDom(instanceDefinition);
       };
       return Vigor.componentManager = componentManager;
     })();
