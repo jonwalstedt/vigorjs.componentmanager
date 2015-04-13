@@ -55,7 +55,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       unless filter
         return false
       else
-        return filter.match new RegExp("^#{filterString}$")
+        return filterString.match new RegExp(filter)
     return instanceDefinitions
 
   addUrlParams: (instanceDefinitions, route) ->

@@ -1,6 +1,6 @@
 do ->
 
-  COMPONENT_CLASS = 'vigorjs-component'
+  COMPONENT_CLASS = 'vigor-component'
 
   componentDefinitionsCollection = new ComponentDefinitionsCollection()
   instanceDefinitionsCollection = new InstanceDefinitionsCollection()
@@ -121,23 +121,27 @@ do ->
     return filteredInstanceDefinitions
 
   _getClass = (src) ->
-    if typeof require is "function"
-      console.log 'require stuff'
-      componentClass = require src
-
+    if _isUrl(src)
+      componentClass = IframeComponent
+      return componentClass
     else
-      obj = window
-      srcObjParts = src.split '.'
+      if typeof require is "function"
+        console.log 'require stuff'
+        componentClass = require src
 
-      for part in srcObjParts
-        obj = obj[part]
+      else
+        obj = window
+        srcObjParts = src.split '.'
 
-      componentClass = obj
+        for part in srcObjParts
+          obj = obj[part]
 
-    unless typeof componentClass is "function"
-      throw "No constructor function found for #{src}"
+        componentClass = obj
 
-    return componentClass
+      unless typeof componentClass is "function"
+        throw "No constructor function found for #{src}"
+
+      return componentClass
 
   _parseComponentSettings = (componentSettings) ->
     componentDefinitions = componentSettings.components or \
@@ -190,12 +194,16 @@ do ->
 
   _addInstanceToModel = (instanceDefinition) ->
     componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
-    componentClass = _getClass componentDefinition.get('src')
+    src = componentDefinition.get 'src'
+    componentClass = _getClass src
 
     args =
       urlParams: instanceDefinition.get 'urlParams'
 
     _.extend args, instanceDefinition.get('args')
+
+    if componentClass is IframeComponent
+      args.src = src
 
     instance = new componentClass args
     instance.$el.addClass COMPONENT_CLASS
@@ -208,9 +216,14 @@ do ->
 
   _incrementShowCount = (instanceDefinition, silent = true) ->
     showCount = instanceDefinition.get 'showCount'
+    showCount++
     instanceDefinition.set
-      'showCount': showCount += 1
+      'showCount': showCount
     , silent: silent
+
+  _isUrl = (string) ->
+    urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
+    return urlRegEx.test(string)
 
   #
   # Callbacks

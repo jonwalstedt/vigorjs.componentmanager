@@ -2,7 +2,8 @@ var componentSettings = {
   "components": [
     {
       "componentId": 'app-component-one',
-      "src": "app.ComponentOne"
+      "src": "app.ComponentOne",
+      "maxShowCount": 2
     },
     {
       "componentId": 'app-component-two',
@@ -11,6 +12,10 @@ var componentSettings = {
     {
       "componentId": 'app-component-three',
       "src": "app.ComponentThree"
+    },
+    {
+      "componentId": 'app-component-four',
+      "src": "http://www.wikipedia.com"
     }
   ],
 
@@ -24,12 +29,12 @@ var componentSettings = {
         "componentId": "app-component-one",
         "urlPattern": "global",
         "args": { title: "Im global", text: "and some text"},
-        "filter": 'testfilter'
+        "filter": '(England)'
       },
       {
         "id": "comp21",
         "order": "top",
-        "componentId": "app-component-two",
+        "componentId": "app-component-four",
         "urlPattern": ["route1/:id", "route2/:id"],
         "args": { test: [], testTwo: {}}
         // "filter": 'testfilter2'

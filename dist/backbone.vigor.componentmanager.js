@@ -19,7 +19,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
+    var ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = {};
     Vigor.extend = Backbone.Model.extend;
     Router = (function(superClass) {
@@ -73,6 +73,43 @@
       return FilterModel;
 
     })(Backbone.Model);
+    IframeComponent = (function(superClass) {
+      extend(IframeComponent, superClass);
+
+      function IframeComponent() {
+        return IframeComponent.__super__.constructor.apply(this, arguments);
+      }
+
+      IframeComponent.prototype.tagName = 'iframe';
+
+      IframeComponent.prototype.className = 'vigor-component--iframe';
+
+      IframeComponent.prototype.attributes = {
+        seamless: 'seamless',
+        scrolling: false
+      };
+
+      IframeComponent.prototype.src = void 0;
+
+      IframeComponent.prototype.initialize = function(attrs) {
+        this.src = attrs.src;
+        return this.$el.on('load', this.onIframeLoaded);
+      };
+
+      IframeComponent.prototype.render = function() {
+        return this.$el.attr('src', this.src);
+      };
+
+      IframeComponent.prototype.dispose = function() {
+        this.$el.off('load', this.onIframeLoaded);
+        return this.remove();
+      };
+
+      IframeComponent.prototype.onIframeLoaded = function(event) {};
+
+      return IframeComponent;
+
+    })(Backbone.View);
     ComponentDefinitionModel = (function(superClass) {
       extend(ComponentDefinitionModel, superClass);
 
@@ -251,7 +288,7 @@
           if (!filter) {
             return false;
           } else {
-            return filter.match(new RegExp("^" + filterString + "$"));
+            return filterString.match(new RegExp(filter));
           }
         });
         return instanceDefinitions;
@@ -275,8 +312,8 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
-      COMPONENT_CLASS = 'vigorjs-component';
+      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isUrl, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      COMPONENT_CLASS = 'vigor-component';
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       instanceDefinitionsCollection = new InstanceDefinitionsCollection();
       activeComponents = new Backbone.Collection();
@@ -404,22 +441,27 @@
       };
       _getClass = function(src) {
         var componentClass, i, len, obj, part, srcObjParts;
-        if (typeof require === "function") {
-          console.log('require stuff');
-          componentClass = require(src);
+        if (_isUrl(src)) {
+          componentClass = IframeComponent;
+          return componentClass;
         } else {
-          obj = window;
-          srcObjParts = src.split('.');
-          for (i = 0, len = srcObjParts.length; i < len; i++) {
-            part = srcObjParts[i];
-            obj = obj[part];
+          if (typeof require === "function") {
+            console.log('require stuff');
+            componentClass = require(src);
+          } else {
+            obj = window;
+            srcObjParts = src.split('.');
+            for (i = 0, len = srcObjParts.length; i < len; i++) {
+              part = srcObjParts[i];
+              obj = obj[part];
+            }
+            componentClass = obj;
           }
-          componentClass = obj;
+          if (typeof componentClass !== "function") {
+            throw "No constructor function found for " + src;
+          }
+          return componentClass;
         }
-        if (typeof componentClass !== "function") {
-          throw "No constructor function found for " + src;
-        }
-        return componentClass;
       };
       _parseComponentSettings = function(componentSettings) {
         var componentDefinitions, hidden, instanceDefinitions;
@@ -474,13 +516,17 @@
         }
       };
       _addInstanceToModel = function(instanceDefinition) {
-        var args, componentClass, componentDefinition, instance;
+        var args, componentClass, componentDefinition, instance, src;
         componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
-        componentClass = _getClass(componentDefinition.get('src'));
+        src = componentDefinition.get('src');
+        componentClass = _getClass(src);
         args = {
           urlParams: instanceDefinition.get('urlParams')
         };
         _.extend(args, instanceDefinition.get('args'));
+        if (componentClass === IframeComponent) {
+          args.src = src;
+        }
         instance = new componentClass(args);
         instance.$el.addClass(COMPONENT_CLASS);
         instanceDefinition.set({
@@ -496,11 +542,17 @@
           silent = true;
         }
         showCount = instanceDefinition.get('showCount');
+        showCount++;
         return instanceDefinition.set({
-          'showCount': showCount += 1
+          'showCount': showCount
         }, {
           silent: silent
         });
+      };
+      _isUrl = function(string) {
+        var urlRegEx;
+        urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
+        return urlRegEx.test(string);
       };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);

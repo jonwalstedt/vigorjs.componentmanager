@@ -30,6 +30,7 @@
   # COMMON
   #= include ./router/Router.coffee
   #= include ./filter/FilterModel.coffee
+  #= include ./iframe-component/IframeComponent.coffee
   #= include ./component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-definitions/ComponentDefinitionsCollection.coffee
   #= include ./targets/InstanceDefinitionModel.coffee
