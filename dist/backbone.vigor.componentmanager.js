@@ -275,17 +275,23 @@
 
     })(Backbone.Collection);
     (function() {
-      var COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _onComponentAdded, _onComponentRemoved, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigorjs-component';
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       instanceDefinitionsCollection = new InstanceDefinitionsCollection();
       activeComponents = new Backbone.Collection();
       filterModel = new FilterModel();
+      $context = void 0;
       componentManager = {
         activeComponents: activeComponents,
         initialize: function(settings) {
           if (settings.componentSettings) {
             _parseComponentSettings(settings.componentSettings);
+          }
+          if (settings.$context) {
+            $context = settings.$context;
+          } else {
+            $context = $('body');
           }
           filterModel.on('add change remove', _updateActiveComponents);
           componentDefinitionsCollection.on('add change remove', _updateActiveComponents);
@@ -440,7 +446,7 @@
         if (render == null) {
           render = true;
         }
-        $target = $("." + (instanceDefinition.get('targetName')));
+        $target = $("." + (instanceDefinition.get('targetName')), $context);
         order = instanceDefinition.get('order');
         instance = instanceDefinition.get('instance');
         if (render) {

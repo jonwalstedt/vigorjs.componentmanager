@@ -2,7 +2,7 @@
  ✔ Verify global components @done (15-04-12 21:40)
  ✔ Add ability to have multiple urlpatterns @done (15-04-12 21:48)
  ✔ Verify showCount @done (15-04-12 22:45)
- ☐ Add ability to set context (if passing element on initialize)
+ ✔ Add ability to set context (if passing element on initialize) @done (15-04-13 20:33)
  ☐ Hidden widgets and the hidden array
  ☐ Readd hidden widgets
  ☐ Add iframe supports (by checking src, have prepared iframe view)

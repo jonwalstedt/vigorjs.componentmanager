@@ -38,7 +38,10 @@ AppRouter = Backbone.Router.extend({
     },
 
     initialize: function () {
-      Vigor.componentManager.initialize({componentSettings: window.componentSettings});
+      Vigor.componentManager.initialize({
+        componentSettings: window.componentSettings,
+        $context: this.$el
+      });
       this.router = new AppRouter();
       this.router.on('route', this._refreshComponents);
 

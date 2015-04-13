@@ -6,6 +6,7 @@ do ->
   instanceDefinitionsCollection = new InstanceDefinitionsCollection()
   activeComponents = new Backbone.Collection()
   filterModel = new FilterModel()
+  $context = undefined
 
   componentManager =
     activeComponents: activeComponents
@@ -13,6 +14,11 @@ do ->
     initialize: (settings) ->
       if settings.componentSettings
         _parseComponentSettings settings.componentSettings
+
+      if settings.$context
+        $context = settings.$context
+      else
+        $context = $ 'body'
 
       filterModel.on 'add change remove', _updateActiveComponents
       componentDefinitionsCollection.on 'add change remove', _updateActiveComponents
@@ -158,7 +164,7 @@ do ->
       parse: true
 
   _addInstanceToDom = (instanceDefinition, render = true) ->
-    $target = $ ".#{instanceDefinition.get('targetName')}"
+    $target = $ ".#{instanceDefinition.get('targetName')}", $context
     order = instanceDefinition.get 'order'
     instance = instanceDefinition.get 'instance'
 
