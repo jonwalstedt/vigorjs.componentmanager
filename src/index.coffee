@@ -27,6 +27,7 @@ do ->
       @activeComponents.on 'add', _onComponentAdded
       @activeComponents.on 'remove', _onComponentRemoved
       @activeComponents.on 'change:order', _onComponentOrderChange
+      @activeComponents.on 'change:targetName', _onComponentTargetNameChange
       return @
 
     refresh: (filterOptions) ->
@@ -239,5 +240,10 @@ do ->
 
   _onComponentOrderChange = (instanceDefinition) ->
     _addInstanceToDom instanceDefinition
+
+  _onComponentTargetNameChange = (instanceDefinition) ->
+    _addInstanceToDom instanceDefinition
+
+
 
   Vigor.componentManager = componentManager
