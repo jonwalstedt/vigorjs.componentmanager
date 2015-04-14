@@ -1,5 +1,7 @@
 var app = app || {};
-app.ComponentOne = Backbone.View.extend({
+app.components = app.components || {};
+
+app.components.ComponentOne = Backbone.View.extend({
 
   title: undefined,
   text: undefined,

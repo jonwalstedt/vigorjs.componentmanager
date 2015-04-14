@@ -1,8 +1,8 @@
 var componentSettings = {
   "components": [
     {
-      "componentId": 'app-component-one',
-      "src": "app.ComponentOne"
+      "componentId": 'app-navigation',
+      "src": "app.components.NavigationComponent"
     },
     {
       "componentId": 'app-component-two',
@@ -21,23 +21,31 @@ var componentSettings = {
   "hidden": [],
 
   "targets": {
+    "header": [
+      {
+        "id": "navigation",
+        "componentId": "app-navigation",
+        "urlPattern": "global"
+      },
+    ],
+
     "main": [
-      {
-        "id": "comp1",
-        "order": 0,
-        "componentId": "app-component-one",
-        "urlPattern": "global",
-        "args": { title: "Im global", text: "and some text"},
-        "filter": '(England)'
-      },
-      {
-        "id": "comp21",
-        "order": "top",
-        "componentId": "app-component-four",
-        "urlPattern": ["route1/:id", "route2/:id"],
-        "args": { test: [], testTwo: {}}
-        // "filter": 'testfilter2'
-      },
+      // {
+      //   "id": "comp1",
+      //   "order": 0,
+      //   "componentId": "app-component-one",
+      //   "urlPattern": "global",
+      //   "args": { title: "Im global", text: "and some text"},
+      //   "filter": '(England)'
+      // },
+      // {
+      //   "id": "comp21",
+      //   "order": "top",
+      //   "componentId": "app-component-four",
+      //   "urlPattern": ["route1/:id", "route2/:id"],
+      //   "args": { test: [], testTwo: {}}
+      //   // "filter": 'testfilter2'
+      // },
 
       // {
       //   "id": "comp2",

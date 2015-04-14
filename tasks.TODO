@@ -8,5 +8,5 @@
  ☐ Improved parsing
  ☐ Hidden widgets and the hidden array
  ☐ Readd hidden widgets
- ☐ Implement conditions
+ ☐ Implement conditions  - method to set general conditions, and component-level overrides (object with methods that returns boolean)
  ☐ Unit test

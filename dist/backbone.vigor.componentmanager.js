@@ -227,7 +227,7 @@
           instanceDefinitions = response[targetName];
           for (i = 0, len = instanceDefinitions.length; i < len; i++) {
             instanceDefinition = instanceDefinitions[i];
-            instanceDefinition.targetName = TARGET_PREFIX + "-" + targetName;
+            instanceDefinition.targetName = TARGET_PREFIX + "--" + targetName;
             if (instanceDefinition.urlPattern === 'global') {
               instanceDefinition.urlPattern = ['*notFound', '*action'];
             }

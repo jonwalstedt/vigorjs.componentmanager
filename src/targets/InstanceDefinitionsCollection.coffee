@@ -10,7 +10,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
     for targetName, instanceDefinitions of response
       for instanceDefinition in instanceDefinitions
 
-        instanceDefinition.targetName = "#{TARGET_PREFIX}-#{targetName}"
+        instanceDefinition.targetName = "#{TARGET_PREFIX}--#{targetName}"
 
         if instanceDefinition.urlPattern is 'global'
           instanceDefinition.urlPattern = ['*notFound', '*action']
