@@ -4,8 +4,10 @@
  ✔ Verify showCount @done (15-04-12 22:45)
  ✔ Add ability to set context (if passing element on initialize) @done (15-04-13 20:33)
  ✔ Add iframe supports (by checking src, have prepared iframe view) @done (15-04-13 22:46)
+ ☐ Handle global components that gets removed when layout change /do we readd?
  ☐ Change properties on the fly: order, target, urlpattern etc.
  ☐ Improved parsing
+ ☐ Ability to save/get setup and save to local storage
  ☐ Hidden widgets and the hidden array
  ☐ Readd hidden widgets
  ☐ Implement conditions  - method to set general conditions, and component-level overrides (object with methods that returns boolean)
