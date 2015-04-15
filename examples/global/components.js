@@ -5,8 +5,8 @@ var componentSettings = {
       "src": "app.components.NavigationComponent"
     },
     {
-      "componentId": 'app-component-two',
-      "src": "app.ComponentTwo"
+      "componentId": 'app-login',
+      "src": "app.components.LoginComponent"
     },
     {
       "componentId": 'app-component-three',
@@ -25,11 +25,17 @@ var componentSettings = {
       {
         "id": "navigation",
         "componentId": "app-navigation",
-        "urlPattern": "global"
-      },
+        "urlPattern": "global",
+        "conditions": "authenticated"
+      }
     ],
 
     "main": [
+      {
+        "id": "app-login",
+        "componentId": "app-login",
+        "urlPattern": ["", "landing", "logout"]
+      }
       // {
       //   "id": "comp1",
       //   "order": 0,

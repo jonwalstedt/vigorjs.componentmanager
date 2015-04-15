@@ -2,10 +2,11 @@ var app = app || {};
 
 ControlsView = Backbone.View.extend({
   router: undefined,
-  className: 'controls',
+  className: 'vigorjs-controls',
   template: _.template($('script.controls-template').html()),
 
   events: {
+    'click .vigorjs-controls__toggle-controls': '_onToggleControlsClick',
     'click .add-component': '_onAddComponentBtnClick',
     'click .remove-component': '_onRemoveComponentBtnClick',
     'click .change-component--order': '_onChangeComponentOrderBtnClick',
@@ -19,6 +20,10 @@ ControlsView = Backbone.View.extend({
   render: function () {
     this.$el.html(this.template());
     return this;
+  },
+
+  _onToggleControlsClick: function () {
+    this.$el.toggleClass('vigorjs-controls--active');
   },
 
   _onAddComponentBtnClick: function () {

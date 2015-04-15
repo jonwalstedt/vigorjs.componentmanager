@@ -5,6 +5,7 @@ var app = app || {};
 
   app.MainView = Backbone.View.extend({
 
+    className: 'layout layout--main',
     template: _.template($('script.main-template').html()),
 
     initialize: function () {

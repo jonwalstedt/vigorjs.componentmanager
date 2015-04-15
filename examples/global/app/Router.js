@@ -7,25 +7,29 @@ var app = app || {};
 
     $el: undefined,
     mainView: undefined,
-    articleView: undefined,
+    landingView: undefined,
 
     routes: {
-      'article/:id': '_onArticleRoute',
-      '*action': '_onAllOtherRoutes'
+      '': '_onLandingRoute',
+      'landing': '_onLandingRoute',
+      'logout': '_onLandingRoute',
+      '*action': '_onAllOtherRoutes',
+      '*notFound': '_onAllOtherRoutes'
     },
 
     initialize: function (options) {
       this.$el = options.$container;
       this.mainView = new app.MainView();
-      this.articleView = new app.ArticleView();
+      this.landingView = new app.LandingView();
     },
 
-    _onArticleRoute: function (id) {
-      this.$el.html(this.articleView.render().$el);
+    _onLandingRoute: function (id) {
+      this.$el.html(this.landingView.render().$el);
       this._refreshComponents();
     },
 
     _onAllOtherRoutes: function () {
+      console.log('_onAllOtherRoutes', arguments);
       this.$el.html(this.mainView.render().$el);
       this._refreshComponents();
     },

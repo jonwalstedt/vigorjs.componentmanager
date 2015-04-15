@@ -6,3 +6,4 @@ gulp.task 'watch', ['server', 'coffee'], ->
   livereload.listen({ basePath: config.dest});
   gulp.watch ["#{config.src}/**/*.coffee"], ['coffee']
   gulp.watch ["./examples/**/*.html"], ['reload']
+  gulp.watch ['./examples/**/*.css'], ['reload']

@@ -346,7 +346,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigor-component';
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       instanceDefinitionsCollection = new InstanceDefinitionsCollection();
@@ -416,6 +416,9 @@
           filterModel = void 0;
           activeComponents = void 0;
           return componentDefinitionsCollection = void 0;
+        },
+        registerConditions: function(conditions) {
+          return console.log(conditions);
         },
         getComponentInstances: function(filterOptions) {
           var i, instance, instanceDefinition, instanceDefinitions, instances, len;
@@ -534,23 +537,24 @@
         if (order) {
           if (order === 'top') {
             instance.$el.data('order', 0);
-            return $target.prepend(instance.$el);
+            $target.prepend(instance.$el);
           } else if (order === 'bottom') {
             instance.$el.data('order', 999);
-            return $target.append(instance.$el);
+            $target.append(instance.$el);
           } else {
             $previousElement = _previousElement($target.children().last(), order);
             instance.$el.data('order', order);
             instance.$el.attr('data-order', order);
             if (!$previousElement) {
-              return $target.prepend(instance.$el);
+              $target.prepend(instance.$el);
             } else {
-              return instance.$el.insertAfter($previousElement);
+              instance.$el.insertAfter($previousElement);
             }
           }
         } else {
-          return $target.append(instance.$el);
+          $target.append(instance.$el);
         }
+        return _isComponentAreaEmpty($target);
       };
       _addInstanceToModel = function(instanceDefinition) {
         var args, componentClass, componentDefinition, instance, src;
@@ -603,14 +607,31 @@
         urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
         return urlRegEx.test(string);
       };
+      _isComponentAreaEmpty = function($componentArea) {
+        if ($componentArea.length > 0) {
+          $componentArea.addClass('component-area--has-component');
+          return true;
+        } else {
+          $componentArea.removeClass('component-area--has-component');
+          return false;
+        }
+      };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);
         return _addInstanceToDom(instanceDefinition);
       };
       _onComponentRemoved = function(instanceDefinition) {
-        var instance;
+        var $target, instance;
         instance = instanceDefinition.get('instance');
-        return instance.dispose();
+        $target = $("." + (instanceDefinition.get('targetName')), $context);
+        _isComponentAreaEmpty($target);
+        instance.dispose();
+        instance = void 0;
+        return instanceDefinition.set({
+          'instance': void 0
+        }, {
+          silent: true
+        });
       };
       _onComponentOrderChange = function(instanceDefinition) {
         return _addInstanceToDom(instanceDefinition);

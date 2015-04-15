@@ -3,12 +3,13 @@ var app = app || {};
 (function ($) {
   'use strict';
 
-  app.ArticleView = Backbone.View.extend({
+  app.LandingView = Backbone.View.extend({
 
-    template: _.template($('script.article-template').html()),
+    className: 'layout layout--landing',
+    template: _.template($('script.landing-template').html()),
 
     initialize: function () {
-      console.log('app:ArticleViewd');
+      console.log('app:LandingView');
       this.render();
     },
 

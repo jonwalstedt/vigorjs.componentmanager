@@ -72,6 +72,9 @@ do ->
       activeComponents = undefined
       componentDefinitionsCollection = undefined
 
+    registerConditions: (conditions) ->
+      console.log conditions
+
     getComponentInstances: (filterOptions) ->
       instanceDefinitions = _filterInstanceDefinitions filterOptions
       instances = []
@@ -197,6 +200,8 @@ do ->
     else
       $target.append instance.$el
 
+    _isComponentAreaEmpty $target
+
   _addInstanceToModel = (instanceDefinition) ->
     componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
     src = componentDefinition.get 'src'
@@ -237,6 +242,14 @@ do ->
     urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
     return urlRegEx.test(string)
 
+  _isComponentAreaEmpty = ($componentArea) ->
+    if $componentArea.length > 0
+      $componentArea.addClass 'component-area--has-component'
+      return true
+    else
+      $componentArea.removeClass 'component-area--has-component'
+      return false
+
   #
   # Callbacks
   # ============================================================================
@@ -246,7 +259,13 @@ do ->
 
   _onComponentRemoved = (instanceDefinition) ->
     instance = instanceDefinition.get 'instance'
+    $target = $ ".#{instanceDefinition.get('targetName')}", $context
+    _isComponentAreaEmpty $target
     do instance.dispose
+    instance = undefined
+    instanceDefinition.set
+      'instance': undefined
+    , { silent: true }
 
   _onComponentOrderChange = (instanceDefinition) ->
     _addInstanceToDom instanceDefinition
