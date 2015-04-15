@@ -6,6 +6,8 @@ class ComponentDefinitionModel extends Backbone.Model
     height: undefined
     args: undefined
     conditions: undefined
+    instance: undefined
+
     maxShowCount: 0
 
   validate: (attrs, options) ->

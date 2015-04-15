@@ -19,7 +19,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
+    var ActiveComponentsCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = {};
     Vigor.extend = Backbone.Model.extend;
     Router = (function(superClass) {
@@ -124,6 +124,7 @@
         height: void 0,
         args: void 0,
         conditions: void 0,
+        instance: void 0,
         maxShowCount: 0
       };
 
@@ -172,6 +173,39 @@
       };
 
       return ComponentDefinitionsCollection;
+
+    })(Backbone.Collection);
+    ActiveComponentsCollection = (function(superClass) {
+      extend(ActiveComponentsCollection, superClass);
+
+      function ActiveComponentsCollection() {
+        return ActiveComponentsCollection.__super__.constructor.apply(this, arguments);
+      }
+
+      ActiveComponentsCollection.prototype.model = ComponentDefinitionModel;
+
+      ActiveComponentsCollection.prototype.getStrays = function() {
+        var strays;
+        strays = _.filter(this.models, (function(_this) {
+          return function(model) {
+            var instance;
+            if (instance = model.get('instance')) {
+              return !_this.isAttached(instance);
+            } else {
+              return false;
+            }
+          };
+        })(this));
+        return strays;
+      };
+
+      ActiveComponentsCollection.prototype.isAttached = function(instance) {
+        var elem;
+        elem = instance.el;
+        return $.contains(document.body, elem);
+      };
+
+      return ActiveComponentsCollection;
 
     })(Backbone.Collection);
     InstanceDefinitionModel = (function(superClass) {
@@ -312,11 +346,11 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigor-component';
       componentDefinitionsCollection = new ComponentDefinitionsCollection();
       instanceDefinitionsCollection = new InstanceDefinitionsCollection();
-      activeComponents = new Backbone.Collection();
+      activeComponents = new ActiveComponentsCollection();
       filterModel = new FilterModel();
       $context = void 0;
       componentManager = {
@@ -415,7 +449,8 @@
         var filterOptions, instanceDefinitions;
         filterOptions = filterModel.toJSON();
         instanceDefinitions = _filterInstanceDefinitions(filterOptions);
-        return activeComponents.set(instanceDefinitions);
+        activeComponents.set(instanceDefinitions);
+        return _tryToReAddStraysToDom();
       };
       _filterInstanceDefinitions = function(filterOptions) {
         var componentDefinition, filteredInstanceDefinitions, i, instanceDefinition, instanceDefinitions, len, maxShowCount, showCount;
@@ -537,6 +572,18 @@
           silent: true
         });
         return instanceDefinition;
+      };
+      _tryToReAddStraysToDom = function() {
+        var i, len, render, results, stray, strays;
+        strays = activeComponents.getStrays();
+        results = [];
+        for (i = 0, len = strays.length; i < len; i++) {
+          stray = strays[i];
+          render = false;
+          _addInstanceToDom(stray, render);
+          results.push(stray.get('instance').delegateEvents());
+        }
+        return results;
       };
       _incrementShowCount = function(instanceDefinition, silent) {
         var showCount;

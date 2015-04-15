@@ -33,6 +33,7 @@
   #= include ./iframe-component/IframeComponent.coffee
   #= include ./component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-definitions/ComponentDefinitionsCollection.coffee
+  #= include ./active-components/ActiveComponentsCollection.coffee
   #= include ./targets/InstanceDefinitionModel.coffee
   #= include ./targets/InstanceDefinitionsCollection.coffee
   #= include ./index.coffee

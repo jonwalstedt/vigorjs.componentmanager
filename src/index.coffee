@@ -4,7 +4,7 @@ do ->
 
   componentDefinitionsCollection = new ComponentDefinitionsCollection()
   instanceDefinitionsCollection = new InstanceDefinitionsCollection()
-  activeComponents = new Backbone.Collection()
+  activeComponents = new ActiveComponentsCollection()
   filterModel = new FilterModel()
   $context = undefined
 
@@ -97,6 +97,9 @@ do ->
     filterOptions = filterModel.toJSON()
     instanceDefinitions = _filterInstanceDefinitions filterOptions
     activeComponents.set instanceDefinitions
+
+    # check if we have any stray instances in active components and then try to readd them
+    do _tryToReAddStraysToDom
 
   _filterInstanceDefinitions = (filterOptions) ->
     instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinitions filterOptions
@@ -215,6 +218,13 @@ do ->
     , silent: true
 
     return instanceDefinition
+
+  _tryToReAddStraysToDom = ->
+    strays = activeComponents.getStrays()
+    for stray in strays
+      render = false
+      _addInstanceToDom stray, render
+      do stray.get('instance').delegateEvents
 
   _incrementShowCount = (instanceDefinition, silent = true) ->
     showCount = instanceDefinition.get 'showCount'

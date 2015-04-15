@@ -16,7 +16,7 @@
         $context: this.$el
       });
 
-      this.router = new app.Router({$container: this.$el.find('.app-body')});
+      this.router = new app.Router({$container: this.$el});
       // this.router.on('route', this._refreshComponents);
 
       Backbone.history.start({root: '/examples/global/'});
