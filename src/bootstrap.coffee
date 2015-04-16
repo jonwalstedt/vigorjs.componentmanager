@@ -25,7 +25,7 @@
 
   Vigor = Backbone.Vigor = {}
 
-  Vigor.extend = Backbone.Model.extend
+  # Vigor.extend = Backbone.Model.extend
 
   # COMMON
   #= include ./router/Router.coffee

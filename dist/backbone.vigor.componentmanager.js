@@ -21,7 +21,6 @@
   })(this, function(root, Backbone, _) {
     var ActiveComponentsCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = {};
-    Vigor.extend = Backbone.Model.extend;
     Router = (function(superClass) {
       extend(Router, superClass);
 
@@ -346,31 +345,30 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigor-component';
-      componentDefinitionsCollection = new ComponentDefinitionsCollection();
-      instanceDefinitionsCollection = new InstanceDefinitionsCollection();
-      activeComponents = new ActiveComponentsCollection();
-      filterModel = new FilterModel();
+      componentDefinitionsCollection = void 0;
+      instanceDefinitionsCollection = void 0;
+      activeComponents = void 0;
+      filterModel = void 0;
       $context = void 0;
       componentManager = {
-        activeComponents: activeComponents,
+        activeComponents: void 0,
         initialize: function(settings) {
-          if (settings.componentSettings) {
-            _parseComponentSettings(settings.componentSettings);
-          }
+          componentDefinitionsCollection = new ComponentDefinitionsCollection();
+          instanceDefinitionsCollection = new InstanceDefinitionsCollection();
+          activeComponents = new ActiveComponentsCollection();
+          filterModel = new FilterModel();
+          this.activeComponents = activeComponents;
+          _addListeners();
           if (settings.$context) {
             $context = settings.$context;
           } else {
             $context = $('body');
           }
-          filterModel.on('add change remove', _updateActiveComponents);
-          componentDefinitionsCollection.on('add change remove', _updateActiveComponents);
-          instanceDefinitionsCollection.on('add change remove', _updateActiveComponents);
-          this.activeComponents.on('add', _onComponentAdded);
-          this.activeComponents.on('remove', _onComponentRemoved);
-          this.activeComponents.on('change:order', _onComponentOrderChange);
-          this.activeComponents.on('change:targetName', _onComponentTargetNameChange);
+          if (settings.componentSettings) {
+            _parseComponentSettings(settings.componentSettings);
+          }
           return this;
         },
         refresh: function(filterOptions) {
@@ -410,11 +408,10 @@
         },
         dispose: function() {
           this.clear();
-          filterModel.off();
-          activeComponents.off();
-          componentDefinitionsCollection.off();
+          this._removeListeners();
           filterModel = void 0;
           activeComponents = void 0;
+          this.activeComponents = void 0;
           return componentDefinitionsCollection = void 0;
         },
         registerConditions: function(conditions) {
@@ -435,6 +432,21 @@
           }
           return instances;
         }
+      };
+      _addListeners = function() {
+        filterModel.on('add change remove', _updateActiveComponents);
+        componentDefinitionsCollection.on('add change remove', _updateActiveComponents);
+        instanceDefinitionsCollection.on('add change remove', _updateActiveComponents);
+        activeComponents.on('add', _onComponentAdded);
+        activeComponents.on('remove', _onComponentRemoved);
+        activeComponents.on('change:order', _onComponentOrderChange);
+        return activeComponents.on('change:targetName', _onComponentTargetNameChange);
+      };
+      _removeListeners = function() {
+        activeComponents.off();
+        filterModel.off();
+        instanceDefinitionsCollection.off();
+        return componentDefinitionsCollection.off();
       };
       _previousElement = function($el, order) {
         if (order == null) {

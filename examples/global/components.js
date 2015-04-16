@@ -15,6 +15,14 @@ var componentSettings = {
     {
       "componentId": 'app-profile-overview',
       "src": "app.components.ProfileOverViewComponent"
+    },
+    {
+      "componentId": 'app-social-media',
+      "src": "app.components.SocialMediaComponent"
+    },
+    {
+      "componentId": 'app-list',
+      "src": "app.components.ListComponent"
     }
   ],
 
@@ -35,20 +43,32 @@ var componentSettings = {
         "id": "app-login",
         "componentId": "app-login",
         "urlPattern": ["", "landing", "logout"]
+      },
+      {
+        "id": "app-list",
+        "componentId": "app-list",
+        "urlPattern": ["home", "event/:id"]
       }
     ],
    "below-header": [
       {
         "id": "app-marquee",
         "componentId": "app-marquee",
-        "urlPattern": "home"
+        "urlPattern": ["home", "event/:id"]
       }
    ],
    "sidebar-top": [
       {
         "id": "app-profile-overview",
         "componentId": "app-profile-overview",
-        "urlPattern": "home"
+        "urlPattern": ["home", "event/:id"]
+      }
+   ],
+   "sidebar-bottom": [
+      {
+        "id": "app-social-media",
+        "componentId": "app-social-media",
+        "urlPattern": ["home", "event/:id"]
       }
    ]
   }

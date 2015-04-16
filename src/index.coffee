@@ -2,32 +2,38 @@ do ->
 
   COMPONENT_CLASS = 'vigor-component'
 
-  componentDefinitionsCollection = new ComponentDefinitionsCollection()
-  instanceDefinitionsCollection = new InstanceDefinitionsCollection()
-  activeComponents = new ActiveComponentsCollection()
-  filterModel = new FilterModel()
+  componentDefinitionsCollection = undefined
+  instanceDefinitionsCollection = undefined
+  activeComponents = undefined
+  filterModel = undefined
   $context = undefined
 
   componentManager =
-    activeComponents: activeComponents
 
+    #
+    # Public properties
+    # ============================================================================
+    activeComponents: undefined
+
+    #
+    # Public methods
+    # ============================================================================
     initialize: (settings) ->
-      if settings.componentSettings
-        _parseComponentSettings settings.componentSettings
+      componentDefinitionsCollection = new ComponentDefinitionsCollection()
+      instanceDefinitionsCollection = new InstanceDefinitionsCollection()
+      activeComponents = new ActiveComponentsCollection()
+      filterModel = new FilterModel()
+      @activeComponents = activeComponents
+      do _addListeners
 
       if settings.$context
         $context = settings.$context
       else
         $context = $ 'body'
 
-      filterModel.on 'add change remove', _updateActiveComponents
-      componentDefinitionsCollection.on 'add change remove', _updateActiveComponents
-      instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
+      if settings.componentSettings
+        _parseComponentSettings settings.componentSettings
 
-      @activeComponents.on 'add', _onComponentAdded
-      @activeComponents.on 'remove', _onComponentRemoved
-      @activeComponents.on 'change:order', _onComponentOrderChange
-      @activeComponents.on 'change:targetName', _onComponentTargetNameChange
       return @
 
     refresh: (filterOptions) ->
@@ -65,11 +71,10 @@ do ->
 
     dispose: ->
       do @clear
-      do filterModel.off
-      do activeComponents.off
-      do componentDefinitionsCollection.off
+      do @_removeListeners
       filterModel = undefined
       activeComponents = undefined
+      @activeComponents = undefined
       componentDefinitionsCollection = undefined
 
     registerConditions: (conditions) ->
@@ -89,6 +94,22 @@ do ->
   #
   # Privat methods
   # ============================================================================
+  _addListeners = ->
+    filterModel.on 'add change remove', _updateActiveComponents
+    componentDefinitionsCollection.on 'add change remove', _updateActiveComponents
+    instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
+
+    activeComponents.on 'add', _onComponentAdded
+    activeComponents.on 'remove', _onComponentRemoved
+    activeComponents.on 'change:order', _onComponentOrderChange
+    activeComponents.on 'change:targetName', _onComponentTargetNameChange
+
+  _removeListeners = ->
+    do activeComponents.off
+    do filterModel.off
+    do instanceDefinitionsCollection.off
+    do componentDefinitionsCollection.off
+
   _previousElement = ($el, order = 0) ->
     if $el.length > 0
       if $el.data('order') < order
@@ -272,7 +293,5 @@ do ->
 
   _onComponentTargetNameChange = (instanceDefinition) ->
     _addInstanceToDom instanceDefinition
-
-
 
   Vigor.componentManager = componentManager

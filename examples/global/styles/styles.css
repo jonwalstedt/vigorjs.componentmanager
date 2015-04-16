@@ -7,8 +7,10 @@ body {
   height: 100%;
   font-family: sans-serif;
 }
+
 a {
   color: #00bfdd;
+  transition: all 0.3s ease-out;
 }
 
 .link {
@@ -31,11 +33,36 @@ Layouts
 
 .content-wrapper {
   position: relative;
-  padding: 0 0 100px 240px;
+  padding: 0 0 100px 260px;
+}
+
+.main-section {
+  position: relative;
 }
 
 .main-content {
-  border: 1px solid green;
+  position: relative;
+  width: 100%;
+  transition: all 0.2s ease-out;
+}
+
+.right-column {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 0%;
+  overflow: hidden;
+  background: #eee;
+  transition: all 0.2s ease-out;
+}
+
+.layout-main--show-sidepanel .main-content {
+  width: 40%;
+}
+
+.layout-main--show-sidepanel .right-column {
+  width: 60%;
 }
 
 .footer {
@@ -75,6 +102,7 @@ Header
   height: 80px;
 }
 
+.social-media::after,
 .navigation::after,
 .main-menu::after {
   content: "";
@@ -98,7 +126,7 @@ Header
 Sidebar
  */
 .sidebar {
-  width: 240px;
+  width: 260px;
   position: absolute;
   top: 0;
   left: 0;
@@ -168,9 +196,15 @@ Example components
 /*Marquee*/
 .marquee {
   position: relative;
-  height: 300px;
+  max-height: 400px;
   background: pink;
 }
+.marquee::after {
+  content: "";
+  display: block;
+  padding-bottom: 57%;
+}
+
 .marquee p {
   position: absolute;
   top: 50%;
@@ -182,7 +216,7 @@ Example components
 /*Profile Overview*/
 .profile-overview {
   position: relative;
-  height: 140px;
+  height: 220px;
   background: silver;
 }
 .profile-overview p {
@@ -191,4 +225,48 @@ Example components
   width: 100%;
   margin-top: -10px;
   text-align: center;
+}
+
+/* Social Media Component*/
+.social-media {
+  position: relative;
+}
+
+.social-media a {
+  display: block;
+  width: 25%;
+  height: 50px;
+  float: left;
+  padding: 0;
+  margin: 0;
+  text-indent: -999em;
+  background: rgb(22, 123, 216);
+  box-sizing: border-box;
+  border: 1px solid rgb(75, 75, 75);
+}
+.social-media a:hover {
+  background: rgb(15, 140, 255);
+}
+
+/* List Component*/
+.list {
+  position: relative;
+  max-width: 600px;
+  margin: 40px auto;
+}
+
+.generic-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+}
+
+.list__link {
+  display: block;
+  border-bottom: 1px solid #ccc;
+  padding: 18px 10px;
+}
+.list__link:hover {
+  background: #eee;
 }

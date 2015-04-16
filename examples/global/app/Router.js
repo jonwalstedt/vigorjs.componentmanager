@@ -13,6 +13,7 @@ var app = app || {};
       '': '_onLandingRoute',
       'landing': '_onLandingRoute',
       'logout': '_onLandingRoute',
+      'event/:id': '_onEventRoute',
       '*action': '_onAllOtherRoutes',
       '*notFound': '_onAllOtherRoutes'
     },
@@ -23,13 +24,20 @@ var app = app || {};
       this.landingView = new app.LandingView();
     },
 
-    _onLandingRoute: function (id) {
+    _onLandingRoute: function () {
       this.$el.html(this.landingView.render().$el);
+      this._refreshComponents();
+    },
+
+    _onEventRoute: function (id) {
+      this.$el.html(this.mainView.render().$el);
+      this.mainView.showSidePanel();
       this._refreshComponents();
     },
 
     _onAllOtherRoutes: function () {
       this.$el.html(this.mainView.render().$el);
+      this.mainView.hideSidePanel();
       this._refreshComponents();
     },
 
