@@ -13,8 +13,8 @@ var componentSettings = {
       "src": "app.components.MarqueeComponent"
     },
     {
-      "componentId": 'app-component-four',
-      "src": "http://www.wikipedia.com"
+      "componentId": 'app-profile-overview',
+      "src": "app.components.ProfileOverViewComponent"
     }
   ],
 
@@ -36,6 +36,23 @@ var componentSettings = {
         "componentId": "app-login",
         "urlPattern": ["", "landing", "logout"]
       }
+    ],
+   "below-header": [
+      {
+        "id": "app-marquee",
+        "componentId": "app-marquee",
+        "urlPattern": "home"
+      }
+   ],
+   "sidebar-top": [
+      {
+        "id": "app-profile-overview",
+        "componentId": "app-profile-overview",
+        "urlPattern": "home"
+      }
+   ]
+  }
+}
       // {
       //   "id": "comp1",
       //   "order": 0,
@@ -77,13 +94,3 @@ var componentSettings = {
       //   "componentId": "app-component-three",
       //   "urlPattern": "route2/:id"
       // }
-    ],
-   "below-header": [
-      {
-        "id": "app-marquee",
-        "componentId": "app-marquee",
-        "urlPattern": "home"
-      }
-   ]
-  }
-}

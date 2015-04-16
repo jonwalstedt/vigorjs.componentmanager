@@ -178,3 +178,17 @@ Example components
   margin-top: -10px;
   text-align: center;
 }
+
+/*Profile Overview*/
+.profile-overview {
+  position: relative;
+  height: 140px;
+  background: silver;
+}
+.profile-overview p {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  margin-top: -10px;
+  text-align: center;
+}
