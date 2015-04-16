@@ -5,7 +5,7 @@
   height: 200px;
   width: 200px;
   background: white;
-  transition: all 0.2s ease-out;
+  transition: all 0.15s ease-out;
   z-index: 9999;
   border: 1px solid #eee;
 }

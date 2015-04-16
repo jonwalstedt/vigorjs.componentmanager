@@ -10,6 +10,7 @@
   <div class="app-wrapper"></div>
 
   <!-- BEGIN: Underscore Template Definition. -->
+  <!-- ############# Controls ###############-->
   <script type="text/template" class="controls-template">
     <button class="vigorjs-controls__toggle-controls">Toggle controls</button>
 
@@ -19,6 +20,7 @@
     <button class="change-component--target">Change component target</button>
   </script>
 
+  <!-- ############# Components ###############-->
   <script type="text/template" class="login-template">
     <input type="text" placeholder="Username" class="login__field login__field--username"/>
     <input type="password" placeholder="Password" class="login__field login__field--password"/>
@@ -33,14 +35,19 @@
     </ul>
   </script>
 
+  <script type="text/template" class="marquee-template">
+    <p>Im the marquee</p>
+  </script>
+
+  <!-- ############# Layouts ###############-->
   <script type="text/template" class="main-template">
     <aside class="sidebar">
       <div class="component-area component-area--sidebar-first"></div>
       <ul class="sub-menu">
-        <li><a href="#route1/1" class="link">link1</a></li>
-        <li><a href="#route1/1" class="link">link2</a></li>
-        <li><a href="#route1/1" class="link">link3</a></li>
-        <li><a href="#route1/1" class="link">link4</a></li>
+        <li><a href="#route1/1" class="link sub-menu__link">link1</a></li>
+        <li><a href="#route1/1" class="link sub-menu__link">link2</a></li>
+        <li><a href="#route1/1" class="link sub-menu__link">link3</a></li>
+        <li><a href="#route1/1" class="link sub-menu__link">link4</a></li>
       </ul>
       <div class="component-area component-area--sidebar-second"></div>
     </aside>
@@ -82,7 +89,7 @@
 
   <script src="../../dist/backbone.vigor.componentmanager.js"></script>
   <script src="./components/ComponentOne.js"></script>
-  <script src="./components/ComponentThree.js"></script>
+  <script src="./components/MarqueeComponent.js"></script>
   <script src="./components/LoginComponent.js"></script>
   <script src="./components/NavigationComponent.js"></script>
 

@@ -1,40 +1,78 @@
+/*
+General
+ */
 body {
   margin: 0;
   padding: 0;
   height: 100%;
+  font-family: sans-serif;
+}
+a {
+  color: #00bfdd;
 }
 
 .link {
   text-decoration: none;
 }
 
+/*
+Layouts
+ */
 .app-wrapper {
   position: relative;
   min-height: 100%;
 }
 
 .header {
-  border: 1px solid red;
   position: relative;
-  padding: 10px 20px;
-  height: 40px;
+  padding: 0px 20px;
+  height: 80px;
 }
 
+.content-wrapper {
+  position: relative;
+  padding: 0 0 100px 240px;
+}
+
+.main-content {
+  border: 1px solid green;
+}
+
+.footer {
+  border: 1px solid red;
+  width: 100%;
+  height: 100px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+/*
+Header
+ */
 .header h1 {
   margin: 0;
   padding: 0;
   float: left;
-  font-family: sans-serif;
-  font-weight: normal
+  width: 70%;
+  line-height: 80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: lighter;
+  color: #bbb;
 }
 
-.navigation {
+.component-area--header {
   float: right;
+  width: 30%;
+  height: 100%;
 }
 
 .main-menu {
   padding: 0;
   margin: 0;
+  height: 80px;
 }
 
 .navigation::after,
@@ -56,9 +94,11 @@ body {
   vertical-align: middle;
 }
 
+/*
+Sidebar
+ */
 .sidebar {
-  border: 1px solid blue;
-  width: 280px;
+  width: 240px;
   position: absolute;
   top: 0;
   left: 0;
@@ -67,29 +107,36 @@ body {
   z-index: 1;
 }
 
-.content-wrapper {
-  position: relative;
-  padding: 0 0 100px 280px;
+/*
+Submenu
+ */
+.sub-menu {
+  list-style: none;
+  border-top: 1px solid #333;
+  border-bottom: 1px solid #333;
+  padding: 10px 0px;
+  margin: 0;
 }
 
-.main-content {
-  border: 1px solid green;
+.sub-menu__link {
+  display: block;
+  padding: 8px 14px;
+  color: #999;
 }
 
-.footer {
-  border: 1px solid red;
-  width: 100%;
-  height: 100px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
+.sub-menu__link:hover,
+.sub-menu__link--active {
+  background: #323232;
+  color: white;
 }
+
 
 
 
 /*
 Example components
 */
+/* Login*/
 .login {
   height: 300px;
   margin: 100px auto;
@@ -115,4 +162,19 @@ Example components
   min-width: 140px;
   width: 100%;
   cursor: pointer;
+}
+
+
+/*Marquee*/
+.marquee {
+  position: relative;
+  height: 300px;
+  background: pink;
+}
+.marquee p {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  margin-top: -10px;
+  text-align: center;
 }

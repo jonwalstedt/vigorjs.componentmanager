@@ -29,7 +29,6 @@ var app = app || {};
     },
 
     _onAllOtherRoutes: function () {
-      console.log('_onAllOtherRoutes', arguments);
       this.$el.html(this.mainView.render().$el);
       this._refreshComponents();
     },
