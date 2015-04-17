@@ -11,6 +11,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       for instanceDefinition in instanceDefinitions
 
         instanceDefinition.targetName = "#{TARGET_PREFIX}--#{targetName}"
+        instanceDefinition.urlParamsModel = new Backbone.Model()
 
         if instanceDefinition.urlPattern is 'global'
           instanceDefinition.urlPattern = ['*notFound', '*action']
@@ -61,6 +62,12 @@ class InstanceDefinitionsCollection extends Backbone.Collection
   addUrlParams: (instanceDefinitions, route) ->
     for instanceDefinition in instanceDefinitions
       urlParams = router.getArguments instanceDefinition.get('urlPattern'), route
+
+      urlParamsModel = instanceDefinition.get 'urlParamsModel'
+      urlParamsModel.set
+        'params': urlParams
+        'route': route
+
       instanceDefinition.set
         'urlParams': urlParams
       , silent: not instanceDefinition.get('reInstantiateOnUrlParamChange')

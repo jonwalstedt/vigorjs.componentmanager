@@ -6,7 +6,7 @@ app.components.SocialMediaComponent = Backbone.View.extend({
   className: 'social-media',
   template: _.template($('script.social-media-template').html()),
 
-  initialize: function () {
+  initialize: function (arguments) {
     console.log('im the SocialMediaComponent');
   },
 

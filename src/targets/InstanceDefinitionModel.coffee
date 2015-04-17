@@ -4,13 +4,14 @@ class InstanceDefinitionModel extends Backbone.Model
     id: undefined
     componentId: undefined
     filter: undefined
-    urlPattern: undefined
     args: undefined
     order: undefined
     targetName: undefined
     instance: undefined
     showCount: 0
+    urlPattern: undefined
     urlParams: undefined
+    urlParamsModel: undefined
     reInstantiateOnUrlParamChange: false
 
   dispose: ->

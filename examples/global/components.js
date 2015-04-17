@@ -47,28 +47,28 @@ var componentSettings = {
       {
         "id": "app-list",
         "componentId": "app-list",
-        "urlPattern": ["home", "event/:id"]
+        "urlPattern": ["home", "event/*path"]
       }
     ],
    "below-header": [
       {
         "id": "app-marquee",
         "componentId": "app-marquee",
-        "urlPattern": ["home", "event/:id"]
+        "urlPattern": ["home", "event/*path"]
       }
    ],
    "sidebar-top": [
       {
         "id": "app-profile-overview",
         "componentId": "app-profile-overview",
-        "urlPattern": ["home", "event/:id"]
+        "urlPattern": ["home", "event/*path"]
       }
    ],
    "sidebar-bottom": [
       {
         "id": "app-social-media",
         "componentId": "app-social-media",
-        "urlPattern": ["home", "event/:id"]
+        "urlPattern": ["home", "event/*path"]
       }
    ],
    "right-column": [

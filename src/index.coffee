@@ -233,6 +233,7 @@ do ->
 
     args =
       urlParams: instanceDefinition.get 'urlParams'
+      urlParamsModel: instanceDefinition.get 'urlParamsModel'
 
     _.extend args, instanceDefinition.get('args')
 

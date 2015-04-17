@@ -218,13 +218,14 @@
         id: void 0,
         componentId: void 0,
         filter: void 0,
-        urlPattern: void 0,
         args: void 0,
         order: void 0,
         targetName: void 0,
         instance: void 0,
         showCount: 0,
+        urlPattern: void 0,
         urlParams: void 0,
+        urlParamsModel: void 0,
         reInstantiateOnUrlParamChange: false
       };
 
@@ -262,6 +263,7 @@
           for (i = 0, len = instanceDefinitions.length; i < len; i++) {
             instanceDefinition = instanceDefinitions[i];
             instanceDefinition.targetName = TARGET_PREFIX + "--" + targetName;
+            instanceDefinition.urlParamsModel = new Backbone.Model();
             if (instanceDefinition.urlPattern === 'global') {
               instanceDefinition.urlPattern = ['*notFound', '*action'];
             }
@@ -329,10 +331,15 @@
       };
 
       InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, route) {
-        var i, instanceDefinition, len, urlParams;
+        var i, instanceDefinition, len, urlParams, urlParamsModel;
         for (i = 0, len = instanceDefinitions.length; i < len; i++) {
           instanceDefinition = instanceDefinitions[i];
           urlParams = router.getArguments(instanceDefinition.get('urlPattern'), route);
+          urlParamsModel = instanceDefinition.get('urlParamsModel');
+          urlParamsModel.set({
+            'params': urlParams,
+            'route': route
+          });
           instanceDefinition.set({
             'urlParams': urlParams
           }, {
@@ -578,7 +585,8 @@
         src = componentDefinition.get('src');
         componentClass = _getClass(src);
         args = {
-          urlParams: instanceDefinition.get('urlParams')
+          urlParams: instanceDefinition.get('urlParams'),
+          urlParamsModel: instanceDefinition.get('urlParamsModel')
         };
         _.extend(args, instanceDefinition.get('args'));
         if (componentClass === IframeComponent) {
