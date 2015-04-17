@@ -100,6 +100,7 @@ do ->
     instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
 
     activeComponents.on 'add', _onComponentAdded
+    # activeComponents.on 'change', _onComponentChange
     activeComponents.on 'remove', _onComponentRemoved
     activeComponents.on 'change:order', _onComponentOrderChange
     activeComponents.on 'change:targetName', _onComponentTargetNameChange
@@ -190,11 +191,13 @@ do ->
     componentDefinitionsCollection.set componentDefinitions,
       validate: true
       parse: true
+      silent: true
 
   _registerInstanceDefinitons = (instanceDefinitions) ->
     instanceDefinitionsCollection.set instanceDefinitions,
       validate: true
       parse: true
+      silent: true
 
   _addInstanceToDom = (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
@@ -277,6 +280,16 @@ do ->
   _onComponentAdded = (instanceDefinition) ->
     _addInstanceToModel instanceDefinition
     _addInstanceToDom instanceDefinition
+
+   # _onComponentChange = (instanceDefinition) ->
+   #  instance = instanceDefinition.get 'instance'
+   #  args =
+   #    urlParams: instanceDefinition.get 'urlParams'
+
+   #  _.extend args, instanceDefinition.get('args')
+   #  instance.initialize args
+   #  do instance.render
+
 
   _onComponentRemoved = (instanceDefinition) ->
     instance = instanceDefinition.get 'instance'

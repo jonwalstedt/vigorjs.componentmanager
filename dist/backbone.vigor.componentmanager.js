@@ -526,13 +526,15 @@
       _registerComponents = function(componentDefinitions) {
         return componentDefinitionsCollection.set(componentDefinitions, {
           validate: true,
-          parse: true
+          parse: true,
+          silent: true
         });
       };
       _registerInstanceDefinitons = function(instanceDefinitions) {
         return instanceDefinitionsCollection.set(instanceDefinitions, {
           validate: true,
-          parse: true
+          parse: true,
+          silent: true
         });
       };
       _addInstanceToDom = function(instanceDefinition, render) {

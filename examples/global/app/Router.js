@@ -30,12 +30,14 @@ var app = app || {};
     },
 
     _onEventRoute: function (id) {
+      console.log('_onEventRoute', id);
       this.$el.html(this.mainView.render().$el);
       this._refreshComponents();
       this.mainView.showSidePanel();
     },
 
     _onAllOtherRoutes: function () {
+      console.log('_onAllOtherRoutes');
       this.$el.html(this.mainView.render().$el);
       this._refreshComponents();
       this.mainView.hideSidePanel();

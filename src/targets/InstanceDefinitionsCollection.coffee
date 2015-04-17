@@ -64,5 +64,6 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       instanceDefinition.set
         'urlParams': urlParams
       , silent: true
+
     return instanceDefinitions
 
