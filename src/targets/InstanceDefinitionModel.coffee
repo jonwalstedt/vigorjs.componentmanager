@@ -11,7 +11,7 @@ class InstanceDefinitionModel extends Backbone.Model
     instance: undefined
     showCount: 0
     urlParams: undefined
-    reRenderOnUrlParamChange: false
+    reInstantiateOnUrlParamChange: false
 
   dispose: ->
     instance = @get 'instance'

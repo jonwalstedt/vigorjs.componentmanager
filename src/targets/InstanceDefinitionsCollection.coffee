@@ -63,7 +63,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       urlParams = router.getArguments instanceDefinition.get('urlPattern'), route
       instanceDefinition.set
         'urlParams': urlParams
-      , silent: not instanceDefinition.get('reRenderOnUrlParamChange')
+      , silent: not instanceDefinition.get('reInstantiateOnUrlParamChange')
 
     return instanceDefinitions
 

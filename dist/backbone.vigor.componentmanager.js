@@ -225,7 +225,7 @@
         instance: void 0,
         showCount: 0,
         urlParams: void 0,
-        reRenderOnUrlParamChange: false
+        reInstantiateOnUrlParamChange: false
       };
 
       InstanceDefinitionModel.prototype.dispose = function() {
@@ -336,7 +336,7 @@
           instanceDefinition.set({
             'urlParams': urlParams
           }, {
-            silent: !instanceDefinition.get('reRenderOnUrlParamChange')
+            silent: !instanceDefinition.get('reInstantiateOnUrlParamChange')
           });
         }
         return instanceDefinitions;
