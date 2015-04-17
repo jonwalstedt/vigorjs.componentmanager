@@ -75,7 +75,8 @@ var componentSettings = {
       {
         "id": "app-list-two",
         "componentId": "app-list",
-        "urlPattern": "event/:id"
+        "urlPattern": "event/:id",
+        "reRenderOnUrlParamChange": true
       }
    ]
   }

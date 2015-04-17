@@ -100,7 +100,7 @@ do ->
     instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
 
     activeComponents.on 'add', _onComponentAdded
-    # activeComponents.on 'change', _onComponentChange
+    activeComponents.on 'change', _onComponentChange
     activeComponents.on 'remove', _onComponentRemoved
     activeComponents.on 'change:order', _onComponentOrderChange
     activeComponents.on 'change:targetName', _onComponentTargetNameChange
@@ -274,6 +274,14 @@ do ->
       $componentArea.removeClass 'component-area--has-component'
       return false
 
+  _disposeAndRemoveInstanceFromModel = (instanceDefinition) ->
+    instance = instanceDefinition.get 'instance'
+    do instance.dispose
+    instance = undefined
+    instanceDefinition.set
+      'instance': undefined
+    , { silent: true }
+
   #
   # Callbacks
   # ============================================================================
@@ -281,25 +289,15 @@ do ->
     _addInstanceToModel instanceDefinition
     _addInstanceToDom instanceDefinition
 
-   # _onComponentChange = (instanceDefinition) ->
-   #  instance = instanceDefinition.get 'instance'
-   #  args =
-   #    urlParams: instanceDefinition.get 'urlParams'
-
-   #  _.extend args, instanceDefinition.get('args')
-   #  instance.initialize args
-   #  do instance.render
-
+  _onComponentChange = (instanceDefinition) ->
+    _disposeAndRemoveInstanceFromModel instanceDefinition
+    _addInstanceToModel instanceDefinition
+    _addInstanceToDom instanceDefinition
 
   _onComponentRemoved = (instanceDefinition) ->
-    instance = instanceDefinition.get 'instance'
+    _disposeAndRemoveInstanceFromModel instanceDefinition
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
     _isComponentAreaEmpty $target
-    do instance.dispose
-    instance = undefined
-    instanceDefinition.set
-      'instance': undefined
-    , { silent: true }
 
   _onComponentOrderChange = (instanceDefinition) ->
     _addInstanceToDom instanceDefinition

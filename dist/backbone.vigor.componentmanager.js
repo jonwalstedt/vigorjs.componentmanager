@@ -223,8 +223,9 @@
         order: void 0,
         targetName: void 0,
         instance: void 0,
+        showCount: 0,
         urlParams: void 0,
-        showCount: 0
+        reRenderOnUrlParamChange: false
       };
 
       InstanceDefinitionModel.prototype.dispose = function() {
@@ -335,7 +336,7 @@
           instanceDefinition.set({
             'urlParams': urlParams
           }, {
-            silent: true
+            silent: !instanceDefinition.get('reRenderOnUrlParamChange')
           });
         }
         return instanceDefinitions;
@@ -345,7 +346,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigor-component';
       componentDefinitionsCollection = void 0;
       instanceDefinitionsCollection = void 0;
@@ -438,6 +439,7 @@
         componentDefinitionsCollection.on('add change remove', _updateActiveComponents);
         instanceDefinitionsCollection.on('add change remove', _updateActiveComponents);
         activeComponents.on('add', _onComponentAdded);
+        activeComponents.on('change', _onComponentChange);
         activeComponents.on('remove', _onComponentRemoved);
         activeComponents.on('change:order', _onComponentOrderChange);
         return activeComponents.on('change:targetName', _onComponentTargetNameChange);
@@ -630,15 +632,9 @@
           return false;
         }
       };
-      _onComponentAdded = function(instanceDefinition) {
-        _addInstanceToModel(instanceDefinition);
-        return _addInstanceToDom(instanceDefinition);
-      };
-      _onComponentRemoved = function(instanceDefinition) {
-        var $target, instance;
+      _disposeAndRemoveInstanceFromModel = function(instanceDefinition) {
+        var instance;
         instance = instanceDefinition.get('instance');
-        $target = $("." + (instanceDefinition.get('targetName')), $context);
-        _isComponentAreaEmpty($target);
         instance.dispose();
         instance = void 0;
         return instanceDefinition.set({
@@ -646,6 +642,21 @@
         }, {
           silent: true
         });
+      };
+      _onComponentAdded = function(instanceDefinition) {
+        _addInstanceToModel(instanceDefinition);
+        return _addInstanceToDom(instanceDefinition);
+      };
+      _onComponentChange = function(instanceDefinition) {
+        _disposeAndRemoveInstanceFromModel(instanceDefinition);
+        _addInstanceToModel(instanceDefinition);
+        return _addInstanceToDom(instanceDefinition);
+      };
+      _onComponentRemoved = function(instanceDefinition) {
+        var $target;
+        _disposeAndRemoveInstanceFromModel(instanceDefinition);
+        $target = $("." + (instanceDefinition.get('targetName')), $context);
+        return _isComponentAreaEmpty($target);
       };
       _onComponentOrderChange = function(instanceDefinition) {
         return _addInstanceToDom(instanceDefinition);

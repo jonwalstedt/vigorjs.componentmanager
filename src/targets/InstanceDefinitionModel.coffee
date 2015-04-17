@@ -9,8 +9,9 @@ class InstanceDefinitionModel extends Backbone.Model
     order: undefined
     targetName: undefined
     instance: undefined
-    urlParams: undefined
     showCount: 0
+    urlParams: undefined
+    reRenderOnUrlParamChange: false
 
   dispose: ->
     instance = @get 'instance'
