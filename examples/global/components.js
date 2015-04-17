@@ -70,6 +70,13 @@ var componentSettings = {
         "componentId": "app-social-media",
         "urlPattern": ["home", "event/:id"]
       }
+   ],
+   "right-column": [
+      {
+        "id": "app-list-two",
+        "componentId": "app-list",
+        "urlPattern": "event/:id"
+      }
    ]
   }
 }

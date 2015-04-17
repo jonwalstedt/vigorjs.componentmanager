@@ -43,7 +43,7 @@ Layouts
 .main-content {
   position: relative;
   width: 100%;
-  transition: all 0.2s ease-out;
+  transition: width 0.2s ease-in;
 }
 
 .right-column {
@@ -54,7 +54,7 @@ Layouts
   width: 0%;
   overflow: hidden;
   background: #eee;
-  transition: all 0.2s ease-out;
+  transition: width 0.2s ease-in;
 }
 
 .layout-main--show-sidepanel .main-content {

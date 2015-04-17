@@ -31,14 +31,14 @@ var app = app || {};
 
     _onEventRoute: function (id) {
       this.$el.html(this.mainView.render().$el);
-      this.mainView.showSidePanel();
       this._refreshComponents();
+      this.mainView.showSidePanel();
     },
 
     _onAllOtherRoutes: function () {
       this.$el.html(this.mainView.render().$el);
-      this.mainView.hideSidePanel();
       this._refreshComponents();
+      this.mainView.hideSidePanel();
     },
 
     _refreshComponents: function () {

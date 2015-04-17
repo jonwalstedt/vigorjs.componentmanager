@@ -23,11 +23,15 @@ var app = app || {};
     },
 
     showSidePanel: function () {
-      this.$el.addClass('layout-main--show-sidepanel');
+      _.defer(_.bind(function () {
+        this.$el.addClass('layout-main--show-sidepanel');
+      }, this));
     },
 
     hideSidePanel: function () {
-      this.$el.removeClass('layout-main--show-sidepanel');
+      _.defer(_.bind(function () {
+        this.$el.removeClass('layout-main--show-sidepanel');
+      }, this));
     }
   });
 
