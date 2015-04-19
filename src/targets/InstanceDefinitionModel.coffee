@@ -14,6 +14,11 @@ class InstanceDefinitionModel extends Backbone.Model
     urlParamsModel: undefined
     reInstantiateOnUrlParamChange: false
 
+  isAttached: ->
+    instance = @get 'instance'
+    elem = instance.el
+    return $.contains document.body, elem
+
   dispose: ->
     instance = @get 'instance'
     if instance

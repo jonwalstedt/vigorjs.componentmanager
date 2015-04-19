@@ -187,21 +187,14 @@
         var strays;
         strays = _.filter(this.models, (function(_this) {
           return function(model) {
-            var instance;
-            if (instance = model.get('instance')) {
-              return !_this.isAttached(instance);
+            if (model.get('instance')) {
+              return !model.isAttached();
             } else {
               return false;
             }
           };
         })(this));
         return strays;
-      };
-
-      ActiveComponentsCollection.prototype.isAttached = function(instance) {
-        var elem;
-        elem = instance.el;
-        return $.contains(document.body, elem);
       };
 
       return ActiveComponentsCollection;
@@ -227,6 +220,13 @@
         urlParams: void 0,
         urlParamsModel: void 0,
         reInstantiateOnUrlParamChange: false
+      };
+
+      InstanceDefinitionModel.prototype.isAttached = function() {
+        var elem, instance;
+        instance = this.get('instance');
+        elem = instance.el;
+        return $.contains(document.body, elem);
       };
 
       InstanceDefinitionModel.prototype.dispose = function() {
@@ -283,6 +283,9 @@
         if (filterOptions.filterString) {
           instanceDefinitions = this.filterInstanceDefinitionsByString(instanceDefinitions, filterOptions.filterString);
         }
+        if (filterOptions.conditions) {
+          instanceDefinitions = this.filterInstanceDefinitionsByConditions(instanceDefinitions, filterOptions.conditions);
+        }
         return instanceDefinitions;
       };
 
@@ -330,6 +333,12 @@
         return instanceDefinitions;
       };
 
+      InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByConditions = function(instanceDefinitions, conditions) {
+        return instanceDefinitions = _.filter(instanceDefinitions, function(instanceDefinitionModel) {
+          return true;
+        });
+      };
+
       InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, route) {
         var i, instanceDefinition, len, urlParams, urlParamsModel;
         for (i = 0, len = instanceDefinitions.length; i < len; i++) {
@@ -353,13 +362,14 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection;
+      var $context, COMPONENT_CLASS, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection;
       COMPONENT_CLASS = 'vigor-component';
       componentDefinitionsCollection = void 0;
       instanceDefinitionsCollection = void 0;
       activeComponents = void 0;
       filterModel = void 0;
       $context = void 0;
+      conditions = {};
       componentManager = {
         activeComponents: void 0,
         initialize: function(settings) {
@@ -377,7 +387,13 @@
           if (settings.componentSettings) {
             _parseComponentSettings(settings.componentSettings);
           }
+          if (settings.componentSettings.conditions) {
+            this.registerConditions(settings.componentSettings.conditions);
+          }
           return this;
+        },
+        registerConditions: function(conditionsToBeRegistered) {
+          return _.extend(conditions, conditionsToBeRegistered);
         },
         refresh: function(filterOptions) {
           filterModel.set(filterOptions);
@@ -408,22 +424,23 @@
           return this;
         },
         clear: function() {
+          var restrictions;
           componentDefinitionsCollection.reset();
           instanceDefinitionsCollection.reset();
           activeComponents.reset();
           filterModel.clear();
+          (restrictions = {})();
           return this;
         },
         dispose: function() {
+          var restrictions;
           this.clear();
           this._removeListeners();
           filterModel = void 0;
           activeComponents = void 0;
+          restrictions = void 0;
           this.activeComponents = void 0;
           return componentDefinitionsCollection = void 0;
-        },
-        registerConditions: function(conditions) {
-          return console.log(conditions);
         },
         getComponentInstances: function(filterOptions) {
           var i, instance, instanceDefinition, instanceDefinitions, instances, len;
@@ -472,33 +489,59 @@
       _updateActiveComponents = function() {
         var filterOptions, instanceDefinitions;
         filterOptions = filterModel.toJSON();
+        filterOptions.conditions = conditions;
         instanceDefinitions = _filterInstanceDefinitions(filterOptions);
         activeComponents.set(instanceDefinitions);
         return _tryToReAddStraysToDom();
       };
       _filterInstanceDefinitions = function(filterOptions) {
-        var componentDefinition, filteredInstanceDefinitions, i, instanceDefinition, instanceDefinitions, len, maxShowCount, showCount;
+        var instanceDefinitions;
         instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinitions(filterOptions);
-        filteredInstanceDefinitions = [];
-        for (i = 0, len = instanceDefinitions.length; i < len; i++) {
-          instanceDefinition = instanceDefinitions[i];
+        instanceDefinitions = _filterInstanceDefinitionsByShowCount(instanceDefinitions);
+        instanceDefinitions = _filterInstanceDefinitionsByShowConditions(instanceDefinitions);
+        return instanceDefinitions;
+      };
+      _filterInstanceDefinitionsByShowCount = function(instanceDefinitions) {
+        return _.filter(instanceDefinitions, function(instanceDefinition) {
+          var componentDefinition, maxShowCount, shouldBeIncluded, showCount;
           componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
           showCount = instanceDefinition.get('showCount');
           maxShowCount = instanceDefinition.get('maxShowCount');
+          shouldBeIncluded = true;
           if (!maxShowCount) {
             maxShowCount = componentDefinition.get('maxShowCount');
           }
           if (maxShowCount) {
             if (showCount < maxShowCount) {
-              _incrementShowCount(instanceDefinition);
-              filteredInstanceDefinitions.push(instanceDefinition);
+              shouldBeIncluded = true;
+            } else {
+              shouldBeIncluded = false;
             }
-          } else {
-            filteredInstanceDefinitions.push(instanceDefinition);
-            _incrementShowCount(instanceDefinition);
           }
-        }
-        return filteredInstanceDefinitions;
+          return shouldBeIncluded;
+        });
+      };
+      _filterInstanceDefinitionsByShowConditions = function(instanceDefinitions) {
+        return _.filter(instanceDefinitions, function(instanceDefinition) {
+          var componentConditions, componentDefinition, condition, i, len, shouldBeIncluded;
+          componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
+          componentConditions = componentDefinition.get('conditions');
+          shouldBeIncluded = true;
+          if (componentConditions) {
+            if (_.isArray(componentConditions)) {
+              for (i = 0, len = componentConditions.length; i < len; i++) {
+                condition = componentConditions[i];
+                if (conditions[condition]()) {
+                  shouldBeIncluded = false;
+                  return;
+                }
+              }
+            } else {
+              shouldBeIncluded = conditions[componentConditions]();
+            }
+          }
+          return shouldBeIncluded;
+        });
       };
       _getClass = function(src) {
         var componentClass, i, len, obj, part, srcObjParts;
@@ -546,39 +589,6 @@
           silent: true
         });
       };
-      _addInstanceToDom = function(instanceDefinition, render) {
-        var $previousElement, $target, instance, order;
-        if (render == null) {
-          render = true;
-        }
-        $target = $("." + (instanceDefinition.get('targetName')), $context);
-        order = instanceDefinition.get('order');
-        instance = instanceDefinition.get('instance');
-        if (render) {
-          instance.render();
-        }
-        if (order) {
-          if (order === 'top') {
-            instance.$el.data('order', 0);
-            $target.prepend(instance.$el);
-          } else if (order === 'bottom') {
-            instance.$el.data('order', 999);
-            $target.append(instance.$el);
-          } else {
-            $previousElement = _previousElement($target.children().last(), order);
-            instance.$el.data('order', order);
-            instance.$el.attr('data-order', order);
-            if (!$previousElement) {
-              $target.prepend(instance.$el);
-            } else {
-              instance.$el.insertAfter($previousElement);
-            }
-          }
-        } else {
-          $target.append(instance.$el);
-        }
-        return _isComponentAreaEmpty($target);
-      };
       _addInstanceToModel = function(instanceDefinition) {
         var args, componentClass, componentDefinition, instance, src;
         componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
@@ -613,6 +623,65 @@
         }
         return results;
       };
+      _addInstanceToDom = function(instanceDefinition, render) {
+        var $target, instance;
+        if (render == null) {
+          render = true;
+        }
+        $target = $("." + (instanceDefinition.get('targetName')), $context);
+        instance = instanceDefinition.get('instance');
+        if (render) {
+          _renderInstance(instanceDefinition);
+        }
+        _addInstanceInOrder(instanceDefinition);
+        _incrementShowCount(instanceDefinition);
+        return _isComponentAreaEmpty($target);
+      };
+      _renderInstance = function(instanceDefinition) {
+        var instance;
+        instance = instanceDefinition.get('instance');
+        if (!instance.render) {
+          throw "The enstance " + (instance.get('id')) + " does not have a render method";
+        }
+        if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
+          instance.preRender();
+        }
+        instance.render();
+        if ((instance.postrender != null) && _.isFunction(instance.postRender)) {
+          return instance.postRender();
+        }
+      };
+      _addInstanceInOrder = function(instanceDefinition) {
+        var $previousElement, $target, instance, order;
+        $target = $("." + (instanceDefinition.get('targetName')), $context);
+        order = instanceDefinition.get('order');
+        instance = instanceDefinition.get('instance');
+        if (order) {
+          if (order === 'top') {
+            instance.$el.data('order', 0);
+            $target.prepend(instance.$el);
+          } else if (order === 'bottom') {
+            instance.$el.data('order', 999);
+            $target.append(instance.$el);
+          } else {
+            $previousElement = _previousElement($target.children().last(), order);
+            instance.$el.data('order', order);
+            instance.$el.attr('data-order', order);
+            if (!$previousElement) {
+              $target.prepend(instance.$el);
+            } else {
+              instance.$el.insertAfter($previousElement);
+            }
+          }
+        } else {
+          $target.append(instance.$el);
+        }
+        if (instanceDefinition.isAttached()) {
+          if ((instance.onAddedToDom != null) && _.isFunction(instance.onAddedToDom)) {
+            return instance.onAddedToDom();
+          }
+        }
+      };
       _incrementShowCount = function(instanceDefinition, silent) {
         var showCount;
         if (silent == null) {
@@ -626,20 +695,6 @@
           silent: silent
         });
       };
-      _isUrl = function(string) {
-        var urlRegEx;
-        urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
-        return urlRegEx.test(string);
-      };
-      _isComponentAreaEmpty = function($componentArea) {
-        if ($componentArea.length > 0) {
-          $componentArea.addClass('component-area--has-component');
-          return true;
-        } else {
-          $componentArea.removeClass('component-area--has-component');
-          return false;
-        }
-      };
       _disposeAndRemoveInstanceFromModel = function(instanceDefinition) {
         var instance;
         instance = instanceDefinition.get('instance');
@@ -650,6 +705,17 @@
         }, {
           silent: true
         });
+      };
+      _isUrl = function(string) {
+        var urlRegEx;
+        urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
+        return urlRegEx.test(string);
+      };
+      _isComponentAreaEmpty = function($componentArea) {
+        var isEmpty;
+        isEmpty = $componentArea.length > 0;
+        $componentArea.addClass('component-area--has-component', isEmpty);
+        return isEmpty;
       };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);

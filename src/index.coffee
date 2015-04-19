@@ -7,6 +7,7 @@ do ->
   activeComponents = undefined
   filterModel = undefined
   $context = undefined
+  conditions = {}
 
   componentManager =
 
@@ -34,7 +35,13 @@ do ->
       if settings.componentSettings
         _parseComponentSettings settings.componentSettings
 
+      if settings.componentSettings.conditions
+        @registerConditions settings.componentSettings.conditions
+
       return @
+
+    registerConditions: (conditionsToBeRegistered) ->
+      _.extend conditions, conditionsToBeRegistered
 
     refresh: (filterOptions) ->
       filterModel.set filterOptions
@@ -67,6 +74,7 @@ do ->
       do instanceDefinitionsCollection.reset
       do activeComponents.reset
       do filterModel.clear
+      do restrictions = {}
       return @
 
     dispose: ->
@@ -74,11 +82,10 @@ do ->
       do @_removeListeners
       filterModel = undefined
       activeComponents = undefined
+      restrictions = undefined
       @activeComponents = undefined
       componentDefinitionsCollection = undefined
 
-    registerConditions: (conditions) ->
-      console.log conditions
 
     getComponentInstances: (filterOptions) ->
       instanceDefinitions = _filterInstanceDefinitions filterOptions
@@ -120,6 +127,7 @@ do ->
 
   _updateActiveComponents = ->
     filterOptions = filterModel.toJSON()
+    filterOptions.conditions = conditions
     instanceDefinitions = _filterInstanceDefinitions filterOptions
     activeComponents.set instanceDefinitions
 
@@ -128,27 +136,43 @@ do ->
 
   _filterInstanceDefinitions = (filterOptions) ->
     instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinitions filterOptions
-    filteredInstanceDefinitions = []
+    instanceDefinitions = _filterInstanceDefinitionsByShowCount instanceDefinitions
+    instanceDefinitions = _filterInstanceDefinitionsByShowConditions instanceDefinitions
+    return instanceDefinitions
 
-    for instanceDefinition in instanceDefinitions
+  _filterInstanceDefinitionsByShowCount = (instanceDefinitions) ->
+    _.filter instanceDefinitions, (instanceDefinition) ->
       componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
       showCount = instanceDefinition.get 'showCount'
-
       # maxShowCount on an instance level overrides maxShowCount on a componentDefinition level
       maxShowCount = instanceDefinition.get 'maxShowCount'
+      shouldBeIncluded = true
       unless maxShowCount
         maxShowCount = componentDefinition.get 'maxShowCount'
 
       if maxShowCount
         if showCount < maxShowCount
-          _incrementShowCount instanceDefinition
-          filteredInstanceDefinitions.push instanceDefinition
+          shouldBeIncluded = true
+        else
+          shouldBeIncluded = false
 
-      else
-        filteredInstanceDefinitions.push instanceDefinition
-        _incrementShowCount instanceDefinition
+      return shouldBeIncluded
 
-    return filteredInstanceDefinitions
+   _filterInstanceDefinitionsByShowConditions = (instanceDefinitions) ->
+    _.filter instanceDefinitions, (instanceDefinition) ->
+      componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
+      componentConditions = componentDefinition.get 'conditions'
+      shouldBeIncluded = true
+      if componentConditions
+        if _.isArray(componentConditions)
+          for condition in componentConditions
+            if conditions[condition]()
+              shouldBeIncluded = false
+              return
+        else
+          shouldBeIncluded = conditions[componentConditions]()
+      return shouldBeIncluded
+
 
   _getClass = (src) ->
     if _isUrl(src)
@@ -199,33 +223,6 @@ do ->
       parse: true
       silent: true
 
-  _addInstanceToDom = (instanceDefinition, render = true) ->
-    $target = $ ".#{instanceDefinition.get('targetName')}", $context
-    order = instanceDefinition.get 'order'
-    instance = instanceDefinition.get 'instance'
-
-    if render then do instance.render
-
-    if order
-      if order is 'top'
-        instance.$el.data 'order', 0
-        $target.prepend instance.$el
-      else if order is 'bottom'
-        instance.$el.data 'order', 999
-        $target.append instance.$el
-      else
-        $previousElement = _previousElement $target.children().last(), order
-        instance.$el.data 'order', order
-        instance.$el.attr 'data-order', order
-        unless $previousElement
-          $target.prepend instance.$el
-        else
-          instance.$el.insertAfter $previousElement
-    else
-      $target.append instance.$el
-
-    _isComponentAreaEmpty $target
-
   _addInstanceToModel = (instanceDefinition) ->
     componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
     src = componentDefinition.get 'src'
@@ -256,24 +253,63 @@ do ->
       _addInstanceToDom stray, render
       do stray.get('instance').delegateEvents
 
+  _addInstanceToDom = (instanceDefinition, render = true) ->
+    $target = $ ".#{instanceDefinition.get('targetName')}", $context
+    instance = instanceDefinition.get 'instance'
+
+    if render
+      _renderInstance instanceDefinition
+
+    _addInstanceInOrder instanceDefinition
+    _incrementShowCount instanceDefinition
+    _isComponentAreaEmpty $target
+
+  _renderInstance = (instanceDefinition) ->
+    instance = instanceDefinition.get 'instance'
+    unless instance.render
+      throw "The enstance #{instance.get('id')} does not have a render method"
+
+    if instance.preRender? and _.isFunction(instance.preRender)
+      do instance.preRender
+
+    do instance.render
+
+    if instance.postrender? and _.isFunction(instance.postRender)
+      do instance.postRender
+
+  _addInstanceInOrder = (instanceDefinition) ->
+    $target = $ ".#{instanceDefinition.get('targetName')}", $context
+    order = instanceDefinition.get 'order'
+    instance = instanceDefinition.get 'instance'
+
+    if order
+      if order is 'top'
+        instance.$el.data 'order', 0
+        $target.prepend instance.$el
+      else if order is 'bottom'
+        instance.$el.data 'order', 999
+        $target.append instance.$el
+      else
+        $previousElement = _previousElement $target.children().last(), order
+        instance.$el.data 'order', order
+        instance.$el.attr 'data-order', order
+        unless $previousElement
+          $target.prepend instance.$el
+        else
+          instance.$el.insertAfter $previousElement
+    else
+      $target.append instance.$el
+
+    if instanceDefinition.isAttached()
+      if instance.onAddedToDom? and _.isFunction(instance.onAddedToDom)
+        do instance.onAddedToDom
+
   _incrementShowCount = (instanceDefinition, silent = true) ->
     showCount = instanceDefinition.get 'showCount'
     showCount++
     instanceDefinition.set
       'showCount': showCount
     , silent: silent
-
-  _isUrl = (string) ->
-    urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
-    return urlRegEx.test(string)
-
-  _isComponentAreaEmpty = ($componentArea) ->
-    if $componentArea.length > 0
-      $componentArea.addClass 'component-area--has-component'
-      return true
-    else
-      $componentArea.removeClass 'component-area--has-component'
-      return false
 
   _disposeAndRemoveInstanceFromModel = (instanceDefinition) ->
     instance = instanceDefinition.get 'instance'
@@ -282,6 +318,15 @@ do ->
     instanceDefinition.set
       'instance': undefined
     , { silent: true }
+
+  _isUrl = (string) ->
+    urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
+    return urlRegEx.test(string)
+
+  _isComponentAreaEmpty = ($componentArea) ->
+    isEmpty = $componentArea.length > 0
+    $componentArea.addClass 'component-area--has-component', isEmpty
+    return isEmpty
 
   #
   # Callbacks

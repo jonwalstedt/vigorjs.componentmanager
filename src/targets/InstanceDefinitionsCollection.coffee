@@ -29,6 +29,9 @@ class InstanceDefinitionsCollection extends Backbone.Collection
     if filterOptions.filterString
       instanceDefinitions = @filterInstanceDefinitionsByString instanceDefinitions, filterOptions.filterString
 
+    if filterOptions.conditions
+      instanceDefinitions = @filterInstanceDefinitionsByConditions instanceDefinitions, filterOptions.conditions
+
     return instanceDefinitions
 
   getInstanceDefinitionsByUrl: (route) ->
@@ -58,6 +61,11 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       else
         return filterString.match new RegExp(filter)
     return instanceDefinitions
+
+  filterInstanceDefinitionsByConditions: (instanceDefinitions, conditions) ->
+    instanceDefinitions = _.filter instanceDefinitions, (instanceDefinitionModel) ->
+      # console.log instanceDefinitionModel.toJSON()
+      return true
 
   addUrlParams: (instanceDefinitions, route) ->
     for instanceDefinition in instanceDefinitions

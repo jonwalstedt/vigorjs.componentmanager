@@ -4,11 +4,8 @@ class ActiveComponentsCollection extends Backbone.Collection
 
   getStrays: ->
     strays = _.filter @models, (model) =>
-      if instance = model.get('instance')
-        return not @isAttached(instance)
+      if model.get('instance')
+        return not model.isAttached()
       else false
     return strays
 
-  isAttached: (instance) ->
-    elem = instance.el
-    return $.contains document.body, elem

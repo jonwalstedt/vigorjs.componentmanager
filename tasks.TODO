@@ -5,11 +5,11 @@
  ✔ Add ability to set context (if passing element on initialize) @done (15-04-13 20:33)
  ✔ Add iframe supports (by checking src, have prepared iframe view) @done (15-04-13 22:46)
  ✔ Handle global components that gets removed when layout change /do we readd? @done (15-04-15 18:55)
- ☐ Does fix for global stray components cause memory leak?
- ☐ Change properties on the fly: order, target, urlpattern etc.
- ☐ Improved parsing
- ☐ Ability to save/get setup and save to local storage
+ ☐ Implement conditions  - method to set general conditions, and component-level overrides (object with methods that returns boolean)
  ☐ Hidden widgets and the hidden array
  ☐ Readd hidden widgets
- ☐ Implement conditions  - method to set general conditions, and component-level overrides (object with methods that returns boolean)
+ ☐ Change properties on the fly: order, target, urlpattern etc.
+ ☐ Ability to save/get setup and save to local storage
  ☐ Unit test
+ ☐ Improved parsing
+ ☐ Does fix for global stray components cause memory leak?

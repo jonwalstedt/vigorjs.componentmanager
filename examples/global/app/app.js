@@ -5,6 +5,8 @@
   var controls = new ControlsView();
   $('body').prepend(controls.render().$el);
 
+  window.isAuthenticated = false;
+
   app.HelloWorld = Backbone.View.extend({
     router: undefined,
 
@@ -17,7 +19,6 @@
       });
 
       this.router = new app.Router({$container: this.$el});
-      // this.router.on('route', this._refreshComponents);
 
       Backbone.history.start({root: '/examples/global/'});
     }

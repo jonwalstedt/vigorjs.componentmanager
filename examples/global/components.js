@@ -1,12 +1,22 @@
 var componentSettings = {
+  "conditions": {
+    "authenticated": function ()  {
+      return window.isAuthenticated;
+    },
+    "not-authenticated": function () {
+      return !window.isAuthenticated;
+    }
+  },
   "components": [
     {
       "componentId": 'app-navigation',
-      "src": "app.components.NavigationComponent"
+      "src": "app.components.NavigationComponent",
+      "conditions": "authenticated"
     },
     {
       "componentId": 'app-login',
-      "src": "app.components.LoginComponent"
+      "src": "app.components.LoginComponent",
+      "conditions": "not-authenticated"
     },
     {
       "componentId": 'app-marquee',
@@ -81,44 +91,3 @@ var componentSettings = {
    ]
   }
 }
-      // {
-      //   "id": "comp1",
-      //   "order": 0,
-      //   "componentId": "app-component-one",
-      //   "urlPattern": "global",
-      //   "args": { title: "Im global", text: "and some text"},
-      //   "filter": '(England)'
-      // },
-      // {
-      //   "id": "comp21",
-      //   "order": "top",
-      //   "componentId": "app-component-four",
-      //   "urlPattern": ["route1/:id", "route2/:id"],
-      //   "args": { test: [], testTwo: {}}
-      //   // "filter": 'testfilter2'
-      // },
-
-      // {
-      //   "id": "comp2",
-      //   "order": 10,
-      //   "componentId": "app-component-two",
-      //   "urlPattern": "route2/:id"
-      // },
-      // {
-      //   "id": "comp3",
-      //   "order": 20,
-      //   "componentId": "app-component-two",
-      //   "urlPattern": "route2/:id"
-      // },
-      // {
-      //   "id": "comp4",
-      //   "order": 9,
-      //   "componentId": "app-component-three",
-      //   "urlPattern": "route2/:id"
-      // },
-      // {
-      //   "id": "comp5",
-      //   "order": 50,
-      //   "componentId": "app-component-three",
-      //   "urlPattern": "route2/:id"
-      // }
