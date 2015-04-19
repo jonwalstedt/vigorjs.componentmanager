@@ -75,10 +75,6 @@
     IframeComponent = (function(superClass) {
       extend(IframeComponent, superClass);
 
-      function IframeComponent() {
-        return IframeComponent.__super__.constructor.apply(this, arguments);
-      }
-
       IframeComponent.prototype.tagName = 'iframe';
 
       IframeComponent.prototype.className = 'vigor-component--iframe';
@@ -90,7 +86,13 @@
 
       IframeComponent.prototype.src = void 0;
 
+      function IframeComponent(attrs) {
+        _.extend(this.attributes, attrs.iframeAttributes);
+        IframeComponent.__super__.constructor.apply(this, arguments);
+      }
+
       IframeComponent.prototype.initialize = function(attrs) {
+        console.log('Im the IframeComponent');
         this.src = attrs.src;
         return this.$el.on('load', this.onIframeLoaded);
       };
@@ -211,6 +213,7 @@
         id: void 0,
         componentId: void 0,
         filter: void 0,
+        conditions: void 0,
         args: void 0,
         order: void 0,
         targetName: void 0,
@@ -294,7 +297,7 @@
       };
 
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, route) {
-        instanceDefinitions = _.filter(instanceDefinitions, (function(_this) {
+        return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinitionModel) {
             var i, len, match, pattern, routeRegEx, urlPattern;
             urlPattern = instanceDefinitionModel.get('urlPattern');
@@ -317,11 +320,10 @@
             }
           };
         })(this));
-        return instanceDefinitions;
       };
 
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByString = function(instanceDefinitions, filterString) {
-        instanceDefinitions = _.filter(instanceDefinitions, function(instanceDefinitionModel) {
+        return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
           var filter;
           filter = instanceDefinitionModel.get('filter');
           if (!filter) {
@@ -330,12 +332,27 @@
             return filterString.match(new RegExp(filter));
           }
         });
-        return instanceDefinitions;
       };
 
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByConditions = function(instanceDefinitions, conditions) {
-        return instanceDefinitions = _.filter(instanceDefinitions, function(instanceDefinitionModel) {
-          return true;
+        return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
+          var condition, i, len, shouldBeIncluded;
+          conditions = instanceDefinitionModel.get('conditions');
+          shouldBeIncluded = true;
+          if (conditions) {
+            if (_.isArray(conditions)) {
+              for (i = 0, len = conditions.length; i < len; i++) {
+                condition = conditions[i];
+                if (condition()) {
+                  shouldBeIncluded = false;
+                  return;
+                }
+              }
+            } else if (_.isFunction(conditions)) {
+              shouldBeIncluded = conditions();
+            }
+          }
+          return shouldBeIncluded;
         });
       };
 
@@ -417,6 +434,16 @@
             parse: true,
             remove: false
           });
+          return this;
+        },
+        updateInstance: function(instanceId, attributes) {
+          var instanceDefinition;
+          instanceDefinition = instanceDefinitionsCollection.get(instanceId);
+          if (instanceDefinition != null) {
+            instanceDefinition.set(attributes, {
+              silent: true
+            });
+          }
           return this;
         },
         removeInstance: function(instancecId) {
@@ -536,7 +563,7 @@
                   return;
                 }
               }
-            } else {
+            } else if (_.isString(componentConditions)) {
               shouldBeIncluded = conditions[componentConditions]();
             }
           }

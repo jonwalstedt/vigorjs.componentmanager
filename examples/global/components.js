@@ -1,10 +1,10 @@
 var componentSettings = {
   "conditions": {
     "authenticated": function ()  {
-      return window.isAuthenticated;
+      return (window.localStorage.getItem('isAuthenticated') === "true");
     },
     "not-authenticated": function () {
-      return !window.isAuthenticated;
+      return !(window.localStorage.getItem('isAuthenticated') === "true");
     }
   },
   "components": [
@@ -33,7 +33,13 @@ var componentSettings = {
     {
       "componentId": 'app-list',
       "src": "app.components.ListComponent"
-    }
+    },
+    {
+      "componentId": 'app-banner',
+      "src": "http://www.bido.com/Banner?s=20060&a=0000"
+
+    },
+
   ],
 
   "hidden": [],
@@ -79,6 +85,20 @@ var componentSettings = {
         "id": "app-social-media",
         "componentId": "app-social-media",
         "urlPattern": ["home", "event/*path"]
+      },
+      {
+        "id": "app-banner",
+        "componentId": "app-banner",
+        "urlPattern": ["home", "event/*path"],
+        "args": {
+          "iframeAttributes": {
+            "scrolling": "no",
+            "border": 0,
+            "frameborder": 0,
+            "width": 200,
+            "height": 60
+          }
+        }
       }
    ],
    "right-column": [

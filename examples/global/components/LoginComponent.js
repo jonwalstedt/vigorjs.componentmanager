@@ -24,6 +24,7 @@ app.components.LoginComponent = Backbone.View.extend({
 
   _onLoginClick: function () {
     console.log('do some login magic and then redirect to home')
+    window.localStorage.setItem('isAuthenticated', true);
     Backbone.history.navigate('home', {trigger: true});
   }
 });

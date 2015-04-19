@@ -8,7 +8,12 @@ class IframeComponent extends Backbone.View
 
   src: undefined
 
+  constructor: (attrs) ->
+    _.extend @attributes, attrs.iframeAttributes
+    super
+
   initialize: (attrs) ->
+    console.log 'Im the IframeComponent'
     @src = attrs.src
     @$el.on 'load', @onIframeLoaded
 

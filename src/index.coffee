@@ -65,6 +65,11 @@ do ->
         remove: false
       return @
 
+    updateInstance: (instanceId, attributes) ->
+      instanceDefinition = instanceDefinitionsCollection.get instanceId
+      instanceDefinition?.set attributes, { silent: true }
+      return @
+
     removeInstance: (instancecId) ->
       instanceDefinitionsCollection.remove instancecId
       return @
@@ -85,7 +90,6 @@ do ->
       restrictions = undefined
       @activeComponents = undefined
       componentDefinitionsCollection = undefined
-
 
     getComponentInstances: (filterOptions) ->
       instanceDefinitions = _filterInstanceDefinitions filterOptions
@@ -169,7 +173,7 @@ do ->
             if conditions[condition]()
               shouldBeIncluded = false
               return
-        else
+        else if _.isString(componentConditions)
           shouldBeIncluded = conditions[componentConditions]()
       return shouldBeIncluded
 

@@ -4,6 +4,7 @@ class InstanceDefinitionModel extends Backbone.Model
     id: undefined
     componentId: undefined
     filter: undefined
+    conditions: undefined
     args: undefined
     order: undefined
     targetName: undefined

@@ -38,7 +38,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
     return @filterInstanceDefinitionsByUrl @models, route
 
   filterInstanceDefinitionsByUrl: (instanceDefinitions, route) ->
-    instanceDefinitions = _.filter instanceDefinitions, (instanceDefinitionModel) =>
+    _.filter instanceDefinitions, (instanceDefinitionModel) =>
       urlPattern = instanceDefinitionModel.get 'urlPattern'
       if urlPattern
         if _.isArray(urlPattern)
@@ -51,21 +51,29 @@ class InstanceDefinitionsCollection extends Backbone.Collection
         else
           routeRegEx = router._routeToRegExp urlPattern
           return routeRegEx.test route
-    return instanceDefinitions
 
   filterInstanceDefinitionsByString: (instanceDefinitions, filterString) ->
-    instanceDefinitions = _.filter instanceDefinitions, (instanceDefinitionModel) ->
+    _.filter instanceDefinitions, (instanceDefinitionModel) ->
       filter = instanceDefinitionModel.get 'filter'
       unless filter
         return false
       else
         return filterString.match new RegExp(filter)
-    return instanceDefinitions
 
   filterInstanceDefinitionsByConditions: (instanceDefinitions, conditions) ->
-    instanceDefinitions = _.filter instanceDefinitions, (instanceDefinitionModel) ->
-      # console.log instanceDefinitionModel.toJSON()
-      return true
+    _.filter instanceDefinitions, (instanceDefinitionModel) ->
+      conditions = instanceDefinitionModel.get 'conditions'
+      shouldBeIncluded = true
+      if conditions
+        if _.isArray(conditions)
+          for condition in conditions
+            if condition()
+              shouldBeIncluded = false
+              return
+        else if _.isFunction(conditions)
+          shouldBeIncluded = conditions()
+
+      return shouldBeIncluded
 
   addUrlParams: (instanceDefinitions, route) ->
     for instanceDefinition in instanceDefinitions
