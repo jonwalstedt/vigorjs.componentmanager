@@ -336,25 +336,24 @@
 
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByConditions = function(instanceDefinitions, conditions) {
         return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
-          var condition, i, len, shouldBeIncluded;
-          conditions = instanceDefinitionModel.get('conditions');
+          var condition, i, instanceConditions, len, shouldBeIncluded;
+          instanceConditions = instanceDefinitionModel.get('conditions');
           shouldBeIncluded = true;
-          if (conditions) {
-            if (_.isArray(conditions)) {
-              for (i = 0, len = conditions.length; i < len; i++) {
-                condition = conditions[i];
-                if (_.isFunction(condition)) {
-                  if (condition()) {
-                    shouldBeIncluded = false;
-                    return;
-                  }
-                }
-                if (_.isString(condition)) {
-                  console.log('handle this string with the "global" conditions object');
+          if (instanceConditions) {
+            if (_.isArray(instanceConditions)) {
+              for (i = 0, len = instanceConditions.length; i < len; i++) {
+                condition = instanceConditions[i];
+                if (_.isFunction(condition) && !condition()) {
+                  shouldBeIncluded = false;
+                  return;
+                } else if (_.isString(condition)) {
+                  shouldBeIncluded = conditions[condition]();
                 }
               }
-            } else if (_.isFunction(conditions)) {
-              shouldBeIncluded = conditions();
+            } else if (_.isFunction(instanceConditions)) {
+              shouldBeIncluded = instanceConditions();
+            } else if (_.isString(instanceConditions)) {
+              shouldBeIncluded = conditions[instanceConditions]();
             }
           }
           return shouldBeIncluded;
@@ -563,7 +562,7 @@
             if (_.isArray(componentConditions)) {
               for (i = 0, len = componentConditions.length; i < len; i++) {
                 condition = componentConditions[i];
-                if (conditions[condition]()) {
+                if (!conditions[condition]()) {
                   shouldBeIncluded = false;
                   return;
                 }

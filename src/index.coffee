@@ -170,7 +170,7 @@ do ->
       if componentConditions
         if _.isArray(componentConditions)
           for condition in componentConditions
-            if conditions[condition]()
+            if not conditions[condition]()
               shouldBeIncluded = false
               return
         else if _.isString(componentConditions)

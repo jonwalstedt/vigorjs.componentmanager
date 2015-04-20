@@ -5,13 +5,19 @@ var componentSettings = {
     },
     "not-authenticated": function () {
       return !(window.localStorage.getItem('isAuthenticated') === "true");
+    },
+    "within-timeframe": function () {
+      var today = new Date().getHours(),
+          startTime = 18,
+          endTime = 22;
+      return (today >= startTime && today <= endTime);
     }
   },
   "components": [
     {
       "componentId": 'app-navigation',
       "src": "app.components.NavigationComponent",
-      "conditions": "authenticated"
+      "conditions": ["authenticated", "within-timeframe"]
     },
     {
       "componentId": 'app-login',

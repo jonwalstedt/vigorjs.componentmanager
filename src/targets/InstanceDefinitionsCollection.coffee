@@ -62,19 +62,26 @@ class InstanceDefinitionsCollection extends Backbone.Collection
 
   filterInstanceDefinitionsByConditions: (instanceDefinitions, conditions) ->
     _.filter instanceDefinitions, (instanceDefinitionModel) ->
-      conditions = instanceDefinitionModel.get 'conditions'
+      instanceConditions = instanceDefinitionModel.get 'conditions'
       shouldBeIncluded = true
-      if conditions
-        if _.isArray(conditions)
-          for condition in conditions
-            if _.isFunction(condition)
-              if condition()
-                shouldBeIncluded = false
-                return
-            if _.isString(condition)
-              console.log 'handle this string with the "global" conditions object'
-        else if _.isFunction(conditions)
-          shouldBeIncluded = conditions()
+
+      if instanceConditions
+
+        if _.isArray(instanceConditions)
+          for condition in instanceConditions
+
+            if _.isFunction(condition) and not condition()
+              shouldBeIncluded = false
+              return
+
+            else if _.isString(condition)
+              shouldBeIncluded = conditions[condition]()
+
+        else if _.isFunction(instanceConditions)
+          shouldBeIncluded = instanceConditions()
+
+        else if _.isString(instanceConditions)
+          shouldBeIncluded = conditions[instanceConditions]()
 
       return shouldBeIncluded
 
