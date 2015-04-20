@@ -13,7 +13,7 @@ app.components.ListComponent = Backbone.View.extend({
   },
 
   render: function () {
-    id = this.urlParams.get('params') || '';
+    id = this.urlParams.get('id') || '';
     this.$el.html(this.template({
       id: id
     }));
