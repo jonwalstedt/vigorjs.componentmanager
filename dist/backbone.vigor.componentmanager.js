@@ -29,11 +29,11 @@
       }
 
       Router.prototype.getArguments = function(routes, fragment) {
-        var args, i, len, route;
+        var args, j, len, route;
         if (_.isArray(routes)) {
           args = [];
-          for (i = 0, len = routes.length; i < len; i++) {
-            route = routes[i];
+          for (j = 0, len = routes.length; j < len; j++) {
+            route = routes[j];
             args = this._getArgumentsFromRoute(route, fragment);
           }
           return args;
@@ -43,7 +43,8 @@
       };
 
       Router.prototype._getArgumentsFromRoute = function(route, fragment) {
-        var args;
+        var args, origRoute;
+        origRoute = route;
         if (!_.isRegExp(route)) {
           route = this._routeToRegExp(route);
         }
@@ -51,7 +52,39 @@
         if (route.exec(fragment)) {
           args = _.compact(this._extractParameters(route, fragment));
         }
+        args = this._getParamsObject(origRoute, args);
         return args;
+      };
+
+      Router.prototype._getParamsObject = function(route, args) {
+        var namedParam, names, optionalParam, optionalParams, params, splatParam, splats, storeNames;
+        optionalParam = /\((.*?)\)/g;
+        namedParam = /(\(\?)?:\w+/g;
+        splatParam = /\*\w+/g;
+        params = {};
+        optionalParams = route.match(new RegExp(optionalParam));
+        names = route.match(new RegExp(namedParam));
+        splats = route.match(new RegExp(splatParam));
+        storeNames = function(matches, args) {
+          var i, j, len, name, results;
+          results = [];
+          for (i = j = 0, len = matches.length; j < len; i = ++j) {
+            name = matches[i];
+            name = name.replace(':', '').replace('(', '').replace(')', '').replace('*', '');
+            results.push(params[name] = args[i]);
+          }
+          return results;
+        };
+        if (optionalParams) {
+          storeNames(optionalParams, args);
+        }
+        if (names) {
+          storeNames(names, args);
+        }
+        if (splats) {
+          storeNames(splats, args);
+        }
+        return params;
       };
 
       return Router;
@@ -259,12 +292,12 @@
       InstanceDefinitionsCollection.prototype.model = InstanceDefinitionModel;
 
       InstanceDefinitionsCollection.prototype.parse = function(response, options) {
-        var i, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, len, targetName;
+        var instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, len, targetName;
         instanceDefinitionsArray = [];
         for (targetName in response) {
           instanceDefinitions = response[targetName];
-          for (i = 0, len = instanceDefinitions.length; i < len; i++) {
-            instanceDefinition = instanceDefinitions[i];
+          for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+            instanceDefinition = instanceDefinitions[j];
             instanceDefinition.targetName = TARGET_PREFIX + "--" + targetName;
             instanceDefinition.urlParamsModel = new Backbone.Model();
             if (instanceDefinition.urlPattern === 'global') {
@@ -299,13 +332,13 @@
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, route) {
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinitionModel) {
-            var i, len, match, pattern, routeRegEx, urlPattern;
+            var j, len, match, pattern, routeRegEx, urlPattern;
             urlPattern = instanceDefinitionModel.get('urlPattern');
             if (urlPattern) {
               if (_.isArray(urlPattern)) {
                 match = false;
-                for (i = 0, len = urlPattern.length; i < len; i++) {
-                  pattern = urlPattern[i];
+                for (j = 0, len = urlPattern.length; j < len; j++) {
+                  pattern = urlPattern[j];
                   routeRegEx = router._routeToRegExp(pattern);
                   match = routeRegEx.test(route);
                   if (match) {
@@ -336,13 +369,13 @@
 
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByConditions = function(instanceDefinitions, conditions) {
         return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
-          var condition, i, instanceConditions, len, shouldBeIncluded;
+          var condition, instanceConditions, j, len, shouldBeIncluded;
           instanceConditions = instanceDefinitionModel.get('conditions');
           shouldBeIncluded = true;
           if (instanceConditions) {
             if (_.isArray(instanceConditions)) {
-              for (i = 0, len = instanceConditions.length; i < len; i++) {
-                condition = instanceConditions[i];
+              for (j = 0, len = instanceConditions.length; j < len; j++) {
+                condition = instanceConditions[j];
                 if (_.isFunction(condition) && !condition()) {
                   shouldBeIncluded = false;
                   return;
@@ -361,15 +394,13 @@
       };
 
       InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, route) {
-        var i, instanceDefinition, len, urlParams, urlParamsModel;
-        for (i = 0, len = instanceDefinitions.length; i < len; i++) {
-          instanceDefinition = instanceDefinitions[i];
+        var instanceDefinition, j, len, urlParams, urlParamsModel;
+        for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+          instanceDefinition = instanceDefinitions[j];
           urlParams = router.getArguments(instanceDefinition.get('urlPattern'), route);
+          urlParams.route = route;
           urlParamsModel = instanceDefinition.get('urlParamsModel');
-          urlParamsModel.set({
-            'params': urlParams,
-            'route': route
-          });
+          urlParamsModel.set(urlParams);
           instanceDefinition.set({
             'urlParams': urlParams
           }, {
@@ -383,8 +414,8 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, COMPONENT_CLASS, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection;
-      COMPONENT_CLASS = 'vigor-component';
+      var $context, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection;
+      componentClassName = 'vigor-component';
       componentDefinitionsCollection = void 0;
       instanceDefinitionsCollection = void 0;
       activeComponents = void 0;
@@ -444,9 +475,7 @@
           var instanceDefinition;
           instanceDefinition = instanceDefinitionsCollection.get(instanceId);
           if (instanceDefinition != null) {
-            instanceDefinition.set(attributes, {
-              silent: true
-            });
+            instanceDefinition.set(attributes);
           }
           return this;
         },
@@ -474,11 +503,11 @@
           return componentDefinitionsCollection = void 0;
         },
         getComponentInstances: function(filterOptions) {
-          var i, instance, instanceDefinition, instanceDefinitions, instances, len;
+          var instance, instanceDefinition, instanceDefinitions, instances, j, len;
           instanceDefinitions = _filterInstanceDefinitions(filterOptions);
           instances = [];
-          for (i = 0, len = instanceDefinitions.length; i < len; i++) {
-            instanceDefinition = instanceDefinitions[i];
+          for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+            instanceDefinition = instanceDefinitions[j];
             instance = instanceDefinition.get('instance');
             if (!instance) {
               _addInstanceToModel(instanceDefinition);
@@ -554,14 +583,14 @@
       };
       _filterInstanceDefinitionsByShowConditions = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, function(instanceDefinition) {
-          var componentConditions, componentDefinition, condition, i, len, shouldBeIncluded;
+          var componentConditions, componentDefinition, condition, j, len, shouldBeIncluded;
           componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
           componentConditions = componentDefinition.get('conditions');
           shouldBeIncluded = true;
           if (componentConditions) {
             if (_.isArray(componentConditions)) {
-              for (i = 0, len = componentConditions.length; i < len; i++) {
-                condition = componentConditions[i];
+              for (j = 0, len = componentConditions.length; j < len; j++) {
+                condition = componentConditions[j];
                 if (!conditions[condition]()) {
                   shouldBeIncluded = false;
                   return;
@@ -575,7 +604,7 @@
         });
       };
       _getClass = function(src) {
-        var componentClass, i, len, obj, part, srcObjParts;
+        var componentClass, j, len, obj, part, srcObjParts;
         if (_isUrl(src)) {
           componentClass = IframeComponent;
           return componentClass;
@@ -586,8 +615,8 @@
           } else {
             obj = window;
             srcObjParts = src.split('.');
-            for (i = 0, len = srcObjParts.length; i < len; i++) {
-              part = srcObjParts[i];
+            for (j = 0, len = srcObjParts.length; j < len; j++) {
+              part = srcObjParts[j];
               obj = obj[part];
             }
             componentClass = obj;
@@ -602,6 +631,7 @@
         var componentDefinitions, hidden, instanceDefinitions;
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
         instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions;
+        componentClassName = componentSettings.componentClassName || componentClassName;
         hidden = componentSettings.hidden;
         _registerComponents(componentDefinitions);
         return _registerInstanceDefinitons(instanceDefinitions);
@@ -634,7 +664,7 @@
           args.src = src;
         }
         instance = new componentClass(args);
-        instance.$el.addClass(COMPONENT_CLASS);
+        instance.$el.addClass(componentClassName);
         instanceDefinition.set({
           'instance': instance
         }, {
@@ -643,11 +673,11 @@
         return instanceDefinition;
       };
       _tryToReAddStraysToDom = function() {
-        var i, len, render, results, stray, strays;
+        var j, len, render, results, stray, strays;
         strays = activeComponents.getStrays();
         results = [];
-        for (i = 0, len = strays.length; i < len; i++) {
-          stray = strays[i];
+        for (j = 0, len = strays.length; j < len; j++) {
+          stray = strays[j];
           render = false;
           _addInstanceToDom(stray, render);
           results.push(stray.get('instance').delegateEvents());

@@ -8,14 +8,14 @@ app.components.ListComponent = Backbone.View.extend({
   urlParams: undefined,
 
   initialize: function (attributes) {
-    console.log('Im the ListComponent');
+    console.log('Im the ListComponent', attributes);
     this.urlParams = attributes.urlParamsModel;
-    this.id = this.urlParams.get('params')[0];
   },
 
   render: function () {
+    id = this.urlParams.get('params') || '';
     this.$el.html(this.template({
-      id: this.id
+      id: id
     }));
     return this;
   },

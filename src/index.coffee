@@ -1,6 +1,6 @@
 do ->
 
-  COMPONENT_CLASS = 'vigor-component'
+  componentClassName = 'vigor-component'
 
   componentDefinitionsCollection = undefined
   instanceDefinitionsCollection = undefined
@@ -67,7 +67,7 @@ do ->
 
     updateInstance: (instanceId, attributes) ->
       instanceDefinition = instanceDefinitionsCollection.get instanceId
-      instanceDefinition?.set attributes, { silent: true }
+      instanceDefinition?.set attributes
       return @
 
     removeInstance: (instancecId) ->
@@ -210,6 +210,8 @@ do ->
     componentSettings.targets or \
     componentSettings.instanceDefinitions
 
+    componentClassName = componentSettings.componentClassName or componentClassName
+
     hidden = componentSettings.hidden
 
     _registerComponents componentDefinitions
@@ -242,7 +244,7 @@ do ->
       args.src = src
 
     instance = new componentClass args
-    instance.$el.addClass COMPONENT_CLASS
+    instance.$el.addClass componentClassName
 
     instanceDefinition.set
       'instance': instance

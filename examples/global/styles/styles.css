@@ -269,3 +269,11 @@ Example components
 .list__link:hover {
   background: #eee;
 }
+
+/* Dummy List Component*/
+.dummy-list-component {
+  margin: 40px auto;
+  max-width: 560px;
+  padding: 20px;
+  border: 1px solid #ccc;
+}

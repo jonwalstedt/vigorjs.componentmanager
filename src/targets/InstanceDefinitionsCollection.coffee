@@ -88,11 +88,10 @@ class InstanceDefinitionsCollection extends Backbone.Collection
   addUrlParams: (instanceDefinitions, route) ->
     for instanceDefinition in instanceDefinitions
       urlParams = router.getArguments instanceDefinition.get('urlPattern'), route
+      urlParams.route = route
 
       urlParamsModel = instanceDefinition.get 'urlParamsModel'
-      urlParamsModel.set
-        'params': urlParams
-        'route': route
+      urlParamsModel.set urlParams
 
       instanceDefinition.set
         'urlParams': urlParams

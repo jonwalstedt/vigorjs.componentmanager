@@ -10,29 +10,40 @@ class Router extends Backbone.Router
       @_getArgumentsFromRoute routes, fragment
 
   _getArgumentsFromRoute: (route, fragment) ->
-    # @_getParamsObject route
+    origRoute = route
     if !_.isRegExp(route) then route = @_routeToRegExp(route)
     args = []
     if route.exec(fragment)
       args = _.compact @_extractParameters(route, fragment)
+    args = @_getParamsObject origRoute, args
     return args
 
-  # _getParamsObject: (route) ->
-  #   optionalParam = /\((.*?)\)/g;
-  #   namedParam    = /(\(\?)?:\w+/g;
-  #   splatParam    = /\*\w+/g;
-  #   escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+  _getParamsObject: (route, args) ->
+    optionalParam = /\((.*?)\)/g
+    namedParam = /(\(\?)?:\w+/g
+    splatParam = /\*\w+/g
+    params = {}
 
-  #   r = route.replace(optionalParam, '(?:$1)?')
-  #                # .replace(namedParam, (match, optional) ->
-  #                #    if optional
-  #                #      return match
-  #                #    else
-  #                #      return '([^/?]+)'
-  #                # )
-  #                # .replace(splatParam, '([^?]*?)')
+    optionalParams = route.match new RegExp(optionalParam)
+    names = route.match new RegExp(namedParam)
+    splats = route.match new RegExp(splatParam)
 
-  #   console.log route.match new RegExp(r)
-  #   # console.log 'route: ', new RegEx  '^' + route + '(?:\\?([\\s\\S]*))?$'
-  #   # return new RegExp '^' + route + '(?:\\?([\\s\\S]*))?$'
+    storeNames = (matches, args) ->
+      for name, i in matches
+        name = name.replace(':', '')
+                   .replace('(', '')
+                   .replace(')', '')
+                   .replace('*', '')
 
+        params[name] = args[i]
+
+    if optionalParams
+      storeNames optionalParams, args
+
+    if names
+      storeNames names, args
+
+    if splats
+      storeNames splats, args
+
+    return params

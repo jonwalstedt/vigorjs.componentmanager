@@ -5,19 +5,13 @@ var componentSettings = {
     },
     "not-authenticated": function () {
       return !(window.localStorage.getItem('isAuthenticated') === "true");
-    },
-    "within-timeframe": function () {
-      var today = new Date().getHours(),
-          startTime = 18,
-          endTime = 22;
-      return (today >= startTime && today <= endTime);
     }
   },
   "components": [
     {
       "componentId": 'app-navigation',
       "src": "app.components.NavigationComponent",
-      "conditions": ["authenticated", "within-timeframe"]
+      "conditions": "authenticated"
     },
     {
       "componentId": 'app-login',
@@ -102,7 +96,8 @@ var componentSettings = {
             "border": 0,
             "frameborder": 0,
             "width": 200,
-            "height": 60
+            "height": 60,
+            "style": "margin: 20px auto; display: block;"
           }
         }
       }
