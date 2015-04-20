@@ -343,9 +343,14 @@
             if (_.isArray(conditions)) {
               for (i = 0, len = conditions.length; i < len; i++) {
                 condition = conditions[i];
-                if (condition()) {
-                  shouldBeIncluded = false;
-                  return;
+                if (_.isFunction(condition)) {
+                  if (condition()) {
+                    shouldBeIncluded = false;
+                    return;
+                  }
+                }
+                if (_.isString(condition)) {
+                  console.log('handle this string with the "global" conditions object');
                 }
               }
             } else if (_.isFunction(conditions)) {

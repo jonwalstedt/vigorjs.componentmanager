@@ -12,7 +12,7 @@
 
   app.HelloWorld = Backbone.View.extend({
     router: undefined,
-    startTime: 7,
+    startTime: 1,
     endTime: 19,
 
     initialize: function () {
@@ -27,7 +27,7 @@
       // Sets the condition to only show this component between the
       // specified start and end time
       Vigor.componentManager.updateInstance('app-banner', {
-        conditions: _.bind(this.exampleCondition, this)
+        conditions: ["not-authenticated", _.bind(this.exampleCondition, this)]
       });
 
       this.router = new app.Router({$container: this.$el});

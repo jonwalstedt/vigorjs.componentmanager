@@ -67,9 +67,12 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       if conditions
         if _.isArray(conditions)
           for condition in conditions
-            if condition()
-              shouldBeIncluded = false
-              return
+            if _.isFunction(condition)
+              if condition()
+                shouldBeIncluded = false
+                return
+            if _.isString(condition)
+              console.log 'handle this string with the "global" conditions object'
         else if _.isFunction(conditions)
           shouldBeIncluded = conditions()
 
