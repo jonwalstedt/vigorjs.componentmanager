@@ -125,7 +125,6 @@
       }
 
       IframeComponent.prototype.initialize = function(attrs) {
-        console.log('Im the IframeComponent');
         this.src = attrs.src;
         return this.$el.on('load', this.onIframeLoaded);
       };

@@ -121,6 +121,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
 
     <script src="../../dist/backbone.vigor.componentmanager.js"></script>
+    <script src="../../dist/backbone.vigor.componentmanager-controls.js"></script>
     <script src="./components/ProfileOverViewComponent.js"></script>
     <script src="./components/MarqueeComponent.js"></script>
     <script src="./components/LoginComponent.js"></script>
@@ -129,20 +130,23 @@
     <script src="./components/ListComponent.js"></script>
 
     <script src="./components.js"></script>
-    <script src="./app/ControlsView.js"></script>
     <script src="./app/MainView.js"></script>
     <script src="./app/LandingView.js"></script>
     <script src="./app/Router.js"></script>
     <script src="./app/app.js"></script>
 
     <script type="text/javascript">
-      var helloWorld;
+      var helloWorld, controls;
 
       $(document).ready(function () {
         'use strict'
         helloWorld = new app.HelloWorld({
           el: '.app-wrapper'
         });
+
+        controls = new Vigor.ComponentManagerControls();
+        $('body').prepend(controls.render().$el);
+
       });
 
     </script>

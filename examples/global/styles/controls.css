@@ -1,9 +1,9 @@
 .vigorjs-controls {
   position: fixed;
-  bottom: -174px;
+  bottom: -374px;
   right: 0;
-  height: 200px;
-  width: 200px;
+  height: 400px;
+  width: 400px;
   background: white;
   transition: all 0.15s ease-out;
   z-index: 9999;

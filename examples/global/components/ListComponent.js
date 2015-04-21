@@ -8,7 +8,6 @@ app.components.ListComponent = Backbone.View.extend({
   urlParams: undefined,
 
   initialize: function (attributes) {
-    console.log('Im the ListComponent', attributes);
     this.urlParams = attributes.urlParamsModel;
   },
 

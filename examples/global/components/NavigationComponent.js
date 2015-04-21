@@ -6,15 +6,6 @@ app.components.NavigationComponent = Backbone.View.extend({
   className: 'navigation',
   template: _.template($('script.navigation-template').html()),
 
-  events: {
-    'click a': '_onClick'
-  },
-
-  initialize: function () {
-    console.log('im the navigation component');
-    this.render();
-  },
-
   render: function () {
     this.$el.html(this.template());
     return this;
@@ -24,8 +15,5 @@ app.components.NavigationComponent = Backbone.View.extend({
     this.remove();
   },
 
-  _onClick: function () {
-    console.log('im being clicked');
-  }
 });
 

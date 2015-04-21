@@ -1,11 +1,7 @@
 (function ($) {
   'use strict';
 
-  // Instatiate controlls - not a part of the example app
-  var controls = new ControlsView(),
-      isAuthenticated = (window.localStorage.getItem('isAuthenticated') === 'true') || false;
-
-  $('body').prepend(controls.render().$el);
+  var isAuthenticated = (window.localStorage.getItem('isAuthenticated') === 'true') || false;
 
   // fake loggedin status
   window.localStorage.setItem('isAuthenticated', isAuthenticated);

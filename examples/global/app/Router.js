@@ -22,23 +22,25 @@ var app = app || {};
       this.$el = options.$container;
       this.mainView = new app.MainView();
       this.landingView = new app.LandingView();
+      this.mainView.render();
+      this.landingView.render();
     },
 
     _onLandingRoute: function () {
-      this.$el.html(this.landingView.render().$el);
+      this.$el.html(this.landingView.$el);
       window.localStorage.setItem('isAuthenticated', false);
       this._refreshComponents();
     },
 
     _onEventRoute: function (id) {
-      this.$el.html(this.mainView.render().$el);
+      this.$el.html(this.mainView.$el);
       this._refreshComponents();
       this._checkIsLoggedIn();
       this.mainView.showSidePanel();
     },
 
     _onAllOtherRoutes: function () {
-      this.$el.html(this.mainView.render().$el);
+      this.$el.html(this.mainView.$el);
       this._refreshComponents();
       this._checkIsLoggedIn();
       this.mainView.hideSidePanel();

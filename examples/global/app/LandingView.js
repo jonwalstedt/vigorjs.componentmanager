@@ -9,7 +9,6 @@ var app = app || {};
     template: _.template($('script.landing-template').html()),
 
     initialize: function () {
-      console.log('app:LandingView');
       this.render();
     },
 

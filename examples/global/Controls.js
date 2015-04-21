@@ -1,6 +1,6 @@
-var app = app || {};
+var Vigor = Backbone.Vigor || {};
 
-ControlsView = Backbone.View.extend({
+Vigor.ComponentManagerControls = Backbone.View.extend({
   router: undefined,
   className: 'vigorjs-controls',
   template: _.template($('script.controls-template').html()),
@@ -15,6 +15,7 @@ ControlsView = Backbone.View.extend({
 
   initialize: function () {
     this.render();
+    console.log(Vigor.componentManager.activeComponents);
   },
 
   render: function () {

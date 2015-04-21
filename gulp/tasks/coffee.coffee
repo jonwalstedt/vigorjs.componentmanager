@@ -6,12 +6,16 @@ livereload = require 'gulp-livereload'
 config = require '../config'
 
 gulp.task 'coffee', ->
-  gulp.src(config.bootstrap)
+  buildLib config.bootstrap, config.outputName, config.dest
+  buildLib config.controls, config.controlsOutputName, config.dest
+
+buildLib = (files, outputName, dest) ->
+  gulp.src(files)
     .pipe include()
     .pipe coffee()
     .on('error', handleError)
-    .pipe rename(config.outputName)
-    .pipe gulp.dest(config.dest)
+    .pipe rename(outputName)
+    .pipe gulp.dest(dest)
     .pipe livereload()
 
 handleError = (error) ->

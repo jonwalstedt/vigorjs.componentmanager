@@ -10,7 +10,6 @@ var app = app || {};
     hasRendered: false,
 
     initialize: function () {
-      console.log('app:MainView');
       this.render();
     },
 

@@ -10,7 +10,6 @@ app.components.LoginComponent = Backbone.View.extend({
   },
 
   initialize: function () {
-    console.log('im the login component');
   },
 
   render: function () {
