@@ -22,3 +22,11 @@
   outline: none;
   cursor: pointer;
 }
+
+.vigorjs-controls__step {
+  margin: 10px;
+}
+
+.vigorjs-controls__header {
+  font-size: 16px;
+}

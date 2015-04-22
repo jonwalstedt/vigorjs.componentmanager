@@ -422,6 +422,8 @@
       $context = void 0;
       conditions = {};
       componentManager = {
+        componentDefinitionsCollection: void 0,
+        instanceDefinitionsCollection: void 0,
         activeComponents: void 0,
         initialize: function(settings) {
           componentDefinitionsCollection = new ComponentDefinitionsCollection();
@@ -429,6 +431,8 @@
           activeComponents = new ActiveComponentsCollection();
           filterModel = new FilterModel();
           this.activeComponents = activeComponents;
+          this.componentDefinitionsCollection = componentDefinitionsCollection;
+          this.instanceDefinitionsCollection = instanceDefinitionsCollection;
           _addListeners();
           if (settings.$context) {
             $context = settings.$context;

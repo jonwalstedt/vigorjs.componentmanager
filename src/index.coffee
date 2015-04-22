@@ -14,6 +14,8 @@ do ->
     #
     # Public properties
     # ============================================================================
+    componentDefinitionsCollection: undefined
+    instanceDefinitionsCollection: undefined
     activeComponents: undefined
 
     #
@@ -24,7 +26,11 @@ do ->
       instanceDefinitionsCollection = new InstanceDefinitionsCollection()
       activeComponents = new ActiveComponentsCollection()
       filterModel = new FilterModel()
+
       @activeComponents = activeComponents
+      @componentDefinitionsCollection = componentDefinitionsCollection
+      @instanceDefinitionsCollection = instanceDefinitionsCollection
+
       do _addListeners
 
       if settings.$context

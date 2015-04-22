@@ -10,7 +10,7 @@
       return ComponentManagerControls.__super__.constructor.apply(this, arguments);
     }
 
-    ComponentManagerControls.prototype.className = 'vigorjs-controls';
+    ComponentManagerControls.prototype.className = 'vigorjs-controls vigorjs-controls--active';
 
     ComponentManagerControls.prototype.events = {
       'click .vigorjs-controls__toggle-controls': '_onToggleControlsClick'
@@ -22,55 +22,15 @@
 
     ComponentManagerControls.prototype.render = function() {
       this.$el.empty();
-      this.$el.append(this.generateElement({
-        tagName: 'button',
-        name: 'Create component',
-        classes: 'vigorjs-controls__toggle-controls'
-      }));
-      this.$el.append(this.generateElement({
-        tagName: 'select',
-        className: 'test',
-        options: [
-          {
-            text: 'option1',
-            value: 'val1'
-          }, {
-            text: 'option2',
-            value: 'val2'
-          }
-        ]
-      }));
-      this.$el.append(this.generateElement({
-        tagName: 'button',
-        name: 'Change component'
-      }));
-      this.$el.append(this.generateElement({
-        tagName: 'button',
-        name: 'Remove component'
-      }));
+      this.$el.html(this.getTemplate());
       return this;
     };
 
-    ComponentManagerControls.prototype.generateElement = function(attrs) {
-      var $el, $optionEl, el, i, len, option, optionEl, ref;
-      el = document.createElement(attrs.tagName);
-      $el = $(el);
-      $el.addClass(attrs.classes);
-      if (attrs.name) {
-        $el.text(attrs.name);
-      }
-      if (attrs.tagName === 'select') {
-        ref = attrs.options;
-        for (i = 0, len = ref.length; i < len; i++) {
-          option = ref[i];
-          optionEl = document.createElement('option');
-          $optionEl = $(optionEl);
-          $optionEl.html(option.text);
-          $optionEl.attr('value', option.value);
-          $el.append(optionEl);
-        }
-      }
-      return $el;
+    ComponentManagerControls.prototype.getTemplate = function() {
+      var availableComponents, markup;
+      availableComponents = Vigor.componentManager.componentDefinitionsCollection.toJSON();
+      markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n\n<div class='vigorjs-controls__step vigorjs-controls__select--step-one'>\n  <h1 class='vigorjs-controls__header'>Do you want to create, update or delete a component?</h1>\n  <button class='vigorjs-controls__create'>Create</button>\n  <button class='vigorjs-controls__update'>Update</button>\n  <button class='vigorjs-controls__delete'>Delete</button>\n</div>\n\n<div class='vigorjs-controls__step vigorjs-controls__select--step-two'>\n  <div class='vigorjs-controls__step vigorjs-controls__create'>\n\n  </div>\n  <div class='vigorjs-controls__step vigorjs-controls__update'>\n  </div>\n  <div class='vigorjs-controls__step vigorjs-controls__delete'>\n  </div>\n</div>\n";
+      return markup;
     };
 
     ComponentManagerControls.prototype._onToggleControlsClick = function() {
