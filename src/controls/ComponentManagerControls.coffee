@@ -18,7 +18,8 @@ class ComponentManagerControls extends Backbone.View
     <button class='vigorjs-controls__toggle-controls'>Controls</button>
 
     <div class='vigorjs-controls__step vigorjs-controls__select--step-one'>
-      <h1 class='vigorjs-controls__header'>Do you want to create, update or delete a component?</h1>
+      <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>
+      <button class='vigorjs-controls__register'>Register an iframe component</button>
       <button class='vigorjs-controls__create'>Create</button>
       <button class='vigorjs-controls__update'>Update</button>
       <button class='vigorjs-controls__delete'>Delete</button>
