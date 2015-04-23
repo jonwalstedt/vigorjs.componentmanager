@@ -37,7 +37,6 @@ var componentSettings = {
     {
       "componentId": 'app-banner',
       "src": "http://www.bido.com/Banner?s=20060&a=0000"
-
     },
 
   ],

@@ -239,11 +239,15 @@ do ->
     componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
     src = componentDefinition.get 'src'
     componentClass = _getClass src
+    height = componentDefinition.get 'height'
+    if instanceDefinition.get('height')
+      height = instanceDefinition.get 'height'
 
     args =
       urlParams: instanceDefinition.get 'urlParams'
       urlParamsModel: instanceDefinition.get 'urlParamsModel'
 
+    _.extend args, componentDefinition.get('args')
     _.extend args, instanceDefinition.get('args')
 
     if componentClass is IframeComponent
@@ -251,6 +255,9 @@ do ->
 
     instance = new componentClass args
     instance.$el.addClass componentClassName
+
+    if height
+      instance.$el.style 'height', "#{height}px"
 
     instanceDefinition.set
       'instance': instance
