@@ -27,15 +27,11 @@
 
   # Vigor.extend = Backbone.Model.extend
 
-  # COMMON
-  #= include ./component-manager/router/Router.coffee
-  #= include ./component-manager/filter/FilterModel.coffee
-  #= include ./component-manager/iframe-component/IframeComponent.coffee
-  #= include ./component-manager/component-definitions/ComponentDefinitionModel.coffee
-  #= include ./component-manager/component-definitions/ComponentDefinitionsCollection.coffee
-  #= include ./component-manager/active-components/ActiveComponentsCollection.coffee
-  #= include ./component-manager/targets/InstanceDefinitionModel.coffee
-  #= include ./component-manager/targets/InstanceDefinitionsCollection.coffee
-  #= include ./component-manager/index.coffee
+  #= include ./component-manager-controls/templateHelper.coffee
+  #= include ./component-manager-controls/views/RegisterComponentView.coffee
+  #= include ./component-manager-controls/views/CreateComponentView.coffee
+  #= include ./component-manager-controls/views/UpdateComponentView.coffee
+  #= include ./component-manager-controls/views/DeleteComponentView.coffee
+  #= include ./component-manager-controls/index.coffee
 
   return Vigor

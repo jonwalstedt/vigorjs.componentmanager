@@ -1,78 +1,384 @@
 (function() {
-  var ComponentManagerControls,
+  var bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  ComponentManagerControls = (function(superClass) {
-    extend(ComponentManagerControls, superClass);
-
-    function ComponentManagerControls() {
-      return ComponentManagerControls.__super__.constructor.apply(this, arguments);
+  (function(root, factory) {
+    var Backbone, _;
+    if (typeof define === "function" && define.amd) {
+      define(['backbone', 'underscore'], function(Backbone, _) {
+        return factory(root, Backbone, _);
+      });
+      console.log('amd');
+    } else if (typeof exports === "object") {
+      Backbone = require('backbone');
+      _ = require('underscore');
+      console.log('commonjs');
+      module.exports = factory(root, Backbone, _);
+    } else {
+      console.log('global');
+      root.Vigor = factory(root, root.Backbone, root._);
     }
-
-    ComponentManagerControls.prototype.className = 'vigorjs-controls vigorjs-controls--active';
-
-    ComponentManagerControls.prototype.events = {
-      'click .vigorjs-controls__toggle-controls': '_onToggleControlsClick',
-      'click .vigorjs-controls__add-row': '_onAddRow',
-      'click .vigorjs-controls__register-btn': '_onRegister'
-    };
-
-    ComponentManagerControls.prototype.initialize = function() {
-      return console.log('ComponentManagerControls:initialize');
-    };
-
-    ComponentManagerControls.prototype.render = function() {
-      this.$el.empty();
-      this.$el.html(this.getTemplate());
-      return this;
-    };
-
-    ComponentManagerControls.prototype.getTemplate = function() {
-      var availableComponents, markup;
-      availableComponents = Vigor.componentManager.componentDefinitionsCollection.toJSON();
-      markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n\n<div class='vigorjs-controls__step vigorjs-controls__select--step-one'>\n  <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>\n  <button class='vigorjs-controls__show-register-btn'>Register an iframe component</button>\n  <button class='vigorjs-controls__show-create-btn'>Create</button>\n  <button class='vigorjs-controls__show-update-btn'>Update</button>\n  <button class='vigorjs-controls__show-delete-btn'>Delete</button>\n</div>\n\n<div class='vigorjs-controls__step vigorjs-controls__select--step-two'>\n  <form class='vigorjs-controls__register'>\n    <div class=\"vigorjs-controls__field\">\n      <label for='component-id'>Unique Component Id</label>\n      <input type='text' id='component-id' placeholder='Unique Component Id' name='componentId'/>\n    </div>\n\n    <div class=\"vigorjs-controls__field\">\n      <label for='component-src'>Component Source - url or namespaced path to view</label>\n      <input type='text' id='component-src' placeholder='Src' name='src'/>\n    </div>\n\n    <div class=\"vigorjs-controls__field\">\n      <label for='component-max-showcount'>Component Showcount - Specify if the component should have a maximum instantiation count ex. 1 if it should only be created once per session</label>\n      <input type='text' id='component-max-showcount' placeholder='Max Showcount' name='maxShowCount'/>\n    </div>\n\n    <div class=\"vigorjs-controls__field\">\n      <label for='component-args'>Component arguments (key:value pairs)</label>\n      <div class=\"vigorjs-controls__args-row\">\n        <input type='text' placeholder='Key' name='key' class='vigorjs-controls__args-key'/>\n        <input type='text' placeholder='Value' name='value' class='vigorjs-controls__args-val'/>\n      </div>\n      <button type='button' class='vigorjs-controls__add-row'>add row</button>\n    </div>\n\n    <button type='button' class='vigorjs-controls__register-btn'>Register</button>\n  </form>\n  <div class='vigorjs-controls__step vigorjs-controls__create'></div>\n  <div class='vigorjs-controls__step vigorjs-controls__update'></div>\n  <div class='vigorjs-controls__step vigorjs-controls__delete'></div>\n</div>\n";
-      return markup;
-    };
-
-    ComponentManagerControls.prototype._onToggleControlsClick = function() {
-      return this.$el.toggleClass('vigorjs-controls--active');
-    };
-
-    ComponentManagerControls.prototype._onAddRow = function(event) {
-      var $btn, $lastRow, $newRow;
-      $btn = $(event.currentTarget);
-      $lastRow = $btn.parent().find('.vigorjs-controls__args-row:last');
-      $newRow = $lastRow.clone();
-      $newRow.find('input').val('');
-      return $newRow.insertAfter($lastRow);
-    };
-
-    ComponentManagerControls.prototype._onRegister = function() {
-      var $argRows, $registerForm, $row, componentDefinition, i, len, objs, row;
-      $registerForm = $('.vigorjs-controls__register', this.el);
-      $argRows = $registerForm.find('.vigorjs-controls__args-row');
-      componentDefinition = {};
-      componentDefinition.args = {};
-      objs = $registerForm.serializeArray();
-      for (i = 0, len = $argRows.length; i < len; i++) {
-        row = $argRows[i];
-        $row = $(row);
-        componentDefinition.args[$row.find('.vigorjs-controls__args-key').val()] = $row.find('.vigorjs-controls__args-val').val();
+  })(this, function(root, Backbone, _) {
+    var ComponentManagerControls, CreateComponentView, DeleteComponentView, RegisterComponentView, UpdateComponentView, Vigor, templateHelper;
+    Vigor = Backbone.Vigor = root.Vigor || {};
+    templateHelper = {
+      storeComponentManager: function(componentManager) {
+        this.componentManager = componentManager;
+      },
+      getRegisteredComponents: function() {
+        var component, componentDefinitions, j, len, markup;
+        componentDefinitions = this.componentManager.componentDefinitionsCollection.toJSON();
+        if (componentDefinitions.length > 0) {
+          markup = '<select>';
+          for (j = 0, len = componentDefinitions.length; j < len; j++) {
+            component = componentDefinitions[j];
+            markup += "<option value='" + component.componentId + "'>" + component.componentId + "</option>";
+          }
+          markup += '</select>';
+          return markup;
+        }
+      },
+      getRegisteredRestrictions: function() {
+        var markup, restriction, restrictions;
+        restrictions = this.componentManager.restrictions;
+        if (!_.isEmpty(restrictions)) {
+          markup = '<select>';
+          for (restriction in restrictions) {
+            console.log(restriction);
+            markup += "<option value='" + restriction + "'>" + restriction + "</option>";
+          }
+          markup += '</select>';
+          return markup;
+        }
       }
-      console.log(componentDefinition);
-      componentDefinition = {
-        componentId: objs.componentId,
-        src: objs.src,
-        showcount: objs.showcount
-      };
-      return console.log(componentDefinition);
     };
+    RegisterComponentView = (function(superClass) {
+      extend(RegisterComponentView, superClass);
 
-    return ComponentManagerControls;
+      function RegisterComponentView() {
+        this._onRegister = bind(this._onRegister, this);
+        return RegisterComponentView.__super__.constructor.apply(this, arguments);
+      }
 
-  })(Backbone.View);
+      RegisterComponentView.prototype.className = 'vigorjs-controls__register-component';
 
-  Vigor.ComponentManagerControls = ComponentManagerControls;
+      RegisterComponentView.prototype.events = {
+        'click .vigorjs-controls__remove-row': '_onRemoveRow',
+        'click .vigorjs-controls__add-row': '_onAddRow',
+        'click .vigorjs-controls__register-btn': '_onRegister'
+      };
+
+      RegisterComponentView.prototype.componentManager = void 0;
+
+      RegisterComponentView.prototype.$feedback = void 0;
+
+      RegisterComponentView.prototype.initialize = function(attributes) {
+        return this.componentManager = attributes.componentManager;
+      };
+
+      RegisterComponentView.prototype.render = function() {
+        this.$el.empty();
+        this.$el.html(this.getTemplate());
+        this.$feedback = $('.vigorjs-controls__register-feedback', this.el);
+        return this;
+      };
+
+      RegisterComponentView.prototype.getTemplate = function() {
+        var availableComponents, markup;
+        availableComponents = this.componentManager.componentDefinitionsCollection.toJSON();
+        markup = "<form class='vigorjs-controls__register'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Unique Component Id</label>\n    <input type='text' id='component-id' placeholder='Unique Component Id' name='componentId'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-src'>Component Source - url or namespaced path to view</label>\n    <input type='text' id='component-src' placeholder='Src' name='src'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-max-showcount'>Component Showcount - Specify if the component should have a maximum instantiation count ex. 1 if it should only be created once per session</label>\n    <input type='text' id='component-max-showcount' placeholder='Max Showcount' name='maxShowCount'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-args'>Component arguments (key:value pairs)</label>\n    <div class=\"vigorjs-controls__rows\">\n      " + (this.getRow()) + "\n    </div>\n    <button type='button' class='vigorjs-controls__remove-row'>remove row</button>\n    <button type='button' class='vigorjs-controls__add-row'>add row</button>\n  </div>\n  \n  <div class='vigorjs-controls__register-feedback'></div>\n  <button type='button' class='vigorjs-controls__register-btn'>Register</button>\n</form>";
+        return markup;
+      };
+
+      RegisterComponentView.prototype.getRow = function() {
+        var markup;
+        markup = "<div class=\"vigorjs-controls__args-row\">\n  <input type='text' placeholder='Key' name='key' class='vigorjs-controls__args-key'/>\n  <input type='text' placeholder='Value' name='value' class='vigorjs-controls__args-val'/>\n</div>";
+        return markup;
+      };
+
+      RegisterComponentView.prototype._registerComponent = function() {
+        var $argRows, $registerForm, arg, args, componentDefinition, error, i, j, k, len, len1, obj, objs;
+        $registerForm = $('.vigorjs-controls__register', this.el);
+        $argRows = $registerForm.find('.vigorjs-controls__args-row');
+        componentDefinition = {};
+        componentDefinition.args = {};
+        objs = $registerForm.serializeArray();
+        args = [];
+        for (i = j = 0, len = objs.length; j < len; i = ++j) {
+          obj = objs[i];
+          if (obj.name !== 'key' && obj.name !== 'value') {
+            componentDefinition[obj.name] = obj.value;
+          } else {
+            args.push(obj);
+          }
+        }
+        for (i = k = 0, len1 = args.length; k < len1; i = ++k) {
+          arg = args[i];
+          if (i % 2) {
+            componentDefinition.args[args[i - 1].value] = args[i].value;
+          }
+        }
+        try {
+          this.componentManager.addComponentDefinition(componentDefinition);
+          $registerForm.find('input').val('');
+          this._showFeedback('Component registered');
+          return setTimeout((function(_this) {
+            return function() {
+              return _this.trigger('show', 'create');
+            };
+          })(this), 1000);
+        } catch (_error) {
+          error = _error;
+          return this._showFeedback(error);
+        }
+      };
+
+      RegisterComponentView.prototype._showFeedback = function(feedback) {
+        return this.$feedback.html(feedback);
+      };
+
+      RegisterComponentView.prototype._onAddRow = function(event) {
+        var $btn, $newRow, $rows;
+        $btn = $(event.currentTarget);
+        $rows = $('.vigorjs-controls__rows', this.el);
+        $newRow = $(this.getRow());
+        return $rows.append($newRow);
+      };
+
+      RegisterComponentView.prototype._onRemoveRow = function(event) {
+        var $btn;
+        $btn = $(event.currentTarget);
+        return $btn.parent().find('.vigorjs-controls__args-row:last').remove();
+      };
+
+      RegisterComponentView.prototype._onRegister = function() {
+        return this._registerComponent();
+      };
+
+      return RegisterComponentView;
+
+    })(Backbone.View);
+    CreateComponentView = (function(superClass) {
+      extend(CreateComponentView, superClass);
+
+      function CreateComponentView() {
+        this._onComponentDefinitionChange = bind(this._onComponentDefinitionChange, this);
+        return CreateComponentView.__super__.constructor.apply(this, arguments);
+      }
+
+      CreateComponentView.prototype.className = 'vigorjs-controls__create-component';
+
+      CreateComponentView.prototype.componentManager = void 0;
+
+      CreateComponentView.prototype.$feedback = void 0;
+
+      CreateComponentView.prototype.initialize = function(attributes) {
+        this.componentManager = attributes.componentManager;
+        return this.listenTo(this.componentManager.componentDefinitionsCollection, 'change add remove', this._onComponentDefinitionChange);
+      };
+
+      CreateComponentView.prototype.render = function() {
+        this.$el.empty();
+        this.$el.html(this.getTemplate());
+        this.$feedback = $('.vigorjs-controls__create-feedback', this.el);
+        return this;
+      };
+
+      CreateComponentView.prototype.getTemplate = function() {
+        var componentDefinitions, components, markup, restrictions, restrictionsMarkup, retstrictionsMarkup;
+        componentDefinitions = this.componentManager.componentDefinitionsCollection.toJSON();
+        components = templateHelper.getRegisteredComponents();
+        restrictions = templateHelper.getRegisteredRestrictions();
+        restrictionsMarkup = '';
+        if (restrictions) {
+          retstrictionsMarkup = "<div class=\"vigorjs-controls__field\">\n  <label for='component-type'>Select component restriction</label>\n  " + restrictions + "\n</div>";
+        }
+        markup = "<form class='vigorjs-controls__create'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-type'>Select component type</label>\n    " + components + "\n  </div>\n  \n  " + restrictionsMarkup + "\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Instance id - a unique instance id</label>\n    <input type='text' id='component-id' placeholder='id' name='id'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>\n    <input type='text' id='component-filter' placeholder='Filter' name='filter'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-condition'>Instance conditions</label>\n    <input type='text' id='component-condition' placeholder='condition' name='condition'/>\n  </div>\n  \n  <div class='vigorjs-controls__create-feedback'></div>\n  <button type='button' class='vigorjs-controls__create-btn'>Create</button>\n</form>";
+        return markup;
+      };
+
+      CreateComponentView.prototype._onComponentDefinitionChange = function() {
+        return this.render();
+      };
+
+      return CreateComponentView;
+
+    })(Backbone.View);
+    UpdateComponentView = (function(superClass) {
+      extend(UpdateComponentView, superClass);
+
+      function UpdateComponentView() {
+        return UpdateComponentView.__super__.constructor.apply(this, arguments);
+      }
+
+      UpdateComponentView.prototype.className = 'vigorjs-controls__update-component';
+
+      UpdateComponentView.prototype.componentManager = void 0;
+
+      UpdateComponentView.prototype.$feedback = void 0;
+
+      UpdateComponentView.prototype.initialize = function(attributes) {
+        return this.componentManager = attributes.componentManager;
+      };
+
+      UpdateComponentView.prototype.render = function() {
+        this.$el.empty();
+        this.$el.html(this.getTemplate());
+        this.$feedback = $('.vigorjs-controls__update-feedback', this.el);
+        return this;
+      };
+
+      UpdateComponentView.prototype.getTemplate = function() {
+        var markup;
+        markup = "<form class='vigorjs-controls__update'>\n  <div class='vigorjs-controls__update-feedback'></div>\n  <button type='button' class='vigorjs-controls__update-btn'>Create</button>\n</form>";
+        return markup;
+      };
+
+      return UpdateComponentView;
+
+    })(Backbone.View);
+    DeleteComponentView = (function(superClass) {
+      extend(DeleteComponentView, superClass);
+
+      function DeleteComponentView() {
+        return DeleteComponentView.__super__.constructor.apply(this, arguments);
+      }
+
+      DeleteComponentView.prototype.className = 'vigorjs-controls__delete-component';
+
+      DeleteComponentView.prototype.componentManager = void 0;
+
+      DeleteComponentView.prototype.$feedback = void 0;
+
+      DeleteComponentView.prototype.initialize = function(attributes) {
+        return this.componentManager = attributes.componentManager;
+      };
+
+      DeleteComponentView.prototype.render = function() {
+        this.$el.empty();
+        this.$el.html(this.getTemplate());
+        this.$feedback = $('.vigorjs-controls__deltete-feedback', this.el);
+        return this;
+      };
+
+      DeleteComponentView.prototype.getTemplate = function() {
+        var markup;
+        markup = "<form class='vigorjs-controls__delete'>\n  <div class='vigorjs-controls__delete-feedback'></div>\n  <button type='button' class='vigorjs-controls__delete-btn'>Delete</button>\n</form>";
+        return markup;
+      };
+
+      return DeleteComponentView;
+
+    })(Backbone.View);
+    ComponentManagerControls = (function(superClass) {
+      extend(ComponentManagerControls, superClass);
+
+      function ComponentManagerControls() {
+        this._onShow = bind(this._onShow, this);
+        this._onShowFormBtnClick = bind(this._onShowFormBtnClick, this);
+        return ComponentManagerControls.__super__.constructor.apply(this, arguments);
+      }
+
+      ComponentManagerControls.prototype.className = 'vigorjs-controls vigorjs-controls--active';
+
+      ComponentManagerControls.prototype.events = {
+        'click .vigorjs-controls__toggle-controls': '_onToggleControlsClick',
+        'click .vigorjs-controls__show-form-btn': '_onShowFormBtnClick'
+      };
+
+      ComponentManagerControls.prototype.componentManager = void 0;
+
+      ComponentManagerControls.prototype.registerComponent = void 0;
+
+      ComponentManagerControls.prototype.$formWrapper = void 0;
+
+      ComponentManagerControls.prototype.initialize = function(attributes) {
+        this.componentManager = attributes.componentManager;
+        return templateHelper.storeComponentManager(this.componentManager);
+      };
+
+      ComponentManagerControls.prototype.render = function() {
+        this.$el.empty();
+        this.$el.html(this.getTemplate());
+        this.$wrappers = $('.vigorjs-controls__wrapper', this.el);
+        this.$registerWrapper = $('.vigorjs-controls__register-wrapper', this.el);
+        this.$createWrapper = $('.vigorjs-controls__create-wrapper', this.el);
+        this.$updateWrapper = $('.vigorjs-controls__update-wrapper', this.el);
+        this.$deleteWrapper = $('.vigorjs-controls__delete-wrapper', this.el);
+        this._addRegisterForm();
+        this._addCreateForm();
+        this._addUpdateForm();
+        this._addDeleteForm();
+        return this;
+      };
+
+      ComponentManagerControls.prototype.getTemplate = function() {
+        var availableComponents, markup;
+        availableComponents = Vigor.componentManager.componentDefinitionsCollection.toJSON();
+        markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n  \n<div class='vigorjs-controls__step'>\n  <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>\n  <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>\n</div>\n  \n<div class='vigorjs-controls__forms'>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__register-wrapper' data-id='register'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__create-wrapper' data-id='create'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__update-wrapper' data-id='update'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__delete-wrapper' data-id='delete'></div>\n</div>\n  ";
+        return markup;
+      };
+
+      ComponentManagerControls.prototype._addRegisterForm = function() {
+        this.registerComponent = new RegisterComponentView({
+          componentManager: this.componentManager
+        });
+        this.registerComponent.on('show', this._onShow);
+        return this.$registerWrapper.html(this.registerComponent.render().$el);
+      };
+
+      ComponentManagerControls.prototype._addCreateForm = function() {
+        this.createComponent = new CreateComponentView({
+          componentManager: this.componentManager
+        });
+        this.createComponent.on('show', this._onShow);
+        return this.$createWrapper.html(this.createComponent.render().$el);
+      };
+
+      ComponentManagerControls.prototype._addUpdateForm = function() {
+        this.updateComponent = new UpdateComponentView({
+          componentManager: this.componentManager
+        });
+        this.updateComponent.on('show', this._onShow);
+        return this.$updateWrapper.html(this.updateComponent.render().$el);
+      };
+
+      ComponentManagerControls.prototype._addDeleteForm = function() {
+        this.deleteComponent = new DeleteComponentView({
+          componentManager: this.componentManager
+        });
+        this.deleteComponent.on('show', this._onShow);
+        return this.$deleteWrapper.html(this.deleteComponent.render().$el);
+      };
+
+      ComponentManagerControls.prototype._showWrapper = function(targetName) {
+        var $target;
+        this.$wrappers.removeClass('vigorjs-controls__wrapper--show');
+        $target = this.$wrappers.filter("[data-id='" + targetName + "']");
+        return $target.addClass('vigorjs-controls__wrapper--show');
+      };
+
+      ComponentManagerControls.prototype._onToggleControlsClick = function() {
+        return this.$el.toggleClass('vigorjs-controls--active');
+      };
+
+      ComponentManagerControls.prototype._onShowFormBtnClick = function(event) {
+        var $btn, targetName;
+        $btn = $(event.currentTarget);
+        targetName = $btn.data('target');
+        return this._showWrapper(targetName);
+      };
+
+      ComponentManagerControls.prototype._onShow = function(targetName) {
+        return this._showWrapper(targetName);
+      };
+
+      return ComponentManagerControls;
+
+    })(Backbone.View);
+    Vigor.ComponentManagerControls = ComponentManagerControls;
+    return Vigor;
+  });
 
 }).call(this);

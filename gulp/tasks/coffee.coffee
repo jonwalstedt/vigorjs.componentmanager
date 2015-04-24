@@ -7,7 +7,7 @@ config = require '../config'
 
 gulp.task 'coffee', ->
   buildLib config.bootstrap, config.outputName, config.dest
-  buildLib config.controls, config.controlsOutputName, config.dest
+  buildLib config.bootstrapControls, config.controlsOutputName, config.dest
 
 buildLib = (files, outputName, dest) ->
   gulp.src(files)

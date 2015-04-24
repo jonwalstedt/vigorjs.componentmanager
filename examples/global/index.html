@@ -144,7 +144,7 @@
           el: '.app-wrapper'
         });
 
-        controls = new Vigor.ComponentManagerControls();
+        controls = new Vigor.ComponentManagerControls({componentManager: Vigor.componentManager});
         $('body').prepend(controls.render().$el);
 
       });

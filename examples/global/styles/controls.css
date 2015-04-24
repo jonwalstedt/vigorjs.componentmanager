@@ -23,7 +23,8 @@
   cursor: pointer;
 }
 
-.vigorjs-controls__step {
+.vigorjs-controls__step,
+.vigorjs-controls__forms {
   margin: 10px;
 }
 
@@ -33,4 +34,20 @@
 
 .vigorjs-controls__header {
   font-size: 16px;
+}
+
+.vigorjs-controls__forms {
+  position: relative;
+}
+
+.vigorjs-controls__wrapper {
+  position: absolute;
+  top: 800px;
+  opacity: 0;
+  transition: all 0.4s ease-out;
+}
+
+.vigorjs-controls__wrapper--show {
+  top: 0;
+  opacity: 1;
 }

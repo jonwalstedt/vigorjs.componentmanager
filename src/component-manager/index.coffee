@@ -30,6 +30,7 @@ do ->
       @activeComponents = activeComponents
       @componentDefinitionsCollection = componentDefinitionsCollection
       @instanceDefinitionsCollection = instanceDefinitionsCollection
+      @conditions = conditions
 
       do _addListeners
 

@@ -20,7 +20,7 @@
     }
   })(this, function(root, Backbone, _) {
     var ActiveComponentsCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
-    Vigor = Backbone.Vigor = {};
+    Vigor = Backbone.Vigor = root.Vigor || {};
     Router = (function(superClass) {
       extend(Router, superClass);
 
@@ -433,6 +433,7 @@
           this.activeComponents = activeComponents;
           this.componentDefinitionsCollection = componentDefinitionsCollection;
           this.instanceDefinitionsCollection = instanceDefinitionsCollection;
+          this.conditions = conditions;
           _addListeners();
           if (settings.$context) {
             $context = settings.$context;
