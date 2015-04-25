@@ -26,30 +26,66 @@
       storeComponentManager: function(componentManager) {
         this.componentManager = componentManager;
       },
-      getRegisteredComponents: function() {
-        var component, componentDefinitions, j, len, markup;
+      getMainTemplate: function() {
+        var markup;
+        markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n  \n<div class='vigorjs-controls__step'>\n  <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>\n  <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>\n</div>\n  \n<div class='vigorjs-controls__forms'>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__register-wrapper' data-id='register'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__create-wrapper' data-id='create'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__update-wrapper' data-id='update'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__delete-wrapper' data-id='delete'></div>\n</div>\n  ";
+        return markup;
+      },
+      getCreateTemplate: function(selectedComponent) {
+        var appliedConditions, appliedConditionsMarkup, components, conditions, conditionsMarkup, markup;
+        if (selectedComponent == null) {
+          selectedComponent = void 0;
+        }
+        components = templateHelper.getRegisteredComponents(selectedComponent);
+        conditions = templateHelper.getRegisteredConditions();
+        appliedConditions = templateHelper.getAppliedCondition(selectedComponent);
+        conditionsMarkup = '';
+        appliedConditionsMarkup = '';
+        if (appliedConditions) {
+          appliedConditionsMarkup = "<p>Already applied conditions:</p>\n" + appliedConditions;
+        }
+        if (conditions) {
+          conditionsMarkup = "<div class=\"vigorjs-controls__field\">\n  <p>Available component conditions:</p>\n  " + conditions + "\n  " + appliedConditionsMarkup + "\n</div>";
+        }
+        markup = "<form class='vigorjs-controls__create'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-type'>Select component type</label>\n    " + components + "\n  </div>\n  \n  " + conditionsMarkup + "\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Instance id - a unique instance id</label>\n    <input type='text' id='component-id' placeholder='id' name='id'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>\n    <input type='text' id='component-filter' placeholder='Filter' name='filter'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-condition'>Instance conditions</label>\n    <input type='text' id='component-condition' placeholder='condition' name='condition'/>\n  </div>\n  \n  <div class='vigorjs-controls__create-feedback'></div>\n  <button type='button' class='vigorjs-controls__create-btn'>Create</button>\n</form>";
+        return markup;
+      },
+      getRegisteredComponents: function(selectedComponent) {
+        var component, componentDefinitions, j, len, markup, selected;
         componentDefinitions = this.componentManager.componentDefinitionsCollection.toJSON();
         if (componentDefinitions.length > 0) {
           markup = '<select>';
+          markup += "<option value='non-selected' selected='selected'>Select a component type</option>";
           for (j = 0, len = componentDefinitions.length; j < len; j++) {
             component = componentDefinitions[j];
-            markup += "<option value='" + component.componentId + "'>" + component.componentId + "</option>";
+            selected = '';
+            if (component.componentId === selectedComponent) {
+              selected = 'selected="selected"';
+            }
+            markup += "<option value='" + component.componentId + "' " + selected + ">" + component.componentId + "</option>";
           }
           markup += '</select>';
           return markup;
         }
       },
-      getRegisteredRestrictions: function() {
-        var markup, restriction, restrictions;
-        restrictions = this.componentManager.restrictions;
-        if (!_.isEmpty(restrictions)) {
-          markup = '<select>';
-          for (restriction in restrictions) {
-            console.log(restriction);
-            markup += "<option value='" + restriction + "'>" + restriction + "</option>";
+      getRegisteredConditions: function() {
+        var condition, conditions, markup;
+        conditions = this.componentManager.conditions;
+        if (!_.isEmpty(conditions)) {
+          markup = '';
+          for (condition in conditions) {
+            markup += "<span>" + condition + " </span>";
           }
-          markup += '</select>';
           return markup;
+        }
+      },
+      getAppliedCondition: function(selectedComponent) {
+        var componentDefinition;
+        if (selectedComponent) {
+          componentDefinition = this.componentManager.componentDefinitionsCollection.get({
+            id: selectedComponent
+          });
+          return console.log(componentDefinition);
         }
       }
     };
@@ -180,22 +216,9 @@
 
       CreateComponentView.prototype.render = function() {
         this.$el.empty();
-        this.$el.html(this.getTemplate());
+        this.$el.html(templateHelper.getCreateTemplate());
         this.$feedback = $('.vigorjs-controls__create-feedback', this.el);
         return this;
-      };
-
-      CreateComponentView.prototype.getTemplate = function() {
-        var componentDefinitions, components, markup, restrictions, restrictionsMarkup, retstrictionsMarkup;
-        componentDefinitions = this.componentManager.componentDefinitionsCollection.toJSON();
-        components = templateHelper.getRegisteredComponents();
-        restrictions = templateHelper.getRegisteredRestrictions();
-        restrictionsMarkup = '';
-        if (restrictions) {
-          retstrictionsMarkup = "<div class=\"vigorjs-controls__field\">\n  <label for='component-type'>Select component restriction</label>\n  " + restrictions + "\n</div>";
-        }
-        markup = "<form class='vigorjs-controls__create'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-type'>Select component type</label>\n    " + components + "\n  </div>\n  \n  " + restrictionsMarkup + "\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Instance id - a unique instance id</label>\n    <input type='text' id='component-id' placeholder='id' name='id'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>\n    <input type='text' id='component-filter' placeholder='Filter' name='filter'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-condition'>Instance conditions</label>\n    <input type='text' id='component-condition' placeholder='condition' name='condition'/>\n  </div>\n  \n  <div class='vigorjs-controls__create-feedback'></div>\n  <button type='button' class='vigorjs-controls__create-btn'>Create</button>\n</form>";
-        return markup;
       };
 
       CreateComponentView.prototype._onComponentDefinitionChange = function() {
@@ -300,7 +323,7 @@
 
       ComponentManagerControls.prototype.render = function() {
         this.$el.empty();
-        this.$el.html(this.getTemplate());
+        this.$el.html(templateHelper.getMainTemplate());
         this.$wrappers = $('.vigorjs-controls__wrapper', this.el);
         this.$registerWrapper = $('.vigorjs-controls__register-wrapper', this.el);
         this.$createWrapper = $('.vigorjs-controls__create-wrapper', this.el);
@@ -311,13 +334,6 @@
         this._addUpdateForm();
         this._addDeleteForm();
         return this;
-      };
-
-      ComponentManagerControls.prototype.getTemplate = function() {
-        var availableComponents, markup;
-        availableComponents = Vigor.componentManager.componentDefinitionsCollection.toJSON();
-        markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n  \n<div class='vigorjs-controls__step'>\n  <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>\n  <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>\n</div>\n  \n<div class='vigorjs-controls__forms'>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__register-wrapper' data-id='register'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__create-wrapper' data-id='create'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__update-wrapper' data-id='update'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__delete-wrapper' data-id='delete'></div>\n</div>\n  ";
-        return markup;
       };
 
       ComponentManagerControls.prototype._addRegisterForm = function() {

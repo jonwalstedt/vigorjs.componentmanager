@@ -488,21 +488,19 @@
           return this;
         },
         clear: function() {
-          var restrictions;
           componentDefinitionsCollection.reset();
           instanceDefinitionsCollection.reset();
           activeComponents.reset();
           filterModel.clear();
-          (restrictions = {})();
+          conditions = {};
           return this;
         },
         dispose: function() {
-          var restrictions;
           this.clear();
           this._removeListeners();
           filterModel = void 0;
           activeComponents = void 0;
-          restrictions = void 0;
+          conditions = void 0;
           this.activeComponents = void 0;
           return componentDefinitionsCollection = void 0;
         },

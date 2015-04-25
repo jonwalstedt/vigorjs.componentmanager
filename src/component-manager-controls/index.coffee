@@ -15,7 +15,7 @@ class ComponentManagerControls extends Backbone.View
 
   render: ->
     do @$el.empty
-    @$el.html @getTemplate()
+    @$el.html templateHelper.getMainTemplate()
 
     @$wrappers = $ '.vigorjs-controls__wrapper', @el
     @$registerWrapper = $ '.vigorjs-controls__register-wrapper', @el
@@ -28,29 +28,6 @@ class ComponentManagerControls extends Backbone.View
     do @_addUpdateForm
     do @_addDeleteForm
     return @
-
-  getTemplate: ->
-    availableComponents = Vigor.componentManager.componentDefinitionsCollection.toJSON()
-    markup = """
-    <button class='vigorjs-controls__toggle-controls'>Controls</button>
-
-    <div class='vigorjs-controls__step'>
-      <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>
-      <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>
-      <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>
-      <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>
-      <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>
-    </div>
-
-    <div class='vigorjs-controls__forms'>
-      <div class='vigorjs-controls__wrapper vigorjs-controls__register-wrapper' data-id='register'></div>
-      <div class='vigorjs-controls__wrapper vigorjs-controls__create-wrapper' data-id='create'></div>
-      <div class='vigorjs-controls__wrapper vigorjs-controls__update-wrapper' data-id='update'></div>
-      <div class='vigorjs-controls__wrapper vigorjs-controls__delete-wrapper' data-id='delete'></div>
-    </div>
-
-    """
-    return markup
 
   _addRegisterForm: ->
     @registerComponent = new RegisterComponentView({componentManager: @componentManager})

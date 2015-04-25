@@ -86,7 +86,7 @@ do ->
       do instanceDefinitionsCollection.reset
       do activeComponents.reset
       do filterModel.clear
-      do restrictions = {}
+      conditions = {}
       return @
 
     dispose: ->
@@ -94,7 +94,7 @@ do ->
       do @_removeListeners
       filterModel = undefined
       activeComponents = undefined
-      restrictions = undefined
+      conditions = undefined
       @activeComponents = undefined
       componentDefinitionsCollection = undefined
 
