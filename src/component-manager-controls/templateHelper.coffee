@@ -31,19 +31,16 @@ templateHelper =
     conditionsMarkup = ''
     appliedConditionsMarkup = ''
 
-    if appliedConditions
-      appliedConditionsMarkup = """
-        <p>Already applied conditions:</p>
-        #{appliedConditions}
-      """
-
     if conditions
       conditionsMarkup = """
-        <div class="vigorjs-controls__field">
           <p>Available component conditions:</p>
           #{conditions}
-          #{appliedConditionsMarkup}
-        </div>
+      """
+
+    if appliedConditions
+      appliedConditionsMarkup = """
+          <p>Already applied conditions:</p>
+          #{appliedConditions}
       """
 
     markup = """
@@ -53,11 +50,31 @@ templateHelper =
           #{components}
         </div>
 
-        #{conditionsMarkup}
+        <div class="vigorjs-controls__field">
+          #{conditionsMarkup}
+        </div>
+
+        <div class="vigorjs-controls__field">
+          #{appliedConditionsMarkup}
+        </div>
 
         <div class="vigorjs-controls__field">
           <label for='component-id'>Instance id - a unique instance id</label>
           <input type='text' id='component-id' placeholder='id' name='id'/>
+        </div>
+
+        <div class="vigorjs-controls__field">
+          <label for='component-url-pattern'>Backbone url pattern</label>
+          <input type='text' id='component-url-pattern' placeholder='UrlPattern, ex: /article/:id' name='urlPattern'/>
+        </div>
+
+        <div class="vigorjs-controls__field">
+          // SHOW AVAILABLE TARGETS AS DROPDOWN AND HIGHLIGHT SELECTED
+        </div>
+
+        <div class="vigorjs-controls__field">
+          <label for='component-order'>Instance order</label>
+          <input type='text' id='component-order' placeholder='Order, ex: 10' name='order'/>
         </div>
 
         <div class="vigorjs-controls__field">
@@ -101,4 +118,3 @@ templateHelper =
   getAppliedCondition: (selectedComponent) ->
     if selectedComponent
       componentDefinition = @componentManager.componentDefinitionsCollection.get({id: selectedComponent})
-      console.log componentDefinition

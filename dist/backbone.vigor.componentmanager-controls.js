@@ -41,13 +41,13 @@
         appliedConditions = templateHelper.getAppliedCondition(selectedComponent);
         conditionsMarkup = '';
         appliedConditionsMarkup = '';
+        if (conditions) {
+          conditionsMarkup = "<p>Available component conditions:</p>\n" + conditions;
+        }
         if (appliedConditions) {
           appliedConditionsMarkup = "<p>Already applied conditions:</p>\n" + appliedConditions;
         }
-        if (conditions) {
-          conditionsMarkup = "<div class=\"vigorjs-controls__field\">\n  <p>Available component conditions:</p>\n  " + conditions + "\n  " + appliedConditionsMarkup + "\n</div>";
-        }
-        markup = "<form class='vigorjs-controls__create'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-type'>Select component type</label>\n    " + components + "\n  </div>\n  \n  " + conditionsMarkup + "\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Instance id - a unique instance id</label>\n    <input type='text' id='component-id' placeholder='id' name='id'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>\n    <input type='text' id='component-filter' placeholder='Filter' name='filter'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-condition'>Instance conditions</label>\n    <input type='text' id='component-condition' placeholder='condition' name='condition'/>\n  </div>\n  \n  <div class='vigorjs-controls__create-feedback'></div>\n  <button type='button' class='vigorjs-controls__create-btn'>Create</button>\n</form>";
+        markup = "<form class='vigorjs-controls__create'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-type'>Select component type</label>\n    " + components + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    " + conditionsMarkup + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    " + appliedConditionsMarkup + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Instance id - a unique instance id</label>\n    <input type='text' id='component-id' placeholder='id' name='id'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-url-pattern'>Backbone url pattern</label>\n    <input type='text' id='component-url-pattern' placeholder='UrlPattern, ex: /article/:id' name='urlPattern'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    // SHOW AVAILABLE TARGETS AS DROPDOWN AND HIGHLIGHT SELECTED\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-order'>Instance order</label>\n    <input type='text' id='component-order' placeholder='Order, ex: 10' name='order'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>\n    <input type='text' id='component-filter' placeholder='Filter' name='filter'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-condition'>Instance conditions</label>\n    <input type='text' id='component-condition' placeholder='condition' name='condition'/>\n  </div>\n  \n  <div class='vigorjs-controls__create-feedback'></div>\n  <button type='button' class='vigorjs-controls__create-btn'>Create</button>\n</form>";
         return markup;
       },
       getRegisteredComponents: function(selectedComponent) {
@@ -82,10 +82,9 @@
       getAppliedCondition: function(selectedComponent) {
         var componentDefinition;
         if (selectedComponent) {
-          componentDefinition = this.componentManager.componentDefinitionsCollection.get({
+          return componentDefinition = this.componentManager.componentDefinitionsCollection.get({
             id: selectedComponent
           });
-          return console.log(componentDefinition);
         }
       }
     };
