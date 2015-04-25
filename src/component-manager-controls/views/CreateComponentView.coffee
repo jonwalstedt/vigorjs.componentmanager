@@ -1,8 +1,8 @@
 class CreateComponentView extends Backbone.View
 
   className: 'vigorjs-controls__create-component'
-  # events:
-  #   'click .vigorjs-controls__register-btn': '_onRegister'
+  events:
+    'change .vigorjs-controls__targets': '_onChange'
 
   componentManager: undefined
   $feedback: undefined
@@ -19,3 +19,6 @@ class CreateComponentView extends Backbone.View
 
   _onComponentDefinitionChange: =>
     do @render
+
+  _onChange: (event) =>
+    console.log event

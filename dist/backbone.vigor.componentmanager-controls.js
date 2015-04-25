@@ -28,16 +28,17 @@
       },
       getMainTemplate: function() {
         var markup;
-        markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n  \n<div class='vigorjs-controls__step'>\n  <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>\n  <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>\n</div>\n  \n<div class='vigorjs-controls__forms'>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__register-wrapper' data-id='register'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__create-wrapper' data-id='create'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__update-wrapper' data-id='update'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__delete-wrapper' data-id='delete'></div>\n</div>\n  ";
+        markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n  \n<div class='vigorjs-controls__header'>\n  <h1 class='vigorjs-controls__title'>Do you want to register, create, update or delete a component?</h1>\n  <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>\n</div>\n  \n<div class='vigorjs-controls__forms'>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__register-wrapper' data-id='register'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__create-wrapper' data-id='create'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__update-wrapper' data-id='update'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__delete-wrapper' data-id='delete'></div>\n</div>\n  ";
         return markup;
       },
       getCreateTemplate: function(selectedComponent) {
-        var appliedConditions, appliedConditionsMarkup, components, conditions, conditionsMarkup, markup;
+        var appliedConditions, appliedConditionsMarkup, availableTargets, components, conditions, conditionsMarkup, markup;
         if (selectedComponent == null) {
           selectedComponent = void 0;
         }
         components = templateHelper.getRegisteredComponents(selectedComponent);
         conditions = templateHelper.getRegisteredConditions();
+        availableTargets = templateHelper.getTargets();
         appliedConditions = templateHelper.getAppliedCondition(selectedComponent);
         conditionsMarkup = '';
         appliedConditionsMarkup = '';
@@ -47,7 +48,7 @@
         if (appliedConditions) {
           appliedConditionsMarkup = "<p>Already applied conditions:</p>\n" + appliedConditions;
         }
-        markup = "<form class='vigorjs-controls__create'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-type'>Select component type</label>\n    " + components + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    " + conditionsMarkup + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    " + appliedConditionsMarkup + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Instance id - a unique instance id</label>\n    <input type='text' id='component-id' placeholder='id' name='id'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-url-pattern'>Backbone url pattern</label>\n    <input type='text' id='component-url-pattern' placeholder='UrlPattern, ex: /article/:id' name='urlPattern'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    // SHOW AVAILABLE TARGETS AS DROPDOWN AND HIGHLIGHT SELECTED\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-order'>Instance order</label>\n    <input type='text' id='component-order' placeholder='Order, ex: 10' name='order'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>\n    <input type='text' id='component-filter' placeholder='Filter' name='filter'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-condition'>Instance conditions</label>\n    <input type='text' id='component-condition' placeholder='condition' name='condition'/>\n  </div>\n  \n  <div class='vigorjs-controls__create-feedback'></div>\n  <button type='button' class='vigorjs-controls__create-btn'>Create</button>\n</form>";
+        markup = "<form class='vigorjs-controls__create'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-type'>Select component type</label>\n    " + components + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Instance id - a unique instance id</label>\n    <input type='text' id='component-id' placeholder='id' name='id'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-url-pattern'>Backbone url pattern</label>\n    <input type='text' id='component-url-pattern' placeholder='UrlPattern, ex: /article/:id' name='urlPattern'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    " + availableTargets + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-order'>Instance order</label>\n    <input type='text' id='component-order' placeholder='Order, ex: 10' name='order'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-reinstantiate'>Reinstantiate component on url param change?</label>\n    <input type='checkbox' name='reInstantiateOnUrlParamChange'>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>\n    <input type='text' id='component-filter' placeholder='Filter' name='filter'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    " + conditionsMarkup + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    " + appliedConditionsMarkup + "\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-condition'>Instance conditions</label>\n    <input type='text' id='component-condition' placeholder='condition' name='condition'/>\n  </div>\n  \n  <div class='vigorjs-controls__create-feedback'></div>\n  <button type='button' class='vigorjs-controls__create-btn'>Create</button>\n</form>";
         return markup;
       },
       getRegisteredComponents: function(selectedComponent) {
@@ -85,6 +86,33 @@
           return componentDefinition = this.componentManager.componentDefinitionsCollection.get({
             id: selectedComponent
           });
+        }
+      },
+      getTargets: function() {
+        var $target, $targets, classSegments, j, k, len, len1, markup, segment, target, targetClasses, targetPrefix;
+        targetPrefix = this.componentManager.instanceDefinitionsCollection.targetPrefix;
+        $targets = $("[class^='" + targetPrefix + "']");
+        if ($targets.length > 0) {
+          markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>';
+          markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets">';
+          markup += "<option value='non-selected' selected='selected'>Select a target</option>";
+          for (j = 0, len = $targets.length; j < len; j++) {
+            target = $targets[j];
+            $target = $(target);
+            targetClasses = $target.attr('class');
+            classSegments = targetClasses.split(' ');
+            classSegments = _.without(classSegments, targetPrefix + "--has-component", targetPrefix);
+            target = {};
+            for (k = 0, len1 = classSegments.length; k < len1; k++) {
+              segment = classSegments[k];
+              if (segment.indexOf(targetPrefix) > -1) {
+                target["class"] = "." + segment;
+                target.name = segment.replace(targetPrefix + "--", '');
+              }
+            }
+            markup += "<option value='" + $target["class"] + "'>" + target.name + "</option>";
+          }
+          return markup += '</select>';
         }
       }
     };
@@ -198,11 +226,16 @@
       extend(CreateComponentView, superClass);
 
       function CreateComponentView() {
+        this._onChange = bind(this._onChange, this);
         this._onComponentDefinitionChange = bind(this._onComponentDefinitionChange, this);
         return CreateComponentView.__super__.constructor.apply(this, arguments);
       }
 
       CreateComponentView.prototype.className = 'vigorjs-controls__create-component';
+
+      CreateComponentView.prototype.events = {
+        'change .vigorjs-controls__targets': '_onChange'
+      };
 
       CreateComponentView.prototype.componentManager = void 0;
 
@@ -222,6 +255,10 @@
 
       CreateComponentView.prototype._onComponentDefinitionChange = function() {
         return this.render();
+      };
+
+      CreateComponentView.prototype._onChange = function(event) {
+        return console.log(event);
       };
 
       return CreateComponentView;

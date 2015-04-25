@@ -1,9 +1,10 @@
 .vigorjs-controls {
   position: fixed;
-  bottom: -374px;
-  right: 0;
+  bottom: -400px;
+  right: 20px;
   height: 400px;
   width: 400px;
+  padding: 20px 10px 10px 10px;
   background: white;
   transition: all 0.15s ease-out;
   z-index: 9999;
@@ -15,17 +16,16 @@
 }
 
 .vigorjs-controls__toggle-controls {
+  position: absolute;
   display: block;
   border: none;
+  top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
   padding: 6px;
   outline: none;
   cursor: pointer;
-}
-
-.vigorjs-controls__step,
-.vigorjs-controls__forms {
-  margin: 10px;
 }
 
 .vigorjs-controls__field label {
@@ -33,6 +33,10 @@
 }
 
 .vigorjs-controls__header {
+  padding: 10px 0px;
+  border-bottom: 1px solid #eee;
+}
+.vigorjs-controls__title {
   font-size: 16px;
 }
 
@@ -44,6 +48,8 @@
   position: absolute;
   top: 800px;
   opacity: 0;
+  height: 310px;
+  overflow-y: auto;
   transition: all 0.4s ease-out;
 }
 

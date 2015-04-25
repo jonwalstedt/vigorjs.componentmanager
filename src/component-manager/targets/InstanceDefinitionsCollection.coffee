@@ -2,7 +2,7 @@ router = new Router()
 
 class InstanceDefinitionsCollection extends Backbone.Collection
 
-  TARGET_PREFIX = 'component-area'
+  targetPrefix: undefined
   model: InstanceDefinitionModel
 
   parse: (response, options) ->
@@ -10,7 +10,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
     for targetName, instanceDefinitions of response
       for instanceDefinition in instanceDefinitions
 
-        instanceDefinition.targetName = "#{TARGET_PREFIX}--#{targetName}"
+        instanceDefinition.targetName = "#{@targetPrefix}--#{targetName}"
         instanceDefinition.urlParamsModel = new Backbone.Model()
 
         if instanceDefinition.urlPattern is 'global'

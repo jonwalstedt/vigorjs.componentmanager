@@ -5,8 +5,8 @@ templateHelper =
     markup = """
     <button class='vigorjs-controls__toggle-controls'>Controls</button>
 
-    <div class='vigorjs-controls__step'>
-      <h1 class='vigorjs-controls__header'>Do you want to register, create, update or delete a component?</h1>
+    <div class='vigorjs-controls__header'>
+      <h1 class='vigorjs-controls__title'>Do you want to register, create, update or delete a component?</h1>
       <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>
       <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>
       <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>
@@ -24,9 +24,9 @@ templateHelper =
     return markup
 
   getCreateTemplate: (selectedComponent = undefined) ->
-
     components = templateHelper.getRegisteredComponents(selectedComponent)
     conditions = templateHelper.getRegisteredConditions()
+    availableTargets = templateHelper.getTargets()
     appliedConditions = templateHelper.getAppliedCondition(selectedComponent)
     conditionsMarkup = ''
     appliedConditionsMarkup = ''
@@ -51,14 +51,6 @@ templateHelper =
         </div>
 
         <div class="vigorjs-controls__field">
-          #{conditionsMarkup}
-        </div>
-
-        <div class="vigorjs-controls__field">
-          #{appliedConditionsMarkup}
-        </div>
-
-        <div class="vigorjs-controls__field">
           <label for='component-id'>Instance id - a unique instance id</label>
           <input type='text' id='component-id' placeholder='id' name='id'/>
         </div>
@@ -69,7 +61,7 @@ templateHelper =
         </div>
 
         <div class="vigorjs-controls__field">
-          // SHOW AVAILABLE TARGETS AS DROPDOWN AND HIGHLIGHT SELECTED
+          #{availableTargets}
         </div>
 
         <div class="vigorjs-controls__field">
@@ -78,8 +70,21 @@ templateHelper =
         </div>
 
         <div class="vigorjs-controls__field">
+          <label for='component-reinstantiate'>Reinstantiate component on url param change?</label>
+          <input type='checkbox' name='reInstantiateOnUrlParamChange'>
+        </div>
+
+        <div class="vigorjs-controls__field">
           <label for='component-filter'>Instance filter - a string that you can use to match against when filtering components</label>
           <input type='text' id='component-filter' placeholder='Filter' name='filter'/>
+        </div>
+
+        <div class="vigorjs-controls__field">
+          #{conditionsMarkup}
+        </div>
+
+        <div class="vigorjs-controls__field">
+          #{appliedConditionsMarkup}
         </div>
 
         <div class="vigorjs-controls__field">
@@ -118,3 +123,26 @@ templateHelper =
   getAppliedCondition: (selectedComponent) ->
     if selectedComponent
       componentDefinition = @componentManager.componentDefinitionsCollection.get({id: selectedComponent})
+
+  getTargets: ->
+    targetPrefix = @componentManager.instanceDefinitionsCollection.targetPrefix
+    $targets = $ "[class^='#{targetPrefix}']"
+    if $targets.length > 0
+      markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>'
+      markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets">'
+      markup += "<option value='non-selected' selected='selected'>Select a target</option>"
+      for target in $targets
+        $target = $ target
+        targetClasses = $target.attr 'class'
+        classSegments = targetClasses.split ' '
+        classSegments = _.without classSegments, "#{targetPrefix}--has-component", targetPrefix
+        target = {}
+
+        for segment in classSegments
+          if segment.indexOf(targetPrefix) > -1
+            target.class = ".#{segment}"
+            target.name = segment.replace("#{targetPrefix}--", '')
+
+        markup += "<option value='#{$target.class}'>#{target.name}</option>"
+      markup += '</select>'
+

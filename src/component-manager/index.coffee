@@ -1,6 +1,7 @@
 do ->
 
   componentClassName = 'vigor-component'
+  targetPrefix = 'component-area'
 
   componentDefinitionsCollection = undefined
   instanceDefinitionsCollection = undefined
@@ -218,6 +219,7 @@ do ->
     componentSettings.instanceDefinitions
 
     componentClassName = componentSettings.componentClassName or componentClassName
+    targetPrefix = componentSettings.targetPrefix or targetPrefix
 
     hidden = componentSettings.hidden
 
@@ -231,6 +233,7 @@ do ->
       silent: true
 
   _registerInstanceDefinitons = (instanceDefinitions) ->
+    instanceDefinitionsCollection.targetPrefix = targetPrefix
     instanceDefinitionsCollection.set instanceDefinitions,
       validate: true
       parse: true

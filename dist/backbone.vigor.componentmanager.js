@@ -278,15 +278,13 @@
     })(Backbone.Model);
     router = new Router();
     InstanceDefinitionsCollection = (function(superClass) {
-      var TARGET_PREFIX;
-
       extend(InstanceDefinitionsCollection, superClass);
 
       function InstanceDefinitionsCollection() {
         return InstanceDefinitionsCollection.__super__.constructor.apply(this, arguments);
       }
 
-      TARGET_PREFIX = 'component-area';
+      InstanceDefinitionsCollection.prototype.targetPrefix = void 0;
 
       InstanceDefinitionsCollection.prototype.model = InstanceDefinitionModel;
 
@@ -297,7 +295,7 @@
           instanceDefinitions = response[targetName];
           for (j = 0, len = instanceDefinitions.length; j < len; j++) {
             instanceDefinition = instanceDefinitions[j];
-            instanceDefinition.targetName = TARGET_PREFIX + "--" + targetName;
+            instanceDefinition.targetName = this.targetPrefix + "--" + targetName;
             instanceDefinition.urlParamsModel = new Backbone.Model();
             if (instanceDefinition.urlPattern === 'global') {
               instanceDefinition.urlPattern = ['*notFound', '*action'];
@@ -413,8 +411,9 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection;
+      var $context, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
+      targetPrefix = 'component-area';
       componentDefinitionsCollection = void 0;
       instanceDefinitionsCollection = void 0;
       activeComponents = void 0;
@@ -634,6 +633,7 @@
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
         instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions;
         componentClassName = componentSettings.componentClassName || componentClassName;
+        targetPrefix = componentSettings.targetPrefix || targetPrefix;
         hidden = componentSettings.hidden;
         _registerComponents(componentDefinitions);
         return _registerInstanceDefinitons(instanceDefinitions);
@@ -646,6 +646,7 @@
         });
       };
       _registerInstanceDefinitons = function(instanceDefinitions) {
+        instanceDefinitionsCollection.targetPrefix = targetPrefix;
         return instanceDefinitionsCollection.set(instanceDefinitions, {
           validate: true,
           parse: true,
