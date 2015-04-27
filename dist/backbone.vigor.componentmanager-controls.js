@@ -31,6 +31,11 @@
         markup = "<button class='vigorjs-controls__toggle-controls'>Controls</button>\n  \n<div class='vigorjs-controls__header'>\n  <h1 class='vigorjs-controls__title'>Do you want to register, create, update or delete a component?</h1>\n  <button class='vigorjs-controls__show-form-btn' data-target='register'>Register</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>\n  <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>\n</div>\n  \n<div class='vigorjs-controls__forms'>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__register-wrapper' data-id='register'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__create-wrapper' data-id='create'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__update-wrapper' data-id='update'></div>\n  <div class='vigorjs-controls__wrapper vigorjs-controls__delete-wrapper' data-id='delete'></div>\n</div>\n  ";
         return markup;
       },
+      getRegisterTemplate: function() {
+        var markup;
+        markup = "<form class='vigorjs-controls__register'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Unique Component Id</label>\n    <input type='text' id='component-id' placeholder='Unique Component Id' name='componentId'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-src'>Component Source - url or namespaced path to view</label>\n    <input type='text' id='component-src' placeholder='Src' name='src'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-max-showcount'>Component Showcount - Specify if the component should have a maximum instantiation count ex. 1 if it should only be created once per session</label>\n    <input type='text' id='component-max-showcount' placeholder='Max Showcount' name='maxShowCount'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-args'>Component arguments (key:value pairs)</label>\n    <div class=\"vigorjs-controls__rows\">\n      " + (this.getArgsRow()) + "\n    </div>\n    <button type='button' class='vigorjs-controls__remove-row'>remove row</button>\n    <button type='button' class='vigorjs-controls__add-row'>add row</button>\n  </div>\n  \n  <div class='vigorjs-controls__register-feedback'></div>\n  <button type='button' class='vigorjs-controls__register-btn'>Register</button>\n</form>";
+        return markup;
+      },
       getCreateTemplate: function(selectedComponent) {
         var appliedConditions, appliedConditionsMarkup, availableTargets, components, conditions, conditionsMarkup, markup;
         if (selectedComponent == null) {
@@ -53,7 +58,7 @@
       },
       getRegisteredComponents: function(selectedComponent) {
         var component, componentDefinitions, j, len, markup, selected;
-        componentDefinitions = this.componentManager.componentDefinitionsCollection.toJSON();
+        componentDefinitions = this.componentManager.getComponents();
         if (componentDefinitions.length > 0) {
           markup = '<select>';
           markup += "<option value='non-selected' selected='selected'>Select a component type</option>";
@@ -71,7 +76,7 @@
       },
       getRegisteredConditions: function() {
         var condition, conditions, markup;
-        conditions = this.componentManager.conditions;
+        conditions = this.componentManager.getConditions();
         if (!_.isEmpty(conditions)) {
           markup = '';
           for (condition in conditions) {
@@ -83,14 +88,14 @@
       getAppliedCondition: function(selectedComponent) {
         var componentDefinition;
         if (selectedComponent) {
-          return componentDefinition = this.componentManager.componentDefinitionsCollection.get({
+          return componentDefinition = this.componentManager.getComponentById({
             id: selectedComponent
           });
         }
       },
       getTargets: function() {
         var $target, $targets, classSegments, j, k, len, len1, markup, segment, target, targetClasses, targetPrefix;
-        targetPrefix = this.componentManager.instanceDefinitionsCollection.targetPrefix;
+        targetPrefix = this.componentManager.getTargetPrefix();
         $targets = $("[class^='" + targetPrefix + "']");
         if ($targets.length > 0) {
           markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>';
@@ -110,10 +115,15 @@
                 target.name = segment.replace(targetPrefix + "--", '');
               }
             }
-            markup += "<option value='" + $target["class"] + "'>" + target.name + "</option>";
+            markup += "<option value='" + target["class"] + "'>" + target.name + "</option>";
           }
           return markup += '</select>';
         }
+      },
+      getArgsRow: function() {
+        var markup;
+        markup = "<div class=\"vigorjs-controls__args-row\">\n  <input type='text' placeholder='Key' name='key' class='vigorjs-controls__args-key'/>\n  <input type='text' placeholder='Value' name='value' class='vigorjs-controls__args-val'/>\n</div>";
+        return markup;
       }
     };
     RegisterComponentView = (function(superClass) {
@@ -142,22 +152,9 @@
 
       RegisterComponentView.prototype.render = function() {
         this.$el.empty();
-        this.$el.html(this.getTemplate());
+        this.$el.html(templateHelper.getRegisterTemplate());
         this.$feedback = $('.vigorjs-controls__register-feedback', this.el);
         return this;
-      };
-
-      RegisterComponentView.prototype.getTemplate = function() {
-        var availableComponents, markup;
-        availableComponents = this.componentManager.componentDefinitionsCollection.toJSON();
-        markup = "<form class='vigorjs-controls__register'>\n  <div class=\"vigorjs-controls__field\">\n    <label for='component-id'>Unique Component Id</label>\n    <input type='text' id='component-id' placeholder='Unique Component Id' name='componentId'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-src'>Component Source - url or namespaced path to view</label>\n    <input type='text' id='component-src' placeholder='Src' name='src'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-max-showcount'>Component Showcount - Specify if the component should have a maximum instantiation count ex. 1 if it should only be created once per session</label>\n    <input type='text' id='component-max-showcount' placeholder='Max Showcount' name='maxShowCount'/>\n  </div>\n  \n  <div class=\"vigorjs-controls__field\">\n    <label for='component-args'>Component arguments (key:value pairs)</label>\n    <div class=\"vigorjs-controls__rows\">\n      " + (this.getRow()) + "\n    </div>\n    <button type='button' class='vigorjs-controls__remove-row'>remove row</button>\n    <button type='button' class='vigorjs-controls__add-row'>add row</button>\n  </div>\n  \n  <div class='vigorjs-controls__register-feedback'></div>\n  <button type='button' class='vigorjs-controls__register-btn'>Register</button>\n</form>";
-        return markup;
-      };
-
-      RegisterComponentView.prototype.getRow = function() {
-        var markup;
-        markup = "<div class=\"vigorjs-controls__args-row\">\n  <input type='text' placeholder='Key' name='key' class='vigorjs-controls__args-key'/>\n  <input type='text' placeholder='Value' name='value' class='vigorjs-controls__args-val'/>\n</div>";
-        return markup;
       };
 
       RegisterComponentView.prototype._registerComponent = function() {
@@ -183,7 +180,7 @@
           }
         }
         try {
-          this.componentManager.addComponentDefinition(componentDefinition);
+          this.componentManager.addComponent(componentDefinition);
           $registerForm.find('input').val('');
           this._showFeedback('Component registered');
           return setTimeout((function(_this) {
@@ -205,7 +202,7 @@
         var $btn, $newRow, $rows;
         $btn = $(event.currentTarget);
         $rows = $('.vigorjs-controls__rows', this.el);
-        $newRow = $(this.getRow());
+        $newRow = $(templateHelper.getArgsRow());
         return $rows.append($newRow);
       };
 
@@ -226,7 +223,7 @@
       extend(CreateComponentView, superClass);
 
       function CreateComponentView() {
-        this._onChange = bind(this._onChange, this);
+        this._onTargetChange = bind(this._onTargetChange, this);
         this._onComponentDefinitionChange = bind(this._onComponentDefinitionChange, this);
         return CreateComponentView.__super__.constructor.apply(this, arguments);
       }
@@ -234,7 +231,8 @@
       CreateComponentView.prototype.className = 'vigorjs-controls__create-component';
 
       CreateComponentView.prototype.events = {
-        'change .vigorjs-controls__targets': '_onChange'
+        'change .vigorjs-controls__targets': '_onTargetChange',
+        'click .vigorjs-controls__create-btn': '_onCreateBtnClick'
       };
 
       CreateComponentView.prototype.componentManager = void 0;
@@ -243,22 +241,45 @@
 
       CreateComponentView.prototype.initialize = function(attributes) {
         this.componentManager = attributes.componentManager;
-        return this.listenTo(this.componentManager.componentDefinitionsCollection, 'change add remove', this._onComponentDefinitionChange);
+        return this.listenTo(this.componentManager, 'component-add component-change component-remove', this._onComponentDefinitionChange);
       };
 
       CreateComponentView.prototype.render = function() {
         this.$el.empty();
         this.$el.html(templateHelper.getCreateTemplate());
         this.$feedback = $('.vigorjs-controls__create-feedback', this.el);
+        this.$targets = $('.vigorjs-controls__targets', this.el);
         return this;
+      };
+
+      CreateComponentView.prototype._createComponent = function() {
+        var $createForm, objs;
+        $createForm = $('.vigorjs-controls__create', this.el);
+        objs = $createForm.serializeArray();
+        return console.log(objs);
+      };
+
+      CreateComponentView.prototype._deselectTargets = function() {
+        var $oldTargets;
+        $oldTargets = $('.component-area--selected');
+        return $oldTargets.removeClass('component-area--selected');
       };
 
       CreateComponentView.prototype._onComponentDefinitionChange = function() {
         return this.render();
       };
 
-      CreateComponentView.prototype._onChange = function(event) {
-        return console.log(event);
+      CreateComponentView.prototype._onTargetChange = function(event) {
+        var $option, $target;
+        $option = $(event.currentTarget);
+        this._deselectTargets();
+        $target = $(this.$targets.val());
+        return $target.addClass('component-area--selected');
+      };
+
+      CreateComponentView.prototype._onCreateBtnClick = function(event) {
+        this._deselectTargets();
+        return this._createComponent();
       };
 
       return CreateComponentView;

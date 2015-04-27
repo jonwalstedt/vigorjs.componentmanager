@@ -1,6 +1,5 @@
 jsdom = require 'jsdom'
-global.$ = require("jquery")(jsdom.jsdom().defaultView)
-# global.$ = global.jQuery = require 'jquery'
+global.$ = require("jquery")(jsdom.jsdom().parentWindow)
 global._ = require 'underscore'
 global.Backbone = require 'backbone'
 global.Backbone.$ = global.$
@@ -11,7 +10,7 @@ sinon = require 'sinon'
 
 describe 'A componentManager', ->
 
-
+  console.log componentManager
   describe 'initialize', ->
 
     componentSettings =

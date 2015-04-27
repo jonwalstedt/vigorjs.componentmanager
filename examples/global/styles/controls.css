@@ -57,3 +57,7 @@
   top: 0;
   opacity: 1;
 }
+
+.component-area--selected {
+  border: 1px solid red;
+}

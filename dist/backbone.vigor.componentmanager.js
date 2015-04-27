@@ -21,6 +21,7 @@
   })(this, function(root, Backbone, _) {
     var ActiveComponentsCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
+    Vigor.extend = Vigor.extend || Backbone.Model.extend;
     Router = (function(superClass) {
       extend(Router, superClass);
 
@@ -288,6 +289,10 @@
 
       InstanceDefinitionsCollection.prototype.model = InstanceDefinitionModel;
 
+      InstanceDefinitionsCollection.prototype.setTargetPrefix = function(targetPrefix1) {
+        this.targetPrefix = targetPrefix1;
+      };
+
       InstanceDefinitionsCollection.prototype.parse = function(response, options) {
         var instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, len, targetName;
         instanceDefinitionsArray = [];
@@ -411,7 +416,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
+      var $context, EVENTS, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
       targetPrefix = 'component-area';
       componentDefinitionsCollection = void 0;
@@ -420,19 +425,24 @@
       filterModel = void 0;
       $context = void 0;
       conditions = {};
+      EVENTS = {
+        ADD: 'add',
+        CHANGE: 'change',
+        REMOVE: 'remove',
+        COMPONENT_ADD: 'component-add',
+        COMPONENT_CHANGE: 'component-change',
+        COMPONENT_REMOVE: 'component-remove',
+        INSTANCE_ADD: 'instance-add',
+        INSTANCE_CHANGE: 'instance-change',
+        INSTANCE_REMOVE: 'instance-remove'
+      };
       componentManager = {
-        componentDefinitionsCollection: void 0,
-        instanceDefinitionsCollection: void 0,
-        activeComponents: void 0,
         initialize: function(settings) {
           componentDefinitionsCollection = new ComponentDefinitionsCollection();
           instanceDefinitionsCollection = new InstanceDefinitionsCollection();
           activeComponents = new ActiveComponentsCollection();
           filterModel = new FilterModel();
-          this.activeComponents = activeComponents;
-          this.componentDefinitionsCollection = componentDefinitionsCollection;
-          this.instanceDefinitionsCollection = instanceDefinitionsCollection;
-          this.conditions = conditions;
+          _.extend(this, EVENTS);
           _addListeners();
           if (settings.$context) {
             $context = settings.$context;
@@ -447,14 +457,20 @@
           }
           return this;
         },
+        updateSettings: function(settings) {
+          componentClassName = settings.componentClassName || componentClassName;
+          targetPrefix = settings.targetPrefix || targetPrefix;
+          return this;
+        },
         registerConditions: function(conditionsToBeRegistered) {
-          return _.extend(conditions, conditionsToBeRegistered);
+          _.extend(conditions, conditionsToBeRegistered);
+          return this;
         },
         refresh: function(filterOptions) {
           filterModel.set(filterOptions);
           return this;
         },
-        addComponentDefinition: function(componentDefinition) {
+        addComponent: function(componentDefinition) {
           componentDefinitionsCollection.set(componentDefinition, {
             validate: true,
             parse: true,
@@ -462,7 +478,7 @@
           });
           return this;
         },
-        removeComponentDefinition: function(componentDefinitionId) {
+        removeComponent: function(componentDefinitionId) {
           instanceDefinitionsCollection.remove(componentDefinitionId);
           return this;
         },
@@ -482,9 +498,40 @@
           }
           return this;
         },
-        removeInstance: function(instancecId) {
-          instanceDefinitionsCollection.remove(instancecId);
+        removeInstance: function(instanceId) {
+          instanceDefinitionsCollection.remove(instanceId);
           return this;
+        },
+        getInstances: function(filterOptions) {
+          var instance, instanceDefinition, instanceDefinitions, instances, j, len;
+          instanceDefinitions = _filterInstanceDefinitions(filterOptions);
+          instances = [];
+          for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+            instanceDefinition = instanceDefinitions[j];
+            instance = instanceDefinition.get('instance');
+            if (!instance) {
+              _addInstanceToModel(instanceDefinition);
+              instance = instanceDefinition.get('instance');
+            }
+            instances.push(instance);
+          }
+          return instances;
+        },
+        getComponentById: function(componentId) {
+          var component;
+          component = componentDefinitionsCollection.get({
+            id: componentId
+          });
+          return component.toJSON();
+        },
+        getComponents: function() {
+          return componentDefinitionsCollection.toJSON();
+        },
+        getTargetPrefix: function() {
+          return targetPrefix;
+        },
+        getConditions: function() {
+          return conditions;
         },
         clear: function() {
           componentDefinitionsCollection.reset();
@@ -502,21 +549,6 @@
           conditions = void 0;
           this.activeComponents = void 0;
           return componentDefinitionsCollection = void 0;
-        },
-        getComponentInstances: function(filterOptions) {
-          var instance, instanceDefinition, instanceDefinitions, instances, j, len;
-          instanceDefinitions = _filterInstanceDefinitions(filterOptions);
-          instances = [];
-          for (j = 0, len = instanceDefinitions.length; j < len; j++) {
-            instanceDefinition = instanceDefinitions[j];
-            instance = instanceDefinition.get('instance');
-            if (!instance) {
-              _addInstanceToModel(instanceDefinition);
-              instance = instanceDefinition.get('instance');
-            }
-            instances.push(instance);
-          }
-          return instances;
         }
       };
       _addListeners = function() {
@@ -527,7 +559,34 @@
         activeComponents.on('change', _onComponentChange);
         activeComponents.on('remove', _onComponentRemoved);
         activeComponents.on('change:order', _onComponentOrderChange);
-        return activeComponents.on('change:targetName', _onComponentTargetNameChange);
+        activeComponents.on('change:targetName', _onComponentTargetNameChange);
+        componentDefinitionsCollection.on('add', function(model, collection, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]);
+        });
+        componentDefinitionsCollection.on('change', function(model, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.COMPONENT_CHANGE, [model.toJSON()]]);
+        });
+        componentDefinitionsCollection.on('remove', function(model, collection, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]);
+        });
+        instanceDefinitionsCollection.on('add', function(model, collection, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]);
+        });
+        instanceDefinitionsCollection.on('change', function(model, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.INSTANCE_CHANGE, [model.toJSON()]]);
+        });
+        instanceDefinitionsCollection.on('remove', function(model, collection, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]);
+        });
+        activeComponents.on('add', function(model, collection, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]);
+        });
+        activeComponents.on('change', function(model, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.CHANGE, [model.toJSON()]]);
+        });
+        return activeComponents.on('remove', function(model, collection, options) {
+          return componentManager.trigger.apply(componentManager, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
+        });
       };
       _removeListeners = function() {
         activeComponents.off();
@@ -632,8 +691,9 @@
         var componentDefinitions, hidden, instanceDefinitions;
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
         instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions;
-        componentClassName = componentSettings.componentClassName || componentClassName;
-        targetPrefix = componentSettings.targetPrefix || targetPrefix;
+        if (componentSettings.settings) {
+          componentManager.updateSettings(componentSettings.settings);
+        }
         hidden = componentSettings.hidden;
         _registerComponents(componentDefinitions);
         return _registerInstanceDefinitons(instanceDefinitions);
@@ -810,6 +870,7 @@
       _onComponentTargetNameChange = function(instanceDefinition) {
         return _addInstanceToDom(instanceDefinition);
       };
+      _.extend(componentManager, Backbone.Events);
       return Vigor.componentManager = componentManager;
     })();
     return Vigor;

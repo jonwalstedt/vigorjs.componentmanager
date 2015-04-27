@@ -23,9 +23,9 @@
 
 ) @, (root, Backbone, _) ->
 
-  Vigor = Backbone.Vigor = root.Vigor || {}
+  Vigor = Backbone.Vigor = root.Vigor or {}
 
-  # Vigor.extend = Backbone.Model.extend
+  Vigor.extend = Vigor.extend or Backbone.Model.extend
 
   # COMMON
   #= include ./component-manager/router/Router.coffee

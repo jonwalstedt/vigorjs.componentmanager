@@ -23,6 +23,39 @@ templateHelper =
     """
     return markup
 
+  getRegisterTemplate: ->
+    markup = """
+      <form class='vigorjs-controls__register'>
+        <div class="vigorjs-controls__field">
+          <label for='component-id'>Unique Component Id</label>
+          <input type='text' id='component-id' placeholder='Unique Component Id' name='componentId'/>
+        </div>
+
+        <div class="vigorjs-controls__field">
+          <label for='component-src'>Component Source - url or namespaced path to view</label>
+          <input type='text' id='component-src' placeholder='Src' name='src'/>
+        </div>
+
+        <div class="vigorjs-controls__field">
+          <label for='component-max-showcount'>Component Showcount - Specify if the component should have a maximum instantiation count ex. 1 if it should only be created once per session</label>
+          <input type='text' id='component-max-showcount' placeholder='Max Showcount' name='maxShowCount'/>
+        </div>
+
+        <div class="vigorjs-controls__field">
+          <label for='component-args'>Component arguments (key:value pairs)</label>
+          <div class="vigorjs-controls__rows">
+            #{@getArgsRow()}
+          </div>
+          <button type='button' class='vigorjs-controls__remove-row'>remove row</button>
+          <button type='button' class='vigorjs-controls__add-row'>add row</button>
+        </div>
+
+        <div class='vigorjs-controls__register-feedback'></div>
+        <button type='button' class='vigorjs-controls__register-btn'>Register</button>
+      </form>
+    """
+    return markup
+
   getCreateTemplate: (selectedComponent = undefined) ->
     components = templateHelper.getRegisteredComponents(selectedComponent)
     conditions = templateHelper.getRegisteredConditions()
@@ -99,7 +132,7 @@ templateHelper =
     return markup
 
   getRegisteredComponents: (selectedComponent) ->
-    componentDefinitions = @componentManager.componentDefinitionsCollection.toJSON()
+    componentDefinitions = @componentManager.getComponents()
     if componentDefinitions.length > 0
       markup = '<select>'
       markup += "<option value='non-selected' selected='selected'>Select a component type</option>"
@@ -113,7 +146,7 @@ templateHelper =
       return markup
 
   getRegisteredConditions: ->
-    conditions = @componentManager.conditions
+    conditions = @componentManager.getConditions()
     if not _.isEmpty(conditions)
       markup = ''
       for condition of conditions
@@ -122,10 +155,10 @@ templateHelper =
 
   getAppliedCondition: (selectedComponent) ->
     if selectedComponent
-      componentDefinition = @componentManager.componentDefinitionsCollection.get({id: selectedComponent})
+      componentDefinition = @componentManager.getComponentById({id: selectedComponent})
 
   getTargets: ->
-    targetPrefix = @componentManager.instanceDefinitionsCollection.targetPrefix
+    targetPrefix = @componentManager.getTargetPrefix()
     $targets = $ "[class^='#{targetPrefix}']"
     if $targets.length > 0
       markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>'
@@ -143,6 +176,15 @@ templateHelper =
             target.class = ".#{segment}"
             target.name = segment.replace("#{targetPrefix}--", '')
 
-        markup += "<option value='#{$target.class}'>#{target.name}</option>"
+        markup += "<option value='#{target.class}'>#{target.name}</option>"
       markup += '</select>'
+
+  getArgsRow: ->
+    markup = """
+      <div class="vigorjs-controls__args-row">
+        <input type='text' placeholder='Key' name='key' class='vigorjs-controls__args-key'/>
+        <input type='text' placeholder='Value' name='value' class='vigorjs-controls__args-val'/>
+      </div>
+    """
+    return markup
 

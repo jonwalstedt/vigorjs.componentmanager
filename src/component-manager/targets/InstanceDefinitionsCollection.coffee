@@ -5,6 +5,8 @@ class InstanceDefinitionsCollection extends Backbone.Collection
   targetPrefix: undefined
   model: InstanceDefinitionModel
 
+  setTargetPrefix: (@targetPrefix) ->
+
   parse: (response, options) ->
     instanceDefinitionsArray = []
     for targetName, instanceDefinitions of response
