@@ -13,5 +13,5 @@
  ☐ Change properties on the fly: order, target, urlpattern etc.
  ☐ Ability to save/get setup and save to local storage
  ☐ Unit test
- ☐ Improved parsing
+ ✔ Improved parsing @done (15-04-29 00:41)
  ☐ Does fix for global stray components cause memory leak?

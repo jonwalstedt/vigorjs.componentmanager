@@ -26,5 +26,18 @@ class InstanceDefinitionModel extends Backbone.Model
       do instance.dispose
       do @clear
 
-  # validate: (attrs, options) ->
-  #   console.log 'TargetsCollection:validate', attrs
+  validate: (attrs, options) ->
+    unless attrs.componentId
+      throw 'id cant be undefined'
+
+    unless attrs.componentId
+      throw 'componentId cant be undefined'
+
+    unless typeof attrs.componentId is 'string'
+      throw 'componentId should be a string'
+
+    unless /^.*[^ ].*$/.test(attrs.componentId)
+      throw 'componentId can not be an empty string'
+
+    unless attrs.targetName
+      throw 'targetName cant be undefined'

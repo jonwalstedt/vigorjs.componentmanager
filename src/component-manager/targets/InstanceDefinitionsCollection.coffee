@@ -8,19 +8,36 @@ class InstanceDefinitionsCollection extends Backbone.Collection
   setTargetPrefix: (@targetPrefix) ->
 
   parse: (response, options) ->
+    parsedResponse = undefined
     instanceDefinitionsArray = []
-    for targetName, instanceDefinitions of response
-      for instanceDefinition in instanceDefinitions
 
-        instanceDefinition.targetName = "#{@targetPrefix}--#{targetName}"
-        instanceDefinition.urlParamsModel = new Backbone.Model()
+    if _.isObject(response) and not _.isArray(response)
+      for targetName, instanceDefinitions of response
+        if _.isArray(instanceDefinitions)
+          for instanceDefinition in instanceDefinitions
 
-        if instanceDefinition.urlPattern is 'global'
-          instanceDefinition.urlPattern = ['*notFound', '*action']
+            instanceDefinition.targetName = "#{@targetPrefix}--#{targetName}"
+            @parseInstanceDefinition instanceDefinition
+            instanceDefinitionsArray.push instanceDefinition
 
-        instanceDefinitionsArray.push instanceDefinition
+          parsedResponse = instanceDefinitionsArray
 
-    return instanceDefinitionsArray
+        else
+          parsedResponse = @parseInstanceDefinition(response)
+          break
+
+    else if _.isArray(response)
+      for instanceDefinition, i in response
+        response[i] = @parseInstanceDefinition(instanceDefinition)
+      parsedResponse = response
+
+    return parsedResponse
+
+  parseInstanceDefinition: (instanceDefinition) ->
+    instanceDefinition.urlParamsModel = new Backbone.Model()
+    if instanceDefinition.urlPattern is 'global'
+      instanceDefinition.urlPattern = ['*notFound', '*action']
+    return instanceDefinition
 
   getInstanceDefinitions: (filterOptions) ->
     instanceDefinitions = @models
@@ -100,4 +117,3 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       , silent: not instanceDefinition.get('reInstantiateOnUrlParamChange')
 
     return instanceDefinitions
-

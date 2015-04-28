@@ -274,6 +274,24 @@
         }
       };
 
+      InstanceDefinitionModel.prototype.validate = function(attrs, options) {
+        if (!attrs.componentId) {
+          throw 'id cant be undefined';
+        }
+        if (!attrs.componentId) {
+          throw 'componentId cant be undefined';
+        }
+        if (typeof attrs.componentId !== 'string') {
+          throw 'componentId should be a string';
+        }
+        if (!/^.*[^ ].*$/.test(attrs.componentId)) {
+          throw 'componentId can not be an empty string';
+        }
+        if (!attrs.targetName) {
+          throw 'targetName cant be undefined';
+        }
+      };
+
       return InstanceDefinitionModel;
 
     })(Backbone.Model);
@@ -294,21 +312,41 @@
       };
 
       InstanceDefinitionsCollection.prototype.parse = function(response, options) {
-        var instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, len, targetName;
+        var i, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, k, len, len1, parsedResponse, targetName;
+        parsedResponse = void 0;
         instanceDefinitionsArray = [];
-        for (targetName in response) {
-          instanceDefinitions = response[targetName];
-          for (j = 0, len = instanceDefinitions.length; j < len; j++) {
-            instanceDefinition = instanceDefinitions[j];
-            instanceDefinition.targetName = this.targetPrefix + "--" + targetName;
-            instanceDefinition.urlParamsModel = new Backbone.Model();
-            if (instanceDefinition.urlPattern === 'global') {
-              instanceDefinition.urlPattern = ['*notFound', '*action'];
+        if (_.isObject(response) && !_.isArray(response)) {
+          for (targetName in response) {
+            instanceDefinitions = response[targetName];
+            if (_.isArray(instanceDefinitions)) {
+              for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+                instanceDefinition = instanceDefinitions[j];
+                instanceDefinition.targetName = this.targetPrefix + "--" + targetName;
+                this.parseInstanceDefinition(instanceDefinition);
+                instanceDefinitionsArray.push(instanceDefinition);
+              }
+              parsedResponse = instanceDefinitionsArray;
+            } else {
+              parsedResponse = this.parseInstanceDefinition(response);
+              break;
             }
-            instanceDefinitionsArray.push(instanceDefinition);
           }
+        } else if (_.isArray(response)) {
+          for (i = k = 0, len1 = response.length; k < len1; i = ++k) {
+            instanceDefinition = response[i];
+            response[i] = this.parseInstanceDefinition(instanceDefinition);
+          }
+          parsedResponse = response;
         }
-        return instanceDefinitionsArray;
+        return parsedResponse;
+      };
+
+      InstanceDefinitionsCollection.prototype.parseInstanceDefinition = function(instanceDefinition) {
+        instanceDefinition.urlParamsModel = new Backbone.Model();
+        if (instanceDefinition.urlPattern === 'global') {
+          instanceDefinition.urlPattern = ['*notFound', '*action'];
+        }
+        return instanceDefinition;
       };
 
       InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filterOptions) {

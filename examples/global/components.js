@@ -48,8 +48,7 @@ var componentSettings = {
       {
         "id": "navigation",
         "componentId": "app-navigation",
-        "urlPattern": "global",
-        "conditions": "authenticated"
+        "urlPattern": "global"
       }
     ],
 

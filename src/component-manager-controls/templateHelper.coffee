@@ -134,7 +134,7 @@ templateHelper =
   getRegisteredComponents: (selectedComponent) ->
     componentDefinitions = @componentManager.getComponents()
     if componentDefinitions.length > 0
-      markup = '<select>'
+      markup = '<select class="vigorjs-controls__component-id" name="componentId">'
       markup += "<option value='non-selected' selected='selected'>Select a component type</option>"
       for component in componentDefinitions
         selected = ''
@@ -162,7 +162,7 @@ templateHelper =
     $targets = $ "[class^='#{targetPrefix}']"
     if $targets.length > 0
       markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>'
-      markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets">'
+      markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets" name="targetName">'
       markup += "<option value='non-selected' selected='selected'>Select a target</option>"
       for target in $targets
         $target = $ target
@@ -173,7 +173,7 @@ templateHelper =
 
         for segment in classSegments
           if segment.indexOf(targetPrefix) > -1
-            target.class = ".#{segment}"
+            target.class = "#{segment}"
             target.name = segment.replace("#{targetPrefix}--", '')
 
         markup += "<option value='#{target.class}'>#{target.name}</option>"

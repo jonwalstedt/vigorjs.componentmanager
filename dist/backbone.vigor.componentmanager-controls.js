@@ -60,7 +60,7 @@
         var component, componentDefinitions, j, len, markup, selected;
         componentDefinitions = this.componentManager.getComponents();
         if (componentDefinitions.length > 0) {
-          markup = '<select>';
+          markup = '<select class="vigorjs-controls__component-id" name="componentId">';
           markup += "<option value='non-selected' selected='selected'>Select a component type</option>";
           for (j = 0, len = componentDefinitions.length; j < len; j++) {
             component = componentDefinitions[j];
@@ -99,7 +99,7 @@
         $targets = $("[class^='" + targetPrefix + "']");
         if ($targets.length > 0) {
           markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>';
-          markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets">';
+          markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets" name="targetName">';
           markup += "<option value='non-selected' selected='selected'>Select a target</option>";
           for (j = 0, len = $targets.length; j < len; j++) {
             target = $targets[j];
@@ -111,7 +111,7 @@
             for (k = 0, len1 = classSegments.length; k < len1; k++) {
               segment = classSegments[k];
               if (segment.indexOf(targetPrefix) > -1) {
-                target["class"] = "." + segment;
+                target["class"] = "" + segment;
                 target.name = segment.replace(targetPrefix + "--", '');
               }
             }
@@ -253,10 +253,15 @@
       };
 
       CreateComponentView.prototype._createComponent = function() {
-        var $createForm, objs;
+        var $createForm, i, instanceDefinition, j, len, obj, objs;
         $createForm = $('.vigorjs-controls__create', this.el);
         objs = $createForm.serializeArray();
-        return console.log(objs);
+        instanceDefinition = {};
+        for (i = j = 0, len = objs.length; j < len; i = ++j) {
+          obj = objs[i];
+          instanceDefinition[obj.name] = obj.value;
+        }
+        return this.componentManager.addInstance(instanceDefinition);
       };
 
       CreateComponentView.prototype._deselectTargets = function() {

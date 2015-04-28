@@ -22,7 +22,12 @@ class CreateComponentView extends Backbone.View
   _createComponent: ->
     $createForm = $ '.vigorjs-controls__create', @el
     objs = $createForm.serializeArray()
-    console.log objs
+    instanceDefinition = {}
+
+    for obj, i in objs
+      instanceDefinition[obj.name] = obj.value
+
+    @componentManager.addInstance instanceDefinition
 
   _deselectTargets: ->
     $oldTargets = $ '.component-area--selected'
