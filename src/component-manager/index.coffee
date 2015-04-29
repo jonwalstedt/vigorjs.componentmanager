@@ -70,10 +70,6 @@ do ->
       targetPrefix = settings.targetPrefix or targetPrefix
       return @
 
-    registerConditions: (conditionsToBeRegistered) ->
-      _.extend conditions, conditionsToBeRegistered
-      return @
-
     refresh: (filterOptions) ->
       filterModel.set filterOptions
       return @
@@ -83,6 +79,11 @@ do ->
         validate: true
         parse: true
         remove: false
+      return @
+
+    updateComponent: (componentId, attributes) ->
+      componentDefinition = componentDefinitionsCollection.get componentId
+      componentDefinition?.set attributes, validate: true
       return @
 
     removeComponent: (componentDefinitionId) ->
@@ -98,33 +99,40 @@ do ->
 
     updateInstance: (instanceId, attributes) ->
       instanceDefinition = instanceDefinitionsCollection.get instanceId
-      instanceDefinition?.set attributes
+      instanceDefinition?.set attributes, validate: true
       return @
 
     removeInstance: (instanceId) ->
       instanceDefinitionsCollection.remove instanceId
       return @
 
-    getInstances: (filterOptions) ->
-      instanceDefinitions = _filterInstanceDefinitions filterOptions
-      instances = []
-      for instanceDefinition in instanceDefinitions
+    getInstanceById: (instanceId) ->
+      return instanceDefinitionsCollection.get(instanceId)?.toJSON()
+
+    getInstances: ->
+      return instanceDefinitionsCollection.toJSON()
+
+    getActiveInstances: ->
+      instances = _.map activeComponents.models, (instanceDefinition) ->
         instance = instanceDefinition.get 'instance'
         unless instance
           _addInstanceToModel instanceDefinition
           instance = instanceDefinition.get 'instance'
-        instances.push instance
+        return instance
       return instances
 
     getComponentById: (componentId) ->
-      component = componentDefinitionsCollection.get id: componentId
-      return component.toJSON()
+      return componentDefinitionsCollection.get(componentId)?.toJSON()
 
     getComponents: ->
       return componentDefinitionsCollection.toJSON()
 
     getTargetPrefix: ->
       return targetPrefix
+
+    registerConditions: (conditionsToBeRegistered) ->
+      _.extend conditions, conditionsToBeRegistered
+      return @
 
     getConditions: ->
       return conditions
@@ -221,7 +229,7 @@ do ->
 
   _filterInstanceDefinitionsByShowCount = (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) ->
-      componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
+      componentDefinition = componentDefinitionsCollection.get instanceDefinition.get('componentId')
       showCount = instanceDefinition.get 'showCount'
       # maxShowCount on an instance level overrides maxShowCount on a componentDefinition level
       maxShowCount = instanceDefinition.get 'maxShowCount'
@@ -239,7 +247,7 @@ do ->
 
    _filterInstanceDefinitionsByShowConditions = (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) ->
-      componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
+      componentDefinition = componentDefinitionsCollection.get instanceDefinition.get('componentId')
       componentConditions = componentDefinition.get 'conditions'
       shouldBeIncluded = true
       if componentConditions
@@ -307,7 +315,7 @@ do ->
       silent: true
 
   _addInstanceToModel = (instanceDefinition) ->
-    componentDefinition = componentDefinitionsCollection.getByComponentId instanceDefinition.get('componentId')
+    componentDefinition = componentDefinitionsCollection.get instanceDefinition.get('componentId')
     src = componentDefinition.get 'src'
     componentClass = _getClass src
     height = componentDefinition.get 'height'

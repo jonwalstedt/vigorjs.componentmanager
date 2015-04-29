@@ -20,7 +20,7 @@ class ComponentManagerControls extends Backbone.View
 
   initialize: (attributes) ->
     @componentManager = attributes.componentManager
-    templateHelper.storeComponentManager @componentManager
+    templateHelper.addComponentManager @componentManager
     do @render
     do @_addForms
 

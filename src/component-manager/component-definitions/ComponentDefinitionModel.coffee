@@ -1,6 +1,6 @@
 class ComponentDefinitionModel extends Backbone.Model
   defaults:
-    componentId: undefined
+    id: undefined
     src: undefined
     showcount: undefined
     height: undefined
@@ -10,14 +10,14 @@ class ComponentDefinitionModel extends Backbone.Model
     maxShowCount: 0
 
   validate: (attrs, options) ->
-    unless attrs.componentId
-      throw 'componentId cant be undefined'
+    unless attrs.id
+      throw 'id cant be undefined'
 
-    unless typeof attrs.componentId is 'string'
-      throw 'componentId should be a string'
+    unless typeof attrs.id is 'string'
+      throw 'id should be a string'
 
-    unless /^.*[^ ].*$/.test(attrs.componentId)
-      throw 'componentId can not be an empty string'
+    unless /^.*[^ ].*$/.test(attrs.id)
+      throw 'id can not be an empty string'
 
     unless attrs.src
       throw 'src should be a url or classname'

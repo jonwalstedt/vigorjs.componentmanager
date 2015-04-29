@@ -85,7 +85,6 @@ class InstanceDefinitionsCollection extends Backbone.Collection
       shouldBeIncluded = true
 
       if instanceConditions
-
         if _.isArray(instanceConditions)
           for condition in instanceConditions
 

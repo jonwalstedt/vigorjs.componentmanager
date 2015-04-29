@@ -154,7 +154,7 @@
       }
 
       ComponentDefinitionModel.prototype.defaults = {
-        componentId: void 0,
+        id: void 0,
         src: void 0,
         showcount: void 0,
         height: void 0,
@@ -165,14 +165,14 @@
       };
 
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
-        if (!attrs.componentId) {
-          throw 'componentId cant be undefined';
+        if (!attrs.id) {
+          throw 'id cant be undefined';
         }
-        if (typeof attrs.componentId !== 'string') {
-          throw 'componentId should be a string';
+        if (typeof attrs.id !== 'string') {
+          throw 'id should be a string';
         }
-        if (!/^.*[^ ].*$/.test(attrs.componentId)) {
-          throw 'componentId can not be an empty string';
+        if (!/^.*[^ ].*$/.test(attrs.id)) {
+          throw 'id can not be an empty string';
         }
         if (!attrs.src) {
           throw 'src should be a url or classname';
@@ -196,17 +196,6 @@
       }
 
       ComponentDefinitionsCollection.prototype.model = ComponentDefinitionModel;
-
-      ComponentDefinitionsCollection.prototype.getByComponentId = function(componentId) {
-        var componentDefinition;
-        componentDefinition = this.findWhere({
-          componentId: componentId
-        });
-        if (!componentDefinition) {
-          throw "Unknown componentId: " + componentId;
-        }
-        return componentDefinition;
-      };
 
       return ComponentDefinitionsCollection;
 
@@ -508,10 +497,6 @@
           targetPrefix = settings.targetPrefix || targetPrefix;
           return this;
         },
-        registerConditions: function(conditionsToBeRegistered) {
-          _.extend(conditions, conditionsToBeRegistered);
-          return this;
-        },
         refresh: function(filterOptions) {
           filterModel.set(filterOptions);
           return this;
@@ -522,6 +507,16 @@
             parse: true,
             remove: false
           });
+          return this;
+        },
+        updateComponent: function(componentId, attributes) {
+          var componentDefinition;
+          componentDefinition = componentDefinitionsCollection.get(componentId);
+          if (componentDefinition != null) {
+            componentDefinition.set(attributes, {
+              validate: true
+            });
+          }
           return this;
         },
         removeComponent: function(componentDefinitionId) {
@@ -540,7 +535,9 @@
           var instanceDefinition;
           instanceDefinition = instanceDefinitionsCollection.get(instanceId);
           if (instanceDefinition != null) {
-            instanceDefinition.set(attributes);
+            instanceDefinition.set(attributes, {
+              validate: true
+            });
           }
           return this;
         },
@@ -548,33 +545,39 @@
           instanceDefinitionsCollection.remove(instanceId);
           return this;
         },
-        getInstances: function(filterOptions) {
-          var instance, instanceDefinition, instanceDefinitions, instances, j, len;
-          instanceDefinitions = _filterInstanceDefinitions(filterOptions);
-          instances = [];
-          for (j = 0, len = instanceDefinitions.length; j < len; j++) {
-            instanceDefinition = instanceDefinitions[j];
+        getInstanceById: function(instanceId) {
+          var ref;
+          return (ref = instanceDefinitionsCollection.get(instanceId)) != null ? ref.toJSON() : void 0;
+        },
+        getInstances: function() {
+          return instanceDefinitionsCollection.toJSON();
+        },
+        getActiveInstances: function() {
+          var instances;
+          instances = _.map(activeComponents.models, function(instanceDefinition) {
+            var instance;
             instance = instanceDefinition.get('instance');
             if (!instance) {
               _addInstanceToModel(instanceDefinition);
               instance = instanceDefinition.get('instance');
             }
-            instances.push(instance);
-          }
+            return instance;
+          });
           return instances;
         },
         getComponentById: function(componentId) {
-          var component;
-          component = componentDefinitionsCollection.get({
-            id: componentId
-          });
-          return component.toJSON();
+          var ref;
+          return (ref = componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
         },
         getComponents: function() {
           return componentDefinitionsCollection.toJSON();
         },
         getTargetPrefix: function() {
           return targetPrefix;
+        },
+        registerConditions: function(conditionsToBeRegistered) {
+          _.extend(conditions, conditionsToBeRegistered);
+          return this;
         },
         getConditions: function() {
           return conditions;
@@ -670,7 +673,7 @@
       _filterInstanceDefinitionsByShowCount = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, function(instanceDefinition) {
           var componentDefinition, maxShowCount, shouldBeIncluded, showCount;
-          componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
+          componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
           showCount = instanceDefinition.get('showCount');
           maxShowCount = instanceDefinition.get('maxShowCount');
           shouldBeIncluded = true;
@@ -690,7 +693,7 @@
       _filterInstanceDefinitionsByShowConditions = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, function(instanceDefinition) {
           var componentConditions, componentDefinition, condition, j, len, shouldBeIncluded;
-          componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
+          componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
           componentConditions = componentDefinition.get('conditions');
           shouldBeIncluded = true;
           if (componentConditions) {
@@ -761,7 +764,7 @@
       };
       _addInstanceToModel = function(instanceDefinition) {
         var args, componentClass, componentDefinition, height, instance, src;
-        componentDefinition = componentDefinitionsCollection.getByComponentId(instanceDefinition.get('componentId'));
+        componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
         src = componentDefinition.get('src');
         componentClass = _getClass(src);
         height = componentDefinition.get('height');

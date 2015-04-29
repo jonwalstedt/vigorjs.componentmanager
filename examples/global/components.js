@@ -9,33 +9,33 @@ var componentSettings = {
   },
   "components": [
     {
-      "componentId": 'app-navigation',
+      "id": 'app-navigation',
       "src": "app.components.NavigationComponent",
       "conditions": "authenticated"
     },
     {
-      "componentId": 'app-login',
+      "id": 'app-login',
       "src": "app.components.LoginComponent",
       "conditions": "not-authenticated"
     },
     {
-      "componentId": 'app-marquee',
+      "id": 'app-marquee',
       "src": "app.components.MarqueeComponent"
     },
     {
-      "componentId": 'app-profile-overview',
+      "id": 'app-profile-overview',
       "src": "app.components.ProfileOverViewComponent"
     },
     {
-      "componentId": 'app-social-media',
+      "id": 'app-social-media',
       "src": "app.components.SocialMediaComponent"
     },
     {
-      "componentId": 'app-list',
+      "id": 'app-list',
       "src": "app.components.ListComponent"
     },
     {
-      "componentId": 'app-banner',
+      "id": 'app-banner',
       "src": "http://www.bido.com/Banner?s=20060&a=0000"
     },
 

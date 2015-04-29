@@ -22,6 +22,7 @@ class CreateComponentView extends BaseFormView
   _createComponent: ->
     instanceDefinition = @parseForm @$createForm
 
+    console.log 'instanceDefinition: ', instanceDefinition
     try
       @componentManager.addInstance instanceDefinition
       @trigger 'feedback', 'Component instantiated'
