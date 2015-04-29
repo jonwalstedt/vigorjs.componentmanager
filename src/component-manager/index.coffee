@@ -80,8 +80,8 @@ do ->
 
     addComponent: (componentDefinition) ->
       componentDefinitionsCollection.set componentDefinition,
-        validate: true,
-        parse: true,
+        validate: true
+        parse: true
         remove: false
       return @
 
@@ -91,8 +91,8 @@ do ->
 
     addInstance: (instanceDefinition) ->
       instanceDefinitionsCollection.set instanceDefinition,
-        validate: true,
-        parse: true,
+        validate: true
+        parse: true
         remove: false
       return @
 

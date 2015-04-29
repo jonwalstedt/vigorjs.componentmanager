@@ -1,4 +1,4 @@
-class UpdateComponentView extends Backbone.View
+class UpdateComponentView extends BaseFormView
 
   className: 'vigorjs-controls__update-component'
   # events:

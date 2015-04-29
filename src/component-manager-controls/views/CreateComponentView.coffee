@@ -1,33 +1,32 @@
-class CreateComponentView extends Backbone.View
+class CreateComponentView extends BaseFormView
 
   className: 'vigorjs-controls__create-component'
+  $createForm: undefined
+
   events:
     'change .vigorjs-controls__targets': '_onTargetChange'
     'click .vigorjs-controls__create-btn': '_onCreateBtnClick'
-
-  componentManager: undefined
-  $feedback: undefined
+    'click .vigorjs-controls__add-row': '_onAddRow'
+    'click .vigorjs-controls__remove-row': '_onRemoveRow'
 
   initialize: (attributes) ->
-    @componentManager = attributes.componentManager
+    super
     @listenTo @componentManager, 'component-add component-change component-remove', @_onComponentDefinitionChange
 
   render: ->
-    do @$el.empty
     @$el.html templateHelper.getCreateTemplate()
-    @$feedback = $ '.vigorjs-controls__create-feedback', @el
     @$targets = $ '.vigorjs-controls__targets', @el
+    @$createForm = $ '.vigorjs-controls__create', @el
     return @
 
   _createComponent: ->
-    $createForm = $ '.vigorjs-controls__create', @el
-    objs = $createForm.serializeArray()
-    instanceDefinition = {}
+    instanceDefinition = @parseForm @$createForm
 
-    for obj, i in objs
-      instanceDefinition[obj.name] = obj.value
-
-    @componentManager.addInstance instanceDefinition
+    try
+      @componentManager.addInstance instanceDefinition
+      @trigger 'feedback', 'Component instantiated'
+    catch error
+      @trigger 'feedback', error
 
   _deselectTargets: ->
     $oldTargets = $ '.component-area--selected'
@@ -39,7 +38,7 @@ class CreateComponentView extends Backbone.View
   _onTargetChange: (event) =>
     $option = $ event.currentTarget
     do @_deselectTargets
-    $target = $ @$targets.val()
+    $target = $ ".#{@$targets.val()}"
     $target.addClass 'component-area--selected'
 
   _onCreateBtnClick: (event) ->

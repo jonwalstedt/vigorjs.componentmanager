@@ -1,4 +1,4 @@
-class DeleteComponentView extends Backbone.View
+class DeleteComponentView extends BaseFormView
 
   className: 'vigorjs-controls__delete-component'
   # events:

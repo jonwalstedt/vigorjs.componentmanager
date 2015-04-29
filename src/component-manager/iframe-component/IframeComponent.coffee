@@ -5,6 +5,8 @@ class IframeComponent extends Backbone.View
   attributes:
     seamless: 'seamless'
     scrolling: no
+    border: 0
+    frameborder: 0
 
   src: undefined
 

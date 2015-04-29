@@ -27,8 +27,14 @@ class InstanceDefinitionModel extends Backbone.Model
       do @clear
 
   validate: (attrs, options) ->
-    unless attrs.componentId
+    unless attrs.id
       throw 'id cant be undefined'
+
+    unless typeof attrs.id is 'string'
+      throw 'id should be a string'
+
+    unless /^.*[^ ].*$/.test(attrs.id)
+      throw 'id can not be an empty string'
 
     unless attrs.componentId
       throw 'componentId cant be undefined'

@@ -28,6 +28,7 @@
   # Vigor.extend = Backbone.Model.extend
 
   #= include ./component-manager-controls/templateHelper.coffee
+  #= include ./component-manager-controls/views/BaseFormView.coffee
   #= include ./component-manager-controls/views/RegisterComponentView.coffee
   #= include ./component-manager-controls/views/CreateComponentView.coffee
   #= include ./component-manager-controls/views/UpdateComponentView.coffee

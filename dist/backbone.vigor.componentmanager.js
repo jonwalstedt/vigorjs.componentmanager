@@ -115,7 +115,9 @@
 
       IframeComponent.prototype.attributes = {
         seamless: 'seamless',
-        scrolling: false
+        scrolling: false,
+        border: 0,
+        frameborder: 0
       };
 
       IframeComponent.prototype.src = void 0;
@@ -275,8 +277,14 @@
       };
 
       InstanceDefinitionModel.prototype.validate = function(attrs, options) {
-        if (!attrs.componentId) {
+        if (!attrs.id) {
           throw 'id cant be undefined';
+        }
+        if (typeof attrs.id !== 'string') {
+          throw 'id should be a string';
+        }
+        if (!/^.*[^ ].*$/.test(attrs.id)) {
+          throw 'id can not be an empty string';
         }
         if (!attrs.componentId) {
           throw 'componentId cant be undefined';

@@ -6,12 +6,23 @@ class ComponentManagerControls extends Backbone.View
     'click .vigorjs-controls__show-form-btn': '_onShowFormBtnClick'
 
   componentManager: undefined
+
   registerComponent: undefined
-  $formWrapper: undefined
+  createComponent: undefined
+  updateComponent: undefined
+  deleteComponent: undefined
+
+  $wrappers: undefined
+  $registerWrapper: undefined
+  $createWrapper: undefined
+  $updateWrapper: undefined
+  $deleteWrapper: undefined
 
   initialize: (attributes) ->
     @componentManager = attributes.componentManager
     templateHelper.storeComponentManager @componentManager
+    do @render
+    do @_addForms
 
   render: ->
     do @$el.empty
@@ -22,31 +33,29 @@ class ComponentManagerControls extends Backbone.View
     @$createWrapper = $ '.vigorjs-controls__create-wrapper', @el
     @$updateWrapper = $ '.vigorjs-controls__update-wrapper', @el
     @$deleteWrapper = $ '.vigorjs-controls__delete-wrapper', @el
+    @$feedback = $ '.vigorjs-controls__feedback', @el
 
-    do @_addRegisterForm
-    do @_addCreateForm
-    do @_addUpdateForm
-    do @_addDeleteForm
     return @
 
-  _addRegisterForm: ->
+  _addForms: ->
     @registerComponent = new RegisterComponentView({componentManager: @componentManager})
     @registerComponent.on 'show', @_onShow
+    @registerComponent.on 'feedback', @_onShowFeedback
     @$registerWrapper.html @registerComponent.render().$el
 
-  _addCreateForm: ->
     @createComponent = new CreateComponentView({componentManager: @componentManager})
     @createComponent.on 'show', @_onShow
+    @createComponent.on 'feedback', @_onShowFeedback
     @$createWrapper.html @createComponent.render().$el
 
-  _addUpdateForm: ->
     @updateComponent = new UpdateComponentView({componentManager: @componentManager})
     @updateComponent.on 'show', @_onShow
+    @updateComponent.on 'feedback', @_onShowFeedback
     @$updateWrapper.html @updateComponent.render().$el
 
-  _addDeleteForm: ->
     @deleteComponent = new DeleteComponentView({componentManager: @componentManager})
     @deleteComponent.on 'show', @_onShow
+    @deleteComponent.on 'feedback', @_onShowFeedback
     @$deleteWrapper.html @deleteComponent.render().$el
 
   _showWrapper: (targetName) ->
@@ -64,5 +73,11 @@ class ComponentManagerControls extends Backbone.View
 
   _onShow: (targetName) =>
     @_showWrapper targetName
+
+  _onShowFeedback: (feedback) =>
+    @$feedback.html feedback
+    setTimeout =>
+      do @$feedback.empty
+    , 3000
 
 Vigor.ComponentManagerControls = ComponentManagerControls

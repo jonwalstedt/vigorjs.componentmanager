@@ -11,6 +11,7 @@ templateHelper =
       <button class='vigorjs-controls__show-form-btn' data-target='create'>Create</button>
       <button class='vigorjs-controls__show-form-btn' data-target='update'>Update</button>
       <button class='vigorjs-controls__show-form-btn' data-target='delete'>Delete</button>
+    <div class='vigorjs-controls__feedback'></div>
     </div>
 
     <div class='vigorjs-controls__forms'>
@@ -42,15 +43,9 @@ templateHelper =
         </div>
 
         <div class="vigorjs-controls__field">
-          <label for='component-args'>Component arguments (key:value pairs)</label>
-          <div class="vigorjs-controls__rows">
-            #{@getArgsRow()}
-          </div>
-          <button type='button' class='vigorjs-controls__remove-row'>remove row</button>
-          <button type='button' class='vigorjs-controls__add-row'>add row</button>
+          #{@getArgumentsFields('Component')}
         </div>
 
-        <div class='vigorjs-controls__register-feedback'></div>
         <button type='button' class='vigorjs-controls__register-btn'>Register</button>
       </form>
     """
@@ -125,9 +120,23 @@ templateHelper =
           <input type='text' id='component-condition' placeholder='condition' name='condition'/>
         </div>
 
-        <div class='vigorjs-controls__create-feedback'></div>
+        <div class="vigorjs-controls__field">
+          #{@getArgumentsFields('Component')}
+        </div>
+
         <button type='button' class='vigorjs-controls__create-btn'>Create</button>
       </form>
+    """
+    return markup
+
+  getArgumentsFields: (type) ->
+    markup = """
+      <label for='component-args'>#{type} arguments (key:value pairs)</label>
+      <div class="vigorjs-controls__rows">
+        #{@getArgsRow()}
+      </div>
+      <button type='button' class='vigorjs-controls__remove-row'>remove row</button>
+      <button type='button' class='vigorjs-controls__add-row'>add row</button>
     """
     return markup
 
