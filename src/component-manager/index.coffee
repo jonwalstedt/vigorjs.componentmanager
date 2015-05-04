@@ -260,30 +260,6 @@ do ->
           shouldBeIncluded = conditions[componentConditions]()
       return shouldBeIncluded
 
-
-  _getClass = (src) ->
-    if _isUrl(src)
-      componentClass = IframeComponent
-      return componentClass
-    else
-      if typeof require is "function"
-        console.log 'require stuff'
-        componentClass = require src
-
-      else
-        obj = window
-        srcObjParts = src.split '.'
-
-        for part in srcObjParts
-          obj = obj[part]
-
-        componentClass = obj
-
-      unless typeof componentClass is "function"
-        throw "No constructor function found for #{src}"
-
-      return componentClass
-
   _parseComponentSettings = (componentSettings) ->
     componentDefinitions = componentSettings.components or \
     componentSettings.widgets or \
@@ -316,8 +292,7 @@ do ->
 
   _addInstanceToModel = (instanceDefinition) ->
     componentDefinition = componentDefinitionsCollection.get instanceDefinition.get('componentId')
-    src = componentDefinition.get 'src'
-    componentClass = _getClass src
+    componentClass = componentDefinition.getClass()
     height = componentDefinition.get 'height'
     if instanceDefinition.get('height')
       height = instanceDefinition.get 'height'
@@ -330,7 +305,7 @@ do ->
     _.extend args, instanceDefinition.get('args')
 
     if componentClass is IframeComponent
-      args.src = src
+      args.src = componentDefinition.get 'src'
 
     instance = new componentClass args
     instance.$el.addClass componentClassName
@@ -416,10 +391,6 @@ do ->
     instanceDefinition.set
       'instance': undefined
     , { silent: true }
-
-  _isUrl = (string) ->
-    urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
-    return urlRegEx.test(string)
 
   _isComponentAreaEmpty = ($componentArea) ->
     isEmpty = $componentArea.length > 0

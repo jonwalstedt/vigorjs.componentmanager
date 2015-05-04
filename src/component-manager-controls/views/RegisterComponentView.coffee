@@ -11,7 +11,9 @@ class RegisterComponentView extends BaseFormView
     'click .vigorjs-controls__remove-row': '_onRemoveRow'
 
   initialize: (attributes) ->
+    super
     @componentManager = attributes.componentManager
+    @listenTo @componentManager, 'component-add component-change component-remove', @_onComponentDefinitionChange
 
   render: (selectedComponent) ->
     @$el.html templateHelper.getRegisterTemplate(selectedComponent)
@@ -40,3 +42,6 @@ class RegisterComponentView extends BaseFormView
 
   _onRegister: =>
     do @_registerComponent
+
+  _onComponentDefinitionChange: =>
+    do @render

@@ -20,11 +20,39 @@ class ComponentDefinitionModel extends Backbone.Model
       throw 'id can not be an empty string'
 
     unless attrs.src
-      throw 'src should be a url or classname'
+      throw 'src should be a url or constructor function'
 
-    unless _.isString(attrs.src)
-      throw 'src should be a string'
+    isValidType = _.isString(attrs.src) or _.isFunction(attrs.src)
+    unless isValidType
+      throw 'src should be a string or a constructor function'
 
-    unless /^.*[^ ].*$/.test(attrs.src)
+    if _.isString(attrs.src) and not /^.*[^ ].*$/.test(attrs.src)
       throw 'src can not be an empty string'
+
+
+  getClass: ->
+    src = @get 'src'
+    if _.isString(src) and _isUrl(src)
+      componentClass = IframeComponent
+
+    else if _.isString(src)
+      obj = window
+      srcObjParts = src.split '.'
+
+      for part in srcObjParts
+        obj = obj[part]
+
+      componentClass = obj
+
+    else if _.isFunction(src)
+      componentClass = src
+
+    unless _.isFunction(componentClass)
+      throw "No constructor function found for #{src}"
+
+    return componentClass
+
+ _isUrl = (string) ->
+    urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
+    return urlRegEx.test(string)
 

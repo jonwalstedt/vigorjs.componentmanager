@@ -19,7 +19,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ActiveComponentsCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
+    var ActiveComponentsCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, _isUrl, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
     Router = (function(superClass) {
@@ -165,6 +165,7 @@
       };
 
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
+        var isValidType;
         if (!attrs.id) {
           throw 'id cant be undefined';
         }
@@ -175,19 +176,47 @@
           throw 'id can not be an empty string';
         }
         if (!attrs.src) {
-          throw 'src should be a url or classname';
+          throw 'src should be a url or constructor function';
         }
-        if (!_.isString(attrs.src)) {
-          throw 'src should be a string';
+        isValidType = _.isString(attrs.src) || _.isFunction(attrs.src);
+        if (!isValidType) {
+          throw 'src should be a string or a constructor function';
         }
-        if (!/^.*[^ ].*$/.test(attrs.src)) {
+        if (_.isString(attrs.src) && !/^.*[^ ].*$/.test(attrs.src)) {
           throw 'src can not be an empty string';
         }
+      };
+
+      ComponentDefinitionModel.prototype.getClass = function() {
+        var componentClass, j, len, obj, part, src, srcObjParts;
+        src = this.get('src');
+        if (_.isString(src) && _isUrl(src)) {
+          componentClass = IframeComponent;
+        } else if (_.isString(src)) {
+          obj = window;
+          srcObjParts = src.split('.');
+          for (j = 0, len = srcObjParts.length; j < len; j++) {
+            part = srcObjParts[j];
+            obj = obj[part];
+          }
+          componentClass = obj;
+        } else if (_.isFunction(src)) {
+          componentClass = src;
+        }
+        if (!_.isFunction(componentClass)) {
+          throw "No constructor function found for " + src;
+        }
+        return componentClass;
       };
 
       return ComponentDefinitionModel;
 
     })(Backbone.Model);
+    _isUrl = function(string) {
+      var urlRegEx;
+      urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
+      return urlRegEx.test(string);
+    };
     ComponentDefinitionsCollection = (function(superClass) {
       extend(ComponentDefinitionsCollection, superClass);
 
@@ -269,7 +298,7 @@
         if (!attrs.id) {
           throw 'id cant be undefined';
         }
-        if (typeof attrs.id !== 'string') {
+        if (!_.isString(attrs.id)) {
           throw 'id should be a string';
         }
         if (!/^.*[^ ].*$/.test(attrs.id)) {
@@ -278,7 +307,7 @@
         if (!attrs.componentId) {
           throw 'componentId cant be undefined';
         }
-        if (typeof attrs.componentId !== 'string') {
+        if (!_.isString(attrs.componentId)) {
           throw 'componentId should be a string';
         }
         if (!/^.*[^ ].*$/.test(attrs.componentId)) {
@@ -451,7 +480,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, EVENTS, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _getClass, _incrementShowCount, _isComponentAreaEmpty, _isUrl, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
+      var $context, EVENTS, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _incrementShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
       targetPrefix = 'component-area';
       componentDefinitionsCollection = void 0;
@@ -712,30 +741,6 @@
           return shouldBeIncluded;
         });
       };
-      _getClass = function(src) {
-        var componentClass, j, len, obj, part, srcObjParts;
-        if (_isUrl(src)) {
-          componentClass = IframeComponent;
-          return componentClass;
-        } else {
-          if (typeof require === "function") {
-            console.log('require stuff');
-            componentClass = require(src);
-          } else {
-            obj = window;
-            srcObjParts = src.split('.');
-            for (j = 0, len = srcObjParts.length; j < len; j++) {
-              part = srcObjParts[j];
-              obj = obj[part];
-            }
-            componentClass = obj;
-          }
-          if (typeof componentClass !== "function") {
-            throw "No constructor function found for " + src;
-          }
-          return componentClass;
-        }
-      };
       _parseComponentSettings = function(componentSettings) {
         var componentDefinitions, hidden, instanceDefinitions;
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
@@ -763,10 +768,9 @@
         });
       };
       _addInstanceToModel = function(instanceDefinition) {
-        var args, componentClass, componentDefinition, height, instance, src;
+        var args, componentClass, componentDefinition, height, instance;
         componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
-        src = componentDefinition.get('src');
-        componentClass = _getClass(src);
+        componentClass = componentDefinition.getClass();
         height = componentDefinition.get('height');
         if (instanceDefinition.get('height')) {
           height = instanceDefinition.get('height');
@@ -778,7 +782,7 @@
         _.extend(args, componentDefinition.get('args'));
         _.extend(args, instanceDefinition.get('args'));
         if (componentClass === IframeComponent) {
-          args.src = src;
+          args.src = componentDefinition.get('src');
         }
         instance = new componentClass(args);
         instance.$el.addClass(componentClassName);
@@ -886,11 +890,6 @@
         }, {
           silent: true
         });
-      };
-      _isUrl = function(string) {
-        var urlRegEx;
-        urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
-        return urlRegEx.test(string);
       };
       _isComponentAreaEmpty = function($componentArea) {
         var isEmpty;

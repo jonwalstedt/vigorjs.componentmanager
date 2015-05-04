@@ -68,7 +68,8 @@ templateHelper =
     return markup
 
   getCreateTemplate: (selectedComponent = undefined) ->
-    components = @getRegisteredComponents(selectedComponent)
+    selectName = 'componentId'
+    components = @getRegisteredComponents(selectedComponent, selectName)
     conditions = @getRegisteredConditions()
     availableTargets = @getTargets()
     appliedConditions = @getAppliedCondition(selectedComponent)
@@ -156,10 +157,10 @@ templateHelper =
     """
     return markup
 
-  getRegisteredComponents: (selectedComponent) ->
+  getRegisteredComponents: (selectedComponent, selectName = 'id') ->
     componentDefinitions = @componentManager.getComponents()
     if componentDefinitions.length > 0
-      markup = '<select class="vigorjs-controls__component-id" name="id">'
+      markup = "<select class='vigorjs-controls__component-id' name='#{selectName}'>"
       markup += '<option value="none-selected" selected="selected">Select a component</option>'
       for component in componentDefinitions
         selected = ''

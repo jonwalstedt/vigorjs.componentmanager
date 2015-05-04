@@ -45,11 +45,12 @@
         return markup;
       },
       getCreateTemplate: function(selectedComponent) {
-        var appliedConditions, appliedConditionsMarkup, availableTargets, components, conditions, conditionsMarkup, markup;
+        var appliedConditions, appliedConditionsMarkup, availableTargets, components, conditions, conditionsMarkup, markup, selectName;
         if (selectedComponent == null) {
           selectedComponent = void 0;
         }
-        components = this.getRegisteredComponents(selectedComponent);
+        selectName = 'componentId';
+        components = this.getRegisteredComponents(selectedComponent, selectName);
         conditions = this.getRegisteredConditions();
         availableTargets = this.getTargets();
         appliedConditions = this.getAppliedCondition(selectedComponent);
@@ -69,11 +70,14 @@
         markup = "<label for='component-args'>" + type + " arguments (key:value pairs)</label>\n<div class=\"vigorjs-controls__rows\">\n  " + (this.getArgsRow()) + "\n</div>\n<button type='button' class='vigorjs-controls__remove-row'>remove row</button>\n<button type='button' class='vigorjs-controls__add-row'>add row</button>";
         return markup;
       },
-      getRegisteredComponents: function(selectedComponent) {
+      getRegisteredComponents: function(selectedComponent, selectName) {
         var component, componentDefinitions, j, len, markup, selected;
+        if (selectName == null) {
+          selectName = 'id';
+        }
         componentDefinitions = this.componentManager.getComponents();
         if (componentDefinitions.length > 0) {
-          markup = '<select class="vigorjs-controls__component-id" name="id">';
+          markup = "<select class='vigorjs-controls__component-id' name='" + selectName + "'>";
           markup += '<option value="none-selected" selected="selected">Select a component</option>';
           for (j = 0, len = componentDefinitions.length; j < len; j++) {
             component = componentDefinitions[j];
@@ -197,6 +201,7 @@
       extend(RegisterComponentView, superClass);
 
       function RegisterComponentView() {
+        this._onComponentDefinitionChange = bind(this._onComponentDefinitionChange, this);
         this._onRegister = bind(this._onRegister, this);
         this._onComponentChange = bind(this._onComponentChange, this);
         return RegisterComponentView.__super__.constructor.apply(this, arguments);
@@ -214,7 +219,9 @@
       };
 
       RegisterComponentView.prototype.initialize = function(attributes) {
-        return this.componentManager = attributes.componentManager;
+        RegisterComponentView.__super__.initialize.apply(this, arguments);
+        this.componentManager = attributes.componentManager;
+        return this.listenTo(this.componentManager, 'component-add component-change component-remove', this._onComponentDefinitionChange);
       };
 
       RegisterComponentView.prototype.render = function(selectedComponent) {
@@ -253,6 +260,10 @@
 
       RegisterComponentView.prototype._onRegister = function() {
         return this._registerComponent();
+      };
+
+      RegisterComponentView.prototype._onComponentDefinitionChange = function() {
+        return this.render();
       };
 
       return RegisterComponentView;

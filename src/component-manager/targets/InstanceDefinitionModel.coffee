@@ -30,7 +30,7 @@ class InstanceDefinitionModel extends Backbone.Model
     unless attrs.id
       throw 'id cant be undefined'
 
-    unless typeof attrs.id is 'string'
+    unless _.isString(attrs.id)
       throw 'id should be a string'
 
     unless /^.*[^ ].*$/.test(attrs.id)
@@ -39,7 +39,7 @@ class InstanceDefinitionModel extends Backbone.Model
     unless attrs.componentId
       throw 'componentId cant be undefined'
 
-    unless typeof attrs.componentId is 'string'
+    unless _.isString(attrs.componentId)
       throw 'componentId should be a string'
 
     unless /^.*[^ ].*$/.test(attrs.componentId)
