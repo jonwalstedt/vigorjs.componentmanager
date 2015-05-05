@@ -530,6 +530,9 @@
           filterModel.set(filterOptions);
           return this;
         },
+        serialize: function() {
+          return console.log('return data in a readable format for the componentManager');
+        },
         addComponent: function(componentDefinition) {
           componentDefinitionsCollection.set(componentDefinition, {
             validate: true,
@@ -551,6 +554,13 @@
         removeComponent: function(componentDefinitionId) {
           instanceDefinitionsCollection.remove(componentDefinitionId);
           return this;
+        },
+        getComponentById: function(componentId) {
+          var ref;
+          return (ref = componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
+        },
+        getComponents: function() {
+          return componentDefinitionsCollection.toJSON();
         },
         addInstance: function(instanceDefinition) {
           instanceDefinitionsCollection.set(instanceDefinition, {
@@ -593,13 +603,6 @@
             return instance;
           });
           return instances;
-        },
-        getComponentById: function(componentId) {
-          var ref;
-          return (ref = componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
-        },
-        getComponents: function() {
-          return componentDefinitionsCollection.toJSON();
         },
         getTargetPrefix: function() {
           return targetPrefix;

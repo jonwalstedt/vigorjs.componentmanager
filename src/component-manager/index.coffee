@@ -74,6 +74,9 @@ do ->
       filterModel.set filterOptions
       return @
 
+    serialize: ->
+      console.log 'return data in a readable format for the componentManager'
+
     addComponent: (componentDefinition) ->
       componentDefinitionsCollection.set componentDefinition,
         validate: true
@@ -89,6 +92,12 @@ do ->
     removeComponent: (componentDefinitionId) ->
       instanceDefinitionsCollection.remove componentDefinitionId
       return @
+
+    getComponentById: (componentId) ->
+      return componentDefinitionsCollection.get(componentId)?.toJSON()
+
+    getComponents: ->
+      return componentDefinitionsCollection.toJSON()
 
     addInstance: (instanceDefinition) ->
       instanceDefinitionsCollection.set instanceDefinition,
@@ -120,12 +129,6 @@ do ->
           instance = instanceDefinition.get 'instance'
         return instance
       return instances
-
-    getComponentById: (componentId) ->
-      return componentDefinitionsCollection.get(componentId)?.toJSON()
-
-    getComponents: ->
-      return componentDefinitionsCollection.toJSON()
 
     getTargetPrefix: ->
       return targetPrefix
