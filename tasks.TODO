@@ -9,6 +9,7 @@
  ✔ Implement conditions  - method to set general conditions, and component-level overrides (object with methods that returns boolean) @done (15-04-20 23:07)
  ☐ Improve Controls
  ☐ AMD and Commonjs modules - dont forget the require logic for this
+ ☐ Make a small example reordering a list of components using vigorjs and the component manager (produce a list with random order on an interval)
  ☐ Protected components?
  ☐ Hidden components and the hidden array
  ☐ Readd hidden components
