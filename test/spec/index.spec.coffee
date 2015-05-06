@@ -77,17 +77,23 @@ describe 'A componentManager', ->
     it 'should return all active instances', ->
 
   describe 'getTargetPrefix', ->
-    it '', ->
+    it 'should return a specified prefix or the default prefix', ->
 
   describe 'registerConditions', ->
-    it '', ->
+    it 'should register new conditions', ->
+    it 'should not remove old conditions', ->
+    it 'should update existing conditions', ->
 
   describe 'getConditions', ->
-    it '', ->
+    it 'return current conditions', ->
 
   describe 'clear', ->
-    it '', ->
+    it 'should remove all components', ->
+    it 'should remove all instances', ->
+    it 'should remove all activeComponents', ->
+    it 'should remove all filters', ->
+    it 'should remove all conditions', ->
 
   describe 'dispose', ->
-    it '', ->
+    it 'should call clear', ->
 

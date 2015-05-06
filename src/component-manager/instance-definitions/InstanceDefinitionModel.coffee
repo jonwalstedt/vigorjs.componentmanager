@@ -47,3 +47,32 @@ class InstanceDefinitionModel extends Backbone.Model
 
     unless attrs.targetName
       throw 'targetName cant be undefined'
+
+  incrementShowCount: (silent = true) ->
+    showCount = @get 'showCount'
+    showCount++
+    @set
+      'showCount': showCount
+    , silent: silent
+
+  renderInstance: ->
+    instance = @get 'instance'
+    unless instance then return
+    unless instance.render
+      throw "The enstance #{instance.get('id')} does not have a render method"
+
+    if instance.preRender? and _.isFunction(instance.preRender)
+      do instance.preRender
+
+    do instance.render
+
+    if instance.postrender? and _.isFunction(instance.postRender)
+      do instance.postRender
+
+  disposeAndRemoveInstance: ->
+    instance = @get 'instance'
+    do instance.dispose
+    instance = undefined
+    @set
+      'instance': undefined
+    , silent: true

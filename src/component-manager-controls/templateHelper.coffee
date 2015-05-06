@@ -185,7 +185,7 @@ templateHelper =
 
   getTargets: ->
     targetPrefix = @componentManager.getTargetPrefix()
-    $targets = $ "[class^='#{targetPrefix}']"
+    $targets = $ "[class*='#{targetPrefix}']"
     if $targets.length > 0
       markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>'
       markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets" name="targetName">'

@@ -27,13 +27,6 @@ do ->
   componentManager =
 
     #
-    # Public properties
-    # ============================================================================
-    # componentDefinitionsCollection: undefined
-    # instanceDefinitionsCollection: undefined
-    # activeComponents: undefined
-
-    #
     # Public methods
     # ============================================================================
     initialize: (settings) ->
@@ -45,10 +38,6 @@ do ->
 
       # Expose methods and properties
       _.extend @, EVENTS
-      # @activeComponents = activeComponents
-      # @componentDefinitionsCollection = componentDefinitionsCollection
-      # @instanceDefinitionsCollection = instanceDefinitionsCollection
-      # @conditions = conditions
 
       do _addListeners
 
@@ -154,7 +143,6 @@ do ->
       filterModel = undefined
       activeComponents = undefined
       conditions = undefined
-      @activeComponents = undefined
       componentDefinitionsCollection = undefined
 
   #
@@ -331,27 +319,13 @@ do ->
 
   _addInstanceToDom = (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
-    instance = instanceDefinition.get 'instance'
 
     if render
-      _renderInstance instanceDefinition
+      do instanceDefinition.renderInstance
 
     _addInstanceInOrder instanceDefinition
-    _incrementShowCount instanceDefinition
+    do instanceDefinition.incrementShowCount
     _isComponentAreaEmpty $target
-
-  _renderInstance = (instanceDefinition) ->
-    instance = instanceDefinition.get 'instance'
-    unless instance.render
-      throw "The enstance #{instance.get('id')} does not have a render method"
-
-    if instance.preRender? and _.isFunction(instance.preRender)
-      do instance.preRender
-
-    do instance.render
-
-    if instance.postrender? and _.isFunction(instance.postRender)
-      do instance.postRender
 
   _addInstanceInOrder = (instanceDefinition) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
@@ -380,24 +354,9 @@ do ->
       if instance.onAddedToDom? and _.isFunction(instance.onAddedToDom)
         do instance.onAddedToDom
 
-  _incrementShowCount = (instanceDefinition, silent = true) ->
-    showCount = instanceDefinition.get 'showCount'
-    showCount++
-    instanceDefinition.set
-      'showCount': showCount
-    , silent: silent
-
-  _disposeAndRemoveInstanceFromModel = (instanceDefinition) ->
-    instance = instanceDefinition.get 'instance'
-    do instance.dispose
-    instance = undefined
-    instanceDefinition.set
-      'instance': undefined
-    , { silent: true }
-
   _isComponentAreaEmpty = ($componentArea) ->
     isEmpty = $componentArea.length > 0
-    $componentArea.addClass 'component-area--has-component', isEmpty
+    $componentArea.toggleClass 'component-area--has-component', isEmpty
     return isEmpty
 
   #
@@ -408,12 +367,12 @@ do ->
     _addInstanceToDom instanceDefinition
 
   _onComponentChange = (instanceDefinition) ->
-    _disposeAndRemoveInstanceFromModel instanceDefinition
+    do instanceDefinition.disposeAndRemoveInstance
     _addInstanceToModel instanceDefinition
     _addInstanceToDom instanceDefinition
 
   _onComponentRemoved = (instanceDefinition) ->
-    _disposeAndRemoveInstanceFromModel instanceDefinition
+    do instanceDefinition.disposeAndRemoveInstance
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
     _isComponentAreaEmpty $target
 
@@ -423,5 +382,57 @@ do ->
   _onComponentTargetNameChange = (instanceDefinition) ->
     _addInstanceToDom instanceDefinition
 
+
+  ### start-test-block ###
+  # this will be removed in distribution build
+
+  __testOnly = {}
+  #classes
+  __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection
+  __testOnly.ComponentDefinitionModel = ComponentDefinitionModel
+  __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
+  __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
+  __testOnly.ActiveComponentsCollection = ActiveComponentsCollection
+  __testOnly.FilterModel = FilterModel
+  __testOnly.IframeComponent = IframeComponent
+
+  #properties
+  __testOnly.componentClassName = componentClassName
+  __testOnly.targetPrefix = targetPrefix
+  __testOnly.componentDefinitionsCollection = componentDefinitionsCollection
+  __testOnly.instanceDefinitionsCollection = instanceDefinitionsCollection
+  __testOnly.activeComponents = activeComponents
+  __testOnly.filterModel = filterModel
+  __testOnly.$context = $context
+  __testOnly.conditions = conditions
+
+  # mehtods
+  __testOnly._addListeners = _addListeners
+  __testOnly._removeListeners = _removeListeners
+  __testOnly._previousElement = _previousElement
+  __testOnly._updateActiveComponents = _updateActiveComponents
+  __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions
+  __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount
+  __testOnly._filterInstanceDefinitionsByShowConditions = _filterInstanceDefinitionsByShowConditions
+  __testOnly._parseComponentSettings = _parseComponentSettings
+  __testOnly._registerComponents = _registerComponents
+  __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons
+  __testOnly._addInstanceToModel = _addInstanceToModel
+  __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom
+  __testOnly._addInstanceToDom = _addInstanceToDom
+  __testOnly._addInstanceInOrder = _addInstanceInOrder
+  __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty
+
+  # callbacks
+  __testOnly._onComponentAdded = _onComponentAdded
+  __testOnly._onComponentChange = _onComponentChange
+  __testOnly._onComponentRemoved = _onComponentRemoved
+  __testOnly._onComponentOrderChange = _onComponentOrderChange
+  __testOnly._onComponentTargetNameChange = _onComponentOrderChange
+
+  componentManager.__testOnly = __testOnly
+  ### end-test-block ###
+
   _.extend componentManager, Backbone.Events
   Vigor.componentManager = componentManager
+

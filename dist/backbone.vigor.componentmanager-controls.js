@@ -113,7 +113,7 @@
       getTargets: function() {
         var $target, $targets, classSegments, j, k, len, len1, markup, segment, target, targetClasses, targetPrefix;
         targetPrefix = this.componentManager.getTargetPrefix();
-        $targets = $("[class^='" + targetPrefix + "']");
+        $targets = $("[class*='" + targetPrefix + "']");
         if ($targets.length > 0) {
           markup = '<label for="vigorjs-controls__targets">Select a target for your component</label>';
           markup += '<select id="vigorjs-controls__targets" class="vigorjs-controls__targets" name="targetName">';

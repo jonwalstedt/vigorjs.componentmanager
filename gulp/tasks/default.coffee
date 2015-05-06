@@ -5,4 +5,3 @@ gulp.task 'default', ['clean'], ->
   gulp.start 'coffee',
              'server',
              'watch'
-

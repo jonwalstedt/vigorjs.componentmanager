@@ -5,7 +5,7 @@ config  = require '../config'
 
 distFile = ["#{config.dest}/#{config.outputName}"]
 
-gulp.task 'test', ->
+gulp.task 'test', ['coffee-test'], ->
   gulp.src distFile
     .pipe istanbul({includeUntested: true}) # Covering files
     .pipe istanbul.hookRequire()

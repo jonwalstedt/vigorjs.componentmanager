@@ -318,6 +318,50 @@
         }
       };
 
+      InstanceDefinitionModel.prototype.incrementShowCount = function(silent) {
+        var showCount;
+        if (silent == null) {
+          silent = true;
+        }
+        showCount = this.get('showCount');
+        showCount++;
+        return this.set({
+          'showCount': showCount
+        }, {
+          silent: silent
+        });
+      };
+
+      InstanceDefinitionModel.prototype.renderInstance = function() {
+        var instance;
+        instance = this.get('instance');
+        if (!instance) {
+          return;
+        }
+        if (!instance.render) {
+          throw "The enstance " + (instance.get('id')) + " does not have a render method";
+        }
+        if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
+          instance.preRender();
+        }
+        instance.render();
+        if ((instance.postrender != null) && _.isFunction(instance.postRender)) {
+          return instance.postRender();
+        }
+      };
+
+      InstanceDefinitionModel.prototype.disposeAndRemoveInstance = function() {
+        var instance;
+        instance = this.get('instance');
+        instance.dispose();
+        instance = void 0;
+        return this.set({
+          'instance': void 0
+        }, {
+          silent: true
+        });
+      };
+
       return InstanceDefinitionModel;
 
     })(Backbone.Model);
@@ -480,7 +524,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, EVENTS, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _disposeAndRemoveInstanceFromModel, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _incrementShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _renderInstance, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
+      var $context, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeComponents, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
       targetPrefix = 'component-area';
       componentDefinitionsCollection = void 0;
@@ -628,7 +672,6 @@
           filterModel = void 0;
           activeComponents = void 0;
           conditions = void 0;
-          this.activeComponents = void 0;
           return componentDefinitionsCollection = void 0;
         }
       };
@@ -812,32 +855,17 @@
         return results;
       };
       _addInstanceToDom = function(instanceDefinition, render) {
-        var $target, instance;
+        var $target;
         if (render == null) {
           render = true;
         }
         $target = $("." + (instanceDefinition.get('targetName')), $context);
-        instance = instanceDefinition.get('instance');
         if (render) {
-          _renderInstance(instanceDefinition);
+          instanceDefinition.renderInstance();
         }
         _addInstanceInOrder(instanceDefinition);
-        _incrementShowCount(instanceDefinition);
+        instanceDefinition.incrementShowCount();
         return _isComponentAreaEmpty($target);
-      };
-      _renderInstance = function(instanceDefinition) {
-        var instance;
-        instance = instanceDefinition.get('instance');
-        if (!instance.render) {
-          throw "The enstance " + (instance.get('id')) + " does not have a render method";
-        }
-        if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
-          instance.preRender();
-        }
-        instance.render();
-        if ((instance.postrender != null) && _.isFunction(instance.postRender)) {
-          return instance.postRender();
-        }
       };
       _addInstanceInOrder = function(instanceDefinition) {
         var $previousElement, $target, instance, order;
@@ -870,34 +898,10 @@
           }
         }
       };
-      _incrementShowCount = function(instanceDefinition, silent) {
-        var showCount;
-        if (silent == null) {
-          silent = true;
-        }
-        showCount = instanceDefinition.get('showCount');
-        showCount++;
-        return instanceDefinition.set({
-          'showCount': showCount
-        }, {
-          silent: silent
-        });
-      };
-      _disposeAndRemoveInstanceFromModel = function(instanceDefinition) {
-        var instance;
-        instance = instanceDefinition.get('instance');
-        instance.dispose();
-        instance = void 0;
-        return instanceDefinition.set({
-          'instance': void 0
-        }, {
-          silent: true
-        });
-      };
       _isComponentAreaEmpty = function($componentArea) {
         var isEmpty;
         isEmpty = $componentArea.length > 0;
-        $componentArea.addClass('component-area--has-component', isEmpty);
+        $componentArea.toggleClass('component-area--has-component', isEmpty);
         return isEmpty;
       };
       _onComponentAdded = function(instanceDefinition) {
@@ -905,13 +909,13 @@
         return _addInstanceToDom(instanceDefinition);
       };
       _onComponentChange = function(instanceDefinition) {
-        _disposeAndRemoveInstanceFromModel(instanceDefinition);
+        instanceDefinition.disposeAndRemoveInstance();
         _addInstanceToModel(instanceDefinition);
         return _addInstanceToDom(instanceDefinition);
       };
       _onComponentRemoved = function(instanceDefinition) {
         var $target;
-        _disposeAndRemoveInstanceFromModel(instanceDefinition);
+        instanceDefinition.disposeAndRemoveInstance();
         $target = $("." + (instanceDefinition.get('targetName')), $context);
         return _isComponentAreaEmpty($target);
       };
@@ -921,6 +925,47 @@
       _onComponentTargetNameChange = function(instanceDefinition) {
         return _addInstanceToDom(instanceDefinition);
       };
+
+      /* start-test-block */
+      __testOnly = {};
+      __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection;
+      __testOnly.ComponentDefinitionModel = ComponentDefinitionModel;
+      __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection;
+      __testOnly.InstanceDefinitionModel = InstanceDefinitionModel;
+      __testOnly.ActiveComponentsCollection = ActiveComponentsCollection;
+      __testOnly.FilterModel = FilterModel;
+      __testOnly.IframeComponent = IframeComponent;
+      __testOnly.componentClassName = componentClassName;
+      __testOnly.targetPrefix = targetPrefix;
+      __testOnly.componentDefinitionsCollection = componentDefinitionsCollection;
+      __testOnly.instanceDefinitionsCollection = instanceDefinitionsCollection;
+      __testOnly.activeComponents = activeComponents;
+      __testOnly.filterModel = filterModel;
+      __testOnly.$context = $context;
+      __testOnly.conditions = conditions;
+      __testOnly._addListeners = _addListeners;
+      __testOnly._removeListeners = _removeListeners;
+      __testOnly._previousElement = _previousElement;
+      __testOnly._updateActiveComponents = _updateActiveComponents;
+      __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions;
+      __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount;
+      __testOnly._filterInstanceDefinitionsByShowConditions = _filterInstanceDefinitionsByShowConditions;
+      __testOnly._parseComponentSettings = _parseComponentSettings;
+      __testOnly._registerComponents = _registerComponents;
+      __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons;
+      __testOnly._addInstanceToModel = _addInstanceToModel;
+      __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom;
+      __testOnly._addInstanceToDom = _addInstanceToDom;
+      __testOnly._addInstanceInOrder = _addInstanceInOrder;
+      __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty;
+      __testOnly._onComponentAdded = _onComponentAdded;
+      __testOnly._onComponentChange = _onComponentChange;
+      __testOnly._onComponentRemoved = _onComponentRemoved;
+      __testOnly._onComponentOrderChange = _onComponentOrderChange;
+      __testOnly._onComponentTargetNameChange = _onComponentOrderChange;
+      componentManager.__testOnly = __testOnly;
+
+      /* end-test-block */
       _.extend(componentManager, Backbone.Events);
       return Vigor.componentManager = componentManager;
     })();
