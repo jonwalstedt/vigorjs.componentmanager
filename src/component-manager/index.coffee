@@ -5,7 +5,7 @@ do ->
 
   componentDefinitionsCollection = undefined
   instanceDefinitionsCollection = undefined
-  activeComponents = undefined
+  activeInstancesCollection = undefined
   filterModel = undefined
   $context = undefined
   conditions = {}
@@ -33,7 +33,7 @@ do ->
 
       componentDefinitionsCollection = new ComponentDefinitionsCollection()
       instanceDefinitionsCollection = new InstanceDefinitionsCollection()
-      activeComponents = new ActiveComponentsCollection()
+      activeInstancesCollection = new ActiveInstancesCollection()
       filterModel = new FilterModel()
 
       # Expose methods and properties
@@ -111,7 +111,7 @@ do ->
       return instanceDefinitionsCollection.toJSON()
 
     getActiveInstances: ->
-      instances = _.map activeComponents.models, (instanceDefinition) ->
+      instances = _.map activeInstancesCollection.models, (instanceDefinition) ->
         instance = instanceDefinition.get 'instance'
         unless instance
           _addInstanceToModel instanceDefinition
@@ -132,7 +132,7 @@ do ->
     clear: ->
       do componentDefinitionsCollection.reset
       do instanceDefinitionsCollection.reset
-      do activeComponents.reset
+      do activeInstancesCollection.reset
       do filterModel.clear
       conditions = {}
       return @
@@ -141,7 +141,7 @@ do ->
       do @clear
       do @_removeListeners
       filterModel = undefined
-      activeComponents = undefined
+      activeInstancesCollection = undefined
       conditions = undefined
       componentDefinitionsCollection = undefined
 
@@ -153,11 +153,11 @@ do ->
     componentDefinitionsCollection.on 'add change remove', _updateActiveComponents
     instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
 
-    activeComponents.on 'add', _onComponentAdded
-    activeComponents.on 'change', _onComponentChange
-    activeComponents.on 'remove', _onComponentRemoved
-    activeComponents.on 'change:order', _onComponentOrderChange
-    activeComponents.on 'change:targetName', _onComponentTargetNameChange
+    activeInstancesCollection.on 'add', _onComponentAdded
+    activeInstancesCollection.on 'change', _onComponentChange
+    activeInstancesCollection.on 'remove', _onComponentRemoved
+    activeInstancesCollection.on 'change:order', _onComponentOrderChange
+    activeInstancesCollection.on 'change:targetName', _onComponentTargetNameChange
 
     # Propagate events
     # Component definitions
@@ -181,17 +181,17 @@ do ->
       componentManager.trigger.apply componentManager, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]
 
     # Active components
-    activeComponents.on 'add', (model, collection, options) ->
+    activeInstancesCollection.on 'add', (model, collection, options) ->
       componentManager.trigger.apply componentManager, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]
 
-    activeComponents.on 'change', (model, options) ->
+    activeInstancesCollection.on 'change', (model, options) ->
       componentManager.trigger.apply componentManager, [EVENTS.CHANGE, [model.toJSON()]]
 
-    activeComponents.on 'remove', (model, collection, options) ->
+    activeInstancesCollection.on 'remove', (model, collection, options) ->
       componentManager.trigger.apply componentManager, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
 
   _removeListeners = ->
-    do activeComponents.off
+    do activeInstancesCollection.off
     do filterModel.off
     do instanceDefinitionsCollection.off
     do componentDefinitionsCollection.off
@@ -207,7 +207,7 @@ do ->
     filterOptions = filterModel.toJSON()
     filterOptions.conditions = conditions
     instanceDefinitions = _filterInstanceDefinitions filterOptions
-    activeComponents.set instanceDefinitions
+    activeInstancesCollection.set instanceDefinitions
 
     # check if we have any stray instances in active components and then try to readd them
     do _tryToReAddStraysToDom
@@ -311,7 +311,7 @@ do ->
     return instanceDefinition
 
   _tryToReAddStraysToDom = ->
-    strays = activeComponents.getStrays()
+    strays = activeInstancesCollection.getStrays()
     for stray in strays
       render = false
       _addInstanceToDom stray, render
@@ -388,11 +388,11 @@ do ->
 
   __testOnly = {}
   #classes
+  __testOnly.ActiveInstancesCollection = ActiveInstancesCollection
   __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection
   __testOnly.ComponentDefinitionModel = ComponentDefinitionModel
   __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
   __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
-  __testOnly.ActiveComponentsCollection = ActiveComponentsCollection
   __testOnly.FilterModel = FilterModel
   __testOnly.IframeComponent = IframeComponent
 
@@ -401,7 +401,7 @@ do ->
   __testOnly.targetPrefix = targetPrefix
   __testOnly.componentDefinitionsCollection = componentDefinitionsCollection
   __testOnly.instanceDefinitionsCollection = instanceDefinitionsCollection
-  __testOnly.activeComponents = activeComponents
+  __testOnly.activeInstancesCollection = activeInstancesCollection
   __testOnly.filterModel = filterModel
   __testOnly.$context = $context
   __testOnly.conditions = conditions

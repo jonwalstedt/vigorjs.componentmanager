@@ -16,23 +16,23 @@ class ComponentDefinitionModel extends Backbone.Model
     unless typeof attrs.id is 'string'
       throw 'id should be a string'
 
-    unless /^.*[^ ].*$/.test(attrs.id)
+    if /^\s+$/g.test(attrs.id)
       throw 'id can not be an empty string'
 
     unless attrs.src
-      throw 'src should be a url or constructor function'
+      throw 'src cant be undefined'
 
     isValidType = _.isString(attrs.src) or _.isFunction(attrs.src)
     unless isValidType
       throw 'src should be a string or a constructor function'
 
-    if _.isString(attrs.src) and not /^.*[^ ].*$/.test(attrs.src)
+    if _.isString(attrs.src) and /^\s+$/g.test(attrs.src)
       throw 'src can not be an empty string'
 
 
   getClass: ->
     src = @get 'src'
-    if _.isString(src) and _isUrl(src)
+    if _.isString(src) and @_isUrl(src)
       componentClass = IframeComponent
 
     else if _.isString(src)
@@ -52,7 +52,7 @@ class ComponentDefinitionModel extends Backbone.Model
 
     return componentClass
 
- _isUrl = (string) ->
+
+  _isUrl: (string) ->
     urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;
     return urlRegEx.test(string)
-

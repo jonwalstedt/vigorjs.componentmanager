@@ -1,6 +1,6 @@
-class ActiveComponentsCollection extends Backbone.Collection
+class ActiveInstancesCollection extends Backbone.Collection
 
-  model: ComponentDefinitionModel
+  model: InstanceDefinitionModel
 
   getStrays: ->
     strays = _.filter @models, (model) =>

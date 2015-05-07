@@ -13,6 +13,9 @@ gulp.task 'test', ['coffee-test'], ->
       gulp.src config.specFiles
         .pipe mocha reporter: 'spec'
         .pipe istanbul.writeReports() # Creating the reports after tests run
+        .on 'finish', ->
+          gulp.start 'coffee'
+
 
 gulp.task 'test-no-coverage', ->
   gulp.src config.specFiles
