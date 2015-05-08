@@ -1,12 +1,6 @@
 assert = require 'assert'
 jsdom = require 'jsdom'
 
-global.document = jsdom.jsdom()
-global.window = document.defaultView
-
-global.$ = require("jquery")(window)
-global._ = require 'underscore'
-
 componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
 ActiveInstancesCollection = componentManager.__testOnly.ActiveInstancesCollection
 
@@ -28,11 +22,11 @@ describe 'ActiveInstancesCollection', ->
   activeInstancesCollection = undefined
 
   beforeEach ->
-    activeInstancesCollection = new ActiveInstancesCollection
+    activeInstancesCollection = new ActiveInstancesCollection()
     activeInstancesCollection.add dummyInstanceDefinitionObj
 
   describe 'getStrays', ->
-    it 'should return return an array of models where instances are not attached to the dom', ->
+    it 'should return an array of models where instances are not attached to the dom', ->
       instance = activeInstancesCollection.get('dummy').get('instance')
 
       $('body').append '<div class="wrapper"></div>'

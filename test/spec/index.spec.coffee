@@ -1,12 +1,5 @@
 assert = require 'assert'
 sinon = require 'sinon'
-jsdom = require 'jsdom'
-window = jsdom.jsdom().parentWindow
-
-global.$ = require("jquery")(window)
-global._ = require 'underscore'
-global.Backbone = require 'backbone'
-global.Backbone.$ = global.$
 
 componentManager = require('../../dist/backbone.vigor.componentmanager').componentManager
 

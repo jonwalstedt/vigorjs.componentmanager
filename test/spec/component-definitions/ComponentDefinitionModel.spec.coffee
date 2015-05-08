@@ -1,12 +1,6 @@
 assert = require 'assert'
 jsdom = require 'jsdom'
 
-global.document = jsdom.jsdom()
-global.window = document.defaultView
-
-global.$ = require("jquery")(window)
-global._ = require 'underscore'
-
 componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
 ComponentDefinitionModel = componentManager.__testOnly.ComponentDefinitionModel
 IframeComponent = componentManager.__testOnly.IframeComponent

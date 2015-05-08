@@ -1,7 +1,16 @@
 gulp = require 'gulp'
 istanbul = require 'gulp-coffee-istanbul'
 mocha = require 'gulp-mocha'
+jsdom = require 'jsdom'
 config  = require '../config'
+
+global.document = jsdom.jsdom()
+global.window = document.defaultView
+
+global.$ = require("jquery")
+global._ = require 'underscore'
+global.Backbone = require 'backbone'
+global.Backbone.$ = global.$
 
 distFile = ["#{config.dest}/#{config.outputName}"]
 
