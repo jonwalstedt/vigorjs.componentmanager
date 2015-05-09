@@ -123,12 +123,13 @@
       IframeComponent.prototype.src = void 0;
 
       function IframeComponent(attrs) {
-        _.extend(this.attributes, attrs.iframeAttributes);
+        _.extend(this.attributes, attrs != null ? attrs.iframeAttributes : void 0);
         IframeComponent.__super__.constructor.apply(this, arguments);
       }
 
       IframeComponent.prototype.initialize = function(attrs) {
-        this.src = attrs.src;
+        this.src = attrs != null ? attrs.src : void 0;
+        this.$el.attr('src', attrs != null ? attrs.src : void 0);
         return this.$el.on('load', this.onIframeLoaded);
       };
 
