@@ -1,41 +1,41 @@
 var componentSettings = {
   "conditions": {
     "authenticated": function ()  {
-      return (window.localStorage.getItem('isAuthenticated') === "true");
+      return (window.localStorage.getItem("isAuthenticated") === "true");
     },
     "not-authenticated": function () {
-      return !(window.localStorage.getItem('isAuthenticated') === "true");
+      return !(window.localStorage.getItem("isAuthenticated") === "true");
     }
   },
   "components": [
     {
-      "id": 'app-navigation',
+      "id": "app-navigation",
       "src": "app.components.NavigationComponent",
       "conditions": "authenticated"
     },
     {
-      "id": 'app-login',
+      "id": "app-login",
       "src": "app.components.LoginComponent",
       "conditions": "not-authenticated"
     },
     {
-      "id": 'app-marquee',
+      "id": "app-marquee",
       "src": "app.components.MarqueeComponent"
     },
     {
-      "id": 'app-profile-overview',
+      "id": "app-profile-overview",
       "src": "app.components.ProfileOverViewComponent"
     },
     {
-      "id": 'app-social-media',
+      "id": "app-social-media",
       "src": "app.components.SocialMediaComponent"
     },
     {
-      "id": 'app-list',
+      "id": "app-list",
       "src": "app.components.ListComponent"
     },
     {
-      "id": 'app-banner',
+      "id": "app-banner",
       "src": "http://www.bido.com/Banner?s=20060&a=0000"
     },
 

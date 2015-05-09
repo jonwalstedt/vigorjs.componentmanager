@@ -604,7 +604,8 @@
           if (settings.componentSettings) {
             _parseComponentSettings(settings.componentSettings);
           }
-          if (settings.componentSettings.conditions) {
+          conditions = settings.componentSettings.conditions;
+          if (conditions && !_.isEmpty(conditions)) {
             this.registerConditions(settings.componentSettings.conditions);
           }
           return this;
@@ -815,16 +816,15 @@
           componentConditions = componentDefinition.get('conditions');
           shouldBeIncluded = true;
           if (componentConditions) {
-            if (_.isArray(componentConditions)) {
-              for (j = 0, len = componentConditions.length; j < len; j++) {
-                condition = componentConditions[j];
-                if (!conditions[condition]()) {
-                  shouldBeIncluded = false;
-                  return;
-                }
+            if (!_.isArray(componentConditions)) {
+              componentConditions = [componentConditions];
+            }
+            for (j = 0, len = componentConditions.length; j < len; j++) {
+              condition = componentConditions[j];
+              if (!conditions[condition]()) {
+                shouldBeIncluded = false;
+                return;
               }
-            } else if (_.isString(componentConditions)) {
-              shouldBeIncluded = conditions[componentConditions]();
             }
           }
           return shouldBeIncluded;

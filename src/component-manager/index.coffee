@@ -49,7 +49,8 @@ do ->
       if settings.componentSettings
         _parseComponentSettings settings.componentSettings
 
-      if settings.componentSettings.conditions
+      conditions = settings.componentSettings.conditions
+      if conditions and not _.isEmpty(conditions)
         @registerConditions settings.componentSettings.conditions
 
       return @
@@ -241,13 +242,12 @@ do ->
       componentConditions = componentDefinition.get 'conditions'
       shouldBeIncluded = true
       if componentConditions
-        if _.isArray(componentConditions)
-          for condition in componentConditions
-            if not conditions[condition]()
-              shouldBeIncluded = false
-              return
-        else if _.isString(componentConditions)
-          shouldBeIncluded = conditions[componentConditions]()
+        unless _.isArray(componentConditions)
+          componentConditions = [componentConditions]
+        for condition in componentConditions
+          if not conditions[condition]()
+            shouldBeIncluded = false
+            return
       return shouldBeIncluded
 
   _parseComponentSettings = (componentSettings) ->
