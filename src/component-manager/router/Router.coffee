@@ -47,3 +47,5 @@ class Router extends Backbone.Router
       storeNames splats, args
 
     return params
+
+router = new Router()

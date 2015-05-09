@@ -91,6 +91,7 @@
       return Router;
 
     })(Backbone.Router);
+    router = new Router();
     FilterModel = (function(superClass) {
       extend(FilterModel, superClass);
 
@@ -255,25 +256,6 @@
         reInstantiateOnUrlParamChange: false
       };
 
-      InstanceDefinitionModel.prototype.isAttached = function() {
-        var attached, instance;
-        instance = this.get('instance');
-        attached = false;
-        if (instance) {
-          attached = $.contains(document.body, instance.el);
-        }
-        return attached;
-      };
-
-      InstanceDefinitionModel.prototype.dispose = function() {
-        var instance;
-        instance = this.get('instance');
-        if (instance) {
-          instance.dispose();
-          return this.clear();
-        }
-      };
-
       InstanceDefinitionModel.prototype.validate = function(attrs, options) {
         if (!attrs.id) {
           throw 'id cant be undefined';
@@ -296,6 +278,16 @@
         if (!attrs.targetName) {
           throw 'targetName cant be undefined';
         }
+      };
+
+      InstanceDefinitionModel.prototype.isAttached = function() {
+        var attached, instance;
+        instance = this.get('instance');
+        attached = false;
+        if (instance) {
+          attached = $.contains(document.body, instance.el);
+        }
+        return attached;
       };
 
       InstanceDefinitionModel.prototype.incrementShowCount = function(silent) {
@@ -330,10 +322,21 @@
         }
       };
 
+      InstanceDefinitionModel.prototype.dispose = function() {
+        var instance;
+        instance = this.get('instance');
+        if (instance) {
+          instance.dispose();
+          return this.clear();
+        }
+      };
+
       InstanceDefinitionModel.prototype.disposeAndRemoveInstance = function() {
         var instance;
         instance = this.get('instance');
-        instance.dispose();
+        if (instance != null) {
+          instance.dispose();
+        }
         instance = void 0;
         return this.set({
           'instance': void 0
@@ -342,10 +345,114 @@
         });
       };
 
+      InstanceDefinitionModel.prototype.passesFilter = function(filter) {
+        var areConditionsMet, filterStringMatch, passes, urlMatch;
+        passes = void 0;
+        if (filter.route || filter.route === '') {
+          urlMatch = this.doesUrlPatternMatch(filter.route);
+          if (urlMatch != null) {
+            if (urlMatch === true) {
+              this.addUrlParams(filter.route);
+            } else {
+              return false;
+            }
+          }
+          passes = urlMatch;
+        }
+        if (filter.filterString) {
+          filterStringMatch = this.doesFilterStringMatch(filter.filterString);
+          if (filterStringMatch != null) {
+            if (!filterStringMatch) {
+              return false;
+            }
+          }
+          passes = filterStringMatch;
+        }
+        if (this.get('conditions')) {
+          areConditionsMet = this.areConditionsMet(filter.conditions);
+          if (areConditionsMet != null) {
+            if (!areConditionsMet) {
+              return false;
+            }
+          }
+          passes = areConditionsMet;
+        }
+        return passes;
+      };
+
+      InstanceDefinitionModel.prototype.doesFilterStringMatch = function(filterString) {
+        var filter;
+        filter = this.get('filter');
+        if (filter) {
+          return filterString.match(new RegExp(filter));
+        }
+      };
+
+      InstanceDefinitionModel.prototype.doesUrlPatternMatch = function(route) {
+        var j, len, match, pattern, routeRegEx, urlPattern;
+        match = false;
+        urlPattern = this.get('urlPattern');
+        if (urlPattern) {
+          if (!_.isArray(urlPattern)) {
+            urlPattern = [urlPattern];
+          }
+          for (j = 0, len = urlPattern.length; j < len; j++) {
+            pattern = urlPattern[j];
+            routeRegEx = router._routeToRegExp(pattern);
+            match = routeRegEx.test(route);
+            if (match) {
+              return match;
+            }
+          }
+          return match;
+        } else {
+          return void 0;
+        }
+      };
+
+      InstanceDefinitionModel.prototype.areConditionsMet = function(globalConditions) {
+        var condition, instanceConditions, j, len, shouldBeIncluded;
+        instanceConditions = this.get('conditions');
+        shouldBeIncluded = true;
+        if (instanceConditions) {
+          if (!_.isArray(instanceConditions)) {
+            instanceConditions = [instanceConditions];
+          }
+          for (j = 0, len = instanceConditions.length; j < len; j++) {
+            condition = instanceConditions[j];
+            if (_.isFunction(condition) && !condition()) {
+              shouldBeIncluded = false;
+              break;
+            } else if (_.isString(condition)) {
+              if (!globalConditions) {
+                throw 'No global conditions was passed, condition could not be tested';
+              }
+              shouldBeIncluded = globalConditions[condition]();
+              if (!shouldBeIncluded) {
+                break;
+              }
+            }
+          }
+        }
+        return shouldBeIncluded;
+      };
+
+      InstanceDefinitionModel.prototype.addUrlParams = function(route) {
+        var urlParams, urlParamsModel;
+        urlParams = router.getArguments(this.get('urlPattern'), route);
+        urlParams.route = route;
+        urlParamsModel = this.get('urlParamsModel');
+        urlParamsModel.set(urlParams);
+        return this.set({
+          'urlParams': urlParams
+        }, {
+          silent: !this.get('reInstantiateOnUrlParamChange')
+        });
+      };
+
       return InstanceDefinitionModel;
 
     })(Backbone.Model);
-    router = new Router();
     InstanceDefinitionsCollection = (function(superClass) {
       extend(InstanceDefinitionsCollection, superClass);
 
@@ -399,20 +506,10 @@
         return instanceDefinition;
       };
 
-      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filterOptions) {
-        var instanceDefinitions;
-        instanceDefinitions = this.models;
-        if (filterOptions.route || filterOptions.route === '') {
-          instanceDefinitions = this.filterInstanceDefinitionsByUrl(instanceDefinitions, filterOptions.route);
-          instanceDefinitions = this.addUrlParams(instanceDefinitions, filterOptions.route);
-        }
-        if (filterOptions.filterString) {
-          instanceDefinitions = this.filterInstanceDefinitionsByString(instanceDefinitions, filterOptions.filterString);
-        }
-        if (filterOptions.conditions) {
-          instanceDefinitions = this.filterInstanceDefinitionsByConditions(instanceDefinitions, filterOptions.conditions);
-        }
-        return instanceDefinitions;
+      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter) {
+        return this.filter(function(instanceDefinitionModel) {
+          return instanceDefinitionModel.passesFilter(filter);
+        });
       };
 
       InstanceDefinitionsCollection.prototype.getInstanceDefinitionsByUrl = function(route) {
@@ -422,80 +519,28 @@
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, route) {
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinitionModel) {
-            var j, len, match, pattern, routeRegEx, urlPattern;
-            urlPattern = instanceDefinitionModel.get('urlPattern');
-            if (urlPattern) {
-              if (_.isArray(urlPattern)) {
-                match = false;
-                for (j = 0, len = urlPattern.length; j < len; j++) {
-                  pattern = urlPattern[j];
-                  routeRegEx = router._routeToRegExp(pattern);
-                  match = routeRegEx.test(route);
-                  if (match) {
-                    return match;
-                  }
-                }
-                return match;
-              } else {
-                routeRegEx = router._routeToRegExp(urlPattern);
-                return routeRegEx.test(route);
-              }
-            }
+            return instanceDefinitionModel.doesUrlPatternMatch(route);
           };
         })(this));
       };
 
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByString = function(instanceDefinitions, filterString) {
         return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
-          var filter;
-          filter = instanceDefinitionModel.get('filter');
-          if (!filter) {
-            return false;
-          } else {
-            return filterString.match(new RegExp(filter));
-          }
+          return instanceDefinitionModel.doesFilterStringMatch(filterString);
         });
       };
 
       InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByConditions = function(instanceDefinitions, conditions) {
         return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
-          var condition, instanceConditions, j, len, shouldBeIncluded;
-          instanceConditions = instanceDefinitionModel.get('conditions');
-          shouldBeIncluded = true;
-          if (instanceConditions) {
-            if (_.isArray(instanceConditions)) {
-              for (j = 0, len = instanceConditions.length; j < len; j++) {
-                condition = instanceConditions[j];
-                if (_.isFunction(condition) && !condition()) {
-                  shouldBeIncluded = false;
-                  return;
-                } else if (_.isString(condition)) {
-                  shouldBeIncluded = conditions[condition]();
-                }
-              }
-            } else if (_.isFunction(instanceConditions)) {
-              shouldBeIncluded = instanceConditions();
-            } else if (_.isString(instanceConditions)) {
-              shouldBeIncluded = conditions[instanceConditions]();
-            }
-          }
-          return shouldBeIncluded;
+          return instanceDefinitionModel.areConditionsMet(conditions);
         });
       };
 
       InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, route) {
-        var instanceDefinition, j, len, urlParams, urlParamsModel;
+        var instanceDefinitionModel, j, len;
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
-          instanceDefinition = instanceDefinitions[j];
-          urlParams = router.getArguments(instanceDefinition.get('urlPattern'), route);
-          urlParams.route = route;
-          urlParamsModel = instanceDefinition.get('urlParamsModel');
-          urlParamsModel.set(urlParams);
-          instanceDefinition.set({
-            'urlParams': urlParams
-          }, {
-            silent: !instanceDefinition.get('reInstantiateOnUrlParamChange')
-          });
+          instanceDefinitionModel = instanceDefinitions[j];
+          instanceDefinitionModel.addUrlParams(route);
         }
         return instanceDefinitions;
       };
@@ -659,6 +704,7 @@
         },
         registerConditions: function(conditionsToBeRegistered) {
           _.extend(conditions, conditionsToBeRegistered);
+          filterModel.set('conditions', conditions);
           return this;
         },
         getConditions: function() {
@@ -737,10 +783,8 @@
         }
       };
       _updateActiveComponents = function() {
-        var filterOptions, instanceDefinitions;
-        filterOptions = filterModel.toJSON();
-        filterOptions.conditions = conditions;
-        instanceDefinitions = _filterInstanceDefinitions(filterOptions);
+        var instanceDefinitions;
+        instanceDefinitions = _filterInstanceDefinitions(filterModel.toJSON());
         activeInstancesCollection.set(instanceDefinitions);
         return _tryToReAddStraysToDom();
       };
@@ -915,9 +959,11 @@
         return _addInstanceToDom(instanceDefinition);
       };
       _onComponentChange = function(instanceDefinition) {
-        instanceDefinition.disposeAndRemoveInstance();
-        _addInstanceToModel(instanceDefinition);
-        return _addInstanceToDom(instanceDefinition);
+        if (instanceDefinition.passesFilter(filterModel.toJSON())) {
+          instanceDefinition.disposeAndRemoveInstance();
+          _addInstanceToModel(instanceDefinition);
+          return _addInstanceToDom(instanceDefinition);
+        }
       };
       _onComponentRemoved = function(instanceDefinition) {
         var $target;

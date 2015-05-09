@@ -15,19 +15,6 @@ class InstanceDefinitionModel extends Backbone.Model
     urlParamsModel: undefined
     reInstantiateOnUrlParamChange: false
 
-  isAttached: ->
-    instance = @get 'instance'
-    attached = false
-    if instance
-      attached = $.contains document.body, instance.el
-    return attached
-
-  dispose: ->
-    instance = @get 'instance'
-    if instance
-      do instance.dispose
-      do @clear
-
   validate: (attrs, options) ->
     unless attrs.id
       throw 'id cant be undefined'
@@ -50,6 +37,13 @@ class InstanceDefinitionModel extends Backbone.Model
     unless attrs.targetName
       throw 'targetName cant be undefined'
 
+  isAttached: ->
+    instance = @get 'instance'
+    attached = false
+    if instance
+      attached = $.contains document.body, instance.el
+    return attached
+
   incrementShowCount: (silent = true) ->
     showCount = @get 'showCount'
     showCount++
@@ -71,10 +65,95 @@ class InstanceDefinitionModel extends Backbone.Model
     if instance.postrender? and _.isFunction(instance.postRender)
       do instance.postRender
 
+  dispose: ->
+    instance = @get 'instance'
+    if instance
+      do instance.dispose
+      do @clear
+
   disposeAndRemoveInstance: ->
     instance = @get 'instance'
-    do instance.dispose
+    do instance?.dispose
     instance = undefined
     @set
       'instance': undefined
     , silent: true
+
+  passesFilter: (filter) ->
+    passes = undefined
+    if filter.route or filter.route is ''
+      urlMatch = @doesUrlPatternMatch(filter.route)
+      if urlMatch?
+        if urlMatch is true
+          @addUrlParams filter.route
+        else
+          return false
+      passes = urlMatch
+
+    if filter.filterString
+      filterStringMatch = @doesFilterStringMatch(filter.filterString)
+      if filterStringMatch?
+        return false unless filterStringMatch
+      passes = filterStringMatch
+
+    if @get('conditions')
+      areConditionsMet = @areConditionsMet filter.conditions
+      if areConditionsMet?
+        return false unless areConditionsMet
+      passes = areConditionsMet
+
+    return passes
+
+  doesFilterStringMatch: (filterString) ->
+    filter = @get 'filter'
+    if filter
+      return filterString.match new RegExp(filter)
+
+  doesUrlPatternMatch: (route) ->
+    match = false
+    urlPattern = @get 'urlPattern'
+    if urlPattern
+      unless _.isArray(urlPattern)
+        urlPattern = [urlPattern]
+
+      for pattern in urlPattern
+        routeRegEx = router._routeToRegExp pattern
+        match = routeRegEx.test route
+        if match then return match
+      return match
+    else
+      return undefined
+
+  areConditionsMet: (globalConditions) ->
+    instanceConditions = @get 'conditions'
+    shouldBeIncluded = true
+
+    if instanceConditions
+      unless _.isArray(instanceConditions)
+        instanceConditions = [instanceConditions]
+
+      for condition in instanceConditions
+        if _.isFunction(condition) and not condition()
+          shouldBeIncluded = false
+          break
+
+        else if _.isString(condition)
+          unless globalConditions
+            throw 'No global conditions was passed, condition could not be tested'
+          shouldBeIncluded = globalConditions[condition]()
+          if not shouldBeIncluded
+            break
+
+    return shouldBeIncluded
+
+  addUrlParams: (route) ->
+    urlParams = router.getArguments @get('urlPattern'), route
+    urlParams.route = route
+
+    urlParamsModel = @get 'urlParamsModel'
+    urlParamsModel.set urlParams
+
+    @set
+      'urlParams': urlParams
+    , silent: not @get('reInstantiateOnUrlParamChange')
+

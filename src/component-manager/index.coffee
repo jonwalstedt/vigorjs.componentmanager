@@ -124,6 +124,7 @@ do ->
 
     registerConditions: (conditionsToBeRegistered) ->
       _.extend conditions, conditionsToBeRegistered
+      filterModel.set 'conditions', conditions
       return @
 
     getConditions: ->
@@ -204,9 +205,7 @@ do ->
         _previousElement $el.prev(), order
 
   _updateActiveComponents = ->
-    filterOptions = filterModel.toJSON()
-    filterOptions.conditions = conditions
-    instanceDefinitions = _filterInstanceDefinitions filterOptions
+    instanceDefinitions = _filterInstanceDefinitions filterModel.toJSON()
     activeInstancesCollection.set instanceDefinitions
 
     # check if we have any stray instances in active components and then try to readd them
@@ -367,9 +366,10 @@ do ->
     _addInstanceToDom instanceDefinition
 
   _onComponentChange = (instanceDefinition) ->
-    do instanceDefinition.disposeAndRemoveInstance
-    _addInstanceToModel instanceDefinition
-    _addInstanceToDom instanceDefinition
+    if instanceDefinition.passesFilter filterModel.toJSON()
+      do instanceDefinition.disposeAndRemoveInstance
+      _addInstanceToModel instanceDefinition
+      _addInstanceToDom instanceDefinition
 
   _onComponentRemoved = (instanceDefinition) ->
     do instanceDefinition.disposeAndRemoveInstance
