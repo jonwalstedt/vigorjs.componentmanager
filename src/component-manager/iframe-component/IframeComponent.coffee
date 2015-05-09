@@ -15,8 +15,8 @@ class IframeComponent extends Backbone.View
     super
 
   initialize: (attrs) ->
-    @src = attrs?.src
-    @$el.attr 'src', attrs?.src
+    if attrs?.src?
+      @src = attrs.src
     @$el.on 'load', @onIframeLoaded
 
   render: ->

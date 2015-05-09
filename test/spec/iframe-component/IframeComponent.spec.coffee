@@ -1,4 +1,5 @@
 assert = require 'assert'
+sinon = require 'sinon'
 jsdom = require 'jsdom'
 
 componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
@@ -62,7 +63,38 @@ describe 'IframeComponent', ->
 
       iframeComponent.initialize attrs
 
+      assert.equal iframeComponent.src, 'http://www.google.com'
+
+    it 'should add load listener', ->
+
+      iframeComponent = new IframeComponent()
+      listener = sinon.spy iframeComponent.$el, 'on'
+      do iframeComponent.initialize
+
+      assert listener.calledWith 'load', iframeComponent.onIframeLoaded
+
+  describe 'render', ->
+    it 'should add src attribute to el', ->
+      iframeComponent = new IframeComponent()
+
+      attrs =
+        src: 'http://www.google.com'
+
+      iframeComponent.initialize attrs
+      do iframeComponent.render
+
       assert.equal iframeComponent.el.src, 'http://www.google.com'
 
-    it 'should add on load listener', ->
+  describe 'dispose', ->
+    it 'shuld remove load listener and call this.remove', ->
 
+      iframeComponent = new IframeComponent()
+      listener = sinon.spy iframeComponent.$el, 'off'
+      remove = sinon.spy iframeComponent, 'remove'
+      do iframeComponent.dispose
+
+      assert listener.calledWith 'load', iframeComponent.onIframeLoaded
+      assert listener.called
+
+  describe 'onIframeLoaded', ->
+    it 'should be called after iframe content has been loaded, no tests yet..', ->

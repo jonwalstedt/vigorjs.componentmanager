@@ -128,8 +128,9 @@
       }
 
       IframeComponent.prototype.initialize = function(attrs) {
-        this.src = attrs != null ? attrs.src : void 0;
-        this.$el.attr('src', attrs != null ? attrs.src : void 0);
+        if ((attrs != null ? attrs.src : void 0) != null) {
+          this.src = attrs.src;
+        }
         return this.$el.on('load', this.onIframeLoaded);
       };
 
