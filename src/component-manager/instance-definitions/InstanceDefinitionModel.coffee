@@ -80,7 +80,6 @@ class InstanceDefinitionModel extends Backbone.Model
     , silent: true
 
   passesFilter: (filter) ->
-    passes = undefined
     if filter.route or filter.route is ''
       urlMatch = @doesUrlPatternMatch(filter.route)
       if urlMatch?
@@ -88,21 +87,17 @@ class InstanceDefinitionModel extends Backbone.Model
           @addUrlParams filter.route
         else
           return false
-      passes = urlMatch
 
     if filter.filterString
       filterStringMatch = @doesFilterStringMatch(filter.filterString)
       if filterStringMatch?
         return false unless filterStringMatch
-      passes = filterStringMatch
 
     if @get('conditions')
       areConditionsMet = @areConditionsMet filter.conditions
       if areConditionsMet?
         return false unless areConditionsMet
-      passes = areConditionsMet
-
-    return passes
+    return true
 
   doesFilterStringMatch: (filterString) ->
     filter = @get 'filter'

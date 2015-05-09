@@ -9,14 +9,11 @@
       define(['backbone', 'underscore'], function(Backbone, _) {
         return factory(root, Backbone, _);
       });
-      console.log('amd');
     } else if (typeof exports === "object") {
       Backbone = require('backbone');
       _ = require('underscore');
-      console.log('commonjs');
       module.exports = factory(root, Backbone, _);
     } else {
-      console.log('global');
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {

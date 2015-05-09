@@ -8,14 +8,11 @@
       define(['backbone', 'underscore'], function(Backbone, _) {
         return factory(root, Backbone, _);
       });
-      console.log('amd');
     } else if (typeof exports === "object") {
       Backbone = require('backbone');
       _ = require('underscore');
-      console.log('commonjs');
       module.exports = factory(root, Backbone, _);
     } else {
-      console.log('global');
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
@@ -346,8 +343,7 @@
       };
 
       InstanceDefinitionModel.prototype.passesFilter = function(filter) {
-        var areConditionsMet, filterStringMatch, passes, urlMatch;
-        passes = void 0;
+        var areConditionsMet, filterStringMatch, urlMatch;
         if (filter.route || filter.route === '') {
           urlMatch = this.doesUrlPatternMatch(filter.route);
           if (urlMatch != null) {
@@ -357,7 +353,6 @@
               return false;
             }
           }
-          passes = urlMatch;
         }
         if (filter.filterString) {
           filterStringMatch = this.doesFilterStringMatch(filter.filterString);
@@ -366,7 +361,6 @@
               return false;
             }
           }
-          passes = filterStringMatch;
         }
         if (this.get('conditions')) {
           areConditionsMet = this.areConditionsMet(filter.conditions);
@@ -375,9 +369,8 @@
               return false;
             }
           }
-          passes = areConditionsMet;
         }
-        return passes;
+        return true;
       };
 
       InstanceDefinitionModel.prototype.doesFilterStringMatch = function(filterString) {
