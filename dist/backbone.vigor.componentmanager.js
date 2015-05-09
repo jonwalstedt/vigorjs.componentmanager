@@ -377,7 +377,7 @@
         var filter;
         filter = this.get('filter');
         if (filter) {
-          return filterString.match(new RegExp(filter));
+          return !!filterString.match(new RegExp(filter));
         }
       };
 

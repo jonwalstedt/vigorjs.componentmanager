@@ -10,7 +10,8 @@ var componentSettings = {
       {
         "id": "hello-world-instance",
         "componentId": "hello-world",
-        "urlPattern": "add-hello-world" // #add-hello-world
+        "urlPattern": "add-hello-world", // #add-hello-world
+        "filter": "test"
       }
     ]
   }

@@ -102,7 +102,7 @@ class InstanceDefinitionModel extends Backbone.Model
   doesFilterStringMatch: (filterString) ->
     filter = @get 'filter'
     if filter
-      return filterString.match new RegExp(filter)
+      return !!filterString.match new RegExp(filter)
 
   doesUrlPatternMatch: (route) ->
     match = false
