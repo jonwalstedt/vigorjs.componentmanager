@@ -26,9 +26,9 @@
       // Example of setting instance conditions on the fly
       // Sets the condition to only show this component between the
       // specified start and end time
-      Vigor.componentManager.updateInstance('app-banner', {
-        conditions: ["authenticated", _.bind(this.exampleCondition, this)]
-      });
+      // Vigor.componentManager.updateInstance('app-banner', {
+      //   conditions: ["authenticated", _.bind(this.exampleCondition, this)]
+      // });
     },
 
     exampleCondition: function () {

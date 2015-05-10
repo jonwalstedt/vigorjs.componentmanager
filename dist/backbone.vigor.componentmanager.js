@@ -98,7 +98,8 @@
 
       FilterModel.prototype.defaults = {
         route: void 0,
-        filterString: void 0
+        filterString: void 0,
+        conditions: void 0
       };
 
       return FilterModel;
@@ -161,7 +162,7 @@
         args: void 0,
         conditions: void 0,
         instance: void 0,
-        maxShowCount: 0
+        maxShowCount: void 0
       };
 
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
@@ -207,6 +208,33 @@
           throw "No constructor function found for " + src;
         }
         return componentClass;
+      };
+
+      ComponentDefinitionModel.prototype.areConditionsMet = function(globalConditions) {
+        var componentConditions, condition, j, len, shouldBeIncluded;
+        componentConditions = this.get('conditions');
+        shouldBeIncluded = true;
+        if (componentConditions) {
+          if (!_.isArray(componentConditions)) {
+            componentConditions = [componentConditions];
+          }
+          for (j = 0, len = componentConditions.length; j < len; j++) {
+            condition = componentConditions[j];
+            if (_.isFunction(condition) && !condition()) {
+              shouldBeIncluded = false;
+              break;
+            } else if (_.isString(condition)) {
+              if (!globalConditions) {
+                throw 'No global conditions was passed, condition could not be tested';
+              }
+              shouldBeIncluded = globalConditions[condition]();
+              if (!shouldBeIncluded) {
+                break;
+              }
+            }
+          }
+        }
+        return shouldBeIncluded;
       };
 
       ComponentDefinitionModel.prototype._isUrl = function(string) {
@@ -340,6 +368,24 @@
         }, {
           silent: true
         });
+      };
+
+      InstanceDefinitionModel.prototype.exceedsMaximumShowCount = function(componentMaxShowCount) {
+        var maxShowCount, shouldBeIncluded, showCount;
+        showCount = this.get('showCount');
+        maxShowCount = this.get('maxShowCount');
+        shouldBeIncluded = true;
+        if (!maxShowCount) {
+          maxShowCount = componentMaxShowCount;
+        }
+        if (maxShowCount) {
+          if (showCount < maxShowCount) {
+            shouldBeIncluded = true;
+          } else {
+            shouldBeIncluded = false;
+          }
+        }
+        return shouldBeIncluded;
       };
 
       InstanceDefinitionModel.prototype.passesFilter = function(filter) {
@@ -568,7 +614,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByShowConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeInstancesCollection, componentClassName, componentDefinitionsCollection, componentManager, conditions, filterModel, instanceDefinitionsCollection, targetPrefix;
+      var $context, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeInstancesCollection, componentClassName, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
       targetPrefix = 'component-area';
       componentDefinitionsCollection = void 0;
@@ -576,7 +622,6 @@
       activeInstancesCollection = void 0;
       filterModel = void 0;
       $context = void 0;
-      conditions = {};
       EVENTS = {
         ADD: 'add',
         CHANGE: 'change',
@@ -590,6 +635,7 @@
       };
       componentManager = {
         initialize: function(settings) {
+          var conditions, silent;
           componentDefinitionsCollection = new ComponentDefinitionsCollection();
           instanceDefinitionsCollection = new InstanceDefinitionsCollection();
           activeInstancesCollection = new ActiveInstancesCollection();
@@ -601,12 +647,13 @@
           } else {
             $context = $('body');
           }
-          if (settings.componentSettings) {
-            _parseComponentSettings(settings.componentSettings);
-          }
           conditions = settings.componentSettings.conditions;
           if (conditions && !_.isEmpty(conditions)) {
-            this.registerConditions(settings.componentSettings.conditions);
+            silent = true;
+            this.registerConditions(settings.componentSettings.conditions, silent);
+          }
+          if (settings.componentSettings) {
+            _parseComponentSettings(settings.componentSettings);
           }
           return this;
         },
@@ -696,15 +743,25 @@
         getTargetPrefix: function() {
           return targetPrefix;
         },
-        registerConditions: function(conditionsToBeRegistered) {
-          _.extend(conditions, conditionsToBeRegistered);
-          filterModel.set('conditions', conditions);
+        registerConditions: function(conditionsToBeRegistered, silent) {
+          var conditions;
+          if (silent == null) {
+            silent = false;
+          }
+          conditions = filterModel.get('conditions') || {};
+          conditions = _.extend(conditions, conditionsToBeRegistered);
+          filterModel.set({
+            'conditions': conditions
+          }, {
+            silent: silent
+          });
           return this;
         },
         getConditions: function() {
-          return conditions;
+          return filterModel.get('conditions');
         },
         clear: function() {
+          var conditions;
           componentDefinitionsCollection.reset();
           instanceDefinitionsCollection.reset();
           activeInstancesCollection.reset();
@@ -713,6 +770,7 @@
           return this;
         },
         dispose: function() {
+          var conditions;
           this.clear();
           this._removeListeners();
           filterModel = void 0;
@@ -786,48 +844,24 @@
         var instanceDefinitions;
         instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinitions(filterOptions);
         instanceDefinitions = _filterInstanceDefinitionsByShowCount(instanceDefinitions);
-        instanceDefinitions = _filterInstanceDefinitionsByShowConditions(instanceDefinitions);
+        instanceDefinitions = _filterInstanceDefinitionsByComponentConditions(instanceDefinitions);
         return instanceDefinitions;
       };
       _filterInstanceDefinitionsByShowCount = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, function(instanceDefinition) {
-          var componentDefinition, maxShowCount, shouldBeIncluded, showCount;
+          var componentDefinition, componentMaxShowCount;
           componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
-          showCount = instanceDefinition.get('showCount');
-          maxShowCount = instanceDefinition.get('maxShowCount');
-          shouldBeIncluded = true;
-          if (!maxShowCount) {
-            maxShowCount = componentDefinition.get('maxShowCount');
-          }
-          if (maxShowCount) {
-            if (showCount < maxShowCount) {
-              shouldBeIncluded = true;
-            } else {
-              shouldBeIncluded = false;
-            }
-          }
-          return shouldBeIncluded;
+          componentMaxShowCount = componentDefinition.get('maxShowCount');
+          return instanceDefinition.exceedsMaximumShowCount(componentMaxShowCount);
         });
       };
-      _filterInstanceDefinitionsByShowConditions = function(instanceDefinitions) {
+      _filterInstanceDefinitionsByComponentConditions = function(instanceDefinitions) {
+        var globalConditions;
+        globalConditions = filterModel.get('conditions');
         return _.filter(instanceDefinitions, function(instanceDefinition) {
-          var componentConditions, componentDefinition, condition, j, len, shouldBeIncluded;
+          var componentDefinition;
           componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
-          componentConditions = componentDefinition.get('conditions');
-          shouldBeIncluded = true;
-          if (componentConditions) {
-            if (!_.isArray(componentConditions)) {
-              componentConditions = [componentConditions];
-            }
-            for (j = 0, len = componentConditions.length; j < len; j++) {
-              condition = componentConditions[j];
-              if (!conditions[condition]()) {
-                shouldBeIncluded = false;
-                return;
-              }
-            }
-          }
-          return shouldBeIncluded;
+          return componentDefinition.areConditionsMet(globalConditions);
         });
       };
       _parseComponentSettings = function(componentSettings) {
@@ -907,7 +941,6 @@
           instanceDefinition.renderInstance();
         }
         _addInstanceInOrder(instanceDefinition);
-        instanceDefinition.incrementShowCount();
         return _isComponentAreaEmpty($target);
       };
       _addInstanceInOrder = function(instanceDefinition) {
@@ -949,7 +982,8 @@
       };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);
-        return _addInstanceToDom(instanceDefinition);
+        _addInstanceToDom(instanceDefinition);
+        return instanceDefinition.incrementShowCount();
       };
       _onComponentChange = function(instanceDefinition) {
         if (instanceDefinition.passesFilter(filterModel.toJSON())) {

@@ -8,7 +8,6 @@ do ->
   activeInstancesCollection = undefined
   filterModel = undefined
   $context = undefined
-  conditions = {}
 
   EVENTS =
 
@@ -46,12 +45,13 @@ do ->
       else
         $context = $ 'body'
 
-      if settings.componentSettings
-        _parseComponentSettings settings.componentSettings
-
       conditions = settings.componentSettings.conditions
       if conditions and not _.isEmpty(conditions)
-        @registerConditions settings.componentSettings.conditions
+        silent = true
+        @registerConditions settings.componentSettings.conditions, silent
+
+      if settings.componentSettings
+        _parseComponentSettings settings.componentSettings
 
       return @
 
@@ -123,13 +123,16 @@ do ->
     getTargetPrefix: ->
       return targetPrefix
 
-    registerConditions: (conditionsToBeRegistered) ->
-      _.extend conditions, conditionsToBeRegistered
-      filterModel.set 'conditions', conditions
+    registerConditions: (conditionsToBeRegistered, silent = false) ->
+      conditions = filterModel.get('conditions')or {}
+      conditions = _.extend conditions, conditionsToBeRegistered
+      filterModel.set
+        'conditions': conditions
+      , silent: silent
       return @
 
     getConditions: ->
-      return conditions
+      return filterModel.get 'conditions'
 
     clear: ->
       do componentDefinitionsCollection.reset
@@ -215,40 +218,20 @@ do ->
   _filterInstanceDefinitions = (filterOptions) ->
     instanceDefinitions = instanceDefinitionsCollection.getInstanceDefinitions filterOptions
     instanceDefinitions = _filterInstanceDefinitionsByShowCount instanceDefinitions
-    instanceDefinitions = _filterInstanceDefinitionsByShowConditions instanceDefinitions
+    instanceDefinitions = _filterInstanceDefinitionsByComponentConditions instanceDefinitions
     return instanceDefinitions
 
   _filterInstanceDefinitionsByShowCount = (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) ->
       componentDefinition = componentDefinitionsCollection.get instanceDefinition.get('componentId')
-      showCount = instanceDefinition.get 'showCount'
-      # maxShowCount on an instance level overrides maxShowCount on a componentDefinition level
-      maxShowCount = instanceDefinition.get 'maxShowCount'
-      shouldBeIncluded = true
-      unless maxShowCount
-        maxShowCount = componentDefinition.get 'maxShowCount'
+      componentMaxShowCount = componentDefinition.get 'maxShowCount'
+      return instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
-      if maxShowCount
-        if showCount < maxShowCount
-          shouldBeIncluded = true
-        else
-          shouldBeIncluded = false
-
-      return shouldBeIncluded
-
-   _filterInstanceDefinitionsByShowConditions = (instanceDefinitions) ->
+  _filterInstanceDefinitionsByComponentConditions = (instanceDefinitions) ->
+    globalConditions = filterModel.get 'conditions'
     _.filter instanceDefinitions, (instanceDefinition) ->
       componentDefinition = componentDefinitionsCollection.get instanceDefinition.get('componentId')
-      componentConditions = componentDefinition.get 'conditions'
-      shouldBeIncluded = true
-      if componentConditions
-        unless _.isArray(componentConditions)
-          componentConditions = [componentConditions]
-        for condition in componentConditions
-          if not conditions[condition]()
-            shouldBeIncluded = false
-            return
-      return shouldBeIncluded
+      return componentDefinition.areConditionsMet(globalConditions)
 
   _parseComponentSettings = (componentSettings) ->
     componentDefinitions = componentSettings.components or \
@@ -323,7 +306,6 @@ do ->
       do instanceDefinition.renderInstance
 
     _addInstanceInOrder instanceDefinition
-    do instanceDefinition.incrementShowCount
     _isComponentAreaEmpty $target
 
   _addInstanceInOrder = (instanceDefinition) ->
@@ -364,6 +346,7 @@ do ->
   _onComponentAdded = (instanceDefinition) ->
     _addInstanceToModel instanceDefinition
     _addInstanceToDom instanceDefinition
+    do instanceDefinition.incrementShowCount
 
   _onComponentChange = (instanceDefinition) ->
     if instanceDefinition.passesFilter filterModel.toJSON()
@@ -404,7 +387,6 @@ do ->
   __testOnly.activeInstancesCollection = activeInstancesCollection
   __testOnly.filterModel = filterModel
   __testOnly.$context = $context
-  __testOnly.conditions = conditions
 
   # mehtods
   __testOnly._addListeners = _addListeners
@@ -413,7 +395,7 @@ do ->
   __testOnly._updateActiveComponents = _updateActiveComponents
   __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions
   __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount
-  __testOnly._filterInstanceDefinitionsByShowConditions = _filterInstanceDefinitionsByShowConditions
+  __testOnly._filterInstanceDefinitionsByComponentConditions = _filterInstanceDefinitionsByComponentConditions
   __testOnly._parseComponentSettings = _parseComponentSettings
   __testOnly._registerComponents = _registerComponents
   __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons

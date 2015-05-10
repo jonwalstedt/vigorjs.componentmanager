@@ -7,7 +7,7 @@ class ComponentDefinitionModel extends Backbone.Model
     args: undefined
     conditions: undefined
     instance: undefined
-    maxShowCount: 0
+    maxShowCount: undefined
 
   validate: (attrs, options) ->
     unless attrs.id
@@ -52,6 +52,26 @@ class ComponentDefinitionModel extends Backbone.Model
 
     return componentClass
 
+  areConditionsMet: (globalConditions) ->
+    componentConditions = @get 'conditions'
+    shouldBeIncluded = true
+
+    if componentConditions
+      unless _.isArray(componentConditions)
+        componentConditions = [componentConditions]
+
+      for condition in componentConditions
+        if _.isFunction(condition) and not condition()
+          shouldBeIncluded = false
+          break
+
+        else if _.isString(condition)
+          unless globalConditions
+            throw 'No global conditions was passed, condition could not be tested'
+          shouldBeIncluded = globalConditions[condition]()
+          if not shouldBeIncluded
+            break
+    return shouldBeIncluded
 
   _isUrl: (string) ->
     urlRegEx = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-]*)?\??(?:[\-\+=&;%@\.\w]*)#?(?:[\.\!\/\\\w]*))?)/g;

@@ -7,15 +7,15 @@
  ✔ Handle global components that gets removed when layout change /do we readd? @done (15-04-15 18:55)
  ✔ Map urlparams so that model contains key value not an array of values @done (15-04-21 00:04)
  ✔ Implement conditions  - method to set general conditions, and component-level overrides (object with methods that returns boolean) @done (15-04-20 23:07)
- ☐ Improve Controls
- ☐ AMD and Commonjs modules - dont forget the require logic for this
  ☐ Rename filterstring logic and have one including and one excluding filter (ex include everything that matches string, exclude everything that matches string)
  ☐ Make a small example reordering a list of components using vigorjs and the component manager (produce a list with random order on an interval)
+ ☐ Improve Controls
+ ☐ AMD and Commonjs modules - dont forget the require logic for this
  ☐ Protected components?
  ☐ Hidden components and the hidden array
  ☐ Readd hidden components
- ☐ Change properties on the fly: order, target, urlpattern etc.
- ☐ Ability to save/get setup and save to local storage
+ ✔ Change properties on the fly: order, target, urlpattern etc. @done (15-05-10 09:14)
+ ☐ Ability to serialize save/get setup and save to local storage
  ☐ Unit test
  ✔ Improved parsing @done (15-04-29 00:41)
  ☐ Does fix for global stray components cause memory leak?
