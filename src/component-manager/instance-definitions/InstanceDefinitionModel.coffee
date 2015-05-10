@@ -3,7 +3,7 @@ class InstanceDefinitionModel extends Backbone.Model
   defaults:
     id: undefined
     componentId: undefined
-    filter: undefined
+    filterString: undefined
     conditions: undefined
     args: undefined
     order: undefined
@@ -104,21 +104,34 @@ class InstanceDefinitionModel extends Backbone.Model
         else
           return false
 
-    if filter.filterString
-      filterStringMatch = @doesFilterStringMatch(filter.filterString)
-      if filterStringMatch?
-        return false unless filterStringMatch
-
     if @get('conditions')
       areConditionsMet = @areConditionsMet filter.conditions
       if areConditionsMet?
         return false unless areConditionsMet
+
+    if filter.includeIfStringMatches
+      filterStringMatch = @includeIfStringMatches(filter.includeIfStringMatches)
+      if filterStringMatch?
+        return filterStringMatch
+
+    if filter.hasToMatchString
+      return @hasToMatchString(filter.hasToMatchString)
+
+    if filter.cantMatchString
+      return @cantMatchString(filter.cantMatchString)
+
     return true
 
-  doesFilterStringMatch: (filterString) ->
-    filter = @get 'filter'
+  hasToMatchString: (filterString) ->
+    return !!@includeIfStringMatches(filterString)
+
+  cantMatchString: (filterString) ->
+    return not @hasToMatchString filterString
+
+  includeIfStringMatches: (filterString) ->
+    filter = @get 'filterString'
     if filter
-      return !!filterString.match new RegExp(filter)
+      return !!filter.match new RegExp(filterString)
 
   doesUrlPatternMatch: (route) ->
     match = false

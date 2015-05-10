@@ -98,8 +98,22 @@
 
       FilterModel.prototype.defaults = {
         route: void 0,
-        filterString: void 0,
+        includeIfStringMatches: void 0,
+        hasToMatchString: void 0,
+        cantMatchString: void 0,
         conditions: void 0
+      };
+
+      FilterModel.prototype.parse = function(attrs) {
+        var newValues;
+        newValues = {
+          route: attrs.route || this.get('route') || void 0,
+          includeIfStringMatches: attrs.includeIfStringMatches || void 0,
+          hasToMatchString: attrs.hasToMatchString || void 0,
+          cantMatchString: attrs.cantMatchString || void 0,
+          conditions: attrs.conditions || this.get('conditions') || void 0
+        };
+        return newValues;
       };
 
       return FilterModel;
@@ -157,7 +171,6 @@
       ComponentDefinitionModel.prototype.defaults = {
         id: void 0,
         src: void 0,
-        showcount: void 0,
         height: void 0,
         args: void 0,
         conditions: void 0,
@@ -268,7 +281,7 @@
       InstanceDefinitionModel.prototype.defaults = {
         id: void 0,
         componentId: void 0,
-        filter: void 0,
+        filterString: void 0,
         conditions: void 0,
         args: void 0,
         order: void 0,
@@ -400,14 +413,6 @@
             }
           }
         }
-        if (filter.filterString) {
-          filterStringMatch = this.doesFilterStringMatch(filter.filterString);
-          if (filterStringMatch != null) {
-            if (!filterStringMatch) {
-              return false;
-            }
-          }
-        }
         if (this.get('conditions')) {
           areConditionsMet = this.areConditionsMet(filter.conditions);
           if (areConditionsMet != null) {
@@ -416,14 +421,34 @@
             }
           }
         }
+        if (filter.includeIfStringMatches) {
+          filterStringMatch = this.includeIfStringMatches(filter.includeIfStringMatches);
+          if (filterStringMatch != null) {
+            return filterStringMatch;
+          }
+        }
+        if (filter.hasToMatchString) {
+          return this.hasToMatchString(filter.hasToMatchString);
+        }
+        if (filter.cantMatchString) {
+          return this.cantMatchString(filter.cantMatchString);
+        }
         return true;
       };
 
-      InstanceDefinitionModel.prototype.doesFilterStringMatch = function(filterString) {
+      InstanceDefinitionModel.prototype.hasToMatchString = function(filterString) {
+        return !!this.includeIfStringMatches(filterString);
+      };
+
+      InstanceDefinitionModel.prototype.cantMatchString = function(filterString) {
+        return !this.hasToMatchString(filterString);
+      };
+
+      InstanceDefinitionModel.prototype.includeIfStringMatches = function(filterString) {
         var filter;
-        filter = this.get('filter');
+        filter = this.get('filterString');
         if (filter) {
-          return !!filterString.match(new RegExp(filter));
+          return !!filter.match(new RegExp(filterString));
         }
       };
 
@@ -663,7 +688,7 @@
           return this;
         },
         refresh: function(filterOptions) {
-          filterModel.set(filterOptions);
+          filterModel.set(filterModel.parse(filterOptions));
           return this;
         },
         serialize: function() {
@@ -780,7 +805,7 @@
         }
       };
       _addListeners = function() {
-        filterModel.on('add change remove', _updateActiveComponents);
+        filterModel.on('change', _updateActiveComponents);
         componentDefinitionsCollection.on('add change remove', _updateActiveComponents);
         instanceDefinitionsCollection.on('add change remove', _updateActiveComponents);
         activeInstancesCollection.on('add', _onComponentAdded);

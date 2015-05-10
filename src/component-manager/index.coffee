@@ -61,7 +61,7 @@ do ->
       return @
 
     refresh: (filterOptions) ->
-      filterModel.set filterOptions
+      filterModel.set filterModel.parse(filterOptions)
       return @
 
     serialize: ->
@@ -154,7 +154,7 @@ do ->
   # Privat methods
   # ============================================================================
   _addListeners = ->
-    filterModel.on 'add change remove', _updateActiveComponents
+    filterModel.on 'change', _updateActiveComponents
     componentDefinitionsCollection.on 'add change remove', _updateActiveComponents
     instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
 

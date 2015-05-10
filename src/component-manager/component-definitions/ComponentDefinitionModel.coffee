@@ -2,7 +2,6 @@ class ComponentDefinitionModel extends Backbone.Model
   defaults:
     id: undefined
     src: undefined
-    showcount: undefined
     height: undefined
     args: undefined
     conditions: undefined
