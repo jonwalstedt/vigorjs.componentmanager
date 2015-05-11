@@ -1,18 +1,31 @@
 <html>
   <head>
-    <title>Vigorjs componentmanager - Hello World</title>
+    <title>Vigorjs componentmanager</title>
     <link rel="stylesheet" href="../common/styles.css">
   </head>
   <body>
 
     <div class="app-wrapper">
       <header class="example-header">
-        <a href="#add-hello-world">Add Hello World</a>
-        <a href="#remove-hello-world">Remove Hello World</a>
+        <p>
+          <a href="#passing-arguments/news/political">Passing arguments</a>
+          <a href="#passing-arguments/news/domestic">Passing arguments</a>
+          <a href="#splat/a/lot/of/sub/sections/in/the/url">Splats</a>
+          <a href="#optional/arguments">Optional Arguments</a>
+          <a href="#optional/arguments/can-be-optional">Optional Arguments</a>
+          <a href="#cant-match-string">cantMatchString</a>
+        </p>
       </header>
       <div class="component-area--main"></div>
     </div>
 
+    <!-- BEGIN: Underscore Templates. -->
+    <!-- ############# Components ###############-->
+    <script type="text/template" class="social-media-template">
+      Hello World
+    </script>
+
+    <!-- ############# End of templates ###############-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
@@ -21,16 +34,16 @@
 
     <script src="./app/Router.js"></script>
     <script src="./components.js"></script>
-    <script src="./components/HelloWorldComponent.js"></script>
+    <script src="./components/FilterComponent.js"></script>
     <script src="./app/app.js"></script>
 
     <script type="text/javascript">
       var app = app || {},
-          helloWorld;
+          filter;
 
       $(document).ready(function () {
         'use strict'
-        helloWorld = new app.HelloWorld({
+        filter = new app.Filter({
           el: '.app-wrapper'
         });
       });

@@ -1,24 +1,26 @@
 <html>
   <head>
     <title>Vigorjs componentmanager</title>
+    <link rel="stylesheet" href="../common/styles.css">
   </head>
   <body>
-
     <div class="app-wrapper">
-      <p>There are three different default ways of filtering on a string: </p>
-      <ul>
-        <li>
-          Either the filter will include the component if the string matches but also include all components that doesnt have a filter string
-        </li>
-        <li>Or it will return only components matching the string passed to the filter</li>
-        <li>Or it will return only components NOT matching the string passed to the filter</li>
-      </ul>
-      <p>Try passing the string "test" to the three different methods of filtering by clicking the links below:</p>
-      <p>
-        <a href="#include-if-string-matches">includeIfStringMatches</a>
-        <a href="#has-to-match-string">hasToMatchString</a>
-        <a href="#cant-match-string">cantMatchString</a>
-      </p>
+      <header class="example-header">
+        <p>There are three different default ways of filtering on a string: </p>
+        <ul>
+          <li>
+            Either the filter will include the component if the string matches but also include all components that doesnt have a filter string
+          </li>
+          <li>Or it will return only components matching the string passed to the filter</li>
+          <li>Or it will return only components NOT matching the string passed to the filter</li>
+        </ul>
+        <p>Try passing the string "test" to the three different methods of filtering by clicking the links below:</p>
+        <p>
+          <a href="#include-if-string-matches">includeIfStringMatches</a>
+          <a href="#has-to-match-string">hasToMatchString</a>
+          <a href="#cant-match-string">cantMatchString</a>
+        </p>
+      </header>
       <div class="component-area--main"></div>
     </div>
 

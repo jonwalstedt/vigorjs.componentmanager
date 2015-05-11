@@ -622,17 +622,11 @@
       ActiveInstancesCollection.prototype.model = InstanceDefinitionModel;
 
       ActiveInstancesCollection.prototype.getStrays = function() {
-        var strays;
-        strays = _.filter(this.models, (function(_this) {
+        return _.filter(this.models, (function(_this) {
           return function(model) {
-            if (model.get('instance')) {
-              return !model.isAttached();
-            } else {
-              return false;
-            }
+            return !model.isAttached();
           };
         })(this));
-        return strays;
       };
 
       return ActiveInstancesCollection;
@@ -945,14 +939,17 @@
         return instanceDefinition;
       };
       _tryToReAddStraysToDom = function() {
-        var j, len, render, results, stray, strays;
-        strays = activeInstancesCollection.getStrays();
+        var instanceDefinition, j, len, ref, render, results, stray;
+        ref = activeInstancesCollection.getStrays();
         results = [];
-        for (j = 0, len = strays.length; j < len; j++) {
-          stray = strays[j];
+        for (j = 0, len = ref.length; j < len; j++) {
+          stray = ref[j];
           render = false;
-          _addInstanceToDom(stray, render);
-          results.push(stray.get('instance').delegateEvents());
+          if (instanceDefinition = _addInstanceToDom(stray, render)) {
+            results.push(instanceDefinition.dispose());
+          } else {
+            results.push(stray.get('instance').delegateEvents());
+          }
         }
         return results;
       };
@@ -965,8 +962,12 @@
         if (render) {
           instanceDefinition.renderInstance();
         }
-        _addInstanceInOrder(instanceDefinition);
-        return _isComponentAreaEmpty($target);
+        if ($target.length > 0) {
+          _addInstanceInOrder(instanceDefinition);
+          return _isComponentAreaEmpty($target);
+        } else {
+          return instanceDefinition;
+        }
       };
       _addInstanceInOrder = function(instanceDefinition) {
         var $previousElement, $target, instance, order;

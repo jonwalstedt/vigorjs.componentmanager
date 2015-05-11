@@ -8,7 +8,7 @@ var componentSettings = {
   "targets": {
     "main": [
       {
-        "id": "filter-string-instance",
+        "id": "filter-string-instance-1",
         "componentId": "filter-string",
         "args": {
           "title": "id: 1",
@@ -18,7 +18,7 @@ var componentSettings = {
       },
 
       {
-        "id": "filter-string-second-instance",
+        "id": "filter-string-instance-2",
         "componentId": "filter-string",
         "args": {
           "title": "id: 2",
@@ -29,7 +29,7 @@ var componentSettings = {
       },
 
       {
-        "id": "filter-string-third-instance",
+        "id": "filter-string-instance-3",
         "componentId": "filter-string",
         "args": {
           "title": "id: 3",

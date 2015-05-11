@@ -11,7 +11,7 @@ app.components.FilterComponent = Backbone.View.extend({
 
   render: function () {
     markup = '<p>Filter component ' + this.title + '<br/>';
-    markup += '<em>filterString: ' + this.filterString+ '</em></p>';
+    markup += '<em>filterString: ' + this.filterString + '</em></p>';
     this.$el.html(markup);
     return this;
   },
