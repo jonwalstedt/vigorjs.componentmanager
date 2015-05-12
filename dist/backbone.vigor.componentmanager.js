@@ -68,7 +68,7 @@
           results = [];
           for (i = j = 0, len = matches.length; j < len; i = ++j) {
             name = matches[i];
-            name = name.replace(':', '').replace('(', '').replace(')', '').replace('*', '');
+            name = name.replace(':', '').replace('(', '').replace(')', '').replace('*', '').replace('/', '');
             results.push(params[name] = args[i]);
           }
           return results;
@@ -105,13 +105,18 @@
       };
 
       FilterModel.prototype.parse = function(attrs) {
-        var newValues;
+        var newValues, route;
+        if ((attrs != null ? attrs.route : void 0) === "") {
+          route = "";
+        } else {
+          route = (attrs != null ? attrs.route : void 0) || this.get('route') || void 0;
+        }
         newValues = {
-          route: attrs.route || this.get('route') || void 0,
-          includeIfStringMatches: attrs.includeIfStringMatches || void 0,
-          hasToMatchString: attrs.hasToMatchString || void 0,
-          cantMatchString: attrs.cantMatchString || void 0,
-          conditions: attrs.conditions || this.get('conditions') || void 0
+          route: route,
+          includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
+          hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
+          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0,
+          conditions: (attrs != null ? attrs.conditions : void 0) || this.get('conditions') || void 0
         };
         return newValues;
       };
@@ -239,6 +244,9 @@
             } else if (_.isString(condition)) {
               if (!globalConditions) {
                 throw 'No global conditions was passed, condition could not be tested';
+              }
+              if (globalConditions[condition] == null) {
+                throw "Trying to verify condition " + condition + " but it has not been registered yet";
               }
               shouldBeIncluded = globalConditions[condition]();
               if (!shouldBeIncluded) {
@@ -369,7 +377,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.disposeAndRemoveInstance = function() {
+      InstanceDefinitionModel.prototype.disposeInstance = function() {
         var instance;
         instance = this.get('instance');
         if (instance != null) {
@@ -490,6 +498,9 @@
             } else if (_.isString(condition)) {
               if (!globalConditions) {
                 throw 'No global conditions was passed, condition could not be tested';
+              }
+              if (globalConditions[condition] == null) {
+                throw "Trying to verify condition " + condition + " but it has not been registered yet";
               }
               shouldBeIncluded = globalConditions[condition]();
               if (!shouldBeIncluded) {
@@ -633,7 +644,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeInstancesCollection, componentClassName, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection, targetPrefix;
+      var $context, ERROR, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeInstancesCollection, componentClassName, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
       targetPrefix = 'component-area';
       componentDefinitionsCollection = void 0;
@@ -641,6 +652,10 @@
       activeInstancesCollection = void 0;
       filterModel = void 0;
       $context = void 0;
+      ERROR = {
+        UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?',
+        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
+      };
       EVENTS = {
         ADD: 'add',
         CHANGE: 'change',
@@ -682,7 +697,11 @@
           return this;
         },
         refresh: function(filterOptions) {
-          filterModel.set(filterModel.parse(filterOptions));
+          if (filterOptions) {
+            filterModel.set(filterModel.parse(filterOptions));
+          } else {
+            _updateActiveComponents();
+          }
           return this;
         },
         serialize: function() {
@@ -728,11 +747,12 @@
         updateInstance: function(instanceId, attributes) {
           var instanceDefinition;
           instanceDefinition = instanceDefinitionsCollection.get(instanceId);
-          if (instanceDefinition != null) {
-            instanceDefinition.set(attributes, {
-              validate: true
-            });
+          if (!instanceDefinition) {
+            throw ERROR.UNKNOWN_INSTANCE_DEFINITION;
           }
+          instanceDefinition.set(attributes, {
+            validate: true
+          });
           return this;
         },
         removeInstance: function(instanceId) {
@@ -870,6 +890,9 @@
         return _.filter(instanceDefinitions, function(instanceDefinition) {
           var componentDefinition, componentMaxShowCount;
           componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
+          if (!componentDefinition) {
+            throw ERROR.UNKNOWN_COMPONENT_DEFINITION;
+          }
           componentMaxShowCount = componentDefinition.get('maxShowCount');
           return instanceDefinition.exceedsMaximumShowCount(componentMaxShowCount);
         });
@@ -1013,14 +1036,14 @@
       };
       _onComponentChange = function(instanceDefinition) {
         if (instanceDefinition.passesFilter(filterModel.toJSON())) {
-          instanceDefinition.disposeAndRemoveInstance();
+          instanceDefinition.disposeInstance();
           _addInstanceToModel(instanceDefinition);
           return _addInstanceToDom(instanceDefinition);
         }
       };
       _onComponentRemoved = function(instanceDefinition) {
         var $target;
-        instanceDefinition.disposeAndRemoveInstance();
+        instanceDefinition.disposeInstance();
         $target = $("." + (instanceDefinition.get('targetName')), $context);
         return _isComponentAreaEmpty($target);
       };

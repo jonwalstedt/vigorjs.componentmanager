@@ -67,6 +67,10 @@ class ComponentDefinitionModel extends Backbone.Model
         else if _.isString(condition)
           unless globalConditions
             throw 'No global conditions was passed, condition could not be tested'
+
+          unless globalConditions[condition]?
+            throw "Trying to verify condition #{condition} but it has not been registered yet"
+
           shouldBeIncluded = globalConditions[condition]()
           if not shouldBeIncluded
             break

@@ -12,7 +12,8 @@ var componentSettings = {
         "componentId": "filter-url",
         "args": {
           "title": "id: 1",
-          "urlPattern": "passing-arguments/:type/:id"
+          "urlPattern": "passing-arguments/:type/:id",
+          "background": "red"
         },
         "urlPattern": "passing-arguments/:type/:id"
       },
@@ -22,7 +23,8 @@ var componentSettings = {
         "componentId": "filter-url",
         "args": {
           "title": "id: 2",
-          "urlPattern": "passing-arguments/:type/:id"
+          "urlPattern": "passing-arguments/:type/:id",
+          "background": "blue"
         },
         "urlPattern": "passing-arguments/:type/:id",
         "reInstantiateOnUrlParamChange": true
@@ -33,7 +35,8 @@ var componentSettings = {
         "componentId": "filter-url",
         "args": {
           "title": "id: 3",
-          "urlPattern": "splat/*path"
+          "urlPattern": "splat/*path",
+          "background": "yellow"
         },
         "urlPattern": "splat/*path"
       },
@@ -43,7 +46,8 @@ var componentSettings = {
         "componentId": "filter-url",
         "args": {
           "title": "id: 4",
-          "urlPattern": "optional/:section(/:subsection)"
+          "urlPattern": "optional/:section(/:subsection)",
+          "background": "green"
         },
         "urlPattern": "optional/:section(/:subsection)"
       },
@@ -53,7 +57,19 @@ var componentSettings = {
         "componentId": "filter-url",
         "args": {
           "title": "id: 5",
-          "urlPattern": "global"
+          "urlPattern": "optional/:section(/:subsection)(/:id)",
+          "background": "silver"
+        },
+        "urlPattern": "optional/:section(/:subsection)(/:id)"
+      },
+
+      {
+        "id": "filter-url-instance-6",
+        "componentId": "filter-url",
+        "args": {
+          "title": "id: 6",
+          "urlPattern": "global",
+          "background": "aqua"
         },
         "urlPattern": "global"
       }

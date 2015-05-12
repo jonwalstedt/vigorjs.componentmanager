@@ -9,6 +9,10 @@ do ->
   filterModel = undefined
   $context = undefined
 
+  ERROR =
+    UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?'
+    UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
+
   EVENTS =
 
     ADD: 'add'
@@ -61,7 +65,10 @@ do ->
       return @
 
     refresh: (filterOptions) ->
-      filterModel.set filterModel.parse(filterOptions)
+      if filterOptions
+        filterModel.set filterModel.parse(filterOptions)
+      else
+        do _updateActiveComponents
       return @
 
     serialize: ->
@@ -98,7 +105,9 @@ do ->
 
     updateInstance: (instanceId, attributes) ->
       instanceDefinition = instanceDefinitionsCollection.get instanceId
-      instanceDefinition?.set attributes, validate: true
+      unless instanceDefinition
+        throw ERROR.UNKNOWN_INSTANCE_DEFINITION
+      instanceDefinition.set attributes, validate: true
       return @
 
     removeInstance: (instanceId) ->
@@ -124,7 +133,7 @@ do ->
       return targetPrefix
 
     registerConditions: (conditionsToBeRegistered, silent = false) ->
-      conditions = filterModel.get('conditions')or {}
+      conditions = filterModel.get('conditions') or {}
       conditions = _.extend conditions, conditionsToBeRegistered
       filterModel.set
         'conditions': conditions
@@ -224,6 +233,8 @@ do ->
   _filterInstanceDefinitionsByShowCount = (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) ->
       componentDefinition = componentDefinitionsCollection.get instanceDefinition.get('componentId')
+      unless componentDefinition
+        throw ERROR.UNKNOWN_COMPONENT_DEFINITION
       componentMaxShowCount = componentDefinition.get 'maxShowCount'
       return instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
@@ -354,12 +365,12 @@ do ->
 
   _onComponentChange = (instanceDefinition) ->
     if instanceDefinition.passesFilter filterModel.toJSON()
-      do instanceDefinition.disposeAndRemoveInstance
+      do instanceDefinition.disposeInstance
       _addInstanceToModel instanceDefinition
       _addInstanceToDom instanceDefinition
 
   _onComponentRemoved = (instanceDefinition) ->
-    do instanceDefinition.disposeAndRemoveInstance
+    do instanceDefinition.disposeInstance
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
     _isComponentAreaEmpty $target
 

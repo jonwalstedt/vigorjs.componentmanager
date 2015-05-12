@@ -280,6 +280,7 @@
       CreateComponentView.prototype.$createForm = void 0;
 
       CreateComponentView.prototype.events = {
+        'focus .vigorjs-controls__targets': '_onTargetFocus',
         'change .vigorjs-controls__targets': '_onTargetChange',
         'click .vigorjs-controls__create-btn': '_onCreateBtnClick',
         'click .vigorjs-controls__add-row': '_onAddRow',

@@ -7,6 +7,7 @@ app.components.FilterComponent = Backbone.View.extend({
   args: undefined,
 
   initialize: function (args) {
+    console.log('component initialized');
     this.title = args.title;
     this.urlPattern = args.urlPattern;
     this.args = args;
@@ -27,6 +28,7 @@ app.components.FilterComponent = Backbone.View.extend({
   },
 
   dispose: function () {
+    console.log('component disposed');
     this.remove();
   },
 

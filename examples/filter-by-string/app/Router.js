@@ -14,10 +14,7 @@ var app = app || {};
 
     home: function () {
       console.log('home');
-      var filterOptions = {
-        route: Backbone.history.fragment
-      };
-      Vigor.componentManager.refresh(filterOptions);
+      Vigor.componentManager.refresh();
     },
 
     includeIfStringMatches: function () {

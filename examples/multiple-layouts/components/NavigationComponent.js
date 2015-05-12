@@ -1,5 +1,6 @@
 var app = app || {};
 app.components = app.components || {};
+
 app.components.NavigationComponent = Backbone.View.extend({
 
   tagName: 'nav',

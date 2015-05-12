@@ -6,6 +6,7 @@ body {
   padding: 0;
   height: 100%;
   font-family: sans-serif;
+  max-width: none;
 }
 
 a {
@@ -15,6 +16,10 @@ a {
 
 .link {
   text-decoration: none;
+}
+
+.vigor-component {
+  border: none;
 }
 
 /*

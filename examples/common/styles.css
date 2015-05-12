@@ -13,6 +13,52 @@ h2 {
   font-size: 16px;
 }
 
+ul, li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.examples {
+  position: fixed;
+  top: 0;
+  width: 240px;
+  height: 340px;
+  right: -200px;
+  z-index: 100;
+  transition: all 0.3s ease-out;
+}
+
+.examples:hover {
+  right: 0px;
+}
+
+.more-examples-list {
+  border: 1px solid #888;
+  height: 320px;
+  margin-left: -1px;
+  margin-top: -1px;
+  padding-top: 10px;
+  background: white;
+}
+.more-examples-list li {
+  padding: 8px 10px 8px 30px;
+}
+
+.more-examples {
+  border: none;
+  border-top: 1px solid #888;
+  border-bottom: 1px solid white;
+  border-left: 1px solid #888;
+  background: white;
+  position: absolute;
+  font-size: 16px;
+  transform: rotate(-90deg);
+  left: -55px;
+  top: 55px;
+  padding: 10px 20px;
+}
+
 .vigor-component {
   margin: 20px 0px;
   padding: 10px;
@@ -25,4 +71,10 @@ h2 {
   width: 100%;
   height: 50px;
   background: white;
+  margin: 0px -10px;
+}
+
+.example-header a {
+  line-height: 50px;
+  margin: 10px;
 }

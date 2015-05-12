@@ -34,6 +34,7 @@ class Router extends Backbone.Router
                    .replace('(', '')
                    .replace(')', '')
                    .replace('*', '')
+                   .replace('/', '')
 
         params[name] = args[i]
 

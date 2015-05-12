@@ -9,9 +9,6 @@ app.components.LoginComponent = Backbone.View.extend({
     'click .login__button': '_onLoginClick',
   },
 
-  initialize: function () {
-  },
-
   render: function () {
     this.$el.html(this.template());
     return this;
