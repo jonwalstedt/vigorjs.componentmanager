@@ -22,9 +22,9 @@ var app = app || {};
       Backbone.history.start({root: '/examples/filter-by-url/'});
 
       // Refresh components on resize
-      $(window).on('resize', function () {
-        Vigor.componentManager.refresh();
-      });
+      // $(window).on('resize', function () {
+      //   Vigor.componentManager.refresh();
+      // });
     },
 
     _onRefreshClick: function () {

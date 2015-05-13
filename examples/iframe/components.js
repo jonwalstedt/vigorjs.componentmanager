@@ -2,7 +2,7 @@ var componentSettings = {
   "conditions": {
     withinTimeSpan: function () {
       var today = new Date().getHours(),
-          startTime = 9,
+          startTime = 18,
           endTime = 24,
           allowed = (today >= startTime && today <= endTime);
       console.log('is within timespan: ', allowed);

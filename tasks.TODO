@@ -15,6 +15,7 @@
  ☐ Hidden components and the hidden array
  ☐ Readd hidden components
  ☐ Send message from iframe to Instance
+ ☐ Send message to iframe from instance
  ✔ Change properties on the fly: order, target, urlpattern etc. @done (15-05-10 09:14)
  ☐ Ability to serialize save/get setup and save to local storage
  ☐ Unit test
