@@ -32,6 +32,7 @@ class ComponentDefinitionModel extends Backbone.Model
   getClass: ->
     src = @get 'src'
     if _.isString(src) and @_isUrl(src)
+      IframeComponent = if Vigor.IframeComponent then Vigor.IframeComponent else IframeComponentBase
       componentClass = IframeComponent
 
     else if _.isString(src)

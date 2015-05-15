@@ -3,9 +3,9 @@ sinon = require 'sinon'
 jsdom = require 'jsdom'
 
 componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
-IframeComponent = componentManager.__testOnly.IframeComponent
+IframeComponentBase = componentManager.__testOnly.IframeComponentBase
 
-describe 'IframeComponent', ->
+describe 'IframeComponentBase', ->
   describe 'constructor', ->
     it 'should add attributes to the iframe from passed "iframeAttributes" object', ->
       attrs =
@@ -13,7 +13,7 @@ describe 'IframeComponent', ->
           width: 400
           height: 400
 
-      iframeComponent = new IframeComponent attrs
+      iframeComponent = new IframeComponentBase attrs
       assert.equal iframeComponent.el.width, 400
       assert.equal iframeComponent.el.height, 400
 
@@ -23,7 +23,7 @@ describe 'IframeComponent', ->
           width: 400
           height: 400
 
-      iframeComponent = new IframeComponent attrs
+      iframeComponent = new IframeComponentBase attrs
 
       assert.equal iframeComponent.el.attributes[0].name, 'seamless'
       assert.equal iframeComponent.el.attributes[0].nodeValue, 'seamless'
@@ -41,7 +41,7 @@ describe 'IframeComponent', ->
           scrolling: true
           frameborder: 1
 
-      iframeComponent = new IframeComponent attrs
+      iframeComponent = new IframeComponentBase attrs
 
       assert.equal iframeComponent.el.attributes[0].name, 'seamless'
       assert.equal iframeComponent.el.attributes[0].nodeValue, 'seamless'
@@ -56,7 +56,7 @@ describe 'IframeComponent', ->
   describe 'initialize', ->
     it 'should set src attribute if passed', ->
 
-      iframeComponent = new IframeComponent()
+      iframeComponent = new IframeComponentBase()
 
       attrs =
         src: 'http://www.google.com'
@@ -67,7 +67,7 @@ describe 'IframeComponent', ->
 
     it 'should add load listener', ->
 
-      iframeComponent = new IframeComponent()
+      iframeComponent = new IframeComponentBase()
       listener = sinon.spy iframeComponent.$el, 'on'
       do iframeComponent.initialize
 
@@ -75,7 +75,7 @@ describe 'IframeComponent', ->
 
   describe 'render', ->
     it 'should add src attribute to el', ->
-      iframeComponent = new IframeComponent()
+      iframeComponent = new IframeComponentBase()
 
       attrs =
         src: 'http://www.google.com'
@@ -88,7 +88,7 @@ describe 'IframeComponent', ->
   describe 'dispose', ->
     it 'shuld remove load listener and call this.remove', ->
 
-      iframeComponent = new IframeComponent()
+      iframeComponent = new IframeComponentBase()
       listener = sinon.spy iframeComponent.$el, 'off'
       remove = sinon.spy iframeComponent, 'remove'
       do iframeComponent.dispose

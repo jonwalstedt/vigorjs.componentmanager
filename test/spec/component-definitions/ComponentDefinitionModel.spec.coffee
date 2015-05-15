@@ -3,7 +3,7 @@ jsdom = require 'jsdom'
 
 componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
 ComponentDefinitionModel = componentManager.__testOnly.ComponentDefinitionModel
-IframeComponent = componentManager.__testOnly.IframeComponent
+IframeComponentBase = componentManager.__testOnly.IframeComponentBase
 
 class DummyComponent
   $el: undefined
@@ -76,7 +76,7 @@ describe 'ComponentDefinitionModel', ->
 
 
   describe 'getClass', ->
-    it 'should return the IframeComponent class if src is a url', ->
+    it 'should return the IframeComponentBase class if src is a url', ->
       dummyComponentDefinitionObj =
         id: 'dummy'
         src: 'http://www.google.com'
@@ -84,7 +84,7 @@ describe 'ComponentDefinitionModel', ->
       model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
       klass = model.getClass()
 
-      assert.equal klass, IframeComponent
+      assert.equal klass, IframeComponentBase
 
     it 'should should try to find the class on window if src is string but not a url', ->
       window.app = {}

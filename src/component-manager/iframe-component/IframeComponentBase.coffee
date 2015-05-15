@@ -1,4 +1,4 @@
-class IframeComponent extends Backbone.View
+class IframeComponentBase extends Backbone.View
 
   tagName: 'iframe'
   className: 'vigor-component--iframe'
@@ -27,3 +27,5 @@ class IframeComponent extends Backbone.View
     do @remove
 
   onIframeLoaded: (event) ->
+
+Vigor.IframeComponentBase = IframeComponentBase

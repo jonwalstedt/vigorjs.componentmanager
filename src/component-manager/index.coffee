@@ -33,7 +33,6 @@ do ->
     # Public methods
     # ============================================================================
     initialize: (settings) ->
-
       componentDefinitionsCollection = new ComponentDefinitionsCollection()
       instanceDefinitionsCollection = new InstanceDefinitionsCollection()
       activeInstancesCollection = new ActiveInstancesCollection()
@@ -131,6 +130,9 @@ do ->
 
     getTargetPrefix: ->
       return targetPrefix
+
+    registerIframeClass: (IframeComponentClass = IframeComponentBase) ->
+      Vigor.IframeComponent = IframeComponentClass
 
     registerConditions: (conditionsToBeRegistered, silent = false) ->
       conditions = filterModel.get('conditions') or {}
@@ -288,7 +290,8 @@ do ->
     _.extend args, componentDefinition.get('args')
     _.extend args, instanceDefinition.get('args')
 
-    if componentClass is IframeComponent
+    if componentClass is Vigor.IframeComponent \
+    or componentClass is IframeComponentBase
       args.src = componentDefinition.get 'src'
 
     instance = new componentClass args
@@ -392,7 +395,7 @@ do ->
   __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
   __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
   __testOnly.FilterModel = FilterModel
-  __testOnly.IframeComponent = IframeComponent
+  __testOnly.IframeComponentBase = IframeComponentBase
 
   #properties
   __testOnly.componentClassName = componentClassName
