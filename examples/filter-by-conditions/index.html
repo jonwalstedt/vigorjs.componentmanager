@@ -2,12 +2,6 @@
   <head>
     <title>Vigorjs componentmanager</title>
     <link rel="stylesheet" href="../common/styles.css">
-    <style>
-      body {
-        background-color: #fff;
-      }
-
-    </style>
   </head>
   <body>
     <iframe src="../common/example-menu.html" frameborder="0" class="examples"></iframe>
@@ -16,6 +10,10 @@
         <p>Conditions can be set on both a component level and an instance level. If applied on a component level all insances of that component will be affected</p>
 
         <p>In this example we add differnt conditions and update components and instances to only be allowed if the conditions are met</p>
+
+        <p>Click the "Register condition" to make the condition available for the components, then click either "Add condition to component "filter-instance" or "Add condition to instance "filter-instance-2" depending on if you want the condition to be applied on a component level or instance level.</p>
+
+        <p>Take a look at components.js to see component the setup for this example</p>
 
         <button class="refresh">Refresh filter</button>
 
@@ -36,9 +34,9 @@
 
         <div class="condition-a">
           <p>Condition A</p>
-          <button class="register-condition-a">Register condition A</button>
-          <button class="apply-condition-a">Add condition A to component "filter-instance"</button>
-          <button class="apply-condition-a-to-instance">Add condition A to instance "filter-instance-2"</button>
+          <button class="register-condition">Register condition</button>
+          <button class="apply-condition-to-component">Add condition to component "filter-instance"</button>
+          <button class="apply-condition-to-instance">Add condition to instance "filter-instance-2"</button>
           <pre>
             {
               "correct-width": function () {

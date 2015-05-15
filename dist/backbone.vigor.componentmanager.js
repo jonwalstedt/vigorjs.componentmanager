@@ -22,7 +22,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ActiveInstancesCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
+    var ActiveInstancesCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponentBase, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
     Router = (function(superClass) {
@@ -32,43 +32,43 @@
         return Router.__super__.constructor.apply(this, arguments);
       }
 
-      Router.prototype.getArguments = function(routes, fragment) {
-        var args, j, len, route;
-        if (_.isArray(routes)) {
+      Router.prototype.getArguments = function(urls, fragment) {
+        var args, j, len, url;
+        if (_.isArray(urls)) {
           args = [];
-          for (j = 0, len = routes.length; j < len; j++) {
-            route = routes[j];
-            args = this._getArgumentsFromRoute(route, fragment);
+          for (j = 0, len = urls.length; j < len; j++) {
+            url = urls[j];
+            args = this._getArgumentsFromUrl(url, fragment);
           }
           return args;
         } else {
-          return this._getArgumentsFromRoute(routes, fragment);
+          return this._getArgumentsFromUrl(urls, fragment);
         }
       };
 
-      Router.prototype._getArgumentsFromRoute = function(route, fragment) {
-        var args, origRoute;
-        origRoute = route;
-        if (!_.isRegExp(route)) {
-          route = this._routeToRegExp(route);
+      Router.prototype._getArgumentsFromUrl = function(url, fragment) {
+        var args, origUrl;
+        origUrl = url;
+        if (!_.isRegExp(url)) {
+          url = this._routeToRegExp(url);
         }
         args = [];
-        if (route.exec(fragment)) {
-          args = _.compact(this._extractParameters(route, fragment));
+        if (url.exec(fragment)) {
+          args = _.compact(this._extractParameters(url, fragment));
         }
-        args = this._getParamsObject(origRoute, args);
+        args = this._getParamsObject(origUrl, args);
         return args;
       };
 
-      Router.prototype._getParamsObject = function(route, args) {
+      Router.prototype._getParamsObject = function(url, args) {
         var namedParam, names, optionalParam, optionalParams, params, splatParam, splats, storeNames;
         optionalParam = /\((.*?)\)/g;
         namedParam = /(\(\?)?:\w+/g;
         splatParam = /\*\w+/g;
         params = {};
-        optionalParams = route.match(new RegExp(optionalParam));
-        names = route.match(new RegExp(namedParam));
-        splats = route.match(new RegExp(splatParam));
+        optionalParams = url.match(new RegExp(optionalParam));
+        names = url.match(new RegExp(namedParam));
+        splats = url.match(new RegExp(splatParam));
         storeNames = function(matches, args) {
           var i, j, len, name, results;
           results = [];
@@ -103,7 +103,7 @@
       }
 
       FilterModel.prototype.defaults = {
-        route: void 0,
+        url: void 0,
         includeIfStringMatches: void 0,
         hasToMatchString: void 0,
         cantMatchString: void 0,
@@ -111,14 +111,14 @@
       };
 
       FilterModel.prototype.parse = function(attrs) {
-        var newValues, route;
-        if ((attrs != null ? attrs.route : void 0) === "") {
-          route = "";
+        var newValues, url;
+        if ((attrs != null ? attrs.url : void 0) === "") {
+          url = "";
         } else {
-          route = (attrs != null ? attrs.route : void 0) || this.get('route') || void 0;
+          url = (attrs != null ? attrs.url : void 0) || this.get('url') || void 0;
         }
         newValues = {
-          route: route,
+          url: url,
           includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
           hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
           cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0,
@@ -130,48 +130,49 @@
       return FilterModel;
 
     })(Backbone.Model);
-    IframeComponent = (function(superClass) {
-      extend(IframeComponent, superClass);
+    IframeComponentBase = (function(superClass) {
+      extend(IframeComponentBase, superClass);
 
-      IframeComponent.prototype.tagName = 'iframe';
+      IframeComponentBase.prototype.tagName = 'iframe';
 
-      IframeComponent.prototype.className = 'vigor-component--iframe';
+      IframeComponentBase.prototype.className = 'vigor-component--iframe';
 
-      IframeComponent.prototype.attributes = {
+      IframeComponentBase.prototype.attributes = {
         seamless: 'seamless',
         scrolling: false,
         border: 0,
         frameborder: 0
       };
 
-      IframeComponent.prototype.src = void 0;
+      IframeComponentBase.prototype.src = void 0;
 
-      function IframeComponent(attrs) {
+      function IframeComponentBase(attrs) {
         _.extend(this.attributes, attrs != null ? attrs.iframeAttributes : void 0);
-        IframeComponent.__super__.constructor.apply(this, arguments);
+        IframeComponentBase.__super__.constructor.apply(this, arguments);
       }
 
-      IframeComponent.prototype.initialize = function(attrs) {
+      IframeComponentBase.prototype.initialize = function(attrs) {
         if ((attrs != null ? attrs.src : void 0) != null) {
           this.src = attrs.src;
         }
         return this.$el.on('load', this.onIframeLoaded);
       };
 
-      IframeComponent.prototype.render = function() {
+      IframeComponentBase.prototype.render = function() {
         return this.$el.attr('src', this.src);
       };
 
-      IframeComponent.prototype.dispose = function() {
+      IframeComponentBase.prototype.dispose = function() {
         this.$el.off('load', this.onIframeLoaded);
         return this.remove();
       };
 
-      IframeComponent.prototype.onIframeLoaded = function(event) {};
+      IframeComponentBase.prototype.onIframeLoaded = function(event) {};
 
-      return IframeComponent;
+      return IframeComponentBase;
 
     })(Backbone.View);
+    Vigor.IframeComponentBase = IframeComponentBase;
     ComponentDefinitionModel = (function(superClass) {
       extend(ComponentDefinitionModel, superClass);
 
@@ -213,9 +214,10 @@
       };
 
       ComponentDefinitionModel.prototype.getClass = function() {
-        var componentClass, j, len, obj, part, src, srcObjParts;
+        var IframeComponent, componentClass, j, len, obj, part, src, srcObjParts;
         src = this.get('src');
         if (_.isString(src) && this._isUrl(src)) {
+          IframeComponent = Vigor.IframeComponent ? Vigor.IframeComponent : IframeComponentBase;
           componentClass = IframeComponent;
         } else if (_.isString(src)) {
           obj = window;
@@ -417,11 +419,11 @@
 
       InstanceDefinitionModel.prototype.passesFilter = function(filter) {
         var areConditionsMet, filterStringMatch, urlMatch;
-        if (filter.route || filter.route === '') {
-          urlMatch = this.doesUrlPatternMatch(filter.route);
+        if (filter.url || filter.url === '') {
+          urlMatch = this.doesUrlPatternMatch(filter.url);
           if (urlMatch != null) {
             if (urlMatch === true) {
-              this.addUrlParams(filter.route);
+              this.addUrlParams(filter.url);
             } else {
               return false;
             }
@@ -466,7 +468,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.doesUrlPatternMatch = function(route) {
+      InstanceDefinitionModel.prototype.doesUrlPatternMatch = function(url) {
         var j, len, match, pattern, routeRegEx, urlPattern;
         match = false;
         urlPattern = this.get('urlPattern');
@@ -477,7 +479,7 @@
           for (j = 0, len = urlPattern.length; j < len; j++) {
             pattern = urlPattern[j];
             routeRegEx = router._routeToRegExp(pattern);
-            match = routeRegEx.test(route);
+            match = routeRegEx.test(url);
             if (match) {
               return match;
             }
@@ -518,10 +520,10 @@
         return shouldBeIncluded;
       };
 
-      InstanceDefinitionModel.prototype.addUrlParams = function(route) {
+      InstanceDefinitionModel.prototype.addUrlParams = function(url) {
         var urlParams, urlParamsModel;
-        urlParams = router.getArguments(this.get('urlPattern'), route);
-        urlParams.route = route;
+        urlParams = router.getArguments(this.get('urlPattern'), url);
+        urlParams.url = url;
         urlParamsModel = this.get('urlParamsModel');
         urlParamsModel.set(urlParams);
         return this.set({
@@ -593,14 +595,14 @@
         });
       };
 
-      InstanceDefinitionsCollection.prototype.getInstanceDefinitionsByUrl = function(route) {
-        return this.filterInstanceDefinitionsByUrl(this.models, route);
+      InstanceDefinitionsCollection.prototype.getInstanceDefinitionsByUrl = function(url) {
+        return this.filterInstanceDefinitionsByUrl(this.models, url);
       };
 
-      InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, route) {
+      InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, url) {
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinitionModel) {
-            return instanceDefinitionModel.doesUrlPatternMatch(route);
+            return instanceDefinitionModel.doesUrlPatternMatch(url);
           };
         })(this));
       };
@@ -617,11 +619,11 @@
         });
       };
 
-      InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, route) {
+      InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, url) {
         var instanceDefinitionModel, j, len;
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
           instanceDefinitionModel = instanceDefinitions[j];
-          instanceDefinitionModel.addUrlParams(route);
+          instanceDefinitionModel.addUrlParams(url);
         }
         return instanceDefinitions;
       };
@@ -788,6 +790,12 @@
         getTargetPrefix: function() {
           return targetPrefix;
         },
+        registerIframeClass: function(IframeComponentClass) {
+          if (IframeComponentClass == null) {
+            IframeComponentClass = IframeComponentBase;
+          }
+          return Vigor.IframeComponent = IframeComponentClass;
+        },
         registerConditions: function(conditionsToBeRegistered, silent) {
           var conditions;
           if (silent == null) {
@@ -952,7 +960,7 @@
         };
         _.extend(args, componentDefinition.get('args'));
         _.extend(args, instanceDefinition.get('args'));
-        if (componentClass === IframeComponent) {
+        if (componentClass === Vigor.IframeComponent || componentClass === IframeComponentBase) {
           args.src = componentDefinition.get('src');
         }
         instance = new componentClass(args);
