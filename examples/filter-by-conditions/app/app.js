@@ -7,9 +7,9 @@ var app = app || {};
     router: undefined,
     events: {
       'click .refresh': '_onRefreshClick',
-      'click .register-condition-a': '_onRegisterConditionAClick',
-      'click .apply-condition-a': '_onApplyConditionAClick',
-      'click .apply-condition-a-to-instance': '_onApplyConditionAToInstanceClick'
+      'click .register-condition': '_onRegisterConditionClick',
+      'click .apply-condition': '_onApplyConditionClick',
+      'click .apply-condition-to-instance': '_onApplyConditionToInstanceClick'
     },
 
     initialize: function () {
@@ -31,24 +31,22 @@ var app = app || {};
       Vigor.componentManager.refresh();
     },
 
-    _onRegisterConditionAClick: function () {
+    _onRegisterConditionClick: function () {
       Vigor.componentManager.registerConditions({
         correctWidth: function () {
           console.log('correctWidth: ', window.innerWidth > 600);
           return window.innerWidth > 600;
         }
       });
-      console.log('current conditions: ', Vigor.componentManager.getConditions());
     },
 
-    _onApplyConditionAClick: function () {
+    _onApplyConditionClick: function () {
       Vigor.componentManager.updateComponent('filter-instance', {
         conditions: ['correctWidth']
       });
-      console.log(Vigor.componentManager.getComponentById('filter-instance'));
     },
 
-    _onApplyConditionAToInstanceClick: function () {
+    _onApplyConditionToInstanceClick: function () {
       Vigor.componentManager.updateInstance('filter-instance-2', {
         conditions: ['correctWidth']
       });
