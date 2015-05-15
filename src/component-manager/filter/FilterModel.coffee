@@ -1,7 +1,7 @@
 class FilterModel extends Backbone.Model
 
   defaults:
-    route: undefined
+    url: undefined
     includeIfStringMatches: undefined
     hasToMatchString: undefined
     cantMatchString: undefined
@@ -9,13 +9,13 @@ class FilterModel extends Backbone.Model
 
   parse: (attrs) ->
 
-    if attrs?.route is ""
-      route = ""
+    if attrs?.url is ""
+      url = ""
     else
-      route = attrs?.route or @get('route') or undefined
+      url = attrs?.url or @get('url') or undefined
 
     newValues =
-      route: route
+      url: url
       includeIfStringMatches: attrs?.includeIfStringMatches or undefined
       hasToMatchString: attrs?.hasToMatchString or undefined
       cantMatchString: attrs?.cantMatchString or undefined

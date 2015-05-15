@@ -1,32 +1,32 @@
 class Router extends Backbone.Router
 
-  getArguments: (routes, fragment) ->
-    if _.isArray(routes)
+  getArguments: (urls, fragment) ->
+    if _.isArray(urls)
       args = []
-      for route in routes
-        args = @_getArgumentsFromRoute route, fragment
+      for url in urls
+        args = @_getArgumentsFromUrl url, fragment
       return args
     else
-      @_getArgumentsFromRoute routes, fragment
+      @_getArgumentsFromUrl urls, fragment
 
-  _getArgumentsFromRoute: (route, fragment) ->
-    origRoute = route
-    if !_.isRegExp(route) then route = @_routeToRegExp(route)
+  _getArgumentsFromUrl: (url, fragment) ->
+    origUrl = url
+    if !_.isRegExp(url) then url = @_routeToRegExp(url)
     args = []
-    if route.exec(fragment)
-      args = _.compact @_extractParameters(route, fragment)
-    args = @_getParamsObject origRoute, args
+    if url.exec(fragment)
+      args = _.compact @_extractParameters(url, fragment)
+    args = @_getParamsObject origUrl, args
     return args
 
-  _getParamsObject: (route, args) ->
+  _getParamsObject: (url, args) ->
     optionalParam = /\((.*?)\)/g
     namedParam = /(\(\?)?:\w+/g
     splatParam = /\*\w+/g
     params = {}
 
-    optionalParams = route.match new RegExp(optionalParam)
-    names = route.match new RegExp(namedParam)
-    splats = route.match new RegExp(splatParam)
+    optionalParams = url.match new RegExp(optionalParam)
+    names = url.match new RegExp(namedParam)
+    splats = url.match new RegExp(splatParam)
 
     storeNames = (matches, args) ->
       for name, i in matches

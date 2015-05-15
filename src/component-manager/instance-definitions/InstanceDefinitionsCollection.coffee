@@ -41,12 +41,12 @@ class InstanceDefinitionsCollection extends Backbone.Collection
     return @filter (instanceDefinitionModel) ->
       instanceDefinitionModel.passesFilter filter
 
-  getInstanceDefinitionsByUrl: (route) ->
-    return @filterInstanceDefinitionsByUrl @models, route
+  getInstanceDefinitionsByUrl: (url) ->
+    return @filterInstanceDefinitionsByUrl @models, url
 
-  filterInstanceDefinitionsByUrl: (instanceDefinitions, route) ->
+  filterInstanceDefinitionsByUrl: (instanceDefinitions, url) ->
     _.filter instanceDefinitions, (instanceDefinitionModel) =>
-      return instanceDefinitionModel.doesUrlPatternMatch(route)
+      return instanceDefinitionModel.doesUrlPatternMatch url
 
   filterInstanceDefinitionsByString: (instanceDefinitions, filterString) ->
     _.filter instanceDefinitions, (instanceDefinitionModel) ->
@@ -56,7 +56,7 @@ class InstanceDefinitionsCollection extends Backbone.Collection
     _.filter instanceDefinitions, (instanceDefinitionModel) ->
       return instanceDefinitionModel.areConditionsMet conditions
 
-  addUrlParams: (instanceDefinitions, route) ->
+  addUrlParams: (instanceDefinitions, url) ->
     for instanceDefinitionModel in instanceDefinitions
-      instanceDefinitionModel.addUrlParams route
+      instanceDefinitionModel.addUrlParams url
     return instanceDefinitions

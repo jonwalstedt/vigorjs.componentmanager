@@ -20,7 +20,7 @@ var app = app || {};
     includeIfStringMatches: function () {
       console.log('includeIfStringMatches');
       var filterOptions = {
-        route: Backbone.history.fragment,
+        url: Backbone.history.fragment,
         includeIfStringMatches: 'test'
       };
       Vigor.componentManager.refresh(filterOptions);
@@ -29,7 +29,7 @@ var app = app || {};
     hasToMatchString: function () {
       console.log('hasToMatchString');
       var filterOptions = {
-        route: Backbone.history.fragment,
+        url: Backbone.history.fragment,
         hasToMatchString: 'test'
       };
       Vigor.componentManager.refresh(filterOptions);
@@ -38,7 +38,7 @@ var app = app || {};
     cantMatchString: function () {
       console.log('cantMatchString');
       var filterOptions = {
-        route: Backbone.history.fragment,
+        url: Backbone.history.fragment,
         cantMatchString: 'test'
       };
       Vigor.componentManager.refresh(filterOptions);

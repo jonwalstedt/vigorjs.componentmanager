@@ -96,11 +96,11 @@ class InstanceDefinitionModel extends Backbone.Model
     return shouldBeIncluded
 
   passesFilter: (filter) ->
-    if filter.route or filter.route is ''
-      urlMatch = @doesUrlPatternMatch(filter.route)
+    if filter.url or filter.url is ''
+      urlMatch = @doesUrlPatternMatch(filter.url)
       if urlMatch?
         if urlMatch is true
-          @addUrlParams filter.route
+          @addUrlParams filter.url
         else
           return false
 
@@ -133,7 +133,7 @@ class InstanceDefinitionModel extends Backbone.Model
     if filter
       return !!filter.match new RegExp(filterString)
 
-  doesUrlPatternMatch: (route) ->
+  doesUrlPatternMatch: (url) ->
     match = false
     urlPattern = @get 'urlPattern'
     if urlPattern
@@ -142,7 +142,7 @@ class InstanceDefinitionModel extends Backbone.Model
 
       for pattern in urlPattern
         routeRegEx = router._routeToRegExp pattern
-        match = routeRegEx.test route
+        match = routeRegEx.test url
         if match then return match
       return match
     else
@@ -174,9 +174,9 @@ class InstanceDefinitionModel extends Backbone.Model
 
     return shouldBeIncluded
 
-  addUrlParams: (route) ->
-    urlParams = router.getArguments @get('urlPattern'), route
-    urlParams.route = route
+  addUrlParams: (url) ->
+    urlParams = router.getArguments @get('urlPattern'), url
+    urlParams.url = url
 
     urlParamsModel = @get 'urlParamsModel'
     urlParamsModel.set urlParams
