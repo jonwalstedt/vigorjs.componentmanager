@@ -1,7 +1,7 @@
 var componentSettings = {
   "conditions": {},
   "components": [{
-    "id": "filter-url",
+    "id": "filter-url-component",
     "src": "app.components.FilterComponent"
   }],
   "hidden": [],
@@ -9,7 +9,7 @@ var componentSettings = {
     "main": [
       {
         "id": "filter-url-instance-1",
-        "componentId": "filter-url",
+        "componentId": "filter-url-component",
         "args": {
           "title": "id: 1",
           "urlPattern": "passing-arguments/:type/:id",
@@ -20,7 +20,7 @@ var componentSettings = {
 
       {
         "id": "filter-url-instance-2",
-        "componentId": "filter-url",
+        "componentId": "filter-url-component",
         "args": {
           "title": "id: 2",
           "urlPattern": "passing-arguments/:type/:id",
@@ -32,7 +32,7 @@ var componentSettings = {
 
       {
         "id": "filter-url-instance-3",
-        "componentId": "filter-url",
+        "componentId": "filter-url-component",
         "args": {
           "title": "id: 3",
           "urlPattern": "splat/*path",
@@ -43,7 +43,7 @@ var componentSettings = {
 
       {
         "id": "filter-url-instance-4",
-        "componentId": "filter-url",
+        "componentId": "filter-url-component",
         "args": {
           "title": "id: 4",
           "urlPattern": "optional/:section(/:subsection)",
@@ -54,7 +54,7 @@ var componentSettings = {
 
       {
         "id": "filter-url-instance-5",
-        "componentId": "filter-url",
+        "componentId": "filter-url-component",
         "args": {
           "title": "id: 5",
           "urlPattern": "optional/:section(/:subsection)(/:id)",
@@ -65,7 +65,7 @@ var componentSettings = {
 
       {
         "id": "filter-url-instance-6",
-        "componentId": "filter-url",
+        "componentId": "filter-url-component",
         "args": {
           "title": "id: 6",
           "urlPattern": "global",

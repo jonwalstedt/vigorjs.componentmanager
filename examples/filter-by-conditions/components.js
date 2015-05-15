@@ -11,7 +11,7 @@ var componentSettings = {
   },
 
   "components": [{
-    "id": "filter-instance",
+    "id": "filter-condition-component",
     "src": "app.components.FilterComponent",
     "conditions": ["withinTimeSpan"]
   }],
@@ -22,7 +22,7 @@ var componentSettings = {
     "main": [
       {
         "id": "filter-instance-1",
-        "componentId": "filter-instance",
+        "componentId": "filter-condition-component",
         "args": {
           "title": "id: filter-instance-1",
           "background": "red"
@@ -31,7 +31,7 @@ var componentSettings = {
 
       {
         "id": "filter-instance-2",
-        "componentId": "filter-instance",
+        "componentId": "filter-condition-component",
         "args": {
           "title": "id: filter-instance-2",
           "background": "silver"

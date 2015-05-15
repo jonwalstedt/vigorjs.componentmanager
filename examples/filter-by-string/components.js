@@ -1,7 +1,7 @@
 var componentSettings = {
   "conditions": {},
   "components": [{
-    "id": "filter-string",
+    "id": "filter-string-component",
     "src": "app.components.FilterComponent"
   }],
   "hidden": [],
@@ -9,7 +9,7 @@ var componentSettings = {
     "main": [
       {
         "id": "filter-string-instance-1",
-        "componentId": "filter-string",
+        "componentId": "filter-string-component",
         "args": {
           "title": "id: 1",
           "filterString": "This instance does not have a filterString (it will be undefined)"
@@ -19,7 +19,7 @@ var componentSettings = {
 
       {
         "id": "filter-string-instance-2",
-        "componentId": "filter-string",
+        "componentId": "filter-string-component",
         "args": {
           "title": "id: 2",
           "filterString": "lorem/ipsum/test"
@@ -30,7 +30,7 @@ var componentSettings = {
 
       {
         "id": "filter-string-instance-3",
-        "componentId": "filter-string",
+        "componentId": "filter-string-component",
         "args": {
           "title": "id: 3",
           "filterString": "a filter string could be any string"

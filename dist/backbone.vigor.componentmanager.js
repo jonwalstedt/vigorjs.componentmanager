@@ -22,7 +22,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ActiveInstancesCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponentBase, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
+    var ActiveInstancesCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
     Router = (function(superClass) {
@@ -130,49 +130,49 @@
       return FilterModel;
 
     })(Backbone.Model);
-    IframeComponentBase = (function(superClass) {
-      extend(IframeComponentBase, superClass);
+    IframeComponent = (function(superClass) {
+      extend(IframeComponent, superClass);
 
-      IframeComponentBase.prototype.tagName = 'iframe';
+      IframeComponent.prototype.tagName = 'iframe';
 
-      IframeComponentBase.prototype.className = 'vigor-component--iframe';
+      IframeComponent.prototype.className = 'vigor-component--iframe';
 
-      IframeComponentBase.prototype.attributes = {
+      IframeComponent.prototype.attributes = {
         seamless: 'seamless',
         scrolling: false,
         border: 0,
         frameborder: 0
       };
 
-      IframeComponentBase.prototype.src = void 0;
+      IframeComponent.prototype.src = void 0;
 
-      function IframeComponentBase(attrs) {
+      function IframeComponent(attrs) {
         _.extend(this.attributes, attrs != null ? attrs.iframeAttributes : void 0);
-        IframeComponentBase.__super__.constructor.apply(this, arguments);
+        IframeComponent.__super__.constructor.apply(this, arguments);
       }
 
-      IframeComponentBase.prototype.initialize = function(attrs) {
+      IframeComponent.prototype.initialize = function(attrs) {
         if ((attrs != null ? attrs.src : void 0) != null) {
           this.src = attrs.src;
         }
         return this.$el.on('load', this.onIframeLoaded);
       };
 
-      IframeComponentBase.prototype.render = function() {
+      IframeComponent.prototype.render = function() {
         return this.$el.attr('src', this.src);
       };
 
-      IframeComponentBase.prototype.dispose = function() {
+      IframeComponent.prototype.dispose = function() {
         this.$el.off('load', this.onIframeLoaded);
         return this.remove();
       };
 
-      IframeComponentBase.prototype.onIframeLoaded = function(event) {};
+      IframeComponent.prototype.onIframeLoaded = function(event) {};
 
-      return IframeComponentBase;
+      return IframeComponent;
 
     })(Backbone.View);
-    Vigor.IframeComponentBase = IframeComponentBase;
+    Vigor.IframeComponent = IframeComponent;
     ComponentDefinitionModel = (function(superClass) {
       extend(ComponentDefinitionModel, superClass);
 
@@ -214,11 +214,10 @@
       };
 
       ComponentDefinitionModel.prototype.getClass = function() {
-        var IframeComponent, componentClass, j, len, obj, part, src, srcObjParts;
+        var componentClass, j, len, obj, part, src, srcObjParts;
         src = this.get('src');
         if (_.isString(src) && this._isUrl(src)) {
-          IframeComponent = Vigor.IframeComponent ? Vigor.IframeComponent : IframeComponentBase;
-          componentClass = IframeComponent;
+          componentClass = Vigor.IframeComponent;
         } else if (_.isString(src)) {
           obj = window;
           srcObjParts = src.split('.');
@@ -790,12 +789,6 @@
         getTargetPrefix: function() {
           return targetPrefix;
         },
-        registerIframeClass: function(IframeComponentClass) {
-          if (IframeComponentClass == null) {
-            IframeComponentClass = IframeComponentBase;
-          }
-          return Vigor.IframeComponent = IframeComponentClass;
-        },
         registerConditions: function(conditionsToBeRegistered, silent) {
           var conditions;
           if (silent == null) {
@@ -947,7 +940,7 @@
         });
       };
       _addInstanceToModel = function(instanceDefinition) {
-        var args, componentClass, componentDefinition, height, instance;
+        var args, componentArgs, componentClass, componentDefinition, height, instance, instanceArgs;
         componentDefinition = componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
         componentClass = componentDefinition.getClass();
         height = componentDefinition.get('height');
@@ -958,9 +951,14 @@
           urlParams: instanceDefinition.get('urlParams'),
           urlParamsModel: instanceDefinition.get('urlParamsModel')
         };
-        _.extend(args, componentDefinition.get('args'));
-        _.extend(args, instanceDefinition.get('args'));
-        if (componentClass === Vigor.IframeComponent || componentClass === IframeComponentBase) {
+        componentArgs = componentDefinition.get('args');
+        instanceArgs = instanceDefinition.get('args');
+        if (((componentArgs != null ? componentArgs.iframeAttributes : void 0) != null) && ((instanceArgs != null ? instanceArgs.iframeAttributes : void 0) != null)) {
+          instanceArgs.iframeAttributes = _.extend(componentArgs.iframeAttributes, instanceArgs.iframeAttributes);
+        }
+        _.extend(args, componentArgs);
+        _.extend(args, instanceArgs);
+        if (componentClass === Vigor.IframeComponent) {
           args.src = componentDefinition.get('src');
         }
         instance = new componentClass(args);

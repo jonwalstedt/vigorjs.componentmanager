@@ -1,7 +1,7 @@
 var componentSettings = {
   "conditions": {},
   "components": [{
-    "id": "hello-world",
+    "id": "hello-world-component",
     "src": "app.components.HelloWorldComponent"
   }],
   "hidden": [],
@@ -9,7 +9,7 @@ var componentSettings = {
     "main": [
       {
         "id": "hello-world-instance",
-        "componentId": "hello-world",
+        "componentId": "hello-world-component",
         "urlPattern": "add-hello-world" // #add-hello-world
       }
     ]
