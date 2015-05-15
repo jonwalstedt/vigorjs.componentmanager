@@ -1,19 +1,9 @@
 var componentSettings = {
-  "conditions": {
-    withinTimeSpan: function () {
-      var today = new Date().getHours(),
-          startTime = 18,
-          endTime = 24,
-          allowed = (today >= startTime && today <= endTime);
-      console.log('is within timespan: ', allowed);
-      return allowed;
-    }
-  },
+  "conditions": {},
 
   "components": [{
     "id": "filter-instance",
-    "src": "app.components.FilterComponent",
-    "conditions": ["withinTimeSpan"]
+    "src": "http://en.wikipedia.org/wiki/Main_Page"
   }],
 
   "hidden": [],
@@ -21,21 +11,15 @@ var componentSettings = {
   "targets": {
     "main": [
       {
-        "id": "filter-instance-1",
+        "id": "filter-instance",
         "componentId": "filter-instance",
         "args": {
-          "title": "id: filter-instance-1",
-          "background": "red"
-        }
-      },
-
-      {
-        "id": "filter-instance-2",
-        "componentId": "filter-instance",
-        "args": {
-          "title": "id: filter-instance-2",
-          "background": "silver"
-        }
+          "iframeAttributes": {
+            "width": 600,
+            "height": 400
+          }
+        },
+        "urlPattern": "global"
       }
     ]
   }

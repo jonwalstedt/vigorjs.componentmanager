@@ -14,7 +14,6 @@ do ->
     UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
 
   EVENTS =
-
     ADD: 'add'
     CHANGE: 'change'
     REMOVE: 'remove'
@@ -55,7 +54,6 @@ do ->
 
       if settings.componentSettings
         _parseComponentSettings settings.componentSettings
-
       return @
 
     updateSettings: (settings) ->

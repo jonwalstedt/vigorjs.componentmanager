@@ -16,8 +16,9 @@ var app = app || {};
 
     _refreshComponents: function () {
       var filterOptions = {
-        route: Backbone.history.fragment
+        url: Backbone.history.fragment
       };
+
       Vigor.componentManager.refresh(filterOptions);
     }
 

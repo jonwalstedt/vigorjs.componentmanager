@@ -2,46 +2,34 @@
   <head>
     <title>Vigorjs componentmanager</title>
     <link rel="stylesheet" href="../common/styles.css">
+    <style>
+      .vigor-component {
+        padding: 0;
+        border: none;
+      }
+
+    </style>
   </head>
   <body>
     <iframe src="../common/example-menu.html" frameborder="0" class="examples"></iframe>
     <div class="app-wrapper">
       <div class="description">
-        <p>Conditions can be set on both a component level and an instance level. If applied on a component level all insances of that component will be affected</p>
+        <h2>Iframe Components</h2>
+        <p>By setting a url as src attribute on the instance definition the componentManager will set create an instance of the IframeComponentBase class to load the url in an iframe</p>
 
-        <p>In this example we add differnt conditions and update components and instances to only be allowed if the conditions are met</p>
-
-        <button class="refresh">Refresh filter</button>
-
-        <div class="already-registered-condition">
-          <p>Already registered condition</p>
-          <pre>
-            {
-              withinTimeSpan: function () {
-                var today = new Date().getHours(),
-                    startTime = 18,
-                    endTime = 22,
-                    allowed = (today >= startTime && today <= endTime);
-                console.log('is within timespan: ', allowed);
-                return allowed;
-            }
-          </pre>
-        </div>
-
-        <div class="condition-a">
-          <p>Condition A</p>
-          <button class="register-condition-a">Register condition A</button>
-          <button class="apply-condition-a">Add condition A to component "filter-instance"</button>
-          <button class="apply-condition-a-to-instance">Add condition A to instance "filter-instance-2"</button>
-          <pre>
-            {
-              "correct-width": function () {
-                return window.outerWidth > 600;
+        <pre>
+          {
+            "id": "filter-instance",
+            "componentId": "filter-instance",
+            "args": {
+              "iframeAttributes": {
+                "width": 600,
+                "height": 400
               }
-            }
-          </pre>
-        </div>
-
+            },
+            "urlPattern": "global"
+          }
+        </pre>
       </div>
       <div class="component-area--main"></div>
     </div>
