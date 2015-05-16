@@ -1,47 +1,62 @@
 var componentSettings = {
   "conditions": {},
 
-  "components": [
-    {
-      "id": "iframe-component",
-      "src": "http://en.wikipedia.org/wiki/Main_Page"
-    },
-    {
-      "id": "extended-iframe-component",
-      "src": "app.components.ExtendedIframeComponent",
-      "args": {
-        "iframeAttributes":{
-          "src": "http://en.wikipedia.org/wiki/Main_Page"
-        }
-      }
-    }
-  ],
+  "components": [{
+    "id": "order-component",
+    "src": "app.components.FilterComponent"
+  }],
 
   "hidden": [],
 
   "targets": {
-    "first": [
+    "main": [
       {
-        "id": "iframe-instance",
-        "componentId": "iframe-component",
+        "id": "order-instance-1",
+        "componentId": "order-component",
+        "order": 1,
         "args": {
-          "iframeAttributes": {
-            "width": 600,
-            "height": 400
-          }
+          "title": "1",
+          "background": "aqua"
         },
         "urlPattern": "global"
-      }
-    ],
-    "second": [
+      },
       {
-        "id": "iframe-instance-2",
-        "componentId": "extended-iframe-component",
+        "id": "order-instance-2",
+        "componentId": "order-component",
+        "order": 2,
         "args": {
-          "iframeAttributes": {
-            "width": 600,
-            "height": 400
-          }
+          "title": "2",
+          "background": "green"
+        },
+        "urlPattern": "global"
+      },
+      {
+        "id": "order-instance-3",
+        "componentId": "order-component",
+        "order": 3,
+        "args": {
+          "title": "3",
+          "background": "silver"
+        },
+        "urlPattern": "global"
+      },
+      {
+        "id": "order-instance-4",
+        "componentId": "order-component",
+        "order": 4,
+        "args": {
+          "title": "4",
+          "background": "yellow"
+        },
+        "urlPattern": "global"
+      },
+      {
+        "id": "order-instance-5",
+        "componentId": "order-component",
+        "order": 5,
+        "args": {
+          "title": "5",
+          "background": "pink"
         },
         "urlPattern": "global"
       }

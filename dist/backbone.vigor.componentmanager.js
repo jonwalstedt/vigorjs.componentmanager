@@ -716,8 +716,8 @@
         },
         addComponent: function(componentDefinition) {
           componentDefinitionsCollection.set(componentDefinition, {
-            validate: true,
             parse: true,
+            validate: true,
             remove: false
           });
           return this;
@@ -745,8 +745,16 @@
         },
         addInstance: function(instanceDefinition) {
           instanceDefinitionsCollection.set(instanceDefinition, {
-            validate: true,
             parse: true,
+            validate: true,
+            remove: false
+          });
+          return this;
+        },
+        updateInstances: function(instanceDefinitions) {
+          instanceDefinitionsCollection.set(instanceDefinitions, {
+            parse: true,
+            validate: true,
             remove: false
           });
           return this;
@@ -830,10 +838,10 @@
         componentDefinitionsCollection.on('add change remove', _updateActiveComponents);
         instanceDefinitionsCollection.on('add change remove', _updateActiveComponents);
         activeInstancesCollection.on('add', _onComponentAdded);
-        activeInstancesCollection.on('change', _onComponentChange);
-        activeInstancesCollection.on('remove', _onComponentRemoved);
+        activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', _onComponentChange);
         activeInstancesCollection.on('change:order', _onComponentOrderChange);
         activeInstancesCollection.on('change:targetName', _onComponentTargetNameChange);
+        activeInstancesCollection.on('remove', _onComponentRemoved);
         componentDefinitionsCollection.on('add', function(model, collection, options) {
           return componentManager.trigger.apply(componentManager, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]);
         });

@@ -73,8 +73,8 @@ do ->
 
     addComponent: (componentDefinition) ->
       componentDefinitionsCollection.set componentDefinition,
-        validate: true
         parse: true
+        validate: true
         remove: false
       return @
 
@@ -95,17 +95,26 @@ do ->
 
     addInstance: (instanceDefinition) ->
       instanceDefinitionsCollection.set instanceDefinition,
-        validate: true
         parse: true
+        validate: true
         remove: false
       return @
 
+    updateInstances: (instanceDefinitions) ->
+      instanceDefinitionsCollection.set instanceDefinitions,
+        parse: true
+        validate: true
+        remove: false
+      return @
+
+    # TODO remove this method
     updateInstance: (instanceId, attributes) ->
       instanceDefinition = instanceDefinitionsCollection.get instanceId
       unless instanceDefinition
         throw ERROR.UNKNOWN_INSTANCE_DEFINITION
       instanceDefinition.set attributes, validate: true
       return @
+    # End of TODO
 
     removeInstance: (instanceId) ->
       instanceDefinitionsCollection.remove instanceId
@@ -165,10 +174,17 @@ do ->
     instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
 
     activeInstancesCollection.on 'add', _onComponentAdded
-    activeInstancesCollection.on 'change', _onComponentChange
-    activeInstancesCollection.on 'remove', _onComponentRemoved
+    activeInstancesCollection.on 'change:componentId
+                                  change:filterString
+                                  change:conditions
+                                  change:args
+                                  change:showCount
+                                  change:urlPattern
+                                  change:urlParams
+                                  change:reInstantiateOnUrlParamChange', _onComponentChange
     activeInstancesCollection.on 'change:order', _onComponentOrderChange
     activeInstancesCollection.on 'change:targetName', _onComponentTargetNameChange
+    activeInstancesCollection.on 'remove', _onComponentRemoved
 
     # Propagate events
     # Component definitions
