@@ -13,7 +13,7 @@ var componentSettings = {
         "args": {
           "title": "id: 1",
           "urlPattern": "passing-arguments/:type/:id",
-          "background": "red"
+          "background": "coral"
         },
         "urlPattern": "passing-arguments/:type/:id"
       },
@@ -24,7 +24,7 @@ var componentSettings = {
         "args": {
           "title": "id: 2",
           "urlPattern": "passing-arguments/:type/:id",
-          "background": "blue"
+          "background": "pink"
         },
         "urlPattern": "passing-arguments/:type/:id",
         "reInstantiateOnUrlParamChange": true
@@ -47,7 +47,7 @@ var componentSettings = {
         "args": {
           "title": "id: 4",
           "urlPattern": "optional/:section(/:subsection)",
-          "background": "green"
+          "background": "Aquamarine "
         },
         "urlPattern": "optional/:section(/:subsection)"
       },

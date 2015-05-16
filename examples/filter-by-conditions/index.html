@@ -24,8 +24,8 @@
             {
               withinTimeSpan: function () {
                 var today = new Date().getHours(),
-                    startTime = 18,
-                    endTime = 22,
+                    startTime = 0,
+                    endTime = 24,
                     allowed = (today >= startTime && today <= endTime);
                 console.log('is within timespan: ', allowed);
                 return allowed;

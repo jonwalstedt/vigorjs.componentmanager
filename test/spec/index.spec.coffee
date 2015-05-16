@@ -54,9 +54,9 @@ describe 'A componentManager', ->
     it 'should store incoming instance data', ->
     it 'should not remove old instances', ->
 
-  describe 'updateInstance', ->
+  describe 'updateInstances', ->
     it 'should validate incomming instance data'
-    it 'should update a specific instance with new data', ->
+    it 'should update one or multiple instances with new data', ->
 
   describe 'removeInstance', ->
     it 'should remove a specific instance', ->

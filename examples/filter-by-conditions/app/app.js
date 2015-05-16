@@ -41,18 +41,18 @@ var app = app || {};
     },
 
     _onApplyConditionClick: function () {
-      Vigor.componentManager.updateComponent('filter-instance', {
+      Vigor.componentManager.updateComponents({
+        id:'filter-instance',
         conditions: ['correctWidth']
       });
     },
 
     _onApplyConditionToInstanceClick: function () {
-      Vigor.componentManager.updateInstance('filter-instance-2', {
+      Vigor.componentManager.updateInstances({
+        id: 'filter-instance-2',
         conditions: ['correctWidth']
       });
     }
-
-
   });
 
 })(jQuery);

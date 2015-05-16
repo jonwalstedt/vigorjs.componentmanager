@@ -759,17 +759,6 @@
           });
           return this;
         },
-        updateInstance: function(instanceId, attributes) {
-          var instanceDefinition;
-          instanceDefinition = instanceDefinitionsCollection.get(instanceId);
-          if (!instanceDefinition) {
-            throw ERROR.UNKNOWN_INSTANCE_DEFINITION;
-          }
-          instanceDefinition.set(attributes, {
-            validate: true
-          });
-          return this;
-        },
         removeInstance: function(instanceId) {
           instanceDefinitionsCollection.remove(instanceId);
           return this;

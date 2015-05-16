@@ -107,15 +107,6 @@ do ->
         remove: false
       return @
 
-    # TODO remove this method
-    updateInstance: (instanceId, attributes) ->
-      instanceDefinition = instanceDefinitionsCollection.get instanceId
-      unless instanceDefinition
-        throw ERROR.UNKNOWN_INSTANCE_DEFINITION
-      instanceDefinition.set attributes, validate: true
-      return @
-    # End of TODO
-
     removeInstance: (instanceId) ->
       instanceDefinitionsCollection.remove instanceId
       return @
