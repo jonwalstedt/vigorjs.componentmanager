@@ -1,5 +1,5 @@
 body {
-  padding: 50px 20px;
+  padding: 20px;
   max-width: 680px;
 }
 
@@ -63,18 +63,4 @@ ul, li {
   margin: 20px 0px;
   padding: 10px;
   border: 1px solid red;
-}
-
-.example-header {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 50px;
-  background: white;
-  margin: 0px -10px;
-}
-
-.example-header a {
-  line-height: 50px;
-  margin: 10px;
 }

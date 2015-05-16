@@ -7,13 +7,16 @@
     <iframe src="../common/example-menu.html" frameborder="0" class="examples"></iframe>
     <div class="app-wrapper">
       <header class="example-header">
-        <a href="#passing-arguments/news/political">Passing arguments</a>
-        <a href="#passing-arguments/news/domestic">Passing arguments</a>
-        <a href="#splat/a/lot/of/sub/sections/in/the/url">Splats</a>
-        <a href="#optional/arguments">Optional Arguments 1</a>
-        <a href="#optional/arguments/can-be-optional">Optional Arguments 2</a>
-        <a href="#optional/arguments/can-be-optional/my-id">Optional Arguments 3</a>
-        <a href="#a-random-url">Global</a>
+        <h2>Filter components by url</h2>
+        <ul>
+          <li><a href="#passing-arguments/news/political">Passing arguments</a> ex: passing-arguments/:type/:id</li>
+          <li><a href="#passing-arguments/news/domestic">Passing arguments</a> ex: passing-arguments/:type/:id</li>
+          <li><a href="#splat/a/lot/of/sub/sections/in/the/url">Splats</a> ex: splat/*path</li>
+          <li><a href="#optional/arguments">Optional Arguments 1</a> ex: optional/:section(/:subsection)</li>
+          <li><a href="#optional/arguments/can-be-optional">Optional Arguments 2</a> ex: optional/:section(/:subsection)</li>
+          <li><a href="#optional/arguments/can-be-optional/my-id">Optional Arguments 3</a> ex: optional/:section(/:subsection)(/:id)</li>
+          <li><a href="#a-random-url">Global</a> ex: all urls</li>
+        </ul>
       </header>
       <div class="description">
         <p>You can filter components by specify a url pattern for your instance definition and then add the url you want to filter on to the filter passed to the refresh method.</p>

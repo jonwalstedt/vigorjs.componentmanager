@@ -7,9 +7,15 @@
     <iframe src="../common/example-menu.html" frameborder="0" class="examples"></iframe>
     <div class="app-wrapper">
       <header class="example-header">
-        <a href="#add-hello-world">Add Hello World</a>
-        <a href="#remove-hello-world">Remove Hello World</a>
+        <h2>Hello world</h2>
+        <ul>
+          <li><a href="#add-hello-world">Add Hello World</a></li>
+          <li><a href="#remove-hello-world">Remove Hello World</a></li>
+        </ul>
       </header>
+      <div class="description">
+        <p>Definitions of components and inctances of components are parsed and then filtered on the componentManager. Whenever the refresh method is called any instance that matches the passed filters will be instantiated and added to the target, all other instances will be disposed.</p>
+      </div>
       <div class="component-area--main"></div>
     </div>
 

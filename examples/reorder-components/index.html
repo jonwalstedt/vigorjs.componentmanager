@@ -1,0 +1,107 @@
+<html>
+  <head>
+    <title>Vigorjs componentmanager</title>
+    <link rel="stylesheet" href="../common/styles.css">
+    <style>
+      .vigor-component {
+        padding: 0;
+        border: none;
+      }
+
+    </style>
+  </head>
+  <body>
+    <iframe src="../common/example-menu.html" frameborder="0" class="examples"></iframe>
+    <div class="app-wrapper">
+      <div class="description">
+        <h2>Iframe Components</h2>
+
+        <p>By setting a url as src attribute on the instance definition the componentManager will create an instance of the IframeComponent class to load the url in an iframe</p>
+
+        <p>The IframemComponent is exposed on the Vigor object so it's easy to extend it and create custom IframeComponents if additional logic is needed</p>
+
+      <strong>Component definition</strong>
+      <pre>
+  {
+    "id": "iframe-component",
+    "src": "http://en.wikipedia.org/wiki/Main_Page"
+  }
+      </pre>
+
+      <strong>Instance definition</strong>
+      <pre>
+  {
+    "id": "iframe-instance",
+    "componentId": "iframe-component",
+    "args": {
+      "iframeAttributes": {
+        "width": 600,
+        "height": 400
+      }
+    },
+    "urlPattern": "global"
+  }
+        </pre>
+      </div>
+      <div class="component-area--first"></div>
+
+      <div class="description">
+        Extended IframeComponentBase
+
+        <strong>Component definition</strong>
+        <pre>
+  {
+    "id": "extended-iframe-component",
+    "src": "app.components.ExtendedIframeComponent",
+    "args": {
+      "iframeAttributes":{
+        "src": "http://en.wikipedia.org/wiki/Main_Page"
+      }
+    }
+  }
+        </pre>
+
+        <strong>Instance definition</strong>
+        <pre>
+  {
+    "id": "iframe-instance-2",
+    "componentId": "extended-iframe-component",
+    "args": {
+      "iframeAttributes": {
+        "width": 600,
+        "height": 400
+      }
+    },
+    "urlPattern": "global"
+  }
+        </pre>
+      </div>
+      <div class="component-area--second"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+
+    <script src="../../dist/backbone.vigor.componentmanager.js"></script>
+
+    <script src="./app/Router.js"></script>
+    <script src="./components.js"></script>
+    <script src="./components/FilterComponent.js"></script>
+    <script src="./components/ExtendedIframeComponent.js"></script>
+    <script src="./app/app.js"></script>
+
+    <script type="text/javascript">
+      var app = app || {},
+          filter;
+
+      $(document).ready(function () {
+        'use strict'
+        filter = new app.Filter({
+          el: '.app-wrapper'
+        });
+      });
+
+    </script>
+  </body>
+</html>
