@@ -651,7 +651,7 @@
 
     })(Backbone.Collection);
     (function() {
-      var $context, ERROR, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _tryToReAddStraysToDom, _updateActiveComponents, activeInstancesCollection, componentClassName, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection, targetPrefix;
+      var $context, ERROR, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _serialize, _tryToReAddStraysToDom, _updateActiveComponents, activeInstancesCollection, componentClassName, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
       targetPrefix = 'component-area';
       componentDefinitionsCollection = void 0;
@@ -712,7 +712,7 @@
           return this;
         },
         serialize: function() {
-          return console.log('return data in a readable format for the componentManager');
+          return _serialize();
         },
         addComponent: function(componentDefinition) {
           componentDefinitionsCollection.set(componentDefinition, {
@@ -1037,6 +1037,31 @@
         isEmpty = $componentArea.length > 0;
         $componentArea.toggleClass('component-area--has-component', isEmpty);
         return isEmpty;
+      };
+      _serialize = function() {
+        var componentSettings, components, conditions, filter, hidden, instanceDefinition, instances, j, len;
+        conditions = filterModel.get('conditions') || {};
+        hidden = [];
+        components = componentDefinitionsCollection.toJSON();
+        instances = instanceDefinitionsCollection.toJSON();
+        componentSettings = {};
+        for (j = 0, len = instances.length; j < len; j++) {
+          instanceDefinition = instances[j];
+          instanceDefinition.instance = void 0;
+        }
+        componentSettings = {
+          conditions: conditions,
+          components: components,
+          hidden: hidden,
+          instanceDefinitions: instances
+        };
+        filter = function(key, value) {
+          if (typeof value === 'function') {
+            return value.toString();
+          }
+          return value;
+        };
+        return JSON.stringify(componentSettings, filter, 2);
       };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);

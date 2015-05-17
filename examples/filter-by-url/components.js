@@ -17,7 +17,6 @@ var componentSettings = {
         },
         "urlPattern": "passing-arguments/:type/:id"
       },
-
       {
         "id": "filter-url-instance-2",
         "componentId": "filter-url-component",
@@ -29,7 +28,6 @@ var componentSettings = {
         "urlPattern": "passing-arguments/:type/:id",
         "reInstantiateOnUrlParamChange": true
       },
-
       {
         "id": "filter-url-instance-3",
         "componentId": "filter-url-component",
@@ -40,7 +38,6 @@ var componentSettings = {
         },
         "urlPattern": "splat/*path"
       },
-
       {
         "id": "filter-url-instance-4",
         "componentId": "filter-url-component",
@@ -51,7 +48,6 @@ var componentSettings = {
         },
         "urlPattern": "optional/:section(/:subsection)"
       },
-
       {
         "id": "filter-url-instance-5",
         "componentId": "filter-url-component",
@@ -62,7 +58,6 @@ var componentSettings = {
         },
         "urlPattern": "optional/:section(/:subsection)(/:id)"
       },
-
       {
         "id": "filter-url-instance-6",
         "componentId": "filter-url-component",
@@ -73,7 +68,6 @@ var componentSettings = {
         },
         "urlPattern": "global"
       }
-
     ]
   }
 }

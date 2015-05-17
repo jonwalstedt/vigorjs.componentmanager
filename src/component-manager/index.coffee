@@ -69,7 +69,7 @@ do ->
       return @
 
     serialize: ->
-      console.log 'return data in a readable format for the componentManager'
+      return _serialize()
 
     addComponent: (componentDefinition) ->
       componentDefinitionsCollection.set componentDefinition,
@@ -364,6 +364,29 @@ do ->
     isEmpty = $componentArea.length > 0
     $componentArea.toggleClass 'component-area--has-component', isEmpty
     return isEmpty
+
+  _serialize = ->
+    conditions = filterModel.get('conditions') or {}
+    hidden = []
+    components = componentDefinitionsCollection.toJSON()
+    instances = instanceDefinitionsCollection.toJSON()
+    componentSettings = {}
+
+    for instanceDefinition in instances
+      instanceDefinition.instance = undefined
+
+    componentSettings =
+      conditions: conditions
+      components: components
+      hidden: hidden
+      instanceDefinitions: instances
+
+    filter = (key, value) ->
+      if typeof value is 'function'
+          return value.toString()
+      return value
+
+    return JSON.stringify(componentSettings, filter, 2)
 
   #
   # Callbacks
