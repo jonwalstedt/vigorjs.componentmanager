@@ -2,6 +2,12 @@
   <head>
     <title>Vigorjs componentmanager</title>
     <link rel="stylesheet" href="../common/styles.css">
+    <style>
+      .serialized-output {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+    </style>
   </head>
   <body>
     <iframe src="../common/example-menu.html" frameborder="0" class="examples"></iframe>
@@ -9,14 +15,14 @@
       <div class="description">
         <h2>Serialize the componentManager</h2>
 
-        <p></p>
+        <p>By calling the method serialize on the componentManager you get the current state of componentManager stringified. By parsing the string back to a object this can be used to bootstrap the componentManager.</p>
 
+        <button class="randomize">Randomize</button>
+        <button class="serialize">Serialize</button>
+        <button class="save">Save to localStorage</button>
+      </div>
       <pre class="serialized-output">
       </pre>
-      <button class="randomize">Randomize</button>
-      <button class="serialize">Serialize</button>
-      <button class="save">Save to localStorage</button>
-      </div>
       <div class="component-area--main"></div>
     </div>
 

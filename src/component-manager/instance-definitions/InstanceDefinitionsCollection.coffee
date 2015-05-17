@@ -1,4 +1,4 @@
-class InstanceDefinitionsCollection extends Backbone.Collection
+class InstanceDefinitionsCollection extends BaseCollection
 
   targetPrefix: undefined
   model: InstanceDefinitionModel

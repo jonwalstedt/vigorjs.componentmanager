@@ -1,3 +1,3 @@
-class ComponentDefinitionsCollection extends Backbone.Collection
+class ComponentDefinitionsCollection extends BaseCollection
 
   model: ComponentDefinitionModel

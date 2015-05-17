@@ -6,7 +6,9 @@
  */
 (function() {
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    hasProp = {}.hasOwnProperty;
+    hasProp = {}.hasOwnProperty,
+    bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    slice = [].slice;
 
   (function(root, factory) {
     var Backbone, _;
@@ -22,7 +24,7 @@
       root.Vigor = factory(root, root.Backbone, root._);
     }
   })(this, function(root, Backbone, _) {
-    var ActiveInstancesCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
+    var ActiveInstancesCollection, BaseCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
     Router = (function(superClass) {
@@ -173,6 +175,148 @@
 
     })(Backbone.View);
     Vigor.IframeComponent = IframeComponent;
+    BaseCollection = (function(superClass) {
+      extend(BaseCollection, superClass);
+
+      function BaseCollection() {
+        this._triggerUpdates = bind(this._triggerUpdates, this);
+        this._onRemove = bind(this._onRemove, this);
+        this._onChange = bind(this._onChange, this);
+        this._onAdd = bind(this._onAdd, this);
+        return BaseCollection.__super__.constructor.apply(this, arguments);
+      }
+
+      BaseCollection.prototype._throttledAddedModels = void 0;
+
+      BaseCollection.prototype._throttledChangedModels = void 0;
+
+      BaseCollection.prototype._throttledRemovedModels = void 0;
+
+      BaseCollection.prototype._throttledTriggerUpdates = void 0;
+
+      BaseCollection.prototype._throttleDelay = 50;
+
+      BaseCollection.prototype.initialize = function() {
+        this._throttledAddedModels = {};
+        this._throttledChangedModels = {};
+        this._throttledRemovedModels = {};
+        this._throttledTriggerUpdates = _.throttle(this._triggerUpdates, this._throttleDelay, {
+          leading: false
+        });
+        this.addThrottledListeners();
+        return BaseCollection.__super__.initialize.apply(this, arguments);
+      };
+
+      BaseCollection.prototype.addThrottledListeners = function() {
+        return this.on('all', this._onAll);
+      };
+
+      BaseCollection.prototype.getByIds = function(ids) {
+        var id, j, len, models;
+        models = [];
+        for (j = 0, len = ids.length; j < len; j++) {
+          id = ids[j];
+          models.push(this.get(id));
+        }
+        return models;
+      };
+
+      BaseCollection.prototype.isEmpty = function() {
+        return this.models.length <= 0;
+      };
+
+      BaseCollection.prototype._onAll = function() {
+        var args, event;
+        event = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+        switch (event) {
+          case 'add':
+            this._onAdd.apply(this, args);
+            break;
+          case 'change':
+            this._onChange.apply(this, args);
+            break;
+          case 'remove':
+            this._onRemove.apply(this, args);
+        }
+        return this._throttledTriggerUpdates();
+      };
+
+      BaseCollection.prototype._onAdd = function(model) {
+        return this._throttledAddedModels[model.id] = model;
+      };
+
+      BaseCollection.prototype._onChange = function(model) {
+        return this._throttledChangedModels[model.id] = model;
+      };
+
+      BaseCollection.prototype._onRemove = function(model) {
+        return this._throttledRemovedModels[model.id] = model;
+      };
+
+      BaseCollection.prototype._throttledAdd = function() {
+        var event, models;
+        event = BaseCollection.prototype.THROTTLED_ADD;
+        models = _.values(this._throttledAddedModels);
+        this._throttledAddedModels = {};
+        if (models.length > 0) {
+          this.trigger(event, models, event);
+        }
+        return models;
+      };
+
+      BaseCollection.prototype._throttledChange = function() {
+        var event, models;
+        event = BaseCollection.prototype.THROTTLED_CHANGE;
+        models = _.values(this._throttledChangedModels);
+        this._throttledChangedModels = {};
+        if (models.length > 0) {
+          this.trigger(event, models, event);
+        }
+        return models;
+      };
+
+      BaseCollection.prototype._throttledRemove = function() {
+        var event, models;
+        event = BaseCollection.prototype.THROTTLED_REMOVE;
+        models = _.values(this._throttledRemovedModels);
+        this._throttledRemovedModels = {};
+        if (models.length > 0) {
+          this.trigger(event, models, event);
+        }
+        return models;
+      };
+
+      BaseCollection.prototype._throttledDiff = function(added, changed, removed) {
+        var consolidated, event, models;
+        event = BaseCollection.prototype.THROTTLED_DIFF;
+        if (added.length || changed.length || removed.length) {
+          added = _.difference(added, removed);
+          consolidated = _.uniq(added.concat(changed));
+          models = {
+            added: added,
+            changed: changed,
+            removed: removed,
+            consolidated: consolidated
+          };
+          return this.trigger(event, models, event);
+        }
+      };
+
+      BaseCollection.prototype._triggerUpdates = function() {
+        return this._throttledDiff(this._throttledAdd(), this._throttledChange(), this._throttledRemove());
+      };
+
+      BaseCollection.prototype.THROTTLED_DIFF = 'throttled_diff';
+
+      BaseCollection.prototype.THROTTLED_ADD = 'throttled_add';
+
+      BaseCollection.prototype.THROTTLED_CHANGE = 'throttled_change';
+
+      BaseCollection.prototype.THROTTLED_REMOVE = 'throttled_remove';
+
+      return BaseCollection;
+
+    })(Backbone.Collection);
     ComponentDefinitionModel = (function(superClass) {
       extend(ComponentDefinitionModel, superClass);
 
@@ -285,7 +429,7 @@
 
       return ComponentDefinitionsCollection;
 
-    })(Backbone.Collection);
+    })(BaseCollection);
     InstanceDefinitionModel = (function(superClass) {
       extend(InstanceDefinitionModel, superClass);
 
@@ -629,7 +773,7 @@
 
       return InstanceDefinitionsCollection;
 
-    })(Backbone.Collection);
+    })(BaseCollection);
     ActiveInstancesCollection = (function(superClass) {
       extend(ActiveInstancesCollection, superClass);
 
@@ -649,7 +793,7 @@
 
       return ActiveInstancesCollection;
 
-    })(Backbone.Collection);
+    })(BaseCollection);
     (function() {
       var $context, ERROR, EVENTS, __testOnly, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _serialize, _tryToReAddStraysToDom, _updateActiveComponents, activeInstancesCollection, componentClassName, componentDefinitionsCollection, componentManager, filterModel, instanceDefinitionsCollection, targetPrefix;
       componentClassName = 'vigor-component';
@@ -714,7 +858,7 @@
         serialize: function() {
           return _serialize();
         },
-        addComponent: function(componentDefinition) {
+        addComponents: function(componentDefinition) {
           componentDefinitionsCollection.set(componentDefinition, {
             parse: true,
             validate: true,
@@ -722,29 +866,16 @@
           });
           return this;
         },
-        updateComponent: function(componentId, attributes) {
-          var componentDefinition;
-          componentDefinition = componentDefinitionsCollection.get(componentId);
-          if (componentDefinition != null) {
-            componentDefinition.set(attributes, {
-              validate: true
-            });
-          }
-          return this;
-        },
-        removeComponent: function(componentDefinitionId) {
-          instanceDefinitionsCollection.remove(componentDefinitionId);
-          return this;
-        },
-        getComponentById: function(componentId) {
-          var ref;
-          return (ref = componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
-        },
-        getComponents: function() {
-          return componentDefinitionsCollection.toJSON();
-        },
         addInstance: function(instanceDefinition) {
           instanceDefinitionsCollection.set(instanceDefinition, {
+            parse: true,
+            validate: true,
+            remove: false
+          });
+          return this;
+        },
+        updateComponents: function(componentDefinitions) {
+          componentDefinitionsCollection.set(componentDefinitions, {
             parse: true,
             validate: true,
             remove: false
@@ -759,13 +890,24 @@
           });
           return this;
         },
+        removeComponent: function(componentDefinitionId) {
+          instanceDefinitionsCollection.remove(componentDefinitionId);
+          return this;
+        },
         removeInstance: function(instanceId) {
           instanceDefinitionsCollection.remove(instanceId);
           return this;
         },
+        getComponentById: function(componentId) {
+          var ref;
+          return (ref = componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
+        },
         getInstanceById: function(instanceId) {
           var ref;
           return (ref = instanceDefinitionsCollection.get(instanceId)) != null ? ref.toJSON() : void 0;
+        },
+        getComponents: function() {
+          return componentDefinitionsCollection.toJSON();
         },
         getInstances: function() {
           return instanceDefinitionsCollection.toJSON();
@@ -786,6 +928,9 @@
         getTargetPrefix: function() {
           return targetPrefix;
         },
+        getConditions: function() {
+          return filterModel.get('conditions');
+        },
         registerConditions: function(conditionsToBeRegistered, silent) {
           var conditions;
           if (silent == null) {
@@ -800,16 +945,11 @@
           });
           return this;
         },
-        getConditions: function() {
-          return filterModel.get('conditions');
-        },
         clear: function() {
-          var conditions;
           componentDefinitionsCollection.reset();
           instanceDefinitionsCollection.reset();
           activeInstancesCollection.reset();
           filterModel.clear();
-          conditions = {};
           return this;
         },
         dispose: function() {
@@ -824,8 +964,8 @@
       };
       _addListeners = function() {
         filterModel.on('change', _updateActiveComponents);
-        componentDefinitionsCollection.on('add change remove', _updateActiveComponents);
-        instanceDefinitionsCollection.on('add change remove', _updateActiveComponents);
+        componentDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
+        instanceDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
         activeInstancesCollection.on('add', _onComponentAdded);
         activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', _onComponentChange);
         activeInstancesCollection.on('change:order', _onComponentOrderChange);

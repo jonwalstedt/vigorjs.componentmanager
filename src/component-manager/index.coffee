@@ -71,30 +71,22 @@ do ->
     serialize: ->
       return _serialize()
 
-    addComponent: (componentDefinition) ->
+    addComponents: (componentDefinition) ->
       componentDefinitionsCollection.set componentDefinition,
         parse: true
         validate: true
         remove: false
       return @
 
-    updateComponent: (componentId, attributes) ->
-      componentDefinition = componentDefinitionsCollection.get componentId
-      componentDefinition?.set attributes, validate: true
-      return @
-
-    removeComponent: (componentDefinitionId) ->
-      instanceDefinitionsCollection.remove componentDefinitionId
-      return @
-
-    getComponentById: (componentId) ->
-      return componentDefinitionsCollection.get(componentId)?.toJSON()
-
-    getComponents: ->
-      return componentDefinitionsCollection.toJSON()
-
     addInstance: (instanceDefinition) ->
       instanceDefinitionsCollection.set instanceDefinition,
+        parse: true
+        validate: true
+        remove: false
+      return @
+
+    updateComponents: (componentDefinitions) ->
+      componentDefinitionsCollection.set componentDefinitions,
         parse: true
         validate: true
         remove: false
@@ -105,14 +97,25 @@ do ->
         parse: true
         validate: true
         remove: false
+
+      return @
+
+    removeComponent: (componentDefinitionId) ->
+      instanceDefinitionsCollection.remove componentDefinitionId
       return @
 
     removeInstance: (instanceId) ->
       instanceDefinitionsCollection.remove instanceId
       return @
 
+    getComponentById: (componentId) ->
+      return componentDefinitionsCollection.get(componentId)?.toJSON()
+
     getInstanceById: (instanceId) ->
       return instanceDefinitionsCollection.get(instanceId)?.toJSON()
+
+    getComponents: ->
+      return componentDefinitionsCollection.toJSON()
 
     getInstances: ->
       return instanceDefinitionsCollection.toJSON()
@@ -129,6 +132,9 @@ do ->
     getTargetPrefix: ->
       return targetPrefix
 
+    getConditions: ->
+      return filterModel.get 'conditions'
+
     registerConditions: (conditionsToBeRegistered, silent = false) ->
       conditions = filterModel.get('conditions') or {}
       conditions = _.extend conditions, conditionsToBeRegistered
@@ -137,15 +143,11 @@ do ->
       , silent: silent
       return @
 
-    getConditions: ->
-      return filterModel.get 'conditions'
-
     clear: ->
       do componentDefinitionsCollection.reset
       do instanceDefinitionsCollection.reset
       do activeInstancesCollection.reset
       do filterModel.clear
-      conditions = {}
       return @
 
     dispose: ->
@@ -161,8 +163,8 @@ do ->
   # ============================================================================
   _addListeners = ->
     filterModel.on 'change', _updateActiveComponents
-    componentDefinitionsCollection.on 'add change remove', _updateActiveComponents
-    instanceDefinitionsCollection.on 'add change remove', _updateActiveComponents
+    componentDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
+    instanceDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
 
     activeInstancesCollection.on 'add', _onComponentAdded
     activeInstancesCollection.on 'change:componentId

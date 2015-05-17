@@ -27,6 +27,7 @@
   #= include ./component-manager/router/Router.coffee
   #= include ./component-manager/filter/FilterModel.coffee
   #= include ./component-manager/iframe-component/IframeComponent.coffee
+  #= include ./component-manager/BaseCollection.coffee
   #= include ./component-manager/component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-manager/component-definitions/ComponentDefinitionsCollection.coffee
   #= include ./component-manager/instance-definitions/InstanceDefinitionModel.coffee

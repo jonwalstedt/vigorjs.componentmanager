@@ -1,4 +1,4 @@
-class ActiveInstancesCollection extends Backbone.Collection
+class ActiveInstancesCollection extends BaseCollection
 
   model: InstanceDefinitionModel
 

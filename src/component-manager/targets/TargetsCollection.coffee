@@ -1,4 +1,4 @@
-class TargetsCollection extends Backbone.Collection
+class TargetsCollection extends BaseCollection
 
   TARGET_PREFIX = 'component-area'
   model: TargetModel

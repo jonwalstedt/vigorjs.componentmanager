@@ -64,6 +64,8 @@ var app = app || {};
         components[i].order = randomOrderArray[i];
       }
 
+      console.log('components: ', components);
+
       Vigor.componentManager.updateInstances(components);
     },
 
