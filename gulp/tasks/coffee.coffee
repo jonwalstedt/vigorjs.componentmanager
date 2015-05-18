@@ -18,11 +18,9 @@ banner = ['/**',
 
 gulp.task 'coffee', ->
   buildLib config.bootstrap, config.outputName, config.dest
-  buildLib config.bootstrapControls, config.controlsOutputName, config.dest
 
 gulp.task 'coffee-test', ->
   buildTestLib config.bootstrap, config.outputName, config.dest
-  buildTestLib config.bootstrapControls, config.controlsOutputName, config.dest
 
 buildLib = (files, outputName, dest) ->
   gulp.src(files)

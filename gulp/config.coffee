@@ -1,8 +1,6 @@
 config =
   bootstrap: './src/bootstrap.coffee'
-  bootstrapControls: './src/bootstrap-controls.coffee'
-  outputName: 'backbone.vigor.componentmanager.js'
-  controlsOutputName: 'backbone.vigor.componentmanager-controls.js'
+  outputName: 'vigor.componentmanager.js'
   serverTarget: './examples'
   specFiles: ['test/**/*.coffee']
   dest: './dist'
