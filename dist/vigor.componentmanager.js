@@ -11,19 +11,20 @@
     slice = [].slice;
 
   (function(root, factory) {
-    var Backbone, _;
+    var $, Backbone, _;
     if (typeof define === "function" && define.amd) {
-      define(['backbone', 'underscore'], function(Backbone, _) {
+      define(['backbone', 'underscore', 'jquery'], function(Backbone, _, $) {
         return factory(root, Backbone, _);
       });
     } else if (typeof exports === "object") {
       Backbone = require('backbone');
       _ = require('underscore');
-      module.exports = factory(root, Backbone, _);
+      $ = require('jquery');
+      module.exports = factory(root, Backbone, _, $);
     } else {
-      root.Vigor = factory(root, root.Backbone, root._);
+      root.Vigor = factory(root, root.Backbone, root._, root.$);
     }
-  })(this, function(root, Backbone, _) {
+  })(this, function(root, Backbone, _, $) {
     var ActiveInstancesCollection, BaseCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
@@ -1111,14 +1112,14 @@
         return instanceDefinition;
       };
       _tryToReAddStraysToDom = function() {
-        var instanceDefinition, j, len, ref, render, results, stray;
+        var j, len, ref, render, results, stray;
         ref = activeInstancesCollection.getStrays();
         results = [];
         for (j = 0, len = ref.length; j < len; j++) {
           stray = ref[j];
           render = false;
-          if (instanceDefinition = _addInstanceToDom(stray, render)) {
-            results.push(instanceDefinition.dispose());
+          if (_addInstanceToDom(stray, render)) {
+            results.push(stray.disposeInstance());
           } else {
             results.push(stray.get('instance').delegateEvents());
           }
@@ -1126,20 +1127,21 @@
         return results;
       };
       _addInstanceToDom = function(instanceDefinition, render) {
-        var $target;
+        var $target, success;
         if (render == null) {
           render = true;
         }
         $target = $("." + (instanceDefinition.get('targetName')), $context);
+        success = false;
         if (render) {
           instanceDefinition.renderInstance();
         }
         if ($target.length > 0) {
           _addInstanceInOrder(instanceDefinition);
-          return _isComponentAreaEmpty($target);
-        } else {
-          return instanceDefinition;
+          _isComponentAreaEmpty($target);
+          success = true;
         }
+        return success;
       };
       _addInstanceInOrder = function(instanceDefinition) {
         var $previousElement, $target, instance, order;

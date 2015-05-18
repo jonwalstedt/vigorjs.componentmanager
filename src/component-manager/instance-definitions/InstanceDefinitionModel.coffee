@@ -40,6 +40,10 @@ class InstanceDefinitionModel extends Backbone.Model
   isAttached: ->
     instance = @get 'instance'
     attached = false
+
+    if not instance.el and instance.$el
+      el = instance.$el.get(0)
+
     if instance
       attached = $.contains document.body, instance.el
     return attached

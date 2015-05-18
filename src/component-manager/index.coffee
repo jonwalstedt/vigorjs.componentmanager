@@ -318,13 +318,14 @@ do ->
   _tryToReAddStraysToDom = ->
     for stray in activeInstancesCollection.getStrays()
       render = false
-      if instanceDefinition = _addInstanceToDom stray, render
-        do instanceDefinition.dispose
+      if _addInstanceToDom(stray, render)
+        do stray.disposeInstance
       else
         do stray.get('instance').delegateEvents
 
   _addInstanceToDom = (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
+    success = false
 
     if render
       do instanceDefinition.renderInstance
@@ -332,8 +333,9 @@ do ->
     if $target.length > 0
       _addInstanceInOrder instanceDefinition
       _isComponentAreaEmpty $target
-    else
-      return instanceDefinition
+      success = true
+
+    return success
 
   _addInstanceInOrder = (instanceDefinition) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
