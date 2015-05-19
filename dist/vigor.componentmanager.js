@@ -479,9 +479,12 @@
       };
 
       InstanceDefinitionModel.prototype.isAttached = function() {
-        var attached, instance;
+        var attached, el, instance;
         instance = this.get('instance');
         attached = false;
+        if (!instance.el && instance.$el) {
+          el = instance.$el.get(0);
+        }
         if (instance) {
           attached = $.contains(document.body, instance.el);
         }

@@ -319,9 +319,9 @@ do ->
     for stray in activeInstancesCollection.getStrays()
       render = false
       if _addInstanceToDom(stray, render)
-        do stray.disposeInstance
-      else
         do stray.get('instance').delegateEvents
+      else
+        do stray.disposeInstance
 
   _addInstanceToDom = (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", $context
