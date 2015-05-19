@@ -319,7 +319,9 @@ do ->
     for stray in activeInstancesCollection.getStrays()
       render = false
       if _addInstanceToDom(stray, render)
-        do stray.get('instance').delegateEvents
+        instance = stray.get 'instance'
+        if instance?.delegateEvents?
+          do instance.delegateEvents
       else
         do stray.disposeInstance
 

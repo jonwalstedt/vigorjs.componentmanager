@@ -1115,16 +1115,21 @@
         return instanceDefinition;
       };
       _tryToReAddStraysToDom = function() {
-        var j, len, ref, render, results, stray;
+        var instance, j, len, ref, render, results, stray;
         ref = activeInstancesCollection.getStrays();
         results = [];
         for (j = 0, len = ref.length; j < len; j++) {
           stray = ref[j];
           render = false;
           if (_addInstanceToDom(stray, render)) {
-            results.push(stray.disposeInstance());
+            instance = stray.get('instance');
+            if ((instance != null ? instance.delegateEvents : void 0) != null) {
+              results.push(instance.delegateEvents());
+            } else {
+              results.push(void 0);
+            }
           } else {
-            results.push(stray.get('instance').delegateEvents());
+            results.push(stray.disposeInstance());
           }
         }
         return results;
