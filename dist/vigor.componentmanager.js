@@ -400,7 +400,7 @@
               if (globalConditions[condition] == null) {
                 throw "Trying to verify condition " + condition + " but it has not been registered yet";
               }
-              shouldBeIncluded = globalConditions[condition]();
+              shouldBeIncluded = !!globalConditions[condition]();
               if (!shouldBeIncluded) {
                 break;
               }

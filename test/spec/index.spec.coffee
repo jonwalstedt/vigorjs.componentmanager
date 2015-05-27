@@ -1,7 +1,7 @@
 assert = require 'assert'
 sinon = require 'sinon'
 
-componentManager = require('../../dist/backbone.vigor.componentmanager').componentManager
+componentManager = require('../../dist/vigor.componentmanager').componentManager
 
 describe 'A componentManager', ->
 

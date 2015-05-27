@@ -1,7 +1,5 @@
 assert = require 'assert'
-jsdom = require 'jsdom'
-
-componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
+componentManager = require('../../../dist/vigor.componentmanager').componentManager
 ActiveInstancesCollection = componentManager.__testOnly.ActiveInstancesCollection
 
 class DummyComponent

@@ -1,8 +1,7 @@
 assert = require 'assert'
 sinon = require 'sinon'
-jsdom = require 'jsdom'
 
-componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
+componentManager = require('../../../dist/vigor.componentmanager').componentManager
 IframeComponent = componentManager.__testOnly.IframeComponent
 
 describe 'IframeComponent', ->

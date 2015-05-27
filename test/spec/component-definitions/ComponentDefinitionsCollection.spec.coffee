@@ -1,7 +1,6 @@
 assert = require 'assert'
-jsdom = require 'jsdom'
 
-componentManager = require('../../../dist/backbone.vigor.componentmanager').componentManager
+componentManager = require('../../../dist/vigor.componentmanager').componentManager
 ComponentDefinitionsCollection = componentManager.__testOnly.ComponentDefinitionsCollection
 
 describe 'ComponentDefinitionsCollection', ->

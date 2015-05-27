@@ -71,9 +71,10 @@ class ComponentDefinitionModel extends Backbone.Model
           unless globalConditions[condition]?
             throw "Trying to verify condition #{condition} but it has not been registered yet"
 
-          shouldBeIncluded = globalConditions[condition]()
+          shouldBeIncluded = !!globalConditions[condition]()
           if not shouldBeIncluded
             break
+
     return shouldBeIncluded
 
   _isUrl: (string) ->
