@@ -107,10 +107,10 @@
 
       FilterModel.prototype.defaults = {
         url: void 0,
+        conditions: void 0,
         includeIfStringMatches: void 0,
         hasToMatchString: void 0,
-        cantMatchString: void 0,
-        conditions: void 0
+        cantMatchString: void 0
       };
 
       FilterModel.prototype.parse = function(attrs) {
@@ -122,10 +122,10 @@
         }
         newValues = {
           url: url,
+          conditions: (attrs != null ? attrs.conditions : void 0) || this.get('conditions') || void 0,
           includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
           hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
-          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0,
-          conditions: (attrs != null ? attrs.conditions : void 0) || this.get('conditions') || void 0
+          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0
         };
         return newValues;
       };
