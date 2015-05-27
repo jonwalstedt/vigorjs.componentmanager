@@ -2,11 +2,15 @@ config  = require '../config'
 gulp  = require 'gulp'
 http = require "http"
 nodeStatic = require "node-static"
+livereload = require "gulp-livereload"
 
 # Start server and redirect to index.html
 gulp.task 'server', ->
   file = new nodeStatic.Server('./', cache: 0)
   port = process.env.PORT || 7070
+  reloadPort = parseInt(port, 10) + 1
+  livereload.listen
+    port: reloadPort
 
   http.createServer((req, res) ->
     req.addListener('end', ->
