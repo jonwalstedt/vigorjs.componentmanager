@@ -108,7 +108,7 @@ class InstanceDefinitionModel extends Backbone.Model
         else
           return false
 
-    if @get('conditions')
+    if filter.conditions and @get('conditions')
       areConditionsMet = @areConditionsMet filter.conditions
       if areConditionsMet?
         return false unless areConditionsMet

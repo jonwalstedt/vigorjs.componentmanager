@@ -5,12 +5,12 @@ class InstanceDefinitionsCollection extends BaseCollection
 
   setTargetPrefix: (@targetPrefix) ->
 
-  parse: (response, options) ->
+  parse: (data, options) ->
     parsedResponse = undefined
     instanceDefinitionsArray = []
 
-    if _.isObject(response) and not _.isArray(response)
-      for targetName, instanceDefinitions of response
+    if _.isObject(data) and not _.isArray(data)
+      for targetName, instanceDefinitions of data
         if _.isArray(instanceDefinitions)
           for instanceDefinition in instanceDefinitions
 
@@ -21,13 +21,13 @@ class InstanceDefinitionsCollection extends BaseCollection
           parsedResponse = instanceDefinitionsArray
 
         else
-          parsedResponse = @parseInstanceDefinition(response)
+          parsedResponse = @parseInstanceDefinition(data)
           break
 
-    else if _.isArray(response)
-      for instanceDefinition, i in response
-        response[i] = @parseInstanceDefinition(instanceDefinition)
-      parsedResponse = response
+    else if _.isArray(data)
+      for instanceDefinition, i in data
+        data[i] = @parseInstanceDefinition(instanceDefinition)
+      parsedResponse = data
 
     return parsedResponse
 
@@ -40,21 +40,6 @@ class InstanceDefinitionsCollection extends BaseCollection
   getInstanceDefinitions: (filter) ->
     return @filter (instanceDefinitionModel) ->
       instanceDefinitionModel.passesFilter filter
-
-  getInstanceDefinitionsByUrl: (url) ->
-    return @filterInstanceDefinitionsByUrl @models, url
-
-  filterInstanceDefinitionsByUrl: (instanceDefinitions, url) ->
-    _.filter instanceDefinitions, (instanceDefinitionModel) =>
-      return instanceDefinitionModel.doesUrlPatternMatch url
-
-  filterInstanceDefinitionsByString: (instanceDefinitions, filterString) ->
-    _.filter instanceDefinitions, (instanceDefinitionModel) ->
-      return instanceDefinitionModel.doesFilterStringMatch filterString
-
-  filterInstanceDefinitionsByConditions: (instanceDefinitions, conditions) ->
-    _.filter instanceDefinitions, (instanceDefinitionModel) ->
-      return instanceDefinitionModel.areConditionsMet conditions
 
   addUrlParams: (instanceDefinitions, url) ->
     for instanceDefinitionModel in instanceDefinitions

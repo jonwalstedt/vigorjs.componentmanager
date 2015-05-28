@@ -576,7 +576,7 @@
             }
           }
         }
-        if (this.get('conditions')) {
+        if (filter.conditions && this.get('conditions')) {
           areConditionsMet = this.areConditionsMet(filter.conditions);
           if (areConditionsMet != null) {
             if (!areConditionsMet) {
@@ -698,13 +698,13 @@
         this.targetPrefix = targetPrefix1;
       };
 
-      InstanceDefinitionsCollection.prototype.parse = function(response, options) {
+      InstanceDefinitionsCollection.prototype.parse = function(data, options) {
         var i, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, k, len, len1, parsedResponse, targetName;
         parsedResponse = void 0;
         instanceDefinitionsArray = [];
-        if (_.isObject(response) && !_.isArray(response)) {
-          for (targetName in response) {
-            instanceDefinitions = response[targetName];
+        if (_.isObject(data) && !_.isArray(data)) {
+          for (targetName in data) {
+            instanceDefinitions = data[targetName];
             if (_.isArray(instanceDefinitions)) {
               for (j = 0, len = instanceDefinitions.length; j < len; j++) {
                 instanceDefinition = instanceDefinitions[j];
@@ -714,16 +714,16 @@
               }
               parsedResponse = instanceDefinitionsArray;
             } else {
-              parsedResponse = this.parseInstanceDefinition(response);
+              parsedResponse = this.parseInstanceDefinition(data);
               break;
             }
           }
-        } else if (_.isArray(response)) {
-          for (i = k = 0, len1 = response.length; k < len1; i = ++k) {
-            instanceDefinition = response[i];
-            response[i] = this.parseInstanceDefinition(instanceDefinition);
+        } else if (_.isArray(data)) {
+          for (i = k = 0, len1 = data.length; k < len1; i = ++k) {
+            instanceDefinition = data[i];
+            data[i] = this.parseInstanceDefinition(instanceDefinition);
           }
-          parsedResponse = response;
+          parsedResponse = data;
         }
         return parsedResponse;
       };
@@ -739,30 +739,6 @@
       InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter) {
         return this.filter(function(instanceDefinitionModel) {
           return instanceDefinitionModel.passesFilter(filter);
-        });
-      };
-
-      InstanceDefinitionsCollection.prototype.getInstanceDefinitionsByUrl = function(url) {
-        return this.filterInstanceDefinitionsByUrl(this.models, url);
-      };
-
-      InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByUrl = function(instanceDefinitions, url) {
-        return _.filter(instanceDefinitions, (function(_this) {
-          return function(instanceDefinitionModel) {
-            return instanceDefinitionModel.doesUrlPatternMatch(url);
-          };
-        })(this));
-      };
-
-      InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByString = function(instanceDefinitions, filterString) {
-        return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
-          return instanceDefinitionModel.doesFilterStringMatch(filterString);
-        });
-      };
-
-      InstanceDefinitionsCollection.prototype.filterInstanceDefinitionsByConditions = function(instanceDefinitions, conditions) {
-        return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
-          return instanceDefinitionModel.areConditionsMet(conditions);
         });
       };
 
