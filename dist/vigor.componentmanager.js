@@ -484,9 +484,11 @@
         attached = false;
         if (!instance.el && instance.$el) {
           el = instance.$el.get(0);
+        } else {
+          el = instance.el;
         }
         if (instance) {
-          attached = $.contains(document.body, instance.el);
+          attached = $.contains(document.body, el);
         }
         return attached;
       };
@@ -512,13 +514,13 @@
           return;
         }
         if (!instance.render) {
-          throw "The enstance " + (instance.get('id')) + " does not have a render method";
+          throw "The instance " + (instance.get('id')) + " does not have a render method";
         }
         if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
           instance.preRender();
         }
         instance.render();
-        if ((instance.postrender != null) && _.isFunction(instance.postRender)) {
+        if ((instance.postRender != null) && _.isFunction(instance.postRender)) {
           return instance.postRender();
         }
       };
@@ -1214,6 +1216,45 @@
         return _addInstanceToDom(instanceDefinition);
       };
 
+      /* start-test-block */
+      __testOnly = {};
+      __testOnly.ActiveInstancesCollection = ActiveInstancesCollection;
+      __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection;
+      __testOnly.ComponentDefinitionModel = ComponentDefinitionModel;
+      __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection;
+      __testOnly.InstanceDefinitionModel = InstanceDefinitionModel;
+      __testOnly.FilterModel = FilterModel;
+      __testOnly.IframeComponent = IframeComponent;
+      __testOnly.componentClassName = componentClassName;
+      __testOnly.targetPrefix = targetPrefix;
+      __testOnly.componentDefinitionsCollection = componentDefinitionsCollection;
+      __testOnly.instanceDefinitionsCollection = instanceDefinitionsCollection;
+      __testOnly.activeInstancesCollection = activeInstancesCollection;
+      __testOnly.filterModel = filterModel;
+      __testOnly.$context = $context;
+      __testOnly._addListeners = _addListeners;
+      __testOnly._removeListeners = _removeListeners;
+      __testOnly._previousElement = _previousElement;
+      __testOnly._updateActiveComponents = _updateActiveComponents;
+      __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions;
+      __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount;
+      __testOnly._filterInstanceDefinitionsByComponentConditions = _filterInstanceDefinitionsByComponentConditions;
+      __testOnly._parseComponentSettings = _parseComponentSettings;
+      __testOnly._registerComponents = _registerComponents;
+      __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons;
+      __testOnly._addInstanceToModel = _addInstanceToModel;
+      __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom;
+      __testOnly._addInstanceToDom = _addInstanceToDom;
+      __testOnly._addInstanceInOrder = _addInstanceInOrder;
+      __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty;
+      __testOnly._onComponentAdded = _onComponentAdded;
+      __testOnly._onComponentChange = _onComponentChange;
+      __testOnly._onComponentRemoved = _onComponentRemoved;
+      __testOnly._onComponentOrderChange = _onComponentOrderChange;
+      __testOnly._onComponentTargetNameChange = _onComponentOrderChange;
+      componentManager.__testOnly = __testOnly;
+
+      /* end-test-block */
       _.extend(componentManager, Backbone.Events);
       return Vigor.componentManager = componentManager;
     })();

@@ -43,9 +43,11 @@ class InstanceDefinitionModel extends Backbone.Model
 
     if not instance.el and instance.$el
       el = instance.$el.get(0)
+    else
+      el = instance.el
 
     if instance
-      attached = $.contains document.body, instance.el
+      attached = $.contains document.body, el
     return attached
 
   incrementShowCount: (silent = true) ->
@@ -59,14 +61,14 @@ class InstanceDefinitionModel extends Backbone.Model
     instance = @get 'instance'
     unless instance then return
     unless instance.render
-      throw "The enstance #{instance.get('id')} does not have a render method"
+      throw "The instance #{instance.get('id')} does not have a render method"
 
     if instance.preRender? and _.isFunction(instance.preRender)
       do instance.preRender
 
     do instance.render
 
-    if instance.postrender? and _.isFunction(instance.postRender)
+    if instance.postRender? and _.isFunction(instance.postRender)
       do instance.postRender
 
   dispose: ->
