@@ -242,7 +242,7 @@ do ->
       unless componentDefinition
         throw ERROR.UNKNOWN_COMPONENT_DEFINITION
       componentMaxShowCount = componentDefinition.get 'maxShowCount'
-      return instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
+      return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
   _filterInstanceDefinitionsByComponentConditions = (instanceDefinitions) ->
     globalConditions = filterModel.get 'conditions'

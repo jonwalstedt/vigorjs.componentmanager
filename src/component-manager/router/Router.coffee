@@ -9,6 +9,9 @@ class Router extends Backbone.Router
     else
       @_getArgumentsFromUrl urls, fragment
 
+  routeToRegExp: (route) ->
+    @_routeToRegExp(route)
+
   _getArgumentsFromUrl: (url, fragment) ->
     origUrl = url
     if !_.isRegExp(url) then url = @_routeToRegExp(url)

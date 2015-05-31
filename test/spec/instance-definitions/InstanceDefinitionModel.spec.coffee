@@ -156,7 +156,7 @@ describe 'InstanceDefinitionModel', ->
       assert.doesNotThrow -> instanceDefinitionModel.renderInstance()
 
   describe 'dispose', ->
-    it 'should call instance.dispose', ->
+    it 'should call instance.dispose if there are an instance', ->
       instance =
         render: ->
         dispose: sinon.spy()
@@ -178,10 +178,151 @@ describe 'InstanceDefinitionModel', ->
       assert instanceDefinitionModel.clear.called
 
   describe 'disposeInstance', ->
-  describe 'exceedsMaximumShowCount', ->
+    it 'should dispose the instance and set it to undefined on the instanceDefinitionModel', ->
+      instance =
+        render: ->
+        dispose: sinon.spy()
+
+      instanceDefinitionModel.set 'instance', instance
+      instanceDefinitionModel.disposeInstance()
+      assert instance.dispose.called
+      instance = instanceDefinitionModel.get 'instance'
+      assert.equal instance, undefined
+
   describe 'passesFilter', ->
+
+  describe 'exceedsMaximumShowCount', ->
+    it 'should return true if instance showCount exeeds instance maxShowCount', ->
+      instanceDefinitionModel.set
+        showCount: 2
+        maxShowCount: 1
+
+      exceeds = instanceDefinitionModel.exceedsMaximumShowCount()
+      assert.equal exceeds, true
+
+    it 'should return false if instance showCount is lower than the instance maxShowCount', ->
+      instanceDefinitionModel.set
+        showCount: 2
+        maxShowCount: 4
+
+      exceeds = instanceDefinitionModel.exceedsMaximumShowCount()
+      assert.equal exceeds, false
+
+    it 'should fallback on component maxShowCount if instance maxShowCount is undefined, (should return true if showCount exceeds componentMaxShowCount)', ->
+      instanceDefinitionModel.set
+        showCount: 4
+        maxShowCount: undefined
+
+      componentMaxShowCount = 3
+      exceeds = instanceDefinitionModel.exceedsMaximumShowCount(componentMaxShowCount)
+      assert.equal exceeds, true
+
+    it 'should fallback on component maxShowCount if instance maxShowCount is undefined, (should return false if showCount is lower than componentMaxShowCount)', ->
+      instanceDefinitionModel.set
+        showCount: 2
+        maxShowCount: undefined
+
+      componentMaxShowCount = 3
+      exceeds = instanceDefinitionModel.exceedsMaximumShowCount(componentMaxShowCount)
+      assert.equal exceeds, false
+
+    it 'sould return false if instance maxShowCount and component maxShowCount is undefined', ->
+      instanceDefinitionModel.set
+        showCount: 2
+        maxShowCount: undefined
+
+      componentMaxShowCount = undefined
+      exceeds = instanceDefinitionModel.exceedsMaximumShowCount(componentMaxShowCount)
+      assert.equal exceeds, false
+
   describe 'hasToMatchString', ->
+    it 'should call includeIfStringMatches', ->
+      sinon.spy instanceDefinitionModel, 'includeIfStringMatches'
+      instanceDefinitionModel.hasToMatchString 'lorem ipsum'
+      assert instanceDefinitionModel.includeIfStringMatches.called
+
+    it 'should return true if string matches', ->
+      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
+      matches = instanceDefinitionModel.hasToMatchString 'lorem ipsum'
+      assert.equal matches, true
+
+    it 'should return false if string doesnt match', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel.hasToMatchString 'lorem ipsum'
+      assert.equal matches, false
+
+    it 'should return false if filterString is undefined', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel.hasToMatchString 'lorem ipsum'
+      assert.equal matches, false
+
   describe 'cantMatchString', ->
+    it 'should call hasToMatchString', ->
+      sinon.spy instanceDefinitionModel, 'hasToMatchString'
+      instanceDefinitionModel.cantMatchString 'lorem ipsum'
+      assert instanceDefinitionModel.hasToMatchString.called
+
+    it 'should return false if string matches', ->
+      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
+      matches = instanceDefinitionModel.cantMatchString 'lorem ipsum'
+      assert.equal matches, false
+
+    it 'should return true if string doesnt match', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel.cantMatchString 'lorem ipsum'
+      assert.equal matches, true
+
+    it 'should return true if filterString is undefined', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel.cantMatchString 'lorem ipsum'
+      assert.equal matches, true
+
   describe 'includeIfStringMatches', ->
+    it 'should return true if string matches', ->
+      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
+      matches = instanceDefinitionModel.includeIfStringMatches 'lorem ipsum'
+      assert.equal matches, true
+
+    it 'should return false if string doesnt match', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel.includeIfStringMatches 'lorem ipsum'
+      assert.equal matches, false
+
+    it 'should return undefined if filterString is undefined', ->
+      instanceDefinitionModel.set 'filterString', undefined
+      matches = instanceDefinitionModel.includeIfStringMatches 'lorem ipsum'
+      assert.equal matches, undefined
+
   describe 'doesUrlPatternMatch', ->
+    it 'should return true if a single urlPattern matches the passed url', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
+      assert.equal match, true
+
+    it 'should return false if a single urlPattern does not match the passed url', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar'
+      assert.equal match, false
+
+    it 'should return true if one out of many urlPatterns matches the passed url', ->
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar', 'bas/*splat']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
+      assert.equal match, true
+
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar'
+      assert.equal match, true
+
+    it 'should return false if the passed url doesnt match any of the urlPatterns', ->
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar', 'bas/*splat']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'lorem'
+      assert.equal match, false
+
+      match = instanceDefinitionModel.doesUrlPatternMatch 'ipsum/lorem'
+      assert.equal match, false
+
+    it 'return undefined if the urlPattern is undefined', ->
+      instanceDefinitionModel.set 'urlPattern', undefined
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
+      assert.equal match, undefined
+
   describe 'addUrlParams', ->

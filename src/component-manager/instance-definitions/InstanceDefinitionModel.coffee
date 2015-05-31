@@ -85,22 +85,6 @@ class InstanceDefinitionModel extends Backbone.Model
       'instance': undefined
     , silent: true
 
-  exceedsMaximumShowCount: (componentMaxShowCount) ->
-    showCount = @get 'showCount'
-    maxShowCount = @get 'maxShowCount'
-    shouldBeIncluded = true
-
-    unless maxShowCount
-      maxShowCount = componentMaxShowCount
-
-    if maxShowCount
-      if showCount < maxShowCount
-        shouldBeIncluded = true
-      else
-        shouldBeIncluded = false
-
-    return shouldBeIncluded
-
   passesFilter: (filter) ->
     if filter.url or filter.url is ''
       urlMatch = @doesUrlPatternMatch(filter.url)
@@ -128,6 +112,20 @@ class InstanceDefinitionModel extends Backbone.Model
 
     return true
 
+  exceedsMaximumShowCount: (componentMaxShowCount) ->
+    showCount = @get 'showCount'
+    maxShowCount = @get 'maxShowCount'
+    exceedsShowCount = false
+
+    unless maxShowCount
+      maxShowCount = componentMaxShowCount
+
+    if maxShowCount
+      if showCount > maxShowCount
+        exceedsShowCount = true
+
+    return exceedsShowCount
+
   hasToMatchString: (filterString) ->
     return !!@includeIfStringMatches(filterString)
 
@@ -147,7 +145,7 @@ class InstanceDefinitionModel extends Backbone.Model
         urlPattern = [urlPattern]
 
       for pattern in urlPattern
-        routeRegEx = router._routeToRegExp pattern
+        routeRegEx = router.routeToRegExp pattern
         match = routeRegEx.test url
         if match then return match
       return match
