@@ -8,7 +8,7 @@ var app = app || {};
     events: {
       'click .refresh': '_onRefreshClick',
       'click .register-condition': '_onRegisterConditionClick',
-      'click .apply-condition': '_onApplyConditionClick',
+      'click .apply-condition-to-component': '_onApplyConditionClick',
       'click .apply-condition-to-instance': '_onApplyConditionToInstanceClick'
     },
 
@@ -42,7 +42,7 @@ var app = app || {};
 
     _onApplyConditionClick: function () {
       Vigor.componentManager.updateComponents({
-        id:'filter-instance',
+        id: 'filter-condition-component',
         conditions: ['correctWidth']
       });
     },
