@@ -205,87 +205,111 @@ describe 'InstanceDefinitionsCollection', ->
       assert.deepEqual parsedData, expectedResults
 
   describe 'getInstanceDefinitions', ->
-    it 'should return instanceDefintions that matches passed filter', ->
-      data = [
-        {
-          'id': 'instance-1',
-          'targetName': 'foo--target1',
-          'componentId': 'component-id-1',
-          'urlPattern': 'global',
-          'filterString': 'foo'
-        },
-        {
-          'id': 'instance-2',
-          'targetName': 'foo--target2',
-          'componentId': 'component-id-2',
-          'urlPattern': 'global',
-          'filterString': 'bar',
-          'conditions': 'foo'
-        },
-        {
-          'id': 'instance-3',
-          'targetName': 'foo--target3',
-          'componentId': 'component-id-3',
-          'urlPattern': 'foo',
-          'filterString': 'bas'
-        },
-        {
-          'id': 'instance-4',
-          'targetName': 'foo--target4',
-          'componentId': 'component-id-4',
-          'urlPattern': 'bar'
-        }
-      ]
+    describe 'should return instanceDefintions that matches passed filter', ->
 
-      instanceDefinitionsCollection.set data,
-        parse: true
-        validate: true
-        remove: false
+      beforeEach ->
+        data = [
+          {
+            'id': 'instance-1',
+            'targetName': 'foo--target1',
+            'componentId': 'component-id-1',
+            'urlPattern': 'global',
+            'filterString': 'foo'
+          },
+          {
+            'id': 'instance-2',
+            'targetName': 'foo--target2',
+            'componentId': 'component-id-2',
+            'urlPattern': 'global',
+            'filterString': 'bar',
+            'conditions': 'foo'
+          },
+          {
+            'id': 'instance-3',
+            'targetName': 'foo--target3',
+            'componentId': 'component-id-3',
+            'urlPattern': 'foo',
+            'filterString': 'baz'
+          },
+          {
+            'id': 'instance-4',
+            'targetName': 'foo--target4',
+            'componentId': 'component-id-4',
+            'urlPattern': 'bar'
+          }
+        ]
 
-      filter = url: 'foo'
-      filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        instanceDefinitionsCollection.set data,
+          parse: true
+          validate: true
+          remove: false
 
-      # two global components and one that matches the url in the filter
-      assert.equal filteredInstances.length, 3
-      assert.equal filteredInstances[0].get('id'), 'instance-1'
-      assert.equal filteredInstances[1].get('id'), 'instance-2'
-      assert.equal filteredInstances[2].get('id'), 'instance-3'
+      it 'should return instanceDefintions that matches the passed url', ->
+        filter =
+          url: 'foo'
+          conditions:
+            foo: -> return true
 
-      filter =
-        conditions:
-          foo: -> return false
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
 
-      filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        # two global components and one that matches the url in the filter
+        assert.equal filteredInstances.length, 3
+        assert.equal filteredInstances[0].get('id'), 'instance-1'
+        assert.equal filteredInstances[1].get('id'), 'instance-2'
+        assert.equal filteredInstances[2].get('id'), 'instance-3'
 
-      # all components except the one with a falsy condition
-      assert.equal filteredInstances.length, 3
-      assert.equal filteredInstances[0].get('id'), 'instance-1'
-      assert.equal filteredInstances[1].get('id'), 'instance-3'
-      assert.equal filteredInstances[2].get('id'), 'instance-4'
+      it 'should return instanceDefintions that passes a condition check', ->
+        filter =
+          conditions:
+            foo: -> return false
 
-      filter = hasToMatchString: 'foo'
-      filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
 
-      # only the component matching the string foo
-      assert.equal filteredInstances.length, 1
-      assert.equal filteredInstances[0].get('id'), 'instance-1'
+        # all components except the one with a falsy condition
+        assert.equal filteredInstances.length, 3
+        assert.equal filteredInstances[0].get('id'), 'instance-1'
+        assert.equal filteredInstances[1].get('id'), 'instance-3'
+        assert.equal filteredInstances[2].get('id'), 'instance-4'
 
-      filter = includeIfStringMatches: 'bar'
-      filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+      it 'should only return instanceDefintions that has a filterString that matches the string defined in hasToMatchString', ->
+        filter =
+          hasToMatchString: 'foo'
+          conditions:
+            foo: -> return true
 
-      # one component matching the string and the component that doesn't have any filterString defined
-      assert.equal filteredInstances.length, 2
-      assert.equal filteredInstances[0].get('id'), 'instance-2'
-      assert.equal filteredInstances[1].get('id'), 'instance-4'
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
 
-      filter = cantMatchString: 'bar'
-      filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        # only the component matching the string foo
+        assert.equal filteredInstances.length, 1
+        assert.equal filteredInstances[0].get('id'), 'instance-1'
 
-      # all components except the one with bar defined as a filterString
-      assert.equal filteredInstances.length, 3
-      assert.equal filteredInstances[0].get('id'), 'instance-1'
-      assert.equal filteredInstances[1].get('id'), 'instance-3'
-      assert.equal filteredInstances[2].get('id'), 'instance-4'
+      it 'should return instanceDefintions that has a filterString that matches the string defined in includeIfStringMatches and instanceDefintions that doesnt have a filterString defined', ->
+        filter =
+          includeIfStringMatches: 'bar'
+          conditions:
+            foo: -> return true
+
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+
+        # one component matching the string and the component that doesn't have any filterString defined
+        assert.equal filteredInstances.length, 2
+        assert.equal filteredInstances[0].get('id'), 'instance-2'
+        assert.equal filteredInstances[1].get('id'), 'instance-4'
+
+
+      it 'should return instanceDefintions that has a filterString that doesnt matches the string defined in includeIfStringMatches and instanceDefintions that doesnt have a filterString defined', ->
+        filter =
+          cantMatchString: 'bar'
+          conditions:
+            foo: -> return true
+
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+
+        # all components except the one with bar defined as a filterString
+        assert.equal filteredInstances.length, 3
+        assert.equal filteredInstances[0].get('id'), 'instance-1'
+        assert.equal filteredInstances[1].get('id'), 'instance-3'
+        assert.equal filteredInstances[2].get('id'), 'instance-4'
 
 
   describe 'addUrlParams', ->
@@ -304,14 +328,14 @@ describe 'InstanceDefinitionsCollection', ->
           'componentId': 'component-id-2',
           'urlPattern': 'global',
           'filterString': 'bar',
-          'conditions': 'foo'
+          'conditions': -> return true
         },
         {
           'id': 'instance-3',
           'targetName': 'foo--target3',
           'componentId': 'component-id-3',
           'urlPattern': 'foo',
-          'filterString': 'bas'
+          'filterString': 'baz'
         },
         {
           'id': 'instance-4',

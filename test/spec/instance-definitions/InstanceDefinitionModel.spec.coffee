@@ -1,9 +1,11 @@
 assert = require 'assert'
 sinon = require 'sinon'
 $ = require 'jquery'
+Backbone = require 'backbone'
 
 componentManager = require('../../../dist/vigor.componentmanager').componentManager
 InstanceDefinitionModel = componentManager.__testOnly.InstanceDefinitionModel
+router = componentManager.__testOnly.router
 
 describe 'InstanceDefinitionModel', ->
 
@@ -190,6 +192,54 @@ describe 'InstanceDefinitionModel', ->
       assert.equal instance, undefined
 
   describe 'passesFilter', ->
+    it 'should return true if filter.url matches urlPattern and no other filters are defined', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      passesFilter = instanceDefinitionModel.passesFilter url: 'foo/123'
+      assert.equal passesFilter, true
+
+    it 'should return false if filter.url doesnt match urlPattern and no other filters are defined', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      passesFilter = instanceDefinitionModel.passesFilter url: 'bar/123'
+      assert.equal passesFilter, false
+
+    it 'should call areConditionsMet if conditions are set', ->
+      instanceDefinitionModel.set 'conditions', -> return false
+      sinon.spy instanceDefinitionModel, 'areConditionsMet'
+      instanceDefinitionModel.passesFilter()
+      assert instanceDefinitionModel.areConditionsMet.called
+
+    it 'should return true if conditions passes and no other filters are defined', ->
+      instanceDefinitionModel.set 'conditions', -> return true
+      passesFilter = instanceDefinitionModel.passesFilter()
+      assert.equal passesFilter, true
+
+    it 'should return false if conditions doesnt pass and no other filters are defined', ->
+      instanceDefinitionModel.set 'conditions', -> return false
+      passesFilter = instanceDefinitionModel.passesFilter()
+      assert.equal passesFilter, false
+
+    it 'should return true if globalConditions passes and no other filters are defined', ->
+      instanceDefinitionModel.set 'conditions', 'foo'
+      filter =
+        conditions:
+          foo: -> return true
+
+      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      assert.equal passesFilter, true
+
+    it 'should return false if globalConditions doesnt pass and no other filters are defined', ->
+      instanceDefinitionModel.set 'conditions', 'foo'
+      filter =
+        conditions:
+          foo: -> return false
+
+      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      assert.equal passesFilter, false
+
+    it 'includeIfStringMatches', ->
+    it 'hasToMatchString', ->
+    it 'cantMatchString', ->
+    it 'no filter passed', ->
 
   describe 'exceedsMaximumShowCount', ->
     it 'should return true if instance showCount exeeds instance maxShowCount', ->
@@ -294,30 +344,154 @@ describe 'InstanceDefinitionModel', ->
       assert.equal matches, undefined
 
   describe 'doesUrlPatternMatch', ->
+    it 'should call router.routeToRegExp with the urlPattern', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      sinon.spy router.prototype, 'routeToRegExp'
+      instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
+      assert router.prototype.routeToRegExp.calledWith 'foo/:id'
+
     it 'should return true if a single urlPattern matches the passed url', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
+      assert.equal match, true
+
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
       match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:name-:mode'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/bar-baz'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:type/:page/:id'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/*splat'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)(/:qux)'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
       assert.equal match, true
 
     it 'should return false if a single urlPattern does not match the passed url', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      instanceDefinitionModel.set 'urlPattern', 'foo'
       match = instanceDefinitionModel.doesUrlPatternMatch 'bar'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:name-:mode'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/bar-baz'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:type/:page/:id'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/*splat'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)(/:qux)'
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
       assert.equal match, false
 
     it 'should return true if one out of many urlPatterns matches the passed url', ->
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar', 'bas/*splat']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
+      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
       assert.equal match, true
 
+      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
       match = instanceDefinitionModel.doesUrlPatternMatch 'bar'
       assert.equal match, true
 
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/bar-baz'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/bar-baz'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)(/:qux)', 'bar/:baz(/:qux)(/:quux)']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
     it 'should return false if the passed url doesnt match any of the urlPatterns', ->
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar', 'bas/*splat']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'lorem'
+      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'baz'
       assert.equal match, false
 
-      match = instanceDefinitionModel.doesUrlPatternMatch 'ipsum/lorem'
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/bar-baz'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)(/:qux)', 'bar/:baz(/:qux)(/:quux)']
+      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2/3'
       assert.equal match, false
 
     it 'return undefined if the urlPattern is undefined', ->
@@ -325,4 +499,150 @@ describe 'InstanceDefinitionModel', ->
       match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
       assert.equal match, undefined
 
+  describe 'areConditionsMet', ->
+    it 'should return true if instanceConditions is undefined', ->
+      instanceDefinitionModel.set 'conditions', undefined
+      areConditionsMet = instanceDefinitionModel.areConditionsMet()
+      assert.equal areConditionsMet, true
+
+    it 'should return true if the condition is a method that returns true', ->
+      instanceDefinitionModel.set 'conditions', -> return true
+      areConditionsMet = instanceDefinitionModel.areConditionsMet()
+      assert.equal areConditionsMet, true
+
+    it 'should return false if the condition is a method that returns false', ->
+      instanceDefinitionModel.set 'conditions', -> return false
+      areConditionsMet = instanceDefinitionModel.areConditionsMet()
+      assert.equal areConditionsMet, false
+
+    it 'should return true if there are multiple conditions and all of them returns true', ->
+      instanceDefinitionModel.set 'conditions', [
+        -> return true,
+        -> return true,
+        -> return true
+      ]
+      areConditionsMet = instanceDefinitionModel.areConditionsMet()
+      assert.equal areConditionsMet, true
+
+    it 'should return false if there are multiple conditions and any of them returns false', ->
+      instanceDefinitionModel.set 'conditions', [
+        -> return true,
+        -> return true,
+        -> return false
+      ]
+      areConditionsMet = instanceDefinitionModel.areConditionsMet()
+      assert.equal areConditionsMet, false
+
+    it 'should use methods in globalConditions if the condition is a string (the string will be used as a key in the globalConditions object)', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      globalConditions =
+        fooCheck: sinon.spy()
+
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      assert globalConditions.fooCheck.called
+
+    it 'should return true if targeted method in globalConditions returns true', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      globalConditions =
+        fooCheck: -> return true
+
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      assert.equal areConditionsMet, true
+
+    it 'should return false if targeted method in globalConditions returns false', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      globalConditions =
+        fooCheck: -> return false
+
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      assert.equal areConditionsMet, false
+
+    it 'should return true if all targeted methods in globalConditions returns true', ->
+      instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
+      globalConditions =
+        fooCheck: -> return true
+        barCheck: -> return true
+        bazCheck: -> return true
+
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      assert.equal areConditionsMet, true
+
+    it 'should return false if any of the targeted methods in globalConditions returns false', ->
+      instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
+      globalConditions =
+        fooCheck: -> return true
+        barCheck: -> return false
+        bazCheck: -> return true
+
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      assert.equal areConditionsMet, false
+
+    it 'should throw an error if the condition is a string and no global conditions was passed', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      errorFn = -> instanceDefinitionModel.areConditionsMet()
+      assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
+
+    it 'should throw an error if the condition is a string and the key is not present in the globalConditions', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      globalConditions =
+        barCheck: -> return true
+
+      errorFn = -> instanceDefinitionModel.areConditionsMet(globalConditions)
+      assert.throws (-> errorFn()), /Trying to verify condition fooCheck but it has not been registered yet/
+
   describe 'addUrlParams', ->
+    it 'should call router.getArguments with registered urlPattern and passedd url', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      sinon.spy router.prototype, 'getArguments'
+      instanceDefinitionModel.addUrlParams 'foo/123'
+      assert router.prototype.getArguments.calledWith 'foo/:id', 'foo/123'
+
+    it 'should create a new urlParamsModel if it does not exist already', ->
+
+      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
+      assert.equal urlParamsModel, undefined
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      instanceDefinitionModel.addUrlParams 'foo/123'
+
+      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
+      assert urlParamsModel instanceof Backbone.Model
+
+    it 'should update the urlParamsModel with the extracted url params and the url itself', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      instanceDefinitionModel.addUrlParams 'foo/123'
+      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
+      assert.equal urlParamsModel.get('id'), 123
+      assert.equal urlParamsModel.get('url'), 'foo/123'
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:type(/:id)'
+      instanceDefinitionModel.addUrlParams 'foo/article/123'
+      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
+      assert.equal urlParamsModel.get('type'), 'article'
+      assert.equal urlParamsModel.get('id'), 123
+      assert.equal urlParamsModel.get('url'), 'foo/article/123'
+
+    it 'should update the urlParams property with the extracted url params and the url itself', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      instanceDefinitionModel.addUrlParams 'foo/123'
+      urlParams = instanceDefinitionModel.get 'urlParams'
+      assert.equal urlParams.id, 123
+      assert.equal urlParams.url, 'foo/123'
+
+    it 'should trigger a change event when updating the urlParams if reInstantiateOnUrlParamChange is set to true', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', true
+      sinon.spy instanceDefinitionModel, 'trigger'
+      instanceDefinitionModel.addUrlParams 'foo/123'
+      urlParams = instanceDefinitionModel.get 'urlParams'
+
+      assert instanceDefinitionModel.trigger.calledWith 'change:urlParams', instanceDefinitionModel, urlParams, { silent: false }
+
+    it 'should not trigger a change event when updating the urlParams if reInstantiateOnUrlParamChange is set to false', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', false
+      sinon.spy instanceDefinitionModel, 'trigger'
+      instanceDefinitionModel.addUrlParams 'foo/123'
+
+      assert instanceDefinitionModel.trigger.notCalled
+

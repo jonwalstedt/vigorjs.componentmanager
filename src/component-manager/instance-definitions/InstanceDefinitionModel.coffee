@@ -86,7 +86,7 @@ class InstanceDefinitionModel extends Backbone.Model
     , silent: true
 
   passesFilter: (filter) ->
-    if filter.url or filter.url is ''
+    if filter?.url or filter?.url is ''
       urlMatch = @doesUrlPatternMatch(filter.url)
       if urlMatch?
         if urlMatch is true
@@ -94,20 +94,20 @@ class InstanceDefinitionModel extends Backbone.Model
         else
           return false
 
-    if filter.conditions and @get('conditions')
-      areConditionsMet = @areConditionsMet filter.conditions
+    if @get('conditions')
+      areConditionsMet = @areConditionsMet filter?.conditions
       if areConditionsMet?
         return false unless areConditionsMet
 
-    if filter.includeIfStringMatches
+    if filter?.includeIfStringMatches
       filterStringMatch = @includeIfStringMatches(filter.includeIfStringMatches)
       if filterStringMatch?
         return filterStringMatch
 
-    if filter.hasToMatchString
+    if filter?.hasToMatchString
       return @hasToMatchString(filter.hasToMatchString)
 
-    if filter.cantMatchString
+    if filter?.cantMatchString
       return @cantMatchString(filter.cantMatchString)
 
     return true
@@ -183,6 +183,13 @@ class InstanceDefinitionModel extends Backbone.Model
     urlParams.url = url
 
     urlParamsModel = @get 'urlParamsModel'
+
+    unless urlParamsModel
+      urlParamsModel = new Backbone.Model()
+      @set
+        'urlParamsModel': urlParamsModel
+      , silent: true
+
     urlParamsModel.set urlParams
 
     @set

@@ -84,13 +84,13 @@ describe 'FilterModel', ->
     filterOptions =
       url: 'foo'
       cantMatchString: 'bar'
-      conditions: 'bas'
+      conditions: 'baz'
 
     filterModel = new FilterModel()
 
     results = filterModel.parse(filterOptions)
     assert.equal results.url, 'foo'
-    assert.equal results.conditions, 'bas'
+    assert.equal results.conditions, 'baz'
     assert.equal results.includeIfStringMatches, undefined
     assert.equal results.hasToMatchString, undefined
     assert.equal results.cantMatchString, 'bar'
@@ -99,14 +99,14 @@ describe 'FilterModel', ->
     filterOptions =
       url: 'foo'
       cantMatchString: 'bar'
-      conditions: 'bas'
+      conditions: 'baz'
 
     filterModel = new FilterModel()
 
     results = filterModel.parse(filterOptions)
     filterModel.set results
     assert.equal filterModel.attributes.url, 'foo'
-    assert.equal filterModel.attributes.conditions, 'bas'
+    assert.equal filterModel.attributes.conditions, 'baz'
     assert.equal filterModel.attributes.includeIfStringMatches, undefined
     assert.equal filterModel.attributes.hasToMatchString, undefined
     assert.equal filterModel.attributes.cantMatchString, 'bar'
@@ -117,7 +117,7 @@ describe 'FilterModel', ->
     results = filterModel.parse(filterOptions)
     filterModel.set results
     assert.equal filterModel.attributes.url, 'foo'
-    assert.equal filterModel.attributes.conditions, 'bas'
+    assert.equal filterModel.attributes.conditions, 'baz'
     assert.equal filterModel.attributes.includeIfStringMatches, undefined
     assert.equal filterModel.attributes.hasToMatchString, 'bar'
     assert.equal filterModel.attributes.cantMatchString, undefined

@@ -424,6 +424,7 @@ do ->
   # this will be removed in distribution build
 
   __testOnly = {}
+
   #classes
   __testOnly.ActiveInstancesCollection = ActiveInstancesCollection
   __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection
@@ -434,6 +435,7 @@ do ->
   __testOnly.IframeComponent = IframeComponent
 
   #properties
+  __testOnly.router = Router
   __testOnly.componentClassName = componentClassName
   __testOnly.targetPrefix = targetPrefix
   __testOnly.componentDefinitionsCollection = componentDefinitionsCollection

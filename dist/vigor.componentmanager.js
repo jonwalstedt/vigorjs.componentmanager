@@ -554,7 +554,7 @@
 
       InstanceDefinitionModel.prototype.passesFilter = function(filter) {
         var areConditionsMet, filterStringMatch, urlMatch;
-        if (filter.url || filter.url === '') {
+        if ((filter != null ? filter.url : void 0) || (filter != null ? filter.url : void 0) === '') {
           urlMatch = this.doesUrlPatternMatch(filter.url);
           if (urlMatch != null) {
             if (urlMatch === true) {
@@ -564,24 +564,24 @@
             }
           }
         }
-        if (filter.conditions && this.get('conditions')) {
-          areConditionsMet = this.areConditionsMet(filter.conditions);
+        if (this.get('conditions')) {
+          areConditionsMet = this.areConditionsMet(filter != null ? filter.conditions : void 0);
           if (areConditionsMet != null) {
             if (!areConditionsMet) {
               return false;
             }
           }
         }
-        if (filter.includeIfStringMatches) {
+        if (filter != null ? filter.includeIfStringMatches : void 0) {
           filterStringMatch = this.includeIfStringMatches(filter.includeIfStringMatches);
           if (filterStringMatch != null) {
             return filterStringMatch;
           }
         }
-        if (filter.hasToMatchString) {
+        if (filter != null ? filter.hasToMatchString : void 0) {
           return this.hasToMatchString(filter.hasToMatchString);
         }
-        if (filter.cantMatchString) {
+        if (filter != null ? filter.cantMatchString : void 0) {
           return this.cantMatchString(filter.cantMatchString);
         }
         return true;
@@ -623,7 +623,6 @@
         var j, len, match, pattern, routeRegEx, urlPattern;
         match = false;
         urlPattern = this.get('urlPattern');
-        console.log('urlPattern: ', urlPattern);
         if (urlPattern) {
           if (!_.isArray(urlPattern)) {
             urlPattern = [urlPattern];
@@ -677,6 +676,14 @@
         urlParams = router.getArguments(this.get('urlPattern'), url);
         urlParams.url = url;
         urlParamsModel = this.get('urlParamsModel');
+        if (!urlParamsModel) {
+          urlParamsModel = new Backbone.Model();
+          this.set({
+            'urlParamsModel': urlParamsModel
+          }, {
+            silent: true
+          });
+        }
         urlParamsModel.set(urlParams);
         return this.set({
           'urlParams': urlParams
