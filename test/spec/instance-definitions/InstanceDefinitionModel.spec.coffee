@@ -711,7 +711,6 @@ describe 'InstanceDefinitionModel', ->
       assert router.prototype.getArguments.calledWith 'foo/:id', 'foo/123'
 
     it 'should create a new urlParamsModel if it does not exist already', ->
-
       urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
       assert.equal urlParamsModel, undefined
 
@@ -739,8 +738,8 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
       instanceDefinitionModel.addUrlParams 'foo/123'
       urlParams = instanceDefinitionModel.get 'urlParams'
-      assert.equal urlParams.id, 123
-      assert.equal urlParams.url, 'foo/123'
+      assert.equal urlParams[0].id, 123
+      assert.equal urlParams[0].url, 'foo/123'
 
     it 'should trigger a change event when updating the urlParams if reInstantiateOnUrlParamChange is set to true', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
@@ -748,7 +747,6 @@ describe 'InstanceDefinitionModel', ->
       sinon.spy instanceDefinitionModel, 'trigger'
       instanceDefinitionModel.addUrlParams 'foo/123'
       urlParams = instanceDefinitionModel.get 'urlParams'
-
       assert instanceDefinitionModel.trigger.calledWith 'change:urlParams', instanceDefinitionModel, urlParams, { silent: false }
 
     it 'should not trigger a change event when updating the urlParams if reInstantiateOnUrlParamChange is set to false', ->
@@ -756,6 +754,31 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', false
       sinon.spy instanceDefinitionModel, 'trigger'
       instanceDefinitionModel.addUrlParams 'foo/123'
-
       assert instanceDefinitionModel.trigger.notCalled
+
+    it 'should should be able to handle multiple urlPatterns with only one matching', ->
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'foo/:bar/:id']
+      instanceDefinitionModel.addUrlParams 'foo/bar/123'
+      urlParams = instanceDefinitionModel.get 'urlParams'
+      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
+
+      assert.equal urlParams.length, 1
+      assert.equal urlParams[0].bar, 'bar'
+      assert.equal urlParams[0].id, 123
+      assert.equal urlParams[0].url, 'foo/bar/123'
+      assert.deepEqual urlParamsModel.toJSON(), urlParams[0]
+
+    it 'should should be able to handle multiple urlPatterns with multiple matches', ->
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'foo/:bar/:id', 'bar/:id', 'foo/*path']
+      instanceDefinitionModel.addUrlParams 'foo/bar/123'
+      urlParams = instanceDefinitionModel.get 'urlParams'
+      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
+
+      assert.equal urlParams.length, 2
+      assert.equal urlParams[0].bar, 'bar'
+      assert.equal urlParams[0].id, 123
+      assert.equal urlParams[0].url, 'foo/bar/123'
+      assert.equal urlParams[1].path, 'bar/123'
+      assert.equal urlParams[1].url, 'foo/bar/123'
+      assert.deepEqual urlParamsModel.toJSON(), urlParams[0]
 

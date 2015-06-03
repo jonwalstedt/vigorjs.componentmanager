@@ -1,23 +1,31 @@
 class Router extends Backbone.Router
 
-  getArguments: (urls, fragment) ->
-    if _.isArray(urls)
-      args = []
-      for url in urls
-        args = @_getArgumentsFromUrl url, fragment
-      return args
-    else
-      @_getArgumentsFromUrl urls, fragment
+  getArguments: (urlPatterns, url) ->
+    unless _.isArray(urlPatterns)
+      urlPatterns = [urlPatterns]
 
-  routeToRegExp: (route) ->
-    @_routeToRegExp(route)
-
-  _getArgumentsFromUrl: (url, fragment) ->
-    origUrl = url
-    if !_.isRegExp(url) then url = @_routeToRegExp(url)
     args = []
-    if url.exec(fragment)
-      args = _.compact @_extractParameters(url, fragment)
+
+    for urlPattern in urlPatterns
+      routeRegEx = @routeToRegExp urlPattern
+      match = routeRegEx.test url
+
+      if match
+        params = @_getArgumentsFromUrl urlPattern, url
+        params.url = url
+        args.push params
+
+    return args
+
+  routeToRegExp: (urlPattern) ->
+    @_routeToRegExp urlPattern
+
+  _getArgumentsFromUrl: (urlPattern, url) ->
+    origUrl = urlPattern
+    if !_.isRegExp(urlPattern) then urlPattern = @_routeToRegExp(urlPattern)
+    args = []
+    if urlPattern.exec(url)
+      args = _.compact @_extractParameters(urlPattern, url)
     args = @_getParamsObject origUrl, args
     return args
 

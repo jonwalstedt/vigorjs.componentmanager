@@ -179,9 +179,14 @@ class InstanceDefinitionModel extends Backbone.Model
     return shouldBeIncluded
 
   addUrlParams: (url) ->
-    urlParams = router.getArguments @get('urlPattern'), url
-    urlParams.url = url
-
+    # a properly setup instanceDefinition should never have multiple urlPatterns that matches
+    # one and the same url, ex: the url foo/bar/baz would match both patterns
+    # ["foo/:section/:id", "foo/*splat"] the correct way would be to select one of them
+    # (probably the first) and then use the url property of the params if more parts of the
+    # url are needed.
+    # To keep it simple we only update the urlParamsModel with the first matchingUrlParams
+    # the entire array of matchingUrlParams is passed as an argument to the instance though.
+    matchingUrlParams = router.getArguments @get('urlPattern'), url
     urlParamsModel = @get 'urlParamsModel'
 
     unless urlParamsModel
@@ -190,9 +195,9 @@ class InstanceDefinitionModel extends Backbone.Model
         'urlParamsModel': urlParamsModel
       , silent: true
 
-    urlParamsModel.set urlParams
+    urlParamsModel.set matchingUrlParams[0]
 
     @set
-      'urlParams': urlParams
+      'urlParams': matchingUrlParams
     , silent: not @get('reInstantiateOnUrlParamChange')
 

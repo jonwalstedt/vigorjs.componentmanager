@@ -35,33 +35,38 @@
         return Router.__super__.constructor.apply(this, arguments);
       }
 
-      Router.prototype.getArguments = function(urls, fragment) {
-        var args, j, len, url;
-        if (_.isArray(urls)) {
-          args = [];
-          for (j = 0, len = urls.length; j < len; j++) {
-            url = urls[j];
-            args = this._getArgumentsFromUrl(url, fragment);
-          }
-          return args;
-        } else {
-          return this._getArgumentsFromUrl(urls, fragment);
-        }
-      };
-
-      Router.prototype.routeToRegExp = function(route) {
-        return this._routeToRegExp(route);
-      };
-
-      Router.prototype._getArgumentsFromUrl = function(url, fragment) {
-        var args, origUrl;
-        origUrl = url;
-        if (!_.isRegExp(url)) {
-          url = this._routeToRegExp(url);
+      Router.prototype.getArguments = function(urlPatterns, url) {
+        var args, j, len, match, params, routeRegEx, urlPattern;
+        if (!_.isArray(urlPatterns)) {
+          urlPatterns = [urlPatterns];
         }
         args = [];
-        if (url.exec(fragment)) {
-          args = _.compact(this._extractParameters(url, fragment));
+        for (j = 0, len = urlPatterns.length; j < len; j++) {
+          urlPattern = urlPatterns[j];
+          routeRegEx = this.routeToRegExp(urlPattern);
+          match = routeRegEx.test(url);
+          if (match) {
+            params = this._getArgumentsFromUrl(urlPattern, url);
+            params.url = url;
+            args.push(params);
+          }
+        }
+        return args;
+      };
+
+      Router.prototype.routeToRegExp = function(urlPattern) {
+        return this._routeToRegExp(urlPattern);
+      };
+
+      Router.prototype._getArgumentsFromUrl = function(urlPattern, url) {
+        var args, origUrl;
+        origUrl = urlPattern;
+        if (!_.isRegExp(urlPattern)) {
+          urlPattern = this._routeToRegExp(urlPattern);
+        }
+        args = [];
+        if (urlPattern.exec(url)) {
+          args = _.compact(this._extractParameters(urlPattern, url));
         }
         args = this._getParamsObject(origUrl, args);
         return args;
@@ -672,9 +677,8 @@
       };
 
       InstanceDefinitionModel.prototype.addUrlParams = function(url) {
-        var urlParams, urlParamsModel;
-        urlParams = router.getArguments(this.get('urlPattern'), url);
-        urlParams.url = url;
+        var matchingUrlParams, urlParamsModel;
+        matchingUrlParams = router.getArguments(this.get('urlPattern'), url);
         urlParamsModel = this.get('urlParamsModel');
         if (!urlParamsModel) {
           urlParamsModel = new Backbone.Model();
@@ -684,9 +688,9 @@
             silent: true
           });
         }
-        urlParamsModel.set(urlParams);
+        urlParamsModel.set(matchingUrlParams[0]);
         return this.set({
-          'urlParams': urlParams
+          'urlParams': matchingUrlParams
         }, {
           silent: !this.get('reInstantiateOnUrlParamChange')
         });
