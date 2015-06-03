@@ -135,7 +135,7 @@ class InstanceDefinitionModel extends Backbone.Model
   includeIfStringMatches: (filterString) ->
     filter = @get 'filterString'
     if filter
-      return !!filter.match new RegExp(filterString)
+      return !!filter.match filterString
 
   doesUrlPatternMatch: (url) ->
     match = false

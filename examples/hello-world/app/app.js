@@ -15,7 +15,6 @@ var app = app || {};
       this.router = new app.Router();
       Backbone.history.start({root: '/examples/hello-world/'});
     }
-
   });
 
 })(jQuery);

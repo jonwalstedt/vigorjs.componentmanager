@@ -615,7 +615,7 @@
         var filter;
         filter = this.get('filterString');
         if (filter) {
-          return !!filter.match(new RegExp(filterString));
+          return !!filter.match(filterString);
         }
       };
 
