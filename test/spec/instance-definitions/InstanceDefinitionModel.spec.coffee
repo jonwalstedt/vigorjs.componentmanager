@@ -749,6 +749,18 @@ describe 'InstanceDefinitionModel', ->
       urlParams = instanceDefinitionModel.get 'urlParams'
       assert instanceDefinitionModel.trigger.calledWith 'change:urlParams', instanceDefinitionModel, urlParams, { silent: false }
 
+    it 'should not update the urlParams if the urlPattern doesnt match the url', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      instanceDefinitionModel.addUrlParams 'bar/123'
+      urlParams = instanceDefinitionModel.get 'urlParams'
+      assert.equal urlParams, undefined
+
+    it 'should not update the urlParams if none out of many urlPatterns doesnt match the url', ->
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id', 'baz/:id']
+      instanceDefinitionModel.addUrlParams 'qux/123'
+      urlParams = instanceDefinitionModel.get 'urlParams'
+      assert.equal urlParams, undefined
+
     it 'should not trigger a change event when updating the urlParams if reInstantiateOnUrlParamChange is set to false', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
       instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', false

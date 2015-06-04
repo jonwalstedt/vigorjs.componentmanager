@@ -36,7 +36,7 @@
       }
 
       Router.prototype.getArguments = function(urlPatterns, url) {
-        var args, j, len, match, params, routeRegEx, urlPattern;
+        var args, j, len, match, paramsObject, routeRegEx, urlPattern;
         if (!_.isArray(urlPatterns)) {
           urlPatterns = [urlPatterns];
         }
@@ -46,9 +46,9 @@
           routeRegEx = this.routeToRegExp(urlPattern);
           match = routeRegEx.test(url);
           if (match) {
-            params = this._getArgumentsFromUrl(urlPattern, url);
-            params.url = url;
-            args.push(params);
+            paramsObject = this._getArgumentsFromUrl(urlPattern, url);
+            paramsObject.url = url;
+            args.push(paramsObject);
           }
         }
         return args;
@@ -59,28 +59,29 @@
       };
 
       Router.prototype._getArgumentsFromUrl = function(urlPattern, url) {
-        var args, origUrl;
-        origUrl = urlPattern;
+        var extractedParams, origUrlPattern;
+        origUrlPattern = urlPattern;
         if (!_.isRegExp(urlPattern)) {
           urlPattern = this._routeToRegExp(urlPattern);
         }
-        args = [];
         if (urlPattern.exec(url)) {
-          args = _.compact(this._extractParameters(urlPattern, url));
+          extractedParams = _.compact(this._extractParameters(urlPattern, url));
         }
-        args = this._getParamsObject(origUrl, args);
-        return args;
+        return this._getParamsObject(origUrlPattern, extractedParams);
       };
 
-      Router.prototype._getParamsObject = function(url, args) {
+      Router.prototype._getParamsObject = function(urlPattern, extractedParams) {
         var namedParam, names, optionalParam, optionalParams, params, splatParam, splats, storeNames;
+        if (!_.isString(urlPattern)) {
+          return extractedParams;
+        }
         optionalParam = /\((.*?)\)/g;
         namedParam = /(\(\?)?:\w+/g;
         splatParam = /\*\w+/g;
         params = {};
-        optionalParams = url.match(new RegExp(optionalParam));
-        names = url.match(new RegExp(namedParam));
-        splats = url.match(new RegExp(splatParam));
+        optionalParams = urlPattern.match(new RegExp(optionalParam));
+        names = urlPattern.match(new RegExp(namedParam));
+        splats = urlPattern.match(new RegExp(splatParam));
         storeNames = function(matches, args) {
           var i, j, len, name, results;
           results = [];
@@ -92,13 +93,13 @@
           return results;
         };
         if (optionalParams) {
-          storeNames(optionalParams, args);
+          storeNames(optionalParams, extractedParams);
         }
         if (names) {
-          storeNames(names, args);
+          storeNames(names, extractedParams);
         }
         if (splats) {
-          storeNames(splats, args);
+          storeNames(splats, extractedParams);
         }
         return params;
       };
@@ -688,12 +689,14 @@
             silent: true
           });
         }
-        urlParamsModel.set(matchingUrlParams[0]);
-        return this.set({
-          'urlParams': matchingUrlParams
-        }, {
-          silent: !this.get('reInstantiateOnUrlParamChange')
-        });
+        if (matchingUrlParams.length > 0) {
+          urlParamsModel.set(matchingUrlParams[0]);
+          return this.set({
+            'urlParams': matchingUrlParams
+          }, {
+            silent: !this.get('reInstantiateOnUrlParamChange')
+          });
+        }
       };
 
       return InstanceDefinitionModel;

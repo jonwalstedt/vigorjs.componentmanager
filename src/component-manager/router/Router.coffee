@@ -11,9 +11,9 @@ class Router extends Backbone.Router
       match = routeRegEx.test url
 
       if match
-        params = @_getArgumentsFromUrl urlPattern, url
-        params.url = url
-        args.push params
+        paramsObject = @_getArgumentsFromUrl urlPattern, url
+        paramsObject.url = url
+        args.push paramsObject
 
     return args
 
@@ -21,23 +21,26 @@ class Router extends Backbone.Router
     @_routeToRegExp urlPattern
 
   _getArgumentsFromUrl: (urlPattern, url) ->
-    origUrl = urlPattern
-    if !_.isRegExp(urlPattern) then urlPattern = @_routeToRegExp(urlPattern)
-    args = []
-    if urlPattern.exec(url)
-      args = _.compact @_extractParameters(urlPattern, url)
-    args = @_getParamsObject origUrl, args
-    return args
+    origUrlPattern = urlPattern
 
-  _getParamsObject: (url, args) ->
+    if !_.isRegExp(urlPattern)
+      urlPattern = @_routeToRegExp(urlPattern)
+
+    if urlPattern.exec(url)
+      extractedParams = _.compact @_extractParameters(urlPattern, url)
+
+    return @_getParamsObject(origUrlPattern, extractedParams)
+
+  _getParamsObject: (urlPattern, extractedParams) ->
+    return extractedParams unless _.isString(urlPattern)
     optionalParam = /\((.*?)\)/g
     namedParam = /(\(\?)?:\w+/g
     splatParam = /\*\w+/g
     params = {}
 
-    optionalParams = url.match new RegExp(optionalParam)
-    names = url.match new RegExp(namedParam)
-    splats = url.match new RegExp(splatParam)
+    optionalParams = urlPattern.match new RegExp(optionalParam)
+    names = urlPattern.match new RegExp(namedParam)
+    splats = urlPattern.match new RegExp(splatParam)
 
     storeNames = (matches, args) ->
       for name, i in matches
@@ -50,13 +53,13 @@ class Router extends Backbone.Router
         params[name] = args[i]
 
     if optionalParams
-      storeNames optionalParams, args
+      storeNames optionalParams,extractedParams
 
     if names
-      storeNames names, args
+      storeNames names,extractedParams
 
     if splats
-      storeNames splats, args
+      storeNames splats,extractedParams
 
     return params
 

@@ -195,9 +195,10 @@ class InstanceDefinitionModel extends Backbone.Model
         'urlParamsModel': urlParamsModel
       , silent: true
 
-    urlParamsModel.set matchingUrlParams[0]
+    if matchingUrlParams.length > 0
+      urlParamsModel.set matchingUrlParams[0]
 
-    @set
-      'urlParams': matchingUrlParams
-    , silent: not @get('reInstantiateOnUrlParamChange')
+      @set
+        'urlParams': matchingUrlParams
+      , silent: not @get('reInstantiateOnUrlParamChange')
 
