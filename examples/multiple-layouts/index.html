@@ -130,17 +130,13 @@
     <script src="./app/app.js"></script>
 
     <script type="text/javascript">
-      var helloWorld, controls;
+      var helloWorld;
 
       $(document).ready(function () {
         'use strict'
         helloWorld = new app.HelloWorld({
           el: '.app-wrapper'
         });
-
-        controls = new Vigor.ComponentManagerControls({componentManager: Vigor.componentManager});
-        $('body').prepend(controls.$el);
-
       });
 
     </script>
