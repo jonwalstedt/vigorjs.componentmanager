@@ -1,9 +1,13 @@
 class InstanceDefinitionsCollection extends BaseCollection
 
-  targetPrefix: undefined
+  _targetPrefix = undefined
   model: InstanceDefinitionModel
 
-  setTargetPrefix: (@targetPrefix) ->
+  setTargetPrefix: (targetPrefix) ->
+    _targetPrefix = targetPrefix
+
+  getTargetPrefix: ->
+    return _targetPrefix
 
   parse: (data, options) ->
     parsedResponse = undefined
@@ -14,7 +18,7 @@ class InstanceDefinitionsCollection extends BaseCollection
         if _.isArray(instanceDefinitions)
           for instanceDefinition in instanceDefinitions
 
-            instanceDefinition.targetName = "#{@targetPrefix}--#{targetName}"
+            instanceDefinition.targetName = "#{_targetPrefix}--#{targetName}"
             @parseInstanceDefinition instanceDefinition
             instanceDefinitionsArray.push instanceDefinition
 

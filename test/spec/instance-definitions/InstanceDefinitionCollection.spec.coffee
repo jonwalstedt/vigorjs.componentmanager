@@ -20,9 +20,15 @@ describe 'InstanceDefinitionsCollection', ->
     stubbedModel.restore()
 
   describe 'setTargetPrefix', ->
-    it 'should store passed prefix on the instance', ->
+    it 'should store passed prefix in private variable', ->
       instanceDefinitionsCollection.setTargetPrefix 'my-prefix'
-      assert.equal instanceDefinitionsCollection.targetPrefix, 'my-prefix'
+      assert.equal instanceDefinitionsCollection.getTargetPrefix(), 'my-prefix'
+
+  describe 'getTargetPrefix', ->
+    it 'should return targetPrefix (private variable)', ->
+      instanceDefinitionsCollection.setTargetPrefix 'my-prefix'
+      prefix = instanceDefinitionsCollection.getTargetPrefix 'my-prefix'
+      assert.equal prefix, 'my-prefix'
 
   describe 'parse', ->
     describe 'if data is an object', ->
