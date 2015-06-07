@@ -1,33 +1,135 @@
 assert = require 'assert'
 sinon = require 'sinon'
+Vigor = require('../../dist/vigor.componentmanager')
 
-componentManager = require('../../dist/vigor.componentmanager').componentManager
+componentManager = Vigor.componentManager
+__testOnly = componentManager.__testOnly
 
-describe 'A componentManager', ->
+describe 'The componentManager', ->
+  sandbox = undefined
+
+  beforeEach ->
+    do componentManager.initialize
+    sandbox = sinon.sandbox.create()
+
+  afterEach ->
+    do componentManager.dispose
+    do sandbox.restore
 
   describe 'initialize', ->
 
-    componentSettings =
-      "components": [],
-      "hidden": [],
-      "targets": {}
-
-    componentManager.initialize {componentSettings: componentSettings}
-
     it 'should extend underscore events', ->
-    it 'should call registerConditions if being passed conditions in componentSettings', ->
+      extendSpy = sandbox.spy _, 'extend'
+      do componentManager.initialize
+      assert extendSpy.called
+
+    it 'should call addListeners', ->
+      addListeners = sandbox.spy componentManager, 'addListeners'
+      do componentManager.initialize
+      assert addListeners.called
+
+    it 'should call _parse - since its private the call cant be tracked, instead we verify that we get the expected results of parse', ->
+      settings =
+        targetPrefix: 'dummy-prefix'
+
+      expectedResults = settings.targetPrefix
+
+      defaultPrefix = componentManager.getTargetPrefix()
+      assert.equal defaultPrefix, 'component-area'
+
+      componentManager.initialize settings
+      results = componentManager.getTargetPrefix()
+
+      assert.equal results, expectedResults
+
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.initialize()
+      assert.equal cm, componentManager
 
   describe 'updateSettings', ->
-    it 'it should update componentClassName if being passed a new componentClassName', ->
-    it 'it should update the target prefix if being passed a new prefix', ->
+    it 'should call _parse - since its private the call cant be tracked, instead we verify that we get the expected results of parse', ->
+      settings =
+        targetPrefix: 'dummy-prefix'
+
+      expectedResults = settings.targetPrefix
+
+      defaultPrefix = componentManager.getTargetPrefix()
+      assert.equal defaultPrefix, 'component-area'
+
+      componentManager.initialize settings
+      results = componentManager.getTargetPrefix()
+
+      assert.equal results, expectedResults
 
   describe 'refresh', ->
-    # all different variations of filters should be tested here, only way to test
-    # is to check agianst dom
-    it '', ->
+    it 'should update the active filter with parsed versions of passed options', ->
+      filterOptions =
+        url: 'foo'
+        conditions: 'bar'
+        hasToMatchString: 'baz'
+
+      expectedResults =
+        url: 'foo'
+        conditions: 'bar'
+        includeIfStringMatches: undefined
+        hasToMatchString: 'baz'
+        cantMatchString: undefined
+
+      componentManager.refresh filterOptions
+      results = componentManager.getActiveFilter()
+      assert.deepEqual results, expectedResults
+
+      filterOptions =
+        url: 'foo'
+        conditions: 'bar'
+        includeIfStringMatches: 'baz'
+        cantMatchString: 'qux'
+
+      expectedResults =
+        url: 'foo'
+        conditions: 'bar'
+        includeIfStringMatches: 'baz'
+        hasToMatchString: undefined
+        cantMatchString: 'qux'
+
+      # note that includeIfStringMatches, hasToMatchString and cantMatchString resets
+      # to default (undefined) by the filter parser even if it had a value the previous
+      # time the filter got updated. This will only happen if their values are not present in
+      # the passed object
+
+      componentManager.refresh filterOptions
+      results = componentManager.getActiveFilter()
+      assert.deepEqual results, expectedResults
+
+    it 'it should clear the filterModel if no filterOptions are passed', ->
+      filterOptions =
+        url: 'foo'
+        conditions: 'bar'
+
+      expectedResults =
+        url: 'foo'
+        conditions: 'bar'
+        includeIfStringMatches: undefined
+        hasToMatchString: undefined
+        cantMatchString: undefined
+
+      componentManager.refresh filterOptions
+      results = componentManager.getActiveFilter()
+      assert.deepEqual results, expectedResults
+
+      expectedResults = {}
+      componentManager.refresh()
+      results = componentManager.getActiveFilter()
+      assert.deepEqual results, expectedResults
 
   describe 'serialize', ->
     it 'should serialize the data used by the componentManager into a format that it can read', ->
+
+      expectedResults =
+        conditions: {}
+        components: []
+        hidden: []
+        instanceDefinitions: []
 
   describe 'addComponent', ->
     it 'should validate incoming component data', ->

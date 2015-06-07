@@ -800,14 +800,14 @@
 
     })(BaseCollection);
     (function() {
-      var ERROR, EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _addListeners, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _removeListeners, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
-      _componentClassName = 'vigor-component';
-      _targetPrefix = 'component-area';
+      var ERROR, EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parse, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
       _componentDefinitionsCollection = void 0;
       _instanceDefinitionsCollection = void 0;
       _activeInstancesCollection = void 0;
       _filterModel = void 0;
       _$context = void 0;
+      _componentClassName = 'vigor-component';
+      _targetPrefix = 'component-area';
       ERROR = {
         UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?',
         UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
@@ -825,44 +825,45 @@
       };
       componentManager = {
         initialize: function(settings) {
-          var componentSettings, conditions, silent;
           _componentDefinitionsCollection = new ComponentDefinitionsCollection();
           _instanceDefinitionsCollection = new InstanceDefinitionsCollection();
           _activeInstancesCollection = new ActiveInstancesCollection();
           _filterModel = new FilterModel();
-          componentSettings = settings != null ? settings.componentSettings : void 0;
           _.extend(this, EVENTS);
-          _addListeners();
-          if (settings != null ? settings.$context : void 0) {
-            _$context = settings.$context;
-          } else {
-            _$context = $('body');
-          }
-          conditions = componentSettings != null ? componentSettings.conditions : void 0;
-          if (conditions && !_.isEmpty(conditions)) {
-            silent = true;
-            this.registerConditions(conditions, silent);
-          }
-          if (componentSettings) {
-            _parseComponentSettings(componentSettings);
-          }
+          this.addListeners();
+          _parse(settings);
           return this;
         },
         updateSettings: function(settings) {
-          _componentClassName = settings.componentClassName || _componentClassName;
-          _targetPrefix = settings.targetPrefix || _targetPrefix;
+          _parse(settings);
           return this;
         },
         refresh: function(filterOptions) {
           if (filterOptions) {
             _filterModel.set(_filterModel.parse(filterOptions));
           } else {
-            _updateActiveComponents();
+            if (_filterModel != null) {
+              _filterModel.clear();
+            }
           }
           return this;
         },
         serialize: function() {
           return _serialize();
+        },
+        registerConditions: function(conditionsToBeRegistered, silent) {
+          var conditions;
+          if (silent == null) {
+            silent = false;
+          }
+          conditions = _filterModel.get('conditions') || {};
+          conditions = _.extend(conditions, conditionsToBeRegistered);
+          _filterModel.set({
+            'conditions': conditions
+          }, {
+            silent: silent
+          });
+          return this;
         },
         addComponents: function(componentDefinition) {
           _componentDefinitionsCollection.set(componentDefinition, {
@@ -904,6 +905,30 @@
           _instanceDefinitionsCollection.remove(instanceId);
           return this;
         },
+        setContext: function($context) {
+          return _$context = $context;
+        },
+        setComponentClassName: function(componentClassName) {
+          return _componentClassName = componentClassName || _componentClassName;
+        },
+        setTargetPrefix: function(targetPrefix) {
+          return _targetPrefix = targetPrefix || _targetPrefix;
+        },
+        getContext: function() {
+          return _$context;
+        },
+        getComponentClassName: function() {
+          return _componentClassName;
+        },
+        getTargetPrefix: function() {
+          return _targetPrefix;
+        },
+        getActiveFilter: function() {
+          return _filterModel.toJSON();
+        },
+        getConditions: function() {
+          return _filterModel.get('conditions');
+        },
         getComponentById: function(componentId) {
           var ref;
           return (ref = _componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
@@ -931,85 +956,148 @@
           });
           return instances;
         },
-        getTargetPrefix: function() {
-          return _targetPrefix;
-        },
-        getConditions: function() {
-          return _filterModel.get('conditions');
-        },
-        registerConditions: function(conditionsToBeRegistered, silent) {
-          var conditions;
-          if (silent == null) {
-            silent = false;
-          }
-          conditions = _filterModel.get('conditions') || {};
-          conditions = _.extend(conditions, conditionsToBeRegistered);
-          _filterModel.set({
-            'conditions': conditions
-          }, {
-            silent: silent
-          });
-          return this;
-        },
         clear: function() {
-          _componentDefinitionsCollection.reset();
-          _instanceDefinitionsCollection.reset();
-          _activeInstancesCollection.reset();
-          _filterModel.clear();
+          if (_componentDefinitionsCollection != null) {
+            _componentDefinitionsCollection.reset();
+          }
+          if (_instanceDefinitionsCollection != null) {
+            _instanceDefinitionsCollection.reset();
+          }
+          if (_activeInstancesCollection != null) {
+            _activeInstancesCollection.reset();
+          }
+          if (_filterModel != null) {
+            _filterModel.clear();
+          }
+          _$context = void 0;
+          _componentClassName = 'vigor-component';
+          _targetPrefix = 'component-area';
           return this;
         },
         dispose: function() {
-          var conditions;
           this.clear();
-          this._removeListeners();
-          _filterModel = void 0;
+          this.removeListeners();
+          _componentDefinitionsCollection = void 0;
+          _instanceDefinitionsCollection = void 0;
           _activeInstancesCollection = void 0;
-          conditions = void 0;
-          return _componentDefinitionsCollection = void 0;
+          return _filterModel = void 0;
+        },
+        addListeners: function() {
+          _filterModel.on('change', _updateActiveComponents);
+          _componentDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
+          _instanceDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
+          _activeInstancesCollection.on('add', _onComponentAdded);
+          _activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', _onComponentChange);
+          _activeInstancesCollection.on('change:order', _onComponentOrderChange);
+          _activeInstancesCollection.on('change:targetName', _onComponentTargetNameChange);
+          _activeInstancesCollection.on('remove', _onComponentRemoved);
+          _componentDefinitionsCollection.on('add', (function(_this) {
+            return function(model, collection, options) {
+              return _this.trigger.apply(_this, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]);
+            };
+          })(this));
+          _componentDefinitionsCollection.on('change', (function(_this) {
+            return function(model, options) {
+              return _this.trigger.apply(_this, [EVENTS.COMPONENT_CHANGE, [model.toJSON()]]);
+            };
+          })(this));
+          _componentDefinitionsCollection.on('remove', (function(_this) {
+            return function(model, collection, options) {
+              return _this.trigger.apply(_this, [EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]);
+            };
+          })(this));
+          _instanceDefinitionsCollection.on('add', (function(_this) {
+            return function(model, collection, options) {
+              return _this.trigger.apply(_this, [EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]);
+            };
+          })(this));
+          _instanceDefinitionsCollection.on('change', (function(_this) {
+            return function(model, options) {
+              return _this.trigger.apply(_this, [EVENTS.INSTANCE_CHANGE, [model.toJSON()]]);
+            };
+          })(this));
+          _instanceDefinitionsCollection.on('remove', (function(_this) {
+            return function(model, collection, options) {
+              return _this.trigger.apply(_this, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]);
+            };
+          })(this));
+          _activeInstancesCollection.on('add', (function(_this) {
+            return function(model, collection, options) {
+              return _this.trigger.apply(_this, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]);
+            };
+          })(this));
+          _activeInstancesCollection.on('change', (function(_this) {
+            return function(model, options) {
+              return _this.trigger.apply(_this, [EVENTS.CHANGE, [model.toJSON()]]);
+            };
+          })(this));
+          return _activeInstancesCollection.on('remove', (function(_this) {
+            return function(model, collection, options) {
+              return _this.trigger.apply(_this, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
+            };
+          })(this));
+        },
+        removeListeners: function() {
+          if (_activeInstancesCollection != null) {
+            _activeInstancesCollection.off();
+          }
+          if (_filterModel != null) {
+            _filterModel.off();
+          }
+          if (_instanceDefinitionsCollection != null) {
+            _instanceDefinitionsCollection.off();
+          }
+          return _componentDefinitionsCollection != null ? _componentDefinitionsCollection.off() : void 0;
         }
       };
-      _addListeners = function() {
-        _filterModel.on('change', _updateActiveComponents);
-        _componentDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
-        _instanceDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
-        _activeInstancesCollection.on('add', _onComponentAdded);
-        _activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', _onComponentChange);
-        _activeInstancesCollection.on('change:order', _onComponentOrderChange);
-        _activeInstancesCollection.on('change:targetName', _onComponentTargetNameChange);
-        _activeInstancesCollection.on('remove', _onComponentRemoved);
-        _componentDefinitionsCollection.on('add', function(model, collection, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]);
-        });
-        _componentDefinitionsCollection.on('change', function(model, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.COMPONENT_CHANGE, [model.toJSON()]]);
-        });
-        _componentDefinitionsCollection.on('remove', function(model, collection, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]);
-        });
-        _instanceDefinitionsCollection.on('add', function(model, collection, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]);
-        });
-        _instanceDefinitionsCollection.on('change', function(model, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.INSTANCE_CHANGE, [model.toJSON()]]);
-        });
-        _instanceDefinitionsCollection.on('remove', function(model, collection, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]);
-        });
-        _activeInstancesCollection.on('add', function(model, collection, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]);
-        });
-        _activeInstancesCollection.on('change', function(model, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.CHANGE, [model.toJSON()]]);
-        });
-        return _activeInstancesCollection.on('remove', function(model, collection, options) {
-          return componentManager.trigger.apply(componentManager, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
+      _parse = function(settings) {
+        var componentSettings, conditions, silent;
+        componentSettings = settings != null ? settings.componentSettings : void 0;
+        conditions = componentSettings != null ? componentSettings.conditions : void 0;
+        if (settings != null ? settings.$context : void 0) {
+          componentManager.setContext(settings.$context);
+        } else {
+          componentManager.setContext($('body'));
+        }
+        if (settings != null ? settings.componentClassName : void 0) {
+          componentManager.setComponentClassName(settings.componentClassName);
+        }
+        if (settings != null ? settings.targetPrefix : void 0) {
+          componentManager.setTargetPrefix(settings.targetPrefix);
+        }
+        if (conditions && !_.isEmpty(conditions)) {
+          silent = true;
+          componentManager.registerConditions.call(componentManager, conditions, silent);
+        }
+        if (componentSettings) {
+          return _parseComponentSettings(componentSettings);
+        }
+      };
+      _parseComponentSettings = function(componentSettings) {
+        var componentDefinitions, hidden, instanceDefinitions;
+        componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
+        instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions;
+        if (componentSettings.settings) {
+          componentManager.updateSettings(componentSettings.settings);
+        }
+        hidden = componentSettings.hidden;
+        _registerComponents(componentDefinitions);
+        return _registerInstanceDefinitons(instanceDefinitions);
+      };
+      _registerComponents = function(componentDefinitions) {
+        return _componentDefinitionsCollection.set(componentDefinitions, {
+          validate: true,
+          parse: true,
+          silent: true
         });
       };
-      _removeListeners = function() {
-        _activeInstancesCollection.off();
-        _filterModel.off();
-        _instanceDefinitionsCollection.off();
-        return _componentDefinitionsCollection.off();
+      _registerInstanceDefinitons = function(instanceDefinitions) {
+        _instanceDefinitionsCollection.setTargetPrefix(_targetPrefix);
+        return _instanceDefinitionsCollection.set(instanceDefinitions, {
+          validate: true,
+          parse: true,
+          silent: true
+        });
       };
       _previousElement = function($el, order) {
         if (order == null) {
@@ -1054,32 +1142,6 @@
           var componentDefinition;
           componentDefinition = _componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
           return componentDefinition.areConditionsMet(globalConditions);
-        });
-      };
-      _parseComponentSettings = function(componentSettings) {
-        var componentDefinitions, hidden, instanceDefinitions;
-        componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
-        instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions;
-        if (componentSettings.settings) {
-          componentManager.updateSettings(componentSettings.settings);
-        }
-        hidden = componentSettings.hidden;
-        _registerComponents(componentDefinitions);
-        return _registerInstanceDefinitons(instanceDefinitions);
-      };
-      _registerComponents = function(componentDefinitions) {
-        return _componentDefinitionsCollection.set(componentDefinitions, {
-          validate: true,
-          parse: true,
-          silent: true
-        });
-      };
-      _registerInstanceDefinitons = function(instanceDefinitions) {
-        _instanceDefinitionsCollection.setTargetPrefix(_targetPrefix);
-        return _instanceDefinitionsCollection.set(instanceDefinitions, {
-          validate: true,
-          parse: true,
-          silent: true
         });
       };
       _addInstanceToModel = function(instanceDefinition) {
@@ -1191,7 +1253,7 @@
         return isEmpty;
       };
       _serialize = function() {
-        var componentSettings, components, conditions, filter, hidden, instanceDefinition, instances, j, len;
+        var componentSettings, components, conditions, filter, hidden, instanceDefinition, instances, j, len, settings;
         conditions = _filterModel.get('conditions') || {};
         hidden = [];
         components = _componentDefinitionsCollection.toJSON();
@@ -1201,11 +1263,16 @@
           instanceDefinition = instances[j];
           instanceDefinition.instance = void 0;
         }
-        componentSettings = {
-          conditions: conditions,
-          components: components,
-          hidden: hidden,
-          instanceDefinitions: instances
+        settings = {
+          $context: componentManager.getContext(),
+          componentClassName: componentManager.getComponentClassName(),
+          targetPrefix: componentManager.getTargetPrefix(),
+          componentSettings: {
+            conditions: conditions,
+            components: components,
+            hidden: hidden,
+            instanceDefinitions: instances
+          }
         };
         filter = function(key, value) {
           if (typeof value === 'function') {
@@ -1250,33 +1317,9 @@
       __testOnly.FilterModel = FilterModel;
       __testOnly.IframeComponent = IframeComponent;
       __testOnly.router = Router;
-      __testOnly._componentClassName = _componentClassName;
-      __testOnly._targetPrefix = _targetPrefix;
       __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection;
       __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection;
       __testOnly._activeInstancesCollection = _activeInstancesCollection;
-      __testOnly._filterModel = _filterModel;
-      __testOnly._$context = _$context;
-      __testOnly._addListeners = _addListeners;
-      __testOnly._removeListeners = _removeListeners;
-      __testOnly._previousElement = _previousElement;
-      __testOnly._updateActiveComponents = _updateActiveComponents;
-      __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions;
-      __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount;
-      __testOnly._filterInstanceDefinitionsByComponentConditions = _filterInstanceDefinitionsByComponentConditions;
-      __testOnly._parseComponentSettings = _parseComponentSettings;
-      __testOnly._registerComponents = _registerComponents;
-      __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons;
-      __testOnly._addInstanceToModel = _addInstanceToModel;
-      __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom;
-      __testOnly._addInstanceToDom = _addInstanceToDom;
-      __testOnly._addInstanceInOrder = _addInstanceInOrder;
-      __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty;
-      __testOnly._onComponentAdded = _onComponentAdded;
-      __testOnly._onComponentChange = _onComponentChange;
-      __testOnly._onComponentRemoved = _onComponentRemoved;
-      __testOnly._onComponentOrderChange = _onComponentOrderChange;
-      __testOnly._onComponentTargetNameChange = _onComponentOrderChange;
       componentManager.__testOnly = __testOnly;
 
       /* end-test-block */
