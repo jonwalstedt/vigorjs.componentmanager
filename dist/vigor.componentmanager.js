@@ -905,8 +905,12 @@
           _instanceDefinitionsCollection.remove(instanceId);
           return this;
         },
-        setContext: function($context) {
-          return _$context = $context;
+        setContext: function(context) {
+          if (_.isString(context)) {
+            return _$context = $(context);
+          } else {
+            return _$context = context;
+          }
         },
         setComponentClassName: function(componentClassName) {
           return _componentClassName = componentClassName || _componentClassName;
@@ -1051,9 +1055,8 @@
         }
       };
       _parse = function(settings) {
-        var componentSettings, conditions, silent;
+        var componentSettings;
         componentSettings = settings != null ? settings.componentSettings : void 0;
-        conditions = componentSettings != null ? componentSettings.conditions : void 0;
         if (settings != null ? settings.$context : void 0) {
           componentManager.setContext(settings.$context);
         } else {
@@ -1065,18 +1068,19 @@
         if (settings != null ? settings.targetPrefix : void 0) {
           componentManager.setTargetPrefix(settings.targetPrefix);
         }
-        if (conditions && !_.isEmpty(conditions)) {
-          silent = true;
-          componentManager.registerConditions.call(componentManager, conditions, silent);
-        }
         if (componentSettings) {
           return _parseComponentSettings(componentSettings);
         }
       };
       _parseComponentSettings = function(componentSettings) {
-        var componentDefinitions, hidden, instanceDefinitions;
+        var componentDefinitions, conditions, hidden, instanceDefinitions, silent;
+        conditions = componentSettings != null ? componentSettings.conditions : void 0;
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
-        instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions;
+        instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions || componentSettings.instances;
+        if (conditions && !_.isEmpty(conditions)) {
+          silent = true;
+          componentManager.registerConditions.call(componentManager, conditions, silent);
+        }
         if (componentSettings.settings) {
           componentManager.updateSettings(componentSettings.settings);
         }
@@ -1253,7 +1257,7 @@
         return isEmpty;
       };
       _serialize = function() {
-        var componentSettings, components, conditions, filter, hidden, instanceDefinition, instances, j, len, settings;
+        var $context, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, settings;
         conditions = _filterModel.get('conditions') || {};
         hidden = [];
         components = _componentDefinitionsCollection.toJSON();
@@ -1263,15 +1267,18 @@
           instanceDefinition = instances[j];
           instanceDefinition.instance = void 0;
         }
+        $context = componentManager.getContext();
+        contextSelector = $context.selector;
+        console.log(contextSelector);
         settings = {
-          $context: componentManager.getContext(),
+          $context: contextSelector,
           componentClassName: componentManager.getComponentClassName(),
           targetPrefix: componentManager.getTargetPrefix(),
           componentSettings: {
             conditions: conditions,
             components: components,
             hidden: hidden,
-            instanceDefinitions: instances
+            instances: instances
           }
         };
         filter = function(key, value) {
@@ -1280,7 +1287,7 @@
           }
           return value;
         };
-        return JSON.stringify(componentSettings, filter, 2);
+        return JSON.stringify(settings, filter, 2);
       };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);
@@ -1307,22 +1314,6 @@
         return _addInstanceToDom(instanceDefinition);
       };
 
-      /* start-test-block */
-      __testOnly = {};
-      __testOnly.ActiveInstancesCollection = ActiveInstancesCollection;
-      __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection;
-      __testOnly.ComponentDefinitionModel = ComponentDefinitionModel;
-      __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection;
-      __testOnly.InstanceDefinitionModel = InstanceDefinitionModel;
-      __testOnly.FilterModel = FilterModel;
-      __testOnly.IframeComponent = IframeComponent;
-      __testOnly.router = Router;
-      __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection;
-      __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection;
-      __testOnly._activeInstancesCollection = _activeInstancesCollection;
-      componentManager.__testOnly = __testOnly;
-
-      /* end-test-block */
       _.extend(componentManager, Backbone.Events);
       return Vigor.componentManager = componentManager;
     })();

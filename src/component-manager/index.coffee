@@ -102,8 +102,11 @@ do ->
       _instanceDefinitionsCollection.remove instanceId
       return @
 
-    setContext: ($context) ->
-      _$context = $context
+    setContext: (context) ->
+      if _.isString(context)
+        _$context = $ context
+      else
+        _$context = context
 
     setComponentClassName: (componentClassName) ->
       _componentClassName = componentClassName or _componentClassName
@@ -226,7 +229,6 @@ do ->
 
   _parse = (settings) ->
     componentSettings = settings?.componentSettings
-    conditions = componentSettings?.conditions
 
     if settings?.$context
       componentManager.setContext settings.$context
@@ -239,21 +241,23 @@ do ->
     if settings?.targetPrefix
       componentManager.setTargetPrefix settings.targetPrefix
 
-    if conditions and not _.isEmpty(conditions)
-      silent = true
-      componentManager.registerConditions.call componentManager, conditions, silent
-
     if componentSettings
       _parseComponentSettings componentSettings
 
   _parseComponentSettings = (componentSettings) ->
+    conditions = componentSettings?.conditions
+
     componentDefinitions = componentSettings.components or \
     componentSettings.widgets or \
     componentSettings.componentDefinitions
 
     instanceDefinitions = componentSettings.layoutsArray or \
     componentSettings.targets or \
-    componentSettings.instanceDefinitions
+    componentSettings.instanceDefinitions or componentSettings.instances
+
+    if conditions and not _.isEmpty(conditions)
+      silent = true
+      componentManager.registerConditions.call componentManager, conditions, silent
 
     if componentSettings.settings
       componentManager.updateSettings componentSettings.settings
@@ -411,22 +415,26 @@ do ->
     for instanceDefinition in instances
       instanceDefinition.instance = undefined
 
+    $context = componentManager.getContext()
+    contextSelector = $context.selector
+    console.log contextSelector
+
     settings =
-      $context: componentManager.getContext()
+      $context: contextSelector
       componentClassName: componentManager.getComponentClassName()
       targetPrefix: componentManager.getTargetPrefix()
       componentSettings:
         conditions: conditions
         components: components
         hidden: hidden
-        instanceDefinitions: instances
+        instances: instances
 
     filter = (key, value) ->
       if typeof value is 'function'
           return value.toString()
       return value
 
-    return JSON.stringify(componentSettings, filter, 2)
+    return JSON.stringify(settings, filter, 2)
 
   #
   # Callbacks
@@ -478,28 +486,28 @@ do ->
   # __testOnly._filterModel = _filterModel
   # __testOnly._$context = _$context
 
-  # mehtods
-  # __testOnly._parse = _parse
-  # __testOnly._previousElement = _previousElement
-  # __testOnly._updateActiveComponents = _updateActiveComponents
-  # __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions
-  # __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount
-  # __testOnly._filterInstanceDefinitionsByComponentConditions = _filterInstanceDefinitionsByComponentConditions
-  # __testOnly._parseComponentSettings = _parseComponentSettings
-  # __testOnly._registerComponents = _registerComponents
-  # __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons
-  # __testOnly._addInstanceToModel = _addInstanceToModel
-  # __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom
-  # __testOnly._addInstanceToDom = _addInstanceToDom
-  # __testOnly._addInstanceInOrder = _addInstanceInOrder
-  # __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty
+  # methods
+  __testOnly._parse = _parse
+  __testOnly._previousElement = _previousElement
+  __testOnly._updateActiveComponents = _updateActiveComponents
+  __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions
+  __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount
+  __testOnly._filterInstanceDefinitionsByComponentConditions = _filterInstanceDefinitionsByComponentConditions
+  __testOnly._parseComponentSettings = _parseComponentSettings
+  __testOnly._registerComponents = _registerComponents
+  __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons
+  __testOnly._addInstanceToModel = _addInstanceToModel
+  __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom
+  __testOnly._addInstanceToDom = _addInstanceToDom
+  __testOnly._addInstanceInOrder = _addInstanceInOrder
+  __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty
 
   # callbacks
-  # __testOnly._onComponentAdded = _onComponentAdded
-  # __testOnly._onComponentChange = _onComponentChange
-  # __testOnly._onComponentRemoved = _onComponentRemoved
-  # __testOnly._onComponentOrderChange = _onComponentOrderChange
-  # __testOnly._onComponentTargetNameChange = _onComponentOrderChange
+  __testOnly._onComponentAdded = _onComponentAdded
+  __testOnly._onComponentChange = _onComponentChange
+  __testOnly._onComponentRemoved = _onComponentRemoved
+  __testOnly._onComponentOrderChange = _onComponentOrderChange
+  __testOnly._onComponentTargetNameChange = _onComponentOrderChange
 
   componentManager.__testOnly = __testOnly
   ### end-test-block ###

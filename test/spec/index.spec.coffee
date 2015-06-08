@@ -5,6 +5,10 @@ Vigor = require('../../dist/vigor.componentmanager')
 componentManager = Vigor.componentManager
 __testOnly = componentManager.__testOnly
 
+class MockComponent
+  constructor: ->
+    return true
+
 describe 'The componentManager', ->
   sandbox = undefined
 
@@ -28,7 +32,7 @@ describe 'The componentManager', ->
       do componentManager.initialize
       assert addListeners.called
 
-    it 'should call _parse - since its private the call cant be tracked, instead we verify that we get the expected results of parse', ->
+    it 'should parse (covered by updateSettings test, this is just a quick test)', ->
       settings =
         targetPrefix: 'dummy-prefix'
 
@@ -47,19 +51,64 @@ describe 'The componentManager', ->
       assert.equal cm, componentManager
 
   describe 'updateSettings', ->
-    it 'should call _parse - since its private the call cant be tracked, instead we verify that we get the expected results of parse', ->
+    it 'should parse and store passed settings', ->
       settings =
-        targetPrefix: 'dummy-prefix'
+        componentClassName: 'test-class-name'
+        $context: '.test'
+        targetPrefix: 'test-prefix'
+        componentSettings:
+          conditions: {
+            testCondition: 'my-condition-reference-to-global-conditions'
+          }
+          hidden: []
+          components: [
+            {
+              'id': 'mock-component',
+              'src': 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+            },
+            {
+              id: 'instance-2',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--main'
+            }
+          ]
 
-      expectedResults = settings.targetPrefix
+      defaults =
+        componentClassName: 'vigor-component'
+        $context: 'body'
+        targetPrefix: 'component-area'
+        componentSettings:
+          conditions: {}
+          hidden: []
+          components: []
+          instances: []
 
-      defaultPrefix = componentManager.getTargetPrefix()
-      assert.equal defaultPrefix, 'component-area'
+      results = JSON.parse componentManager.serialize()
+      assert.deepEqual results, defaults
 
       componentManager.initialize settings
-      results = componentManager.getTargetPrefix()
+      results = JSON.parse componentManager.serialize()
 
-      assert.equal results, expectedResults
+      assert.equal results.componentClassName, 'test-class-name'
+      assert.equal results.$context, '.test'
+      assert.equal results.targetPrefix, 'test-prefix'
+      assert.equal results.componentSettings.conditions.testCondition, 'my-condition-reference-to-global-conditions'
+      assert.equal results.componentSettings.components.length, 1
+      assert.equal results.componentSettings.hidden.length, 0
+      assert.equal results.componentSettings.instances.length, 2
+      assert.equal results.componentSettings.instances[0].reInstantiateOnUrlParamChange, false
+      assert results.componentSettings.instances[0].urlParamsModel
+
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.updateSettings()
+      assert.equal cm, componentManager
 
   describe 'refresh', ->
     it 'should update the active filter with parsed versions of passed options', ->
@@ -122,14 +171,28 @@ describe 'The componentManager', ->
       results = componentManager.getActiveFilter()
       assert.deepEqual results, expectedResults
 
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.refresh()
+      assert.equal cm, componentManager
+
   describe 'serialize', ->
     it 'should serialize the data used by the componentManager into a format that it can read', ->
+      settings =
+        componentClassName: 'test-class-name'
+        context: $('<div class="test"></div>')
+        targetPrefix: 'test-prefix'
+        componentSettings:
+          conditions: {}
+          components: []
+          instances: []
 
       expectedResults =
         conditions: {}
         components: []
         hidden: []
         instanceDefinitions: []
+
+      componentManager.updateSettings settings
 
   describe 'addComponent', ->
     it 'should validate incoming component data', ->
