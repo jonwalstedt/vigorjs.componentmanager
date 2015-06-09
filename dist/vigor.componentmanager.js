@@ -851,13 +851,41 @@
         serialize: function() {
           return _serialize();
         },
-        registerConditions: function(conditionsToBeRegistered, silent) {
-          var conditions;
+        parse: function(jsonString, updateSettings) {
+          var filter, settings;
+          if (updateSettings == null) {
+            updateSettings = false;
+          }
+          filter = function(key, value) {
+            var args, body, endArgs, endBody, isFunction, isString, startArgs, startBody;
+            isString = value && typeof value === 'string';
+            isFunction = isString && value.substr(0, 8) === 'function';
+            if (isString && isFunction) {
+              startBody = value.indexOf('{') + 1;
+              endBody = value.lastIndexOf('}');
+              startArgs = value.indexOf('(') + 1;
+              endArgs = value.indexOf(')');
+              args = value.substring(startArgs, endArgs);
+              body = value.substring(startBody, endBody);
+              return new Function(args, body);
+            }
+            return value;
+          };
+          settings = JSON.parse(jsonString, filter);
+          if (updateSettings) {
+            this.updateSettings(settings);
+          }
+          return settings;
+        },
+        registerConditions: function(conditions, silent) {
+          var existingConditions;
           if (silent == null) {
             silent = false;
           }
-          conditions = _filterModel.get('conditions') || {};
-          conditions = _.extend(conditions, conditionsToBeRegistered);
+          if (_.isObject(conditions)) {
+            existingConditions = _filterModel.get('conditions') || {};
+            conditions = _.extend(existingConditions, conditions);
+          }
           _filterModel.set({
             'conditions': conditions
           }, {
@@ -1077,8 +1105,10 @@
         conditions = componentSettings != null ? componentSettings.conditions : void 0;
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
         instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions || componentSettings.instances;
-        if (conditions && !_.isEmpty(conditions)) {
-          silent = true;
+        silent = true;
+        if (conditions && _.isObject(conditions) && !_.isEmpty(conditions)) {
+          componentManager.registerConditions.call(componentManager, conditions, silent);
+        } else if (conditions && _.isString(conditions)) {
           componentManager.registerConditions.call(componentManager, conditions, silent);
         }
         if (componentSettings.settings) {
@@ -1257,7 +1287,7 @@
         return isEmpty;
       };
       _serialize = function() {
-        var $context, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, settings;
+        var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
         conditions = _filterModel.get('conditions') || {};
         hidden = [];
         components = _componentDefinitionsCollection.toJSON();
@@ -1268,8 +1298,13 @@
           instanceDefinition.instance = void 0;
         }
         $context = componentManager.getContext();
-        contextSelector = $context.selector;
-        console.log(contextSelector);
+        if ($context.length > 0) {
+          tagName = $context.prop('tagName').toLowerCase();
+          classes = (ref = $context.attr('class')) != null ? ref.replace(' ', '.') : void 0;
+          contextSelector = $context.selector || (tagName + "." + classes);
+        } else {
+          contextSelector = 'body';
+        }
         settings = {
           $context: contextSelector,
           componentClassName: componentManager.getComponentClassName(),
@@ -1287,7 +1322,7 @@
           }
           return value;
         };
-        return JSON.stringify(settings, filter, 2);
+        return JSON.stringify(settings, filter);
       };
       _onComponentAdded = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);

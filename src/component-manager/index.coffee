@@ -57,9 +57,33 @@ do ->
     serialize: ->
       return _serialize()
 
-    registerConditions: (conditionsToBeRegistered, silent = false) ->
-      conditions = _filterModel.get('conditions') or {}
-      conditions = _.extend conditions, conditionsToBeRegistered
+    parse: (jsonString, updateSettings = false) ->
+      filter = (key, value) ->
+        isString = value and typeof value is 'string'
+        isFunction = isString and value.substr(0, 8) is 'function'
+        if isString and isFunction
+          startBody = value.indexOf('{') + 1
+          endBody = value.lastIndexOf '}'
+          startArgs = value.indexOf('(') + 1
+          endArgs = value.indexOf ')'
+
+          args = value.substring(startArgs, endArgs)
+          body = value.substring(startBody, endBody)
+          return new Function(args, body)
+        return value
+
+      settings = JSON.parse jsonString, filter
+
+      if updateSettings
+        @updateSettings settings
+
+      return settings
+
+    registerConditions: (conditions, silent = false) ->
+      if _.isObject(conditions)
+        existingConditions = _filterModel.get('conditions') or {}
+        conditions = _.extend existingConditions, conditions
+
       _filterModel.set
         'conditions': conditions
       , silent: silent
@@ -226,7 +250,6 @@ do ->
   #
   # Privat methods
   # ============================================================================
-
   _parse = (settings) ->
     componentSettings = settings?.componentSettings
 
@@ -255,8 +278,10 @@ do ->
     componentSettings.targets or \
     componentSettings.instanceDefinitions or componentSettings.instances
 
-    if conditions and not _.isEmpty(conditions)
-      silent = true
+    silent = true
+    if conditions and _.isObject(conditions) and  not _.isEmpty(conditions)
+      componentManager.registerConditions.call componentManager, conditions, silent
+    else if conditions and _.isString(conditions)
       componentManager.registerConditions.call componentManager, conditions, silent
 
     if componentSettings.settings
@@ -416,8 +441,12 @@ do ->
       instanceDefinition.instance = undefined
 
     $context = componentManager.getContext()
-    contextSelector = $context.selector
-    console.log contextSelector
+    if $context.length > 0
+      tagName = $context.prop('tagName').toLowerCase()
+      classes = $context.attr('class')?.replace(' ', '.')
+      contextSelector = $context.selector or "#{tagName}.#{classes}"
+    else
+      contextSelector = 'body'
 
     settings =
       $context: contextSelector
@@ -434,7 +463,7 @@ do ->
           return value.toString()
       return value
 
-    return JSON.stringify(settings, filter, 2)
+    return JSON.stringify(settings, filter)
 
   #
   # Callbacks

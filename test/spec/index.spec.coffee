@@ -51,7 +51,8 @@ describe 'The componentManager', ->
       assert.equal cm, componentManager
 
   describe 'updateSettings', ->
-    it 'should parse and store passed settings', ->
+    it 'should parse and use passed settings', ->
+      $('body').append "<div class='test'></div>"
       settings =
         componentClassName: 'test-class-name'
         $context: '.test'
@@ -90,11 +91,11 @@ describe 'The componentManager', ->
           components: []
           instances: []
 
-      results = JSON.parse componentManager.serialize()
+      results = componentManager.parse componentManager.serialize()
       assert.deepEqual results, defaults
 
       componentManager.initialize settings
-      results = JSON.parse componentManager.serialize()
+      results = componentManager.parse componentManager.serialize()
 
       assert.equal results.componentClassName, 'test-class-name'
       assert.equal results.$context, '.test'
@@ -105,6 +106,7 @@ describe 'The componentManager', ->
       assert.equal results.componentSettings.instances.length, 2
       assert.equal results.componentSettings.instances[0].reInstantiateOnUrlParamChange, false
       assert results.componentSettings.instances[0].urlParamsModel
+      do $('.test').remove
 
     it 'should return the componentManager for chainability', ->
       cm = componentManager.updateSettings()
@@ -176,23 +178,106 @@ describe 'The componentManager', ->
       assert.equal cm, componentManager
 
   describe 'serialize', ->
-    it 'should serialize the data used by the componentManager into a format that it can read', ->
+    it 'should serialize the data used by the componentManager into a format that it later can read using parse', ->
       settings =
         componentClassName: 'test-class-name'
-        context: $('<div class="test"></div>')
+        $context: $('<div class="test"></div>')
         targetPrefix: 'test-prefix'
         componentSettings:
-          conditions: {}
-          components: []
-          instances: []
+          conditions:
+            dummyCondition: ->
+              if 10 > 9 then return false
+          hidden: []
+          components: [
+            {
+              'id': 'mock-component',
+              'src': 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+            },
+            {
+              id: 'instance-2',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--main'
+            }
+          ]
+
+      expectedResults = '{\"$context\":\"div.test\",\"componentClassName\":\"test-class-name\",\"targetPrefix\":\"test-prefix\",\"componentSettings\":{\"conditions\":{\"dummyCondition\":\"function () {\\n                if (10 > 9) {\\n                  return false;\\n                }\\n              }\"},\"components\":[{\"id\":\"mock-component\",\"src\":\"window.MockComponent\"}],\"hidden\":[],\"instances\":[{\"id\":\"instance-1\",\"componentId\":\"mock-component\",\"targetName\":\"test-prefix--header\",\"urlParamsModel\":{},\"showCount\":0,\"reInstantiateOnUrlParamChange\":false},{\"id\":\"instance-2\",\"componentId\":\"mock-component\",\"targetName\":\"test-prefix--main\",\"urlParamsModel\":{},\"showCount\":0,\"reInstantiateOnUrlParamChange\":false}]}}'
+      results = componentManager.initialize(settings).serialize()
+      assert.equal results, expectedResults
+
+  describe 'parse', ->
+    it 'should be able to parse the output of serialize back into usable settings', ->
+      settings =
+        componentClassName: 'test-class-name'
+        $context: $('<div class="test"></div>')
+        targetPrefix: 'test-prefix'
+        componentSettings:
+          conditions: 'test-condition'
+          hidden: []
+          components: [
+            {
+              'id': 'mock-component',
+              'src': 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+            },
+            {
+              id: 'instance-2',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--main'
+            }
+          ]
 
       expectedResults =
-        conditions: {}
-        components: []
-        hidden: []
-        instanceDefinitions: []
+        componentClassName: 'test-class-name'
+        $context: 'div.test'
+        targetPrefix: 'test-prefix'
+        componentSettings:
+          conditions: 'test-condition'
+          hidden: []
+          components: [
+            {
+              'id': 'mock-component',
+              'src': 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              reInstantiateOnUrlParamChange: false
+              showCount: 0
+            },
+            {
+              id: 'instance-2',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--main'
+              reInstantiateOnUrlParamChange: false
+              showCount: 0
+            }
+          ]
 
-      componentManager.updateSettings settings
+      serializedResults = componentManager.initialize(settings).serialize()
+      results = componentManager.parse serializedResults
+      # clean out the added urlParamsModel (a backbone model with generated uniqe id since its id wont be predictable)
+      for instance in results.componentSettings.instances
+        delete instance.urlParamsModel
+
+      assert.deepEqual results, expectedResults
+
+    it 'should be able to parse settings that contains condition methods', ->
 
   describe 'addComponent', ->
     it 'should validate incoming component data', ->

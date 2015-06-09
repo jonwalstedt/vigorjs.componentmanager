@@ -12,29 +12,14 @@ var app = app || {};
     },
 
     initialize: function () {
-      componentSettings = window.localStorage.getItem('componentSettings') || window.componentSettings;
+      var stringifiedSettings = window.localStorage.getItem('componentSettings'),
+          settings = window.componentSettings;
 
-      if (_.isString(componentSettings)) {
-      filter = function (key, value) {
-        if (value && typeof value === "string"
-            && value.substr(0,8) == "function") {
-            var startBody = value.indexOf('{') + 1;
-            var endBody = value.lastIndexOf('}');
-            var startArgs = value.indexOf('(') + 1;
-            var endArgs = value.indexOf(')');
-
-           return new Function(value.substring(startArgs, endArgs)
-                             , value.substring(startBody, endBody));
-          }
-          return value;
-        }
-        componentSettings = JSON.parse(componentSettings, filter);
+      if (stringifiedSettings) {
+        settings = Vigor.componentManager.parse(stringifiedSettings);
       }
 
-      Vigor.componentManager.initialize({
-        componentSettings: componentSettings,
-        $context: this.$el
-      });
+      Vigor.componentManager.initialize(settings);
 
       this.router = new app.Router();
       Backbone.history.start({root: '/examples/iframe-component/'});
