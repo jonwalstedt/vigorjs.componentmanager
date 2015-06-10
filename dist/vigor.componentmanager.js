@@ -877,117 +877,6 @@
           }
           return settings;
         },
-        registerConditions: function(conditions, silent) {
-          var existingConditions;
-          if (silent == null) {
-            silent = false;
-          }
-          if (_.isObject(conditions)) {
-            existingConditions = _filterModel.get('conditions') || {};
-            conditions = _.extend(existingConditions, conditions);
-          }
-          _filterModel.set({
-            'conditions': conditions
-          }, {
-            silent: silent
-          });
-          return this;
-        },
-        addComponents: function(componentDefinition) {
-          _componentDefinitionsCollection.set(componentDefinition, {
-            parse: true,
-            validate: true,
-            remove: false
-          });
-          return this;
-        },
-        addInstance: function(instanceDefinition) {
-          _instanceDefinitionsCollection.set(instanceDefinition, {
-            parse: true,
-            validate: true,
-            remove: false
-          });
-          return this;
-        },
-        updateComponents: function(componentDefinitions) {
-          _componentDefinitionsCollection.set(componentDefinitions, {
-            parse: true,
-            validate: true,
-            remove: false
-          });
-          return this;
-        },
-        updateInstances: function(instanceDefinitions) {
-          _instanceDefinitionsCollection.set(instanceDefinitions, {
-            parse: true,
-            validate: true,
-            remove: false
-          });
-          return this;
-        },
-        removeComponent: function(componentDefinitionId) {
-          _instanceDefinitionsCollection.remove(componentDefinitionId);
-          return this;
-        },
-        removeInstance: function(instanceId) {
-          _instanceDefinitionsCollection.remove(instanceId);
-          return this;
-        },
-        setContext: function(context) {
-          if (_.isString(context)) {
-            return _$context = $(context);
-          } else {
-            return _$context = context;
-          }
-        },
-        setComponentClassName: function(componentClassName) {
-          return _componentClassName = componentClassName || _componentClassName;
-        },
-        setTargetPrefix: function(targetPrefix) {
-          return _targetPrefix = targetPrefix || _targetPrefix;
-        },
-        getContext: function() {
-          return _$context;
-        },
-        getComponentClassName: function() {
-          return _componentClassName;
-        },
-        getTargetPrefix: function() {
-          return _targetPrefix;
-        },
-        getActiveFilter: function() {
-          return _filterModel.toJSON();
-        },
-        getConditions: function() {
-          return _filterModel.get('conditions');
-        },
-        getComponentById: function(componentId) {
-          var ref;
-          return (ref = _componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
-        },
-        getInstanceById: function(instanceId) {
-          var ref;
-          return (ref = _instanceDefinitionsCollection.get(instanceId)) != null ? ref.toJSON() : void 0;
-        },
-        getComponents: function() {
-          return _componentDefinitionsCollection.toJSON();
-        },
-        getInstances: function() {
-          return _instanceDefinitionsCollection.toJSON();
-        },
-        getActiveInstances: function() {
-          var instances;
-          instances = _.map(_activeInstancesCollection.models, function(instanceDefinition) {
-            var instance;
-            instance = instanceDefinition.get('instance');
-            if (!instance) {
-              _addInstanceToModel(instanceDefinition);
-              instance = instanceDefinition.get('instance');
-            }
-            return instance;
-          });
-          return instances;
-        },
         clear: function() {
           if (_componentDefinitionsCollection != null) {
             _componentDefinitionsCollection.reset();
@@ -1069,6 +958,54 @@
             };
           })(this));
         },
+        addConditions: function(conditions, silent) {
+          var existingConditions;
+          if (silent == null) {
+            silent = false;
+          }
+          if (_.isObject(conditions)) {
+            existingConditions = _filterModel.get('conditions') || {};
+            conditions = _.extend(existingConditions, conditions);
+          }
+          _filterModel.set({
+            'conditions': conditions
+          }, {
+            silent: silent
+          });
+          return this;
+        },
+        addComponents: function(componentDefinition) {
+          _componentDefinitionsCollection.set(componentDefinition, {
+            parse: true,
+            validate: true,
+            remove: false
+          });
+          return this;
+        },
+        addInstance: function(instanceDefinition) {
+          _instanceDefinitionsCollection.set(instanceDefinition, {
+            parse: true,
+            validate: true,
+            remove: false
+          });
+          return this;
+        },
+        updateComponents: function(componentDefinitions) {
+          _componentDefinitionsCollection.set(componentDefinitions, {
+            parse: true,
+            validate: true,
+            remove: false
+          });
+          return this;
+        },
+        updateInstances: function(instanceDefinitions) {
+          _instanceDefinitionsCollection.set(instanceDefinitions, {
+            parse: true,
+            validate: true,
+            remove: false
+          });
+          return this;
+        },
         removeListeners: function() {
           if (_activeInstancesCollection != null) {
             _activeInstancesCollection.off();
@@ -1080,6 +1017,69 @@
             _instanceDefinitionsCollection.off();
           }
           return _componentDefinitionsCollection != null ? _componentDefinitionsCollection.off() : void 0;
+        },
+        removeComponent: function(componentDefinitionId) {
+          _instanceDefinitionsCollection.remove(componentDefinitionId);
+          return this;
+        },
+        removeInstance: function(instanceId) {
+          _instanceDefinitionsCollection.remove(instanceId);
+          return this;
+        },
+        setContext: function(context) {
+          if (_.isString(context)) {
+            return _$context = $(context);
+          } else {
+            return _$context = context;
+          }
+        },
+        setComponentClassName: function(componentClassName) {
+          return _componentClassName = componentClassName || _componentClassName;
+        },
+        setTargetPrefix: function(targetPrefix) {
+          return _targetPrefix = targetPrefix || _targetPrefix;
+        },
+        getContext: function() {
+          return _$context;
+        },
+        getComponentClassName: function() {
+          return _componentClassName;
+        },
+        getTargetPrefix: function() {
+          return _targetPrefix;
+        },
+        getActiveFilter: function() {
+          return _filterModel.toJSON();
+        },
+        getConditions: function() {
+          return _filterModel.get('conditions');
+        },
+        getComponentById: function(componentId) {
+          var ref;
+          return (ref = _componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
+        },
+        getInstanceById: function(instanceId) {
+          var ref;
+          return (ref = _instanceDefinitionsCollection.get(instanceId)) != null ? ref.toJSON() : void 0;
+        },
+        getComponents: function() {
+          return _componentDefinitionsCollection.toJSON();
+        },
+        getInstances: function() {
+          return _instanceDefinitionsCollection.toJSON();
+        },
+        getActiveInstances: function() {
+          var instances;
+          instances = _.map(_activeInstancesCollection.models, function(instanceDefinition) {
+            var instance;
+            instance = instanceDefinition.get('instance');
+            if (!instance) {
+              _addInstanceToModel(instanceDefinition);
+              instance = instanceDefinition.get('instance');
+            }
+            return instance;
+          });
+          return instances;
         }
       };
       _parse = function(settings) {
@@ -1107,9 +1107,9 @@
         instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions || componentSettings.instances;
         silent = true;
         if (conditions && _.isObject(conditions) && !_.isEmpty(conditions)) {
-          componentManager.registerConditions.call(componentManager, conditions, silent);
+          componentManager.addConditions.call(componentManager, conditions, silent);
         } else if (conditions && _.isString(conditions)) {
-          componentManager.registerConditions.call(componentManager, conditions, silent);
+          componentManager.addConditions.call(componentManager, conditions, silent);
         }
         if (componentSettings.settings) {
           componentManager.updateSettings(componentSettings.settings);

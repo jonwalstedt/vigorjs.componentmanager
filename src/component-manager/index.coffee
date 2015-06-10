@@ -79,101 +79,6 @@ do ->
 
       return settings
 
-    registerConditions: (conditions, silent = false) ->
-      if _.isObject(conditions)
-        existingConditions = _filterModel.get('conditions') or {}
-        conditions = _.extend existingConditions, conditions
-
-      _filterModel.set
-        'conditions': conditions
-      , silent: silent
-      return @
-
-    addComponents: (componentDefinition) ->
-      _componentDefinitionsCollection.set componentDefinition,
-        parse: true
-        validate: true
-        remove: false
-      return @
-
-    addInstance: (instanceDefinition) ->
-      _instanceDefinitionsCollection.set instanceDefinition,
-        parse: true
-        validate: true
-        remove: false
-      return @
-
-    updateComponents: (componentDefinitions) ->
-      _componentDefinitionsCollection.set componentDefinitions,
-        parse: true
-        validate: true
-        remove: false
-      return @
-
-    updateInstances: (instanceDefinitions) ->
-      _instanceDefinitionsCollection.set instanceDefinitions,
-        parse: true
-        validate: true
-        remove: false
-
-      return @
-
-    removeComponent: (componentDefinitionId) ->
-      _instanceDefinitionsCollection.remove componentDefinitionId
-      return @
-
-    removeInstance: (instanceId) ->
-      _instanceDefinitionsCollection.remove instanceId
-      return @
-
-    setContext: (context) ->
-      if _.isString(context)
-        _$context = $ context
-      else
-        _$context = context
-
-    setComponentClassName: (componentClassName) ->
-      _componentClassName = componentClassName or _componentClassName
-
-    setTargetPrefix: (targetPrefix) ->
-      _targetPrefix = targetPrefix or _targetPrefix
-
-    getContext: ->
-      return _$context
-
-    getComponentClassName: ->
-      return _componentClassName
-
-    getTargetPrefix: ->
-      return _targetPrefix
-
-    getActiveFilter: ->
-      return _filterModel.toJSON()
-
-    getConditions: ->
-      return _filterModel.get 'conditions'
-
-    getComponentById: (componentId) ->
-      return _componentDefinitionsCollection.get(componentId)?.toJSON()
-
-    getInstanceById: (instanceId) ->
-      return _instanceDefinitionsCollection.get(instanceId)?.toJSON()
-
-    getComponents: ->
-      return _componentDefinitionsCollection.toJSON()
-
-    getInstances: ->
-      return _instanceDefinitionsCollection.toJSON()
-
-    getActiveInstances: ->
-      instances = _.map _activeInstancesCollection.models, (instanceDefinition) ->
-        instance = instanceDefinition.get 'instance'
-        unless instance
-          _addInstanceToModel instanceDefinition
-          instance = instanceDefinition.get 'instance'
-        return instance
-      return instances
-
     clear: ->
       do _componentDefinitionsCollection?.reset
       do _instanceDefinitionsCollection?.reset
@@ -241,11 +146,107 @@ do ->
       _activeInstancesCollection.on 'remove', (model, collection, options) =>
         @trigger.apply @, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
 
+    addConditions: (conditions, silent = false) ->
+      if _.isObject(conditions)
+        existingConditions = _filterModel.get('conditions') or {}
+        conditions = _.extend existingConditions, conditions
+
+      _filterModel.set
+        'conditions': conditions
+      , silent: silent
+      return @
+
+    addComponents: (componentDefinition) ->
+      _componentDefinitionsCollection.set componentDefinition,
+        parse: true
+        validate: true
+        remove: false
+      return @
+
+    addInstance: (instanceDefinition) ->
+      _instanceDefinitionsCollection.set instanceDefinition,
+        parse: true
+        validate: true
+        remove: false
+      return @
+
+    updateComponents: (componentDefinitions) ->
+      _componentDefinitionsCollection.set componentDefinitions,
+        parse: true
+        validate: true
+        remove: false
+      return @
+
+    updateInstances: (instanceDefinitions) ->
+      _instanceDefinitionsCollection.set instanceDefinitions,
+        parse: true
+        validate: true
+        remove: false
+
+      return @
+
     removeListeners: ->
       do _activeInstancesCollection?.off
       do _filterModel?.off
       do _instanceDefinitionsCollection?.off
       do _componentDefinitionsCollection?.off
+
+    removeComponent: (componentDefinitionId) ->
+      _instanceDefinitionsCollection.remove componentDefinitionId
+      return @
+
+    removeInstance: (instanceId) ->
+      _instanceDefinitionsCollection.remove instanceId
+      return @
+
+    setContext: (context) ->
+      if _.isString(context)
+        _$context = $ context
+      else
+        _$context = context
+
+    setComponentClassName: (componentClassName) ->
+      _componentClassName = componentClassName or _componentClassName
+
+    setTargetPrefix: (targetPrefix) ->
+      _targetPrefix = targetPrefix or _targetPrefix
+
+    getContext: ->
+      return _$context
+
+    getComponentClassName: ->
+      return _componentClassName
+
+    getTargetPrefix: ->
+      return _targetPrefix
+
+    getActiveFilter: ->
+      return _filterModel.toJSON()
+
+    getConditions: ->
+      return _filterModel.get 'conditions'
+
+    getComponentById: (componentId) ->
+      return _componentDefinitionsCollection.get(componentId)?.toJSON()
+
+    getInstanceById: (instanceId) ->
+      return _instanceDefinitionsCollection.get(instanceId)?.toJSON()
+
+    getComponents: ->
+      return _componentDefinitionsCollection.toJSON()
+
+    getInstances: ->
+      return _instanceDefinitionsCollection.toJSON()
+
+    getActiveInstances: ->
+      instances = _.map _activeInstancesCollection.models, (instanceDefinition) ->
+        instance = instanceDefinition.get 'instance'
+        unless instance
+          _addInstanceToModel instanceDefinition
+          instance = instanceDefinition.get 'instance'
+        return instance
+      return instances
+
 
   #
   # Privat methods
@@ -280,9 +281,9 @@ do ->
 
     silent = true
     if conditions and _.isObject(conditions) and  not _.isEmpty(conditions)
-      componentManager.registerConditions.call componentManager, conditions, silent
+      componentManager.addConditions.call componentManager, conditions, silent
     else if conditions and _.isString(conditions)
-      componentManager.registerConditions.call componentManager, conditions, silent
+      componentManager.addConditions.call componentManager, conditions, silent
 
     if componentSettings.settings
       componentManager.updateSettings componentSettings.settings
@@ -507,9 +508,9 @@ do ->
 
   #properties
   __testOnly.router = Router
-  __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection
-  __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection
-  __testOnly._activeInstancesCollection = _activeInstancesCollection
+  # __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection
+  # __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection
+  # __testOnly._activeInstancesCollection = _activeInstancesCollection
   # __testOnly._componentClassName = _componentClassName
   # __testOnly._targetPrefix = _targetPrefix
   # __testOnly._filterModel = _filterModel
