@@ -192,7 +192,7 @@ do ->
       do _componentDefinitionsCollection?.off
 
     removeComponent: (componentDefinitionId) ->
-      _instanceDefinitionsCollection.remove componentDefinitionId
+      _componentDefinitionsCollection.remove componentDefinitionId
       return @
 
     removeInstance: (instanceId) ->
@@ -284,9 +284,6 @@ do ->
       componentManager.addConditions.call componentManager, conditions, silent
     else if conditions and _.isString(conditions)
       componentManager.addConditions.call componentManager, conditions, silent
-
-    if componentSettings.settings
-      componentManager.updateSettings componentSettings.settings
 
     hidden = componentSettings.hidden
 
@@ -508,13 +505,13 @@ do ->
 
   #properties
   __testOnly.router = Router
-  # __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection
-  # __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection
-  # __testOnly._activeInstancesCollection = _activeInstancesCollection
-  # __testOnly._componentClassName = _componentClassName
-  # __testOnly._targetPrefix = _targetPrefix
-  # __testOnly._filterModel = _filterModel
-  # __testOnly._$context = _$context
+  __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection
+  __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection
+  __testOnly._activeInstancesCollection = _activeInstancesCollection
+  __testOnly._componentClassName = _componentClassName
+  __testOnly._targetPrefix = _targetPrefix
+  __testOnly._filterModel = _filterModel
+  __testOnly._$context = _$context
 
   # methods
   __testOnly._parse = _parse

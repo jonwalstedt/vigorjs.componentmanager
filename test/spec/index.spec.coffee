@@ -7,8 +7,20 @@ __testOnly = componentManager.__testOnly
 
 class MockComponent
   $el: undefined
-  constructor: ->
+  attr: undefined
+  constructor: (attr) ->
+    @attr = attr
     @$el = $ '<div clas="mock-component"></div>'
+
+  render: ->
+    return @
+
+class MockComponent2
+  $el: undefined
+  attr: undefined
+  constructor: (attr) ->
+    @attr = attr
+    @$el = $ '<div clas="mock-component2"></div>'
 
   render: ->
     return @
@@ -435,8 +447,73 @@ describe 'The componentManager', ->
       assert componentManager.removeListeners.called
 
   describe 'addListeners', ->
+    settings =
+      targetPrefix: 'test-prefix'
+      componentSettings:
+        components: [
+          {
+            'id': 'mock-component',
+            'src': 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+            urlPattern: 'foo/:id'
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--main'
+            urlPattern: 'bar/:id'
+          }
+        ]
 
-  describe 'registerConditions', ->
+    beforeEach ->
+      componentManager.initialize settings
+      $('body').append '<div class="test-prefix--header"/>'
+
+    afterEach ->
+      do $('.test-prefix--header').remove
+
+    it 'after being called it should update activeComponents when applying new filter (add change listener to _filterModel)', ->
+      filteredComponents = componentManager.getActiveInstances()
+      assert.equal filteredComponents.length, 0
+
+      componentManager.updateSettings settings
+      componentManager.refresh url: 'foo/1'
+
+      filteredComponents = componentManager.getActiveInstances()
+      assert.equal filteredComponents.length, 1
+      assert.equal filteredComponents[0].attr.urlParams[0].url, 'foo/1'
+
+
+    it.only 'after being called it should update activeComponents when adding new componentDefinitions (add throttled_diff listener to the _componentDefinitionsCollection)', ->
+      dummyComponent =
+        id: 'mock-component-2',
+        src: 'window.MockComponent2'
+
+      dummyInstance =
+        id: 'mock-instance',
+        componentId: 'mock-component-2'
+        urlPattern: 'baz/:1'
+        targetName: 'test-prefix--header'
+
+      componentManager.refresh url: 'baz/1'
+      filteredComponents = componentManager.getActiveInstances()
+      assert.equal filteredComponents.length, 0
+
+      componentManager.addComponents dummyComponent
+
+      filteredComponents = componentManager.getActiveInstances()
+      console.log 'filteredComponents: ', filteredComponents
+      assert.equal filteredComponents.length, 1
+      # assert.equal filteredComponents[0].attr.urlParams[0].url, 'foo/1'
+
+
+  describe 'addConditions', ->
     it 'should register new conditions', ->
       # obj = 'test-condition'
       # componentManager.registerConditions obj
