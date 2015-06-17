@@ -4,6 +4,7 @@ Vigor = require('../../dist/vigor.componentmanager')
 
 componentManager = Vigor.componentManager
 __testOnly = componentManager.__testOnly
+clock = undefined
 
 class MockComponent
   $el: undefined
@@ -26,17 +27,20 @@ class MockComponent2
     return @
 
 window.MockComponent = MockComponent
+window.MockComponent2 = MockComponent
 
 describe 'The componentManager', ->
   sandbox = undefined
 
   beforeEach ->
-    do componentManager.initialize
     sandbox = sinon.sandbox.create()
+    clock = sinon.useFakeTimers()
+    do componentManager.initialize
 
   afterEach ->
     do componentManager.dispose
     do sandbox.restore
+    do clock.restore
 
   describe 'initialize', ->
 
@@ -448,7 +452,6 @@ describe 'The componentManager', ->
 
   describe 'addListeners', ->
     settings =
-      targetPrefix: 'test-prefix'
       componentSettings:
         components: [
           {
@@ -472,11 +475,11 @@ describe 'The componentManager', ->
         ]
 
     beforeEach ->
+      $('body').append '<div class="component-area--header"/>'
       componentManager.initialize settings
-      $('body').append '<div class="test-prefix--header"/>'
 
     afterEach ->
-      do $('.test-prefix--header').remove
+      do $('.component-area--header').remove
 
     it 'after being called it should update activeComponents when applying new filter (add change listener to _filterModel)', ->
       filteredComponents = componentManager.getActiveInstances()
@@ -490,27 +493,23 @@ describe 'The componentManager', ->
       assert.equal filteredComponents[0].attr.urlParams[0].url, 'foo/1'
 
 
-    it.only 'after being called it should update activeComponents when adding new componentDefinitions (add throttled_diff listener to the _componentDefinitionsCollection)', ->
-      dummyComponent =
-        id: 'mock-component-2',
-        src: 'window.MockComponent2'
-
+    it 'after being called it should update activeComponents when adding new instanceDefinitions (add throttled_diff listener to the _instanceDefinitionsCollection)', ->
       dummyInstance =
         id: 'mock-instance',
-        componentId: 'mock-component-2'
-        urlPattern: 'baz/:1'
-        targetName: 'test-prefix--header'
+        componentId: 'mock-component'
+        urlPattern: 'baz/:id'
+        targetName: 'componnet-area--header'
 
       componentManager.refresh url: 'baz/1'
-      filteredComponents = componentManager.getActiveInstances()
-      assert.equal filteredComponents.length, 0
 
-      componentManager.addComponents dummyComponent
+      activeComponents = componentManager.getActiveInstances()
+      assert.equal activeComponents.length, 0
 
+      componentManager.addInstance dummyInstance
+      clock.tick 51
       filteredComponents = componentManager.getActiveInstances()
-      console.log 'filteredComponents: ', filteredComponents
+
       assert.equal filteredComponents.length, 1
-      # assert.equal filteredComponents[0].attr.urlParams[0].url, 'foo/1'
 
 
   describe 'addConditions', ->

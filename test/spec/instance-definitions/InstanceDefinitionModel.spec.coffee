@@ -135,10 +135,13 @@ describe 'InstanceDefinitionModel', ->
           if key is 'id'
             return 'test'
 
-      instanceDefinitionModel.set 'instance', instance
+      instanceDefinitionModel.set
+        'id': 'test'
+        'instance': instance
+
       errorFn = -> instanceDefinitionModel.renderInstance()
 
-      assert.throws (-> errorFn()), /The instance test does not have a render method/
+      assert.throws (-> errorFn()), /The instance for test does not have a render method/
 
     it 'should call postRender if it exsists', ->
       instance =

@@ -492,6 +492,9 @@
         var attached, el, instance;
         instance = this.get('instance');
         attached = false;
+        if (!instance) {
+          return attached;
+        }
         if (!instance.el && instance.$el) {
           el = instance.$el.get(0);
         } else {
@@ -524,7 +527,7 @@
           return;
         }
         if (!instance.render) {
-          throw "The instance " + (instance.get('id')) + " does not have a render method";
+          throw "The instance for " + (this.get('id')) + " does not have a render method";
         }
         if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
           instance.preRender();
@@ -547,7 +550,7 @@
       InstanceDefinitionModel.prototype.disposeInstance = function() {
         var instance;
         instance = this.get('instance');
-        if (instance != null) {
+        if ((instance != null ? instance.dispose : void 0) != null) {
           instance.dispose();
         }
         instance = void 0;
@@ -800,7 +803,7 @@
 
     })(BaseCollection);
     (function() {
-      var ERROR, EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onComponentAdded, _onComponentChange, _onComponentOrderChange, _onComponentRemoved, _onComponentTargetNameChange, _parse, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
+      var ERROR, EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onActiveInstanceAdd, _onActiveInstanceChange, _onActiveInstanceOrderChange, _onActiveInstanceRemoved, _onActiveInstanceTargetNameChange, _parse, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
       _componentDefinitionsCollection = void 0;
       _instanceDefinitionsCollection = void 0;
       _activeInstancesCollection = void 0;
@@ -905,13 +908,12 @@
         },
         addListeners: function() {
           _filterModel.on('change', _updateActiveComponents);
-          _componentDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
           _instanceDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
-          _activeInstancesCollection.on('add', _onComponentAdded);
-          _activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', _onComponentChange);
-          _activeInstancesCollection.on('change:order', _onComponentOrderChange);
-          _activeInstancesCollection.on('change:targetName', _onComponentTargetNameChange);
-          _activeInstancesCollection.on('remove', _onComponentRemoved);
+          _activeInstancesCollection.on('add', _onActiveInstanceAdd);
+          _activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', _onActiveInstanceChange);
+          _activeInstancesCollection.on('change:order', _onActiveInstanceOrderChange);
+          _activeInstancesCollection.on('change:targetName', _onActiveInstanceTargetNameChange);
+          _activeInstancesCollection.on('remove', _onActiveInstanceRemoved);
           _componentDefinitionsCollection.on('add', (function(_this) {
             return function(model, collection, options) {
               return _this.trigger.apply(_this, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]);
@@ -1321,70 +1323,31 @@
         };
         return JSON.stringify(settings, filter);
       };
-      _onComponentAdded = function(instanceDefinition) {
+      _onActiveInstanceAdd = function(instanceDefinition) {
         _addInstanceToModel(instanceDefinition);
         _addInstanceToDom(instanceDefinition);
         return instanceDefinition.incrementShowCount();
       };
-      _onComponentChange = function(instanceDefinition) {
+      _onActiveInstanceChange = function(instanceDefinition) {
         if (instanceDefinition.passesFilter(_filterModel.toJSON())) {
           instanceDefinition.disposeInstance();
           _addInstanceToModel(instanceDefinition);
           return _addInstanceToDom(instanceDefinition);
         }
       };
-      _onComponentRemoved = function(instanceDefinition) {
+      _onActiveInstanceRemoved = function(instanceDefinition) {
         var $target;
         instanceDefinition.disposeInstance();
         $target = $("." + (instanceDefinition.get('targetName')), _$context);
         return _isComponentAreaEmpty($target);
       };
-      _onComponentOrderChange = function(instanceDefinition) {
+      _onActiveInstanceOrderChange = function(instanceDefinition) {
         return _addInstanceToDom(instanceDefinition);
       };
-      _onComponentTargetNameChange = function(instanceDefinition) {
+      _onActiveInstanceTargetNameChange = function(instanceDefinition) {
         return _addInstanceToDom(instanceDefinition);
       };
 
-      /* start-test-block */
-      __testOnly = {};
-      __testOnly.ActiveInstancesCollection = ActiveInstancesCollection;
-      __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection;
-      __testOnly.ComponentDefinitionModel = ComponentDefinitionModel;
-      __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection;
-      __testOnly.InstanceDefinitionModel = InstanceDefinitionModel;
-      __testOnly.FilterModel = FilterModel;
-      __testOnly.IframeComponent = IframeComponent;
-      __testOnly.router = Router;
-      __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection;
-      __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection;
-      __testOnly._activeInstancesCollection = _activeInstancesCollection;
-      __testOnly._componentClassName = _componentClassName;
-      __testOnly._targetPrefix = _targetPrefix;
-      __testOnly._filterModel = _filterModel;
-      __testOnly._$context = _$context;
-      __testOnly._parse = _parse;
-      __testOnly._previousElement = _previousElement;
-      __testOnly._updateActiveComponents = _updateActiveComponents;
-      __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions;
-      __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount;
-      __testOnly._filterInstanceDefinitionsByComponentConditions = _filterInstanceDefinitionsByComponentConditions;
-      __testOnly._parseComponentSettings = _parseComponentSettings;
-      __testOnly._registerComponents = _registerComponents;
-      __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons;
-      __testOnly._addInstanceToModel = _addInstanceToModel;
-      __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom;
-      __testOnly._addInstanceToDom = _addInstanceToDom;
-      __testOnly._addInstanceInOrder = _addInstanceInOrder;
-      __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty;
-      __testOnly._onComponentAdded = _onComponentAdded;
-      __testOnly._onComponentChange = _onComponentChange;
-      __testOnly._onComponentRemoved = _onComponentRemoved;
-      __testOnly._onComponentOrderChange = _onComponentOrderChange;
-      __testOnly._onComponentTargetNameChange = _onComponentOrderChange;
-      componentManager.__testOnly = __testOnly;
-
-      /* end-test-block */
       _.extend(componentManager, Backbone.Events);
       return Vigor.componentManager = componentManager;
     })();

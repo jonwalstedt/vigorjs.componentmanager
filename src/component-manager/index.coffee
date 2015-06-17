@@ -99,10 +99,10 @@ do ->
 
     addListeners: ->
       _filterModel.on 'change', _updateActiveComponents
-      _componentDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
+      # _componentDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
       _instanceDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
 
-      _activeInstancesCollection.on 'add', _onComponentAdded
+      _activeInstancesCollection.on 'add', _onActiveInstanceAdd
       _activeInstancesCollection.on 'change:componentId
                                     change:filterString
                                     change:conditions
@@ -110,10 +110,10 @@ do ->
                                     change:showCount
                                     change:urlPattern
                                     change:urlParams
-                                    change:reInstantiateOnUrlParamChange', _onComponentChange
-      _activeInstancesCollection.on 'change:order', _onComponentOrderChange
-      _activeInstancesCollection.on 'change:targetName', _onComponentTargetNameChange
-      _activeInstancesCollection.on 'remove', _onComponentRemoved
+                                    change:reInstantiateOnUrlParamChange', _onActiveInstanceChange
+      _activeInstancesCollection.on 'change:order', _onActiveInstanceOrderChange
+      _activeInstancesCollection.on 'change:targetName', _onActiveInstanceTargetNameChange
+      _activeInstancesCollection.on 'remove', _onActiveInstanceRemoved
 
       # Propagate events
       # Component definitions
@@ -466,26 +466,26 @@ do ->
   #
   # Callbacks
   # ============================================================================
-  _onComponentAdded = (instanceDefinition) ->
+  _onActiveInstanceAdd = (instanceDefinition) ->
     _addInstanceToModel instanceDefinition
     _addInstanceToDom instanceDefinition
     do instanceDefinition.incrementShowCount
 
-  _onComponentChange = (instanceDefinition) ->
+  _onActiveInstanceChange = (instanceDefinition) ->
     if instanceDefinition.passesFilter _filterModel.toJSON()
       do instanceDefinition.disposeInstance
       _addInstanceToModel instanceDefinition
       _addInstanceToDom instanceDefinition
 
-  _onComponentRemoved = (instanceDefinition) ->
+  _onActiveInstanceRemoved = (instanceDefinition) ->
     do instanceDefinition.disposeInstance
     $target = $ ".#{instanceDefinition.get('targetName')}", _$context
     _isComponentAreaEmpty $target
 
-  _onComponentOrderChange = (instanceDefinition) ->
+  _onActiveInstanceOrderChange = (instanceDefinition) ->
     _addInstanceToDom instanceDefinition
 
-  _onComponentTargetNameChange = (instanceDefinition) ->
+  _onActiveInstanceTargetNameChange = (instanceDefinition) ->
     _addInstanceToDom instanceDefinition
 
 
@@ -530,11 +530,11 @@ do ->
   __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty
 
   # callbacks
-  __testOnly._onComponentAdded = _onComponentAdded
-  __testOnly._onComponentChange = _onComponentChange
-  __testOnly._onComponentRemoved = _onComponentRemoved
-  __testOnly._onComponentOrderChange = _onComponentOrderChange
-  __testOnly._onComponentTargetNameChange = _onComponentOrderChange
+  __testOnly._onActiveInstanceAdd = _onActiveInstanceAdd
+  __testOnly._onActiveInstanceChange = _onActiveInstanceChange
+  __testOnly._onActiveInstanceRemoved = _onActiveInstanceRemoved
+  __testOnly._onActiveInstanceOrderChange = _onActiveInstanceOrderChange
+  __testOnly._onActiveInstanceTargetNameChange = _onActiveInstanceTargetNameChange
 
   componentManager.__testOnly = __testOnly
   ### end-test-block ###

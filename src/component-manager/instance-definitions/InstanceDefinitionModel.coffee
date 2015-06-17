@@ -40,6 +40,7 @@ class InstanceDefinitionModel extends Backbone.Model
   isAttached: ->
     instance = @get 'instance'
     attached = false
+    return attached unless instance
 
     if not instance.el and instance.$el
       el = instance.$el.get(0)
@@ -61,7 +62,7 @@ class InstanceDefinitionModel extends Backbone.Model
     instance = @get 'instance'
     unless instance then return
     unless instance.render
-      throw "The instance #{instance.get('id')} does not have a render method"
+      throw "The instance for #{@get('id')} does not have a render method"
 
     if instance.preRender? and _.isFunction(instance.preRender)
       do instance.preRender
@@ -79,7 +80,8 @@ class InstanceDefinitionModel extends Backbone.Model
 
   disposeInstance: ->
     instance = @get 'instance'
-    do instance?.dispose
+    if instance?.dispose?
+      do instance.dispose
     instance = undefined
     @set
       'instance': undefined
