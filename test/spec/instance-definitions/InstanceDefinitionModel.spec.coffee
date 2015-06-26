@@ -223,20 +223,18 @@ describe 'InstanceDefinitionModel', ->
 
     it 'should return true if globalConditions passes and no other filters are defined', ->
       instanceDefinitionModel.set 'conditions', 'foo'
-      filter =
-        conditions:
-          foo: -> return true
+      globalConditions =
+        foo: -> return true
 
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
       assert.equal passesFilter, true
 
     it 'should return false if globalConditions doesnt pass and no other filters are defined', ->
       instanceDefinitionModel.set 'conditions', 'foo'
-      filter =
-        conditions:
-          foo: -> return false
+      globalConditions =
+        foo: -> return false
 
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
       assert.equal passesFilter, false
 
     it 'should return true if includeIfStringMatches matches and no other filters are defined', ->

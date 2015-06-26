@@ -117,7 +117,6 @@
 
       FilterModel.prototype.defaults = {
         url: void 0,
-        conditions: void 0,
         includeIfStringMatches: void 0,
         hasToMatchString: void 0,
         cantMatchString: void 0
@@ -132,7 +131,6 @@
         }
         newValues = {
           url: url,
-          conditions: (attrs != null ? attrs.conditions : void 0) || this.get('conditions') || void 0,
           includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
           hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
           cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0
@@ -561,7 +559,7 @@
         });
       };
 
-      InstanceDefinitionModel.prototype.passesFilter = function(filter) {
+      InstanceDefinitionModel.prototype.passesFilter = function(filter, globalConditions) {
         var areConditionsMet, filterStringMatch, urlMatch;
         if ((filter != null ? filter.url : void 0) || (filter != null ? filter.url : void 0) === '') {
           urlMatch = this.doesUrlPatternMatch(filter.url);
@@ -574,7 +572,7 @@
           }
         }
         if (this.get('conditions')) {
-          areConditionsMet = this.areConditionsMet(filter != null ? filter.conditions : void 0);
+          areConditionsMet = this.areConditionsMet(globalConditions);
           if (areConditionsMet != null) {
             if (!areConditionsMet) {
               return false;
@@ -764,9 +762,9 @@
         return instanceDefinition;
       };
 
-      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter) {
+      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter, globalConditions) {
         return this.filter(function(instanceDefinitionModel) {
-          return instanceDefinitionModel.passesFilter(filter);
+          return instanceDefinitionModel.passesFilter(filter, globalConditions);
         });
       };
 
@@ -803,10 +801,11 @@
 
     })(BaseCollection);
     (function() {
-      var ERROR, EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onActiveInstanceAdd, _onActiveInstanceChange, _onActiveInstanceOrderChange, _onActiveInstanceRemoved, _onActiveInstanceTargetNameChange, _parse, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
+      var ERROR, EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _globalConditionsModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onActiveInstanceAdd, _onActiveInstanceChange, _onActiveInstanceOrderChange, _onActiveInstanceRemoved, _onActiveInstanceTargetNameChange, _parse, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
       _componentDefinitionsCollection = void 0;
       _instanceDefinitionsCollection = void 0;
       _activeInstancesCollection = void 0;
+      _globalConditionsModel = void 0;
       _filterModel = void 0;
       _$context = void 0;
       _componentClassName = 'vigor-component';
@@ -831,6 +830,7 @@
           _componentDefinitionsCollection = new ComponentDefinitionsCollection();
           _instanceDefinitionsCollection = new InstanceDefinitionsCollection();
           _activeInstancesCollection = new ActiveInstancesCollection();
+          _globalConditionsModel = new Backbone.Model();
           _filterModel = new FilterModel();
           _.extend(this, EVENTS);
           this.addListeners();
@@ -848,6 +848,7 @@
             if (_filterModel != null) {
               _filterModel.clear();
             }
+            _updateActiveComponents();
           }
           return this;
         },
@@ -908,7 +909,9 @@
         },
         addListeners: function() {
           _filterModel.on('change', _updateActiveComponents);
+          _componentDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
           _instanceDefinitionsCollection.on('throttled_diff', _updateActiveComponents);
+          _globalConditionsModel.on('change', _updateActiveComponents);
           _activeInstancesCollection.on('add', _onActiveInstanceAdd);
           _activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', _onActiveInstanceChange);
           _activeInstancesCollection.on('change:order', _onActiveInstanceOrderChange);
@@ -966,14 +969,12 @@
             silent = false;
           }
           if (_.isObject(conditions)) {
-            existingConditions = _filterModel.get('conditions') || {};
+            existingConditions = _globalConditionsModel.get('conditions') || {};
             conditions = _.extend(existingConditions, conditions);
+            _globalConditionsModel.set(conditions, {
+              silent: silent
+            });
           }
-          _filterModel.set({
-            'conditions': conditions
-          }, {
-            silent: silent
-          });
           return this;
         },
         addComponents: function(componentDefinition) {
@@ -1018,7 +1019,10 @@
           if (_instanceDefinitionsCollection != null) {
             _instanceDefinitionsCollection.off();
           }
-          return _componentDefinitionsCollection != null ? _componentDefinitionsCollection.off() : void 0;
+          if (_componentDefinitionsCollection != null) {
+            _componentDefinitionsCollection.off();
+          }
+          return _globalConditionsModel != null ? _globalConditionsModel.off() : void 0;
         },
         removeComponent: function(componentDefinitionId) {
           _componentDefinitionsCollection.remove(componentDefinitionId);
@@ -1054,7 +1058,7 @@
           return _filterModel.toJSON();
         },
         getConditions: function() {
-          return _filterModel.get('conditions');
+          return _globalConditionsModel.toJSON();
         },
         getComponentById: function(componentId) {
           var ref;
@@ -1086,7 +1090,7 @@
       };
       _parse = function(settings) {
         var componentSettings;
-        componentSettings = settings != null ? settings.componentSettings : void 0;
+        componentSettings = (settings != null ? settings.componentSettings : void 0) || settings;
         if (settings != null ? settings.$context : void 0) {
           componentManager.setContext(settings.$context);
         } else {
@@ -1151,8 +1155,9 @@
         return _tryToReAddStraysToDom();
       };
       _filterInstanceDefinitions = function(filterOptions) {
-        var instanceDefinitions;
-        instanceDefinitions = _instanceDefinitionsCollection.getInstanceDefinitions(filterOptions);
+        var globalConditions, instanceDefinitions;
+        globalConditions = _globalConditionsModel.toJSON();
+        instanceDefinitions = _instanceDefinitionsCollection.getInstanceDefinitions(filterOptions, globalConditions);
         instanceDefinitions = _filterInstanceDefinitionsByShowCount(instanceDefinitions);
         instanceDefinitions = _filterInstanceDefinitionsByComponentConditions(instanceDefinitions);
         return instanceDefinitions;
@@ -1170,7 +1175,7 @@
       };
       _filterInstanceDefinitionsByComponentConditions = function(instanceDefinitions) {
         var globalConditions;
-        globalConditions = _filterModel.get('conditions');
+        globalConditions = _globalConditionsModel.toJSON();
         return _.filter(instanceDefinitions, function(instanceDefinition) {
           var componentDefinition;
           componentDefinition = _componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
@@ -1287,7 +1292,7 @@
       };
       _serialize = function() {
         var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
-        conditions = _filterModel.get('conditions') || {};
+        conditions = _globalConditionsModel.toJSON();
         hidden = [];
         components = _componentDefinitionsCollection.toJSON();
         instances = _instanceDefinitionsCollection.toJSON();
@@ -1329,7 +1334,10 @@
         return instanceDefinition.incrementShowCount();
       };
       _onActiveInstanceChange = function(instanceDefinition) {
-        if (instanceDefinition.passesFilter(_filterModel.toJSON())) {
+        var filter, globalConditions;
+        filter = _filterModel.toJSON();
+        globalConditions = _globalConditionsModel.toJSON();
+        if (instanceDefinition.passesFilter(filter, globalConditions)) {
           instanceDefinition.disposeInstance();
           _addInstanceToModel(instanceDefinition);
           return _addInstanceToDom(instanceDefinition);

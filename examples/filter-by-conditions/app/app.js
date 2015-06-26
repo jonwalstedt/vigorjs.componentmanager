@@ -32,7 +32,7 @@ var app = app || {};
     },
 
     _onRegisterConditionClick: function () {
-      Vigor.componentManager.registerConditions({
+      Vigor.componentManager.addConditions({
         correctWidth: function () {
           console.log('correctWidth: ', window.innerWidth > 600);
           return window.innerWidth > 600;

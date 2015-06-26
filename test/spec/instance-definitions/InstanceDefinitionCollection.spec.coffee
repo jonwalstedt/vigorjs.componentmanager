@@ -251,12 +251,11 @@ describe 'InstanceDefinitionsCollection', ->
           remove: false
 
       it 'should return instanceDefintions that matches the passed url', ->
-        filter =
-          url: 'foo'
-          conditions:
-            foo: -> return true
+        filter = url: 'foo'
+        globalConditions =
+          foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
 
         # two global components and one that matches the url in the filter
         assert.equal filteredInstances.length, 3
@@ -265,11 +264,10 @@ describe 'InstanceDefinitionsCollection', ->
         assert.equal filteredInstances[2].get('id'), 'instance-3'
 
       it 'should return instanceDefintions that passes a condition check', ->
-        filter =
-          conditions:
-            foo: -> return false
+        globalConditions =
+          foo: -> return false
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions undefined, globalConditions
 
         # all components except the one with a falsy condition
         assert.equal filteredInstances.length, 3
@@ -280,10 +278,11 @@ describe 'InstanceDefinitionsCollection', ->
       it 'should only return instanceDefintions that has a filterString that matches the string defined in hasToMatchString', ->
         filter =
           hasToMatchString: 'foo'
-          conditions:
-            foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        globalConditions =
+          foo: -> return true
+
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
 
         # only the component matching the string foo
         assert.equal filteredInstances.length, 1
@@ -292,10 +291,11 @@ describe 'InstanceDefinitionsCollection', ->
       it 'should return instanceDefintions that has a filterString that matches the string defined in includeIfStringMatches and instanceDefintions that doesnt have a filterString defined', ->
         filter =
           includeIfStringMatches: 'bar'
-          conditions:
-            foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        globalConditions =
+          foo: -> return true
+
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
 
         # one component matching the string and the component that doesn't have any filterString defined
         assert.equal filteredInstances.length, 2
@@ -306,10 +306,11 @@ describe 'InstanceDefinitionsCollection', ->
       it 'should return instanceDefintions that has a filterString that doesnt matches the string defined in includeIfStringMatches and instanceDefintions that doesnt have a filterString defined', ->
         filter =
           cantMatchString: 'bar'
-          conditions:
-            foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+        globalConditions =
+          foo: -> return true
+
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
 
         # all components except the one with bar defined as a filterString
         assert.equal filteredInstances.length, 3

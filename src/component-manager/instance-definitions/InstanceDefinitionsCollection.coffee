@@ -41,9 +41,9 @@ class InstanceDefinitionsCollection extends BaseCollection
       instanceDefinition.urlPattern = ['*notFound', '*action']
     return instanceDefinition
 
-  getInstanceDefinitions: (filter) ->
+  getInstanceDefinitions: (filter, globalConditions) ->
     return @filter (instanceDefinitionModel) ->
-      instanceDefinitionModel.passesFilter filter
+      instanceDefinitionModel.passesFilter filter, globalConditions
 
   addUrlParams: (instanceDefinitions, url) ->
     for instanceDefinitionModel in instanceDefinitions

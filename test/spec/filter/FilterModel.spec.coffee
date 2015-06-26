@@ -28,19 +28,6 @@ describe 'FilterModel', ->
     filterModel.set filterModel.parse({hasToMatchString: 'bar'})
     assert.equal filterModel.attributes.url, filterOptions.url
 
-  it 'should keep already set conditions if no new one is passed', ->
-    filterOptions =
-      conditions: ['foo', 'bar']
-      hasToMatchString: 'foo'
-
-    filterModel = new FilterModel()
-
-    filterModel.set filterModel.parse(filterOptions)
-    assert.equal filterModel.attributes.conditions, filterOptions.conditions
-
-    filterModel.set filterModel.parse({hasToMatchString: 'bar'})
-    assert.equal filterModel.attributes.conditions, filterOptions.conditions
-
   it 'should not keep already set "includeIfStringMatches" if no new one is passed', ->
     filterOptions =
       url: 'foo'
@@ -84,29 +71,25 @@ describe 'FilterModel', ->
     filterOptions =
       url: 'foo'
       cantMatchString: 'bar'
-      conditions: 'baz'
 
     filterModel = new FilterModel()
 
     results = filterModel.parse(filterOptions)
     assert.equal results.url, 'foo'
-    assert.equal results.conditions, 'baz'
     assert.equal results.includeIfStringMatches, undefined
     assert.equal results.hasToMatchString, undefined
     assert.equal results.cantMatchString, 'bar'
 
-  it 'should update values with url and conditions unchanged if other properties changes in the model', ->
+  it 'should update values with url unchanged if other properties changes in the model', ->
     filterOptions =
       url: 'foo'
       cantMatchString: 'bar'
-      conditions: 'baz'
 
     filterModel = new FilterModel()
 
     results = filterModel.parse(filterOptions)
     filterModel.set results
     assert.equal filterModel.attributes.url, 'foo'
-    assert.equal filterModel.attributes.conditions, 'baz'
     assert.equal filterModel.attributes.includeIfStringMatches, undefined
     assert.equal filterModel.attributes.hasToMatchString, undefined
     assert.equal filterModel.attributes.cantMatchString, 'bar'
@@ -117,7 +100,6 @@ describe 'FilterModel', ->
     results = filterModel.parse(filterOptions)
     filterModel.set results
     assert.equal filterModel.attributes.url, 'foo'
-    assert.equal filterModel.attributes.conditions, 'baz'
     assert.equal filterModel.attributes.includeIfStringMatches, undefined
     assert.equal filterModel.attributes.hasToMatchString, 'bar'
     assert.equal filterModel.attributes.cantMatchString, undefined

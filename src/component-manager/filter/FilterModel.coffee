@@ -2,7 +2,6 @@ class FilterModel extends Backbone.Model
 
   defaults:
     url: undefined
-    conditions: undefined
     includeIfStringMatches: undefined
     hasToMatchString: undefined
     cantMatchString: undefined
@@ -16,7 +15,6 @@ class FilterModel extends Backbone.Model
 
     newValues =
       url: url
-      conditions: attrs?.conditions or @get('conditions') or undefined
       includeIfStringMatches: attrs?.includeIfStringMatches or undefined
       hasToMatchString: attrs?.hasToMatchString or undefined
       cantMatchString: attrs?.cantMatchString or undefined

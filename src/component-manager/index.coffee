@@ -3,6 +3,7 @@ do ->
   _componentDefinitionsCollection = undefined
   _instanceDefinitionsCollection = undefined
   _activeInstancesCollection = undefined
+  _globalConditionsModel = undefined
   _filterModel = undefined
 
   _$context = undefined
@@ -35,6 +36,7 @@ do ->
       _componentDefinitionsCollection = new ComponentDefinitionsCollection()
       _instanceDefinitionsCollection = new InstanceDefinitionsCollection()
       _activeInstancesCollection = new ActiveInstancesCollection()
+      _globalConditionsModel = new Backbone.Model()
       _filterModel = new FilterModel()
       _.extend @, EVENTS
 
@@ -51,7 +53,7 @@ do ->
         _filterModel.set _filterModel.parse(filterOptions)
       else
         do _filterModel?.clear
-        # do _updateActiveComponents
+        do _updateActiveComponents
       return @
 
     serialize: ->
@@ -99,8 +101,9 @@ do ->
 
     addListeners: ->
       _filterModel.on 'change', _updateActiveComponents
-      # _componentDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
+      _componentDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
       _instanceDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
+      _globalConditionsModel.on 'change', _updateActiveComponents
 
       _activeInstancesCollection.on 'add', _onActiveInstanceAdd
       _activeInstancesCollection.on 'change:componentId
@@ -148,12 +151,10 @@ do ->
 
     addConditions: (conditions, silent = false) ->
       if _.isObject(conditions)
-        existingConditions = _filterModel.get('conditions') or {}
+        existingConditions = _globalConditionsModel.get('conditions') or {}
         conditions = _.extend existingConditions, conditions
 
-      _filterModel.set
-        'conditions': conditions
-      , silent: silent
+        _globalConditionsModel.set conditions, silent: silent
       return @
 
     addComponents: (componentDefinition) ->
@@ -190,6 +191,7 @@ do ->
       do _filterModel?.off
       do _instanceDefinitionsCollection?.off
       do _componentDefinitionsCollection?.off
+      do _globalConditionsModel?.off
 
     removeComponent: (componentDefinitionId) ->
       _componentDefinitionsCollection.remove componentDefinitionId
@@ -224,7 +226,7 @@ do ->
       return _filterModel.toJSON()
 
     getConditions: ->
-      return _filterModel.get 'conditions'
+      return _globalConditionsModel.toJSON()
 
     getComponentById: (componentId) ->
       return _componentDefinitionsCollection.get(componentId)?.toJSON()
@@ -252,7 +254,7 @@ do ->
   # Privat methods
   # ============================================================================
   _parse = (settings) ->
-    componentSettings = settings?.componentSettings
+    componentSettings = settings?.componentSettings or settings
 
     if settings?.$context
       componentManager.setContext settings.$context
@@ -280,7 +282,7 @@ do ->
     componentSettings.instanceDefinitions or componentSettings.instances
 
     silent = true
-    if conditions and _.isObject(conditions) and  not _.isEmpty(conditions)
+    if conditions and _.isObject(conditions) and not _.isEmpty(conditions)
       componentManager.addConditions.call componentManager, conditions, silent
     else if conditions and _.isString(conditions)
       componentManager.addConditions.call componentManager, conditions, silent
@@ -318,7 +320,8 @@ do ->
     do _tryToReAddStraysToDom
 
   _filterInstanceDefinitions = (filterOptions) ->
-    instanceDefinitions = _instanceDefinitionsCollection.getInstanceDefinitions filterOptions
+    globalConditions = _globalConditionsModel.toJSON()
+    instanceDefinitions = _instanceDefinitionsCollection.getInstanceDefinitions filterOptions, globalConditions
     instanceDefinitions = _filterInstanceDefinitionsByShowCount instanceDefinitions
     instanceDefinitions = _filterInstanceDefinitionsByComponentConditions instanceDefinitions
     return instanceDefinitions
@@ -332,10 +335,10 @@ do ->
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
   _filterInstanceDefinitionsByComponentConditions = (instanceDefinitions) ->
-    globalConditions = _filterModel.get 'conditions'
+    globalConditions = _globalConditionsModel.toJSON()
     _.filter instanceDefinitions, (instanceDefinition) ->
       componentDefinition = _componentDefinitionsCollection.get instanceDefinition.get('componentId')
-      return componentDefinition.areConditionsMet(globalConditions)
+      return componentDefinition.areConditionsMet globalConditions
 
   _addInstanceToModel = (instanceDefinition) ->
     componentDefinition = _componentDefinitionsCollection.get instanceDefinition.get('componentId')
@@ -429,7 +432,7 @@ do ->
     return isEmpty
 
   _serialize = ->
-    conditions = _filterModel.get('conditions') or {}
+    conditions = _globalConditionsModel.toJSON()
     hidden = []
     components = _componentDefinitionsCollection.toJSON()
     instances = _instanceDefinitionsCollection.toJSON()
@@ -472,7 +475,9 @@ do ->
     do instanceDefinition.incrementShowCount
 
   _onActiveInstanceChange = (instanceDefinition) ->
-    if instanceDefinition.passesFilter _filterModel.toJSON()
+    filter = _filterModel.toJSON()
+    globalConditions = _globalConditionsModel.toJSON()
+    if instanceDefinition.passesFilter filter, globalConditions
       do instanceDefinition.disposeInstance
       _addInstanceToModel instanceDefinition
       _addInstanceToDom instanceDefinition

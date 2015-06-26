@@ -138,12 +138,11 @@ describe 'The componentManager', ->
     it 'should update the active filter with parsed versions of passed options', ->
       filterOptions =
         url: 'foo'
-        conditions: 'bar'
+        # conditions: 'bar'
         hasToMatchString: 'baz'
 
       expectedResults =
         url: 'foo'
-        conditions: 'bar'
         includeIfStringMatches: undefined
         hasToMatchString: 'baz'
         cantMatchString: undefined
@@ -154,13 +153,11 @@ describe 'The componentManager', ->
 
       filterOptions =
         url: 'foo'
-        conditions: 'bar'
         includeIfStringMatches: 'baz'
         cantMatchString: 'qux'
 
       expectedResults =
         url: 'foo'
-        conditions: 'bar'
         includeIfStringMatches: 'baz'
         hasToMatchString: undefined
         cantMatchString: 'qux'
@@ -177,11 +174,9 @@ describe 'The componentManager', ->
     it 'it should clear the filterModel if no filterOptions are passed', ->
       filterOptions =
         url: 'foo'
-        conditions: 'bar'
 
       expectedResults =
         url: 'foo'
-        conditions: 'bar'
         includeIfStringMatches: undefined
         hasToMatchString: undefined
         cantMatchString: undefined
@@ -239,7 +234,7 @@ describe 'The componentManager', ->
       $context: $('<div class="test"></div>')
       targetPrefix: 'test-prefix'
       componentSettings:
-        conditions: 'test-condition'
+        conditions: 'test-condition': false
         hidden: []
         components: [
           {
@@ -265,7 +260,7 @@ describe 'The componentManager', ->
       $context: 'div.test'
       targetPrefix: 'test-prefix'
       componentSettings:
-        conditions: 'test-condition'
+        conditions: 'test-condition': false
         hidden: []
         components: [
           {
@@ -293,6 +288,7 @@ describe 'The componentManager', ->
     it 'should be able to parse the output of serialize back into usable settings', ->
       serializedResults = componentManager.initialize(settings).serialize()
       results = componentManager.parse serializedResults
+
       # clean out the added urlParamsModel (a backbone model with generated uniqe id since its id wont be predictable)
       for instance in results.componentSettings.instances
         delete instance.urlParamsModel
@@ -328,7 +324,7 @@ describe 'The componentManager', ->
         $context: '.clear-test'
         targetPrefix: 'test-prefix'
         componentSettings:
-          conditions: 'test-condition'
+          conditions: 'test-condition': false
           hidden: []
           components: [
             {
@@ -394,7 +390,6 @@ describe 'The componentManager', ->
       filter = componentManager.getActiveFilter()
       expectedResults =
         url: 'foo/1'
-        conditions: 'test-condition'
         includeIfStringMatches: undefined
         hasToMatchString: undefined
         cantMatchString: undefined

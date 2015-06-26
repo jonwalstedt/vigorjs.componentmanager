@@ -87,7 +87,7 @@ class InstanceDefinitionModel extends Backbone.Model
       'instance': undefined
     , silent: true
 
-  passesFilter: (filter) ->
+  passesFilter: (filter, globalConditions) ->
     if filter?.url or filter?.url is ''
       urlMatch = @doesUrlPatternMatch(filter.url)
       if urlMatch?
@@ -97,7 +97,7 @@ class InstanceDefinitionModel extends Backbone.Model
           return false
 
     if @get('conditions')
-      areConditionsMet = @areConditionsMet filter?.conditions
+      areConditionsMet = @areConditionsMet globalConditions
       if areConditionsMet?
         return false unless areConditionsMet
 
