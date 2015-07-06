@@ -10,10 +10,6 @@ do ->
   _componentClassName = 'vigor-component'
   _targetPrefix = 'component-area'
 
-  ERROR =
-    UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?'
-    UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
-
   EVENTS =
     ADD: 'add'
     CHANGE: 'change'
@@ -229,10 +225,10 @@ do ->
       return _globalConditionsModel.toJSON()
 
     getComponentById: (componentId) ->
-      return _componentDefinitionsCollection.get(componentId)?.toJSON()
+      return _componentDefinitionsCollection.getComponentDefinition(componentId).toJSON()
 
     getInstanceById: (instanceId) ->
-      return _instanceDefinitionsCollection.get(instanceId)?.toJSON()
+      return _instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON()
 
     getComponents: ->
       return _componentDefinitionsCollection.toJSON()
@@ -328,20 +324,21 @@ do ->
 
   _filterInstanceDefinitionsByShowCount = (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) ->
-      componentDefinition = _componentDefinitionsCollection.get instanceDefinition.get('componentId')
-      unless componentDefinition
-        throw ERROR.UNKNOWN_COMPONENT_DEFINITION
+      instanceId = instanceDefinition.get('componentId')
+      componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId)
       componentMaxShowCount = componentDefinition.get 'maxShowCount'
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
   _filterInstanceDefinitionsByComponentConditions = (instanceDefinitions) ->
     globalConditions = _globalConditionsModel.toJSON()
     _.filter instanceDefinitions, (instanceDefinition) ->
-      componentDefinition = _componentDefinitionsCollection.get instanceDefinition.get('componentId')
+      instanceId = instanceDefinition.get('componentId')
+      componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId)
       return componentDefinition.areConditionsMet globalConditions
 
   _addInstanceToModel = (instanceDefinition) ->
-    componentDefinition = _componentDefinitionsCollection.get instanceDefinition.get('componentId')
+    instanceId = instanceDefinition.get('componentId')
+    componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId)
     componentClass = componentDefinition.getClass()
     height = componentDefinition.get 'height'
     if instanceDefinition.get('height')

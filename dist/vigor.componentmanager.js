@@ -428,6 +428,8 @@
 
     })(Backbone.Model);
     ComponentDefinitionsCollection = (function(superClass) {
+      var ERROR;
+
       extend(ComponentDefinitionsCollection, superClass);
 
       function ComponentDefinitionsCollection() {
@@ -435,6 +437,19 @@
       }
 
       ComponentDefinitionsCollection.prototype.model = ComponentDefinitionModel;
+
+      ERROR = {
+        UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?'
+      };
+
+      ComponentDefinitionsCollection.prototype.getComponentDefinition = function(componentId) {
+        var componentDefinition;
+        componentDefinition = this.get(componentId);
+        if (!componentDefinition) {
+          throw ERROR.UNKNOWN_COMPONENT_DEFINITION;
+        }
+        return componentDefinition;
+      };
 
       return ComponentDefinitionsCollection;
 
@@ -704,7 +719,7 @@
 
     })(Backbone.Model);
     InstanceDefinitionsCollection = (function(superClass) {
-      var _targetPrefix;
+      var ERROR, _targetPrefix;
 
       extend(InstanceDefinitionsCollection, superClass);
 
@@ -714,6 +729,10 @@
 
       _targetPrefix = void 0;
 
+      ERROR = {
+        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
+      };
+
       InstanceDefinitionsCollection.prototype.model = InstanceDefinitionModel;
 
       InstanceDefinitionsCollection.prototype.setTargetPrefix = function(targetPrefix) {
@@ -722,6 +741,21 @@
 
       InstanceDefinitionsCollection.prototype.getTargetPrefix = function() {
         return _targetPrefix;
+      };
+
+      InstanceDefinitionsCollection.prototype.getInstanceDefinition = function(instanceId) {
+        var instanceDefinition;
+        instanceDefinition = this.get(instanceId);
+        if (!instanceDefinition) {
+          throw ERROR.UNKNOWN_COMPONENT_DEFINITION;
+        }
+        return instanceDefinition;
+      };
+
+      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter, globalConditions) {
+        return this.filter(function(instanceDefinitionModel) {
+          return instanceDefinitionModel.passesFilter(filter, globalConditions);
+        });
       };
 
       InstanceDefinitionsCollection.prototype.parse = function(data, options) {
@@ -762,12 +796,6 @@
         return instanceDefinition;
       };
 
-      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter, globalConditions) {
-        return this.filter(function(instanceDefinitionModel) {
-          return instanceDefinitionModel.passesFilter(filter, globalConditions);
-        });
-      };
-
       InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, url) {
         var instanceDefinitionModel, j, len;
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
@@ -801,7 +829,7 @@
 
     })(BaseCollection);
     (function() {
-      var ERROR, EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _globalConditionsModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onActiveInstanceAdd, _onActiveInstanceChange, _onActiveInstanceOrderChange, _onActiveInstanceRemoved, _onActiveInstanceTargetNameChange, _parse, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
+      var EVENTS, _$context, __testOnly, _activeInstancesCollection, _addInstanceInOrder, _addInstanceToDom, _addInstanceToModel, _componentClassName, _componentDefinitionsCollection, _filterInstanceDefinitions, _filterInstanceDefinitionsByComponentConditions, _filterInstanceDefinitionsByShowCount, _filterModel, _globalConditionsModel, _instanceDefinitionsCollection, _isComponentAreaEmpty, _onActiveInstanceAdd, _onActiveInstanceChange, _onActiveInstanceOrderChange, _onActiveInstanceRemoved, _onActiveInstanceTargetNameChange, _parse, _parseComponentSettings, _previousElement, _registerComponents, _registerInstanceDefinitons, _serialize, _targetPrefix, _tryToReAddStraysToDom, _updateActiveComponents, componentManager;
       _componentDefinitionsCollection = void 0;
       _instanceDefinitionsCollection = void 0;
       _activeInstancesCollection = void 0;
@@ -810,10 +838,6 @@
       _$context = void 0;
       _componentClassName = 'vigor-component';
       _targetPrefix = 'component-area';
-      ERROR = {
-        UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?',
-        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
-      };
       EVENTS = {
         ADD: 'add',
         CHANGE: 'change',
@@ -1061,12 +1085,10 @@
           return _globalConditionsModel.toJSON();
         },
         getComponentById: function(componentId) {
-          var ref;
-          return (ref = _componentDefinitionsCollection.get(componentId)) != null ? ref.toJSON() : void 0;
+          return _componentDefinitionsCollection.getComponentDefinition(componentId).toJSON();
         },
         getInstanceById: function(instanceId) {
-          var ref;
-          return (ref = _instanceDefinitionsCollection.get(instanceId)) != null ? ref.toJSON() : void 0;
+          return _instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON();
         },
         getComponents: function() {
           return _componentDefinitionsCollection.toJSON();
@@ -1164,11 +1186,9 @@
       };
       _filterInstanceDefinitionsByShowCount = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, function(instanceDefinition) {
-          var componentDefinition, componentMaxShowCount;
-          componentDefinition = _componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
-          if (!componentDefinition) {
-            throw ERROR.UNKNOWN_COMPONENT_DEFINITION;
-          }
+          var componentDefinition, componentMaxShowCount, instanceId;
+          instanceId = instanceDefinition.get('componentId');
+          componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId);
           componentMaxShowCount = componentDefinition.get('maxShowCount');
           return !instanceDefinition.exceedsMaximumShowCount(componentMaxShowCount);
         });
@@ -1177,14 +1197,16 @@
         var globalConditions;
         globalConditions = _globalConditionsModel.toJSON();
         return _.filter(instanceDefinitions, function(instanceDefinition) {
-          var componentDefinition;
-          componentDefinition = _componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
+          var componentDefinition, instanceId;
+          instanceId = instanceDefinition.get('componentId');
+          componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId);
           return componentDefinition.areConditionsMet(globalConditions);
         });
       };
       _addInstanceToModel = function(instanceDefinition) {
-        var args, componentArgs, componentClass, componentDefinition, height, instance, instanceArgs;
-        componentDefinition = _componentDefinitionsCollection.get(instanceDefinition.get('componentId'));
+        var args, componentArgs, componentClass, componentDefinition, height, instance, instanceArgs, instanceId;
+        instanceId = instanceDefinition.get('componentId');
+        componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId);
         componentClass = componentDefinition.getClass();
         height = componentDefinition.get('height');
         if (instanceDefinition.get('height')) {

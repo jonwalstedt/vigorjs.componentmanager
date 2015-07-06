@@ -446,6 +446,7 @@ describe 'The componentManager', ->
       assert componentManager.removeListeners.called
 
   describe 'addListeners', ->
+    addListenersSpy = undefined
     settings =
       componentSettings:
         components: [
@@ -471,12 +472,15 @@ describe 'The componentManager', ->
 
     beforeEach ->
       $('body').append '<div class="component-area--header"/>'
+      addListenersSpy = sinon.spy componentManager, 'addListeners'
       componentManager.initialize settings
 
     afterEach ->
       do $('.component-area--header').remove
+      do addListenersSpy.restore
 
     it 'after being called it should update activeComponents when applying new filter (add change listener to _filterModel)', ->
+      assert addListenersSpy.calledOnce
       filteredComponents = componentManager.getActiveInstances()
       assert.equal filteredComponents.length, 0
 
@@ -487,6 +491,35 @@ describe 'The componentManager', ->
       assert.equal filteredComponents.length, 1
       assert.equal filteredComponents[0].attr.urlParams[0].url, 'foo/1'
 
+    it 'after being called it should update activeComponents when adding new componentDefinitions (add throttled_diff listener to the _componentDefinitionsCollection)', ->
+      dummyComponent =
+        id: "dummy-component",
+        src: "window.MockComponent"
+
+      dummyInstance =
+        id: 'mock-instance',
+        componentId: 'dummy-component'
+        urlPattern: 'baz/:id'
+        targetName: 'componnet-area--header'
+
+      assert addListenersSpy.calledOnce
+      componentManager.refresh url: 'baz/1'
+
+      activeComponents = componentManager.getActiveInstances()
+      assert.equal activeComponents.length, 0
+
+      componentManager.addComponents dummyComponent
+      componentManager.addInstance dummyInstance
+      clock.tick 51
+      filteredComponents = componentManager.getActiveInstances()
+
+      assert.equal filteredComponents.length, 1
+      assert.equal componentManager.getComponents().length, 2
+
+      componentManager.removeComponent dummyComponent.id
+      assert.equal componentManager.getComponents().length, 1
+      # clock.tick 51
+      console.log 'activeComponents >>>', componentManager.getActiveInstances().length
 
     it 'after being called it should update activeComponents when adding new instanceDefinitions (add throttled_diff listener to the _instanceDefinitionsCollection)', ->
       dummyInstance =
@@ -495,6 +528,7 @@ describe 'The componentManager', ->
         urlPattern: 'baz/:id'
         targetName: 'componnet-area--header'
 
+      assert addListenersSpy.calledOnce
       componentManager.refresh url: 'baz/1'
 
       activeComponents = componentManager.getActiveInstances()
