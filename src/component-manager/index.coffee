@@ -1,14 +1,4 @@
-do ->
-
-  _componentDefinitionsCollection = undefined
-  _instanceDefinitionsCollection = undefined
-  _activeInstancesCollection = undefined
-  _globalConditionsModel = undefined
-  _filterModel = undefined
-
-  _$context = undefined
-  _componentClassName = 'vigor-component'
-  _targetPrefix = 'component-area'
+class ComponentManager
 
   EVENTS =
     ADD: 'add'
@@ -23,250 +13,263 @@ do ->
     INSTANCE_CHANGE: 'instance-change'
     INSTANCE_REMOVE: 'instance-remove'
 
-  componentManager =
+  _componentDefinitionsCollection: undefined
+  _instanceDefinitionsCollection: undefined
+  _activeInstancesCollection: undefined
+  _globalConditionsModel: undefined
+  _filterModel: undefined
 
-    #
-    # Public methods
-    # ============================================================================
-    initialize: (settings) ->
-      _componentDefinitionsCollection = new ComponentDefinitionsCollection()
-      _instanceDefinitionsCollection = new InstanceDefinitionsCollection()
-      _activeInstancesCollection = new ActiveInstancesCollection()
-      _globalConditionsModel = new Backbone.Model()
-      _filterModel = new FilterModel()
-      _.extend @, EVENTS
+  _$context: undefined
+  _componentClassName: 'vigor-component'
+  _targetPrefix: 'component-area'
 
-      do @addListeners
-      _parse settings
-      return @
+  #
+  # Public methods
+  # ============================================================================
+  initialize: (settings) ->
+    _.extend @, EVENTS
 
-    updateSettings: (settings) ->
-      _parse settings
-      return @
+    @_componentDefinitionsCollection = new ComponentDefinitionsCollection()
+    @_instanceDefinitionsCollection = new InstanceDefinitionsCollection()
+    @_activeInstancesCollection = new ActiveInstancesCollection()
+    @_globalConditionsModel = new Backbone.Model()
+    @_filterModel = new FilterModel()
 
-    refresh: (filterOptions) ->
-      if filterOptions
-        _filterModel.set _filterModel.parse(filterOptions)
-      else
-        do _filterModel?.clear
-        do _updateActiveComponents
-      return @
+    do @addListeners
+    @_parse settings
+    return @
 
-    serialize: ->
-      return _serialize()
+  updateSettings: (settings) ->
+    @_parse settings
+    return @
 
-    parse: (jsonString, updateSettings = false) ->
-      filter = (key, value) ->
-        isString = value and typeof value is 'string'
-        isFunction = isString and value.substr(0, 8) is 'function'
-        if isString and isFunction
-          startBody = value.indexOf('{') + 1
-          endBody = value.lastIndexOf '}'
-          startArgs = value.indexOf('(') + 1
-          endArgs = value.indexOf ')'
+  refresh: (filterOptions) ->
+    if filterOptions
+      @_filterModel.set @_filterModel.parse(filterOptions)
+    else
+      do @_filterModel?.clear
+      do @_updateActiveComponents
+    return @
 
-          args = value.substring(startArgs, endArgs)
-          body = value.substring(startBody, endBody)
-          return new Function(args, body)
-        return value
+  serialize: ->
+    return @_serialize()
 
-      settings = JSON.parse jsonString, filter
+  parse: (jsonString, updateSettings = false) ->
+    filter = (key, value) ->
+      isString = value and typeof value is 'string'
+      isFunction = isString and value.substr(0, 8) is 'function'
+      if isString and isFunction
+        startBody = value.indexOf('{') + 1
+        endBody = value.lastIndexOf '}'
+        startArgs = value.indexOf('(') + 1
+        endArgs = value.indexOf ')'
 
-      if updateSettings
-        @updateSettings settings
+        args = value.substring(startArgs, endArgs)
+        body = value.substring(startBody, endBody)
+        return new Function(args, body)
+      return value
 
-      return settings
+    settings = JSON.parse jsonString, filter
 
-    clear: ->
-      do _componentDefinitionsCollection?.reset
-      do _instanceDefinitionsCollection?.reset
-      do _activeInstancesCollection?.reset
-      do _filterModel?.clear
-      _$context = undefined
-      _componentClassName = 'vigor-component'
-      _targetPrefix = 'component-area'
-      return @
+    if updateSettings
+      @updateSettings settings
 
-    dispose: ->
-      do @clear
-      do @removeListeners
-      _componentDefinitionsCollection = undefined
-      _instanceDefinitionsCollection = undefined
-      _activeInstancesCollection = undefined
-      _filterModel = undefined
+    return settings
 
-    addListeners: ->
-      _filterModel.on 'change', _updateActiveComponents
-      _componentDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
-      _instanceDefinitionsCollection.on 'throttled_diff', _updateActiveComponents
-      _globalConditionsModel.on 'change', _updateActiveComponents
+  clear: ->
+    do @_componentDefinitionsCollection?.reset
+    do @_instanceDefinitionsCollection?.reset
+    do @_activeInstancesCollection?.reset
+    do @_filterModel?.clear
+    @_$context = undefined
+    @_componentClassName = 'vigor-component'
+    @_targetPrefix = 'component-area'
+    return @
 
-      _activeInstancesCollection.on 'add', _onActiveInstanceAdd
-      _activeInstancesCollection.on 'change:componentId
-                                    change:filterString
-                                    change:conditions
-                                    change:args
-                                    change:showCount
-                                    change:urlPattern
-                                    change:urlParams
-                                    change:reInstantiateOnUrlParamChange', _onActiveInstanceChange
-      _activeInstancesCollection.on 'change:order', _onActiveInstanceOrderChange
-      _activeInstancesCollection.on 'change:targetName', _onActiveInstanceTargetNameChange
-      _activeInstancesCollection.on 'remove', _onActiveInstanceRemoved
+  dispose: ->
+    do @clear
+    do @removeListeners
+    @_componentDefinitionsCollection = undefined
+    @_instanceDefinitionsCollection = undefined
+    @_activeInstancesCollection = undefined
+    @_filterModel = undefined
 
-      # Propagate events
-      # Component definitions
-      _componentDefinitionsCollection.on 'add', (model, collection, options) =>
-        @trigger.apply @, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]
+  addListeners: ->
+    @_filterModel.on 'change', @_updateActiveComponents
+    @_componentDefinitionsCollection.on 'throttled_diff', @_updateActiveComponents
+    @_instanceDefinitionsCollection.on 'throttled_diff', @_updateActiveComponents
+    @_globalConditionsModel.on 'change', @_updateActiveComponents
 
-      _componentDefinitionsCollection.on 'change', (model, options) =>
-        @trigger.apply @, [EVENTS.COMPONENT_CHANGE, [model.toJSON()]]
+    @_activeInstancesCollection.on 'add', @_onActiveInstanceAdd
+    @_activeInstancesCollection.on 'change:componentId
+                                  change:filterString
+                                  change:conditions
+                                  change:args
+                                  change:showCount
+                                  change:urlPattern
+                                  change:urlParams
+                                  change:reInstantiateOnUrlParamChange', @_onActiveInstanceChange
+    @_activeInstancesCollection.on 'change:order', @_onActiveInstanceOrderChange
+    @_activeInstancesCollection.on 'change:targetName', @_onActiveInstanceTargetNameChange
+    @_activeInstancesCollection.on 'remove', @_onActiveInstanceRemoved
 
-      _componentDefinitionsCollection.on 'remove', (model, collection, options) =>
-        @trigger.apply @, [EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]
+    # Propagate events
+    # Component definitions
+    @_componentDefinitionsCollection.on 'add', (model, collection, options) =>
+      @trigger.apply @, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]
 
-      # Instance definitions
-      _instanceDefinitionsCollection.on 'add', (model, collection, options) =>
-        @trigger.apply @, [EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]
+    @_componentDefinitionsCollection.on 'change', (model, options) =>
+      @trigger.apply @, [EVENTS.COMPONENT_CHANGE, [model.toJSON()]]
 
-      _instanceDefinitionsCollection.on 'change', (model, options) =>
-        @trigger.apply @, [EVENTS.INSTANCE_CHANGE, [model.toJSON()]]
+    @_componentDefinitionsCollection.on 'remove', (model, collection, options) =>
+      @trigger.apply @, [EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]
 
-      _instanceDefinitionsCollection.on 'remove', (model, collection, options) =>
-        @trigger.apply @, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]
+    # Instance definitions
+    @_instanceDefinitionsCollection.on 'add', (model, collection, options) =>
+      @trigger.apply @, [EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]
 
-      # Active components
-      _activeInstancesCollection.on 'add', (model, collection, options) =>
-        @trigger.apply @, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]
+    @_instanceDefinitionsCollection.on 'change', (model, options) =>
+      @trigger.apply @, [EVENTS.INSTANCE_CHANGE, [model.toJSON()]]
 
-      _activeInstancesCollection.on 'change', (model, options) =>
-        @trigger.apply @, [EVENTS.CHANGE, [model.toJSON()]]
+    @_instanceDefinitionsCollection.on 'remove', (model, collection, options) =>
+      @trigger.apply @, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]
 
-      _activeInstancesCollection.on 'remove', (model, collection, options) =>
-        @trigger.apply @, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
+    # Active components
+    @_activeInstancesCollection.on 'add', (model, collection, options) =>
+      @trigger.apply @, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]
 
-    addConditions: (conditions, silent = false) ->
-      if _.isObject(conditions)
-        existingConditions = _globalConditionsModel.get('conditions') or {}
-        conditions = _.extend existingConditions, conditions
+    @_activeInstancesCollection.on 'change', (model, options) =>
+      @trigger.apply @, [EVENTS.CHANGE, [model.toJSON()]]
 
-        _globalConditionsModel.set conditions, silent: silent
-      return @
+    @_activeInstancesCollection.on 'remove', (model, collection, options) =>
+      @trigger.apply @, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
 
-    addComponents: (componentDefinition) ->
-      _componentDefinitionsCollection.set componentDefinition,
-        parse: true
-        validate: true
-        remove: false
-      return @
+  addConditions: (conditions, silent = false) ->
+    if _.isObject(conditions)
+      existingConditions = @_globalConditionsModel.get('conditions') or {}
+      conditions = _.extend existingConditions, conditions
 
-    addInstance: (instanceDefinition) ->
-      _instanceDefinitionsCollection.set instanceDefinition,
-        parse: true
-        validate: true
-        remove: false
-      return @
+      @_globalConditionsModel.set conditions, silent: silent
+    return @
 
-    updateComponents: (componentDefinitions) ->
-      _componentDefinitionsCollection.set componentDefinitions,
-        parse: true
-        validate: true
-        remove: false
-      return @
+  addComponents: (componentDefinition) ->
+    @_componentDefinitionsCollection.set componentDefinition,
+      parse: true
+      validate: true
+      remove: false
+    return @
 
-    updateInstances: (instanceDefinitions) ->
-      _instanceDefinitionsCollection.set instanceDefinitions,
-        parse: true
-        validate: true
-        remove: false
+  addInstance: (instanceDefinition) ->
+    @_instanceDefinitionsCollection.set instanceDefinition,
+      parse: true
+      validate: true
+      remove: false
+    return @
 
-      return @
+  updateComponents: (componentDefinitions) ->
+    @_componentDefinitionsCollection.set componentDefinitions,
+      parse: true
+      validate: true
+      remove: false
+    return @
 
-    removeListeners: ->
-      do _activeInstancesCollection?.off
-      do _filterModel?.off
-      do _instanceDefinitionsCollection?.off
-      do _componentDefinitionsCollection?.off
-      do _globalConditionsModel?.off
+  updateInstances: (instanceDefinitions) ->
+    @_instanceDefinitionsCollection.set instanceDefinitions,
+      parse: true
+      validate: true
+      remove: false
+    return @
 
-    removeComponent: (componentDefinitionId) ->
-      _componentDefinitionsCollection.remove componentDefinitionId
-      return @
+  removeListeners: ->
+    do @_activeInstancesCollection?.off
+    do @_filterModel?.off
+    do @_instanceDefinitionsCollection?.off
+    do @_componentDefinitionsCollection?.off
+    do @_globalConditionsModel?.off
 
-    removeInstance: (instanceId) ->
-      _instanceDefinitionsCollection.remove instanceId
-      return @
+  removeComponent: (componentDefinitionId) ->
+    @_componentDefinitionsCollection.remove componentDefinitionId
+    return @
 
-    setContext: (context) ->
-      if _.isString(context)
-        _$context = $ context
-      else
-        _$context = context
+  removeInstance: (instanceId) ->
+    @_instanceDefinitionsCollection.remove instanceId
+    return @
 
-    setComponentClassName: (componentClassName) ->
-      _componentClassName = componentClassName or _componentClassName
+  setContext: (context) ->
+    if _.isString(context)
+      @_$context = $ context
+    else
+      @_$context = context
+    return @
 
-    setTargetPrefix: (targetPrefix) ->
-      _targetPrefix = targetPrefix or _targetPrefix
+  setComponentClassName: (componentClassName) ->
+    @_componentClassName = componentClassName or @_componentClassName
+    return @
 
-    getContext: ->
-      return _$context
+  setTargetPrefix: (targetPrefix) ->
+    @_targetPrefix = targetPrefix or @_targetPrefix
+    return @
 
-    getComponentClassName: ->
-      return _componentClassName
+  getContext: ->
+    return @_$context
 
-    getTargetPrefix: ->
-      return _targetPrefix
+  getComponentClassName: ->
+    return @_componentClassName
 
-    getActiveFilter: ->
-      return _filterModel.toJSON()
+  getTargetPrefix: ->
+    return @_targetPrefix
 
-    getConditions: ->
-      return _globalConditionsModel.toJSON()
+  getActiveFilter: ->
+    return @_filterModel.toJSON()
 
-    getComponentById: (componentId) ->
-      return _componentDefinitionsCollection.getComponentDefinition(componentId).toJSON()
+  getConditions: ->
+    return @_globalConditionsModel.toJSON()
 
-    getInstanceById: (instanceId) ->
-      return _instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON()
+  getComponentById: (componentId) ->
+    return @_componentDefinitionsCollection.getComponentDefinition(componentId).toJSON()
 
-    getComponents: ->
-      return _componentDefinitionsCollection.toJSON()
+  getInstanceById: (instanceId) ->
+    return @_instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON()
 
-    getInstances: ->
-      return _instanceDefinitionsCollection.toJSON()
+  getComponents: ->
+    return @_componentDefinitionsCollection.toJSON()
 
-    getActiveInstances: ->
-      instances = _.map _activeInstancesCollection.models, (instanceDefinition) ->
+  getInstances: ->
+    return @_instanceDefinitionsCollection.toJSON()
+
+  getActiveInstances: ->
+    instances = _.map @_activeInstancesCollection.models, (instanceDefinition) =>
+      instance = instanceDefinition.get 'instance'
+      unless instance
+        @_addInstanceToModel instanceDefinition
         instance = instanceDefinition.get 'instance'
-        unless instance
-          _addInstanceToModel instanceDefinition
-          instance = instanceDefinition.get 'instance'
-        return instance
-      return instances
+      return instance
+    return instances
 
 
   #
   # Privat methods
   # ============================================================================
-  _parse = (settings) ->
+  _parse: (settings) ->
     componentSettings = settings?.componentSettings or settings
 
     if settings?.$context
-      componentManager.setContext settings.$context
+      @setContext settings.$context
     else
-      componentManager.setContext $('body')
+      @setContext $('body')
 
     if settings?.componentClassName
-      componentManager.setComponentClassName settings.componentClassName
+      @setComponentClassName settings.componentClassName
 
     if settings?.targetPrefix
-      componentManager.setTargetPrefix settings.targetPrefix
+      @setTargetPrefix settings.targetPrefix
 
     if componentSettings
-      _parseComponentSettings componentSettings
+      @_parseComponentSettings componentSettings
 
-  _parseComponentSettings = (componentSettings) ->
+    return @
+
+  _parseComponentSettings: (componentSettings) ->
     conditions = componentSettings?.conditions
 
     componentDefinitions = componentSettings.components or \
@@ -278,67 +281,69 @@ do ->
     componentSettings.instanceDefinitions or componentSettings.instances
 
     silent = true
-    if conditions and _.isObject(conditions) and not _.isEmpty(conditions)
-      componentManager.addConditions.call componentManager, conditions, silent
-    else if conditions and _.isString(conditions)
-      componentManager.addConditions.call componentManager, conditions, silent
-
     hidden = componentSettings.hidden
 
-    _registerComponents componentDefinitions
-    _registerInstanceDefinitons instanceDefinitions
+    if (conditions and _.isObject(conditions) and not _.isEmpty(conditions)) or (conditions and _.isString(conditions))
+      @addConditions conditions, silent
 
-  _registerComponents = (componentDefinitions) ->
-    _componentDefinitionsCollection.set componentDefinitions,
+    @_registerComponents componentDefinitions
+    @_registerInstanceDefinitons instanceDefinitions
+    return @
+
+  _registerComponents: (componentDefinitions) ->
+    @_componentDefinitionsCollection.set componentDefinitions,
       validate: true
       parse: true
       silent: true
+    return @
 
-  _registerInstanceDefinitons = (instanceDefinitions) ->
-    _instanceDefinitionsCollection.setTargetPrefix _targetPrefix
-    _instanceDefinitionsCollection.set instanceDefinitions,
+  _registerInstanceDefinitons: (instanceDefinitions) ->
+    @_instanceDefinitionsCollection.setTargetPrefix @_targetPrefix
+    @_instanceDefinitionsCollection.set instanceDefinitions,
       validate: true
       parse: true
       silent: true
+    return @
 
-  _previousElement = ($el, order = 0) ->
+  _previousElement: ($el, order = 0) ->
     if $el.length > 0
       if $el.data('order') < order
         return $el
       else
-        _previousElement $el.prev(), order
+        @_previousElement $el.prev(), order
 
-  _updateActiveComponents = ->
-    instanceDefinitions = _filterInstanceDefinitions _filterModel.toJSON()
-    _activeInstancesCollection.set instanceDefinitions
+  _updateActiveComponents: =>
+    instanceDefinitions = @_filterInstanceDefinitions @_filterModel.toJSON()
+    @_activeInstancesCollection.set instanceDefinitions
 
     # check if we have any stray instances in active components and then try to readd them
-    do _tryToReAddStraysToDom
+    do @_tryToReAddStraysToDom
+    return @
 
-  _filterInstanceDefinitions = (filterOptions) ->
-    globalConditions = _globalConditionsModel.toJSON()
-    instanceDefinitions = _instanceDefinitionsCollection.getInstanceDefinitions filterOptions, globalConditions
-    instanceDefinitions = _filterInstanceDefinitionsByShowCount instanceDefinitions
-    instanceDefinitions = _filterInstanceDefinitionsByComponentConditions instanceDefinitions
+  _filterInstanceDefinitions: (filterOptions) ->
+    globalConditions = @_globalConditionsModel.toJSON()
+    instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions filterOptions, globalConditions
+    instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
+    instanceDefinitions = @_filterInstanceDefinitionsByComponentConditions instanceDefinitions
     return instanceDefinitions
 
-  _filterInstanceDefinitionsByShowCount = (instanceDefinitions) ->
-    _.filter instanceDefinitions, (instanceDefinition) ->
-      instanceId = instanceDefinition.get('componentId')
-      componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId)
+  _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->
+    _.filter instanceDefinitions, (instanceDefinition) =>
+      instanceId = instanceDefinition.get 'componentId'
+      componentDefinition = @_componentDefinitionsCollection.getComponentDefinition instanceId
       componentMaxShowCount = componentDefinition.get 'maxShowCount'
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
-  _filterInstanceDefinitionsByComponentConditions = (instanceDefinitions) ->
-    globalConditions = _globalConditionsModel.toJSON()
-    _.filter instanceDefinitions, (instanceDefinition) ->
-      instanceId = instanceDefinition.get('componentId')
-      componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId)
+  _filterInstanceDefinitionsByComponentConditions: (instanceDefinitions) ->
+    globalConditions = @_globalConditionsModel.toJSON()
+    _.filter instanceDefinitions, (instanceDefinition) =>
+      instanceId = instanceDefinition.get 'componentId'
+      componentDefinition = @_componentDefinitionsCollection.getComponentDefinition instanceId
       return componentDefinition.areConditionsMet globalConditions
 
-  _addInstanceToModel = (instanceDefinition) ->
-    instanceId = instanceDefinition.get('componentId')
-    componentDefinition = _componentDefinitionsCollection.getComponentDefinition(instanceId)
+  _addInstanceToModel: (instanceDefinition) ->
+    instanceId = instanceDefinition.get 'componentId'
+    componentDefinition = @_componentDefinitionsCollection.getComponentDefinition instanceId
     componentClass = componentDefinition.getClass()
     height = componentDefinition.get 'height'
     if instanceDefinition.get('height')
@@ -361,7 +366,7 @@ do ->
       args.src = componentDefinition.get 'src'
 
     instance = new componentClass args
-    instance.$el.addClass _componentClassName
+    instance.$el.addClass @_componentClassName
 
     if height
       instance.$el.style 'height', "#{height}px"
@@ -372,32 +377,32 @@ do ->
 
     return instanceDefinition
 
-  _tryToReAddStraysToDom = ->
-    for stray in _activeInstancesCollection.getStrays()
+  _tryToReAddStraysToDom: ->
+    for stray in @_activeInstancesCollection.getStrays()
       render = false
-      if _addInstanceToDom(stray, render)
+      if @_addInstanceToDom(stray, render)
         instance = stray.get 'instance'
         if instance?.delegateEvents?
           do instance.delegateEvents
       else
         do stray.disposeInstance
 
-  _addInstanceToDom = (instanceDefinition, render = true) ->
-    $target = $ ".#{instanceDefinition.get('targetName')}", _$context
+  _addInstanceToDom: (instanceDefinition, render = true) ->
+    $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
     success = false
 
     if render
       do instanceDefinition.renderInstance
 
     if $target.length > 0
-      _addInstanceInOrder instanceDefinition
-      _isComponentAreaEmpty $target
+      @_addInstanceInOrder instanceDefinition
+      @_isComponentAreaEmpty $target
       success = true
 
     return success
 
-  _addInstanceInOrder = (instanceDefinition) ->
-    $target = $ ".#{instanceDefinition.get('targetName')}", _$context
+  _addInstanceInOrder: (instanceDefinition) ->
+    $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
     order = instanceDefinition.get 'order'
     instance = instanceDefinition.get 'instance'
 
@@ -409,7 +414,7 @@ do ->
         instance.$el.data 'order', 999
         $target.append instance.$el
       else
-        $previousElement = _previousElement $target.children().last(), order
+        $previousElement = @_previousElement $target.children().last(), order
         instance.$el.data 'order', order
         instance.$el.attr 'data-order', order
         unless $previousElement
@@ -423,33 +428,35 @@ do ->
       if instance.onAddedToDom? and _.isFunction(instance.onAddedToDom)
         do instance.onAddedToDom
 
-  _isComponentAreaEmpty = ($componentArea) ->
+    return @
+
+  _isComponentAreaEmpty: ($componentArea) ->
     isEmpty = $componentArea.length > 0
     $componentArea.toggleClass 'component-area--has-component', isEmpty
     return isEmpty
 
-  _serialize = ->
-    conditions = _globalConditionsModel.toJSON()
+  _serialize: ->
     hidden = []
-    components = _componentDefinitionsCollection.toJSON()
-    instances = _instanceDefinitionsCollection.toJSON()
     componentSettings = {}
+    conditions = @_globalConditionsModel.toJSON()
+    components = @_componentDefinitionsCollection.toJSON()
+    instances = @_instanceDefinitionsCollection.toJSON()
 
     for instanceDefinition in instances
       instanceDefinition.instance = undefined
 
-    $context = componentManager.getContext()
+    $context = @getContext()
     if $context.length > 0
       tagName = $context.prop('tagName').toLowerCase()
-      classes = $context.attr('class')?.replace(' ', '.')
+      classes = $context.attr('class')?.replace ' ', '.'
       contextSelector = $context.selector or "#{tagName}.#{classes}"
     else
       contextSelector = 'body'
 
     settings =
       $context: contextSelector
-      componentClassName: componentManager.getComponentClassName()
-      targetPrefix: componentManager.getTargetPrefix()
+      componentClassName: @getComponentClassName()
+      targetPrefix: @getTargetPrefix()
       componentSettings:
         conditions: conditions
         components: components
@@ -466,81 +473,50 @@ do ->
   #
   # Callbacks
   # ============================================================================
-  _onActiveInstanceAdd = (instanceDefinition) ->
-    _addInstanceToModel instanceDefinition
-    _addInstanceToDom instanceDefinition
+  _onActiveInstanceAdd: (instanceDefinition) =>
+    @_addInstanceToModel instanceDefinition
+    @_addInstanceToDom instanceDefinition
     do instanceDefinition.incrementShowCount
 
-  _onActiveInstanceChange = (instanceDefinition) ->
-    filter = _filterModel.toJSON()
-    globalConditions = _globalConditionsModel.toJSON()
+  _onActiveInstanceChange: (instanceDefinition) =>
+    filter = @_filterModel.toJSON()
+    globalConditions = @_globalConditionsModel.toJSON()
     if instanceDefinition.passesFilter filter, globalConditions
       do instanceDefinition.disposeInstance
-      _addInstanceToModel instanceDefinition
-      _addInstanceToDom instanceDefinition
+      @_addInstanceToModel instanceDefinition
+      @_addInstanceToDom instanceDefinition
 
-  _onActiveInstanceRemoved = (instanceDefinition) ->
+  _onActiveInstanceRemoved: (instanceDefinition) =>
     do instanceDefinition.disposeInstance
-    $target = $ ".#{instanceDefinition.get('targetName')}", _$context
-    _isComponentAreaEmpty $target
+    $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
+    @_isComponentAreaEmpty $target
 
-  _onActiveInstanceOrderChange = (instanceDefinition) ->
-    _addInstanceToDom instanceDefinition
+  _onActiveInstanceOrderChange: (instanceDefinition) =>
+    @_addInstanceToDom instanceDefinition
 
-  _onActiveInstanceTargetNameChange = (instanceDefinition) ->
-    _addInstanceToDom instanceDefinition
+  _onActiveInstanceTargetNameChange: (instanceDefinition) =>
+    @_addInstanceToDom instanceDefinition
 
 
-  ### start-test-block ###
-  # this will be removed in distribution build
 
-  __testOnly = {}
+### start-test-block ###
+# this will be removed in distribution build
+__testOnly = {}
 
-  #classes
-  __testOnly.ActiveInstancesCollection = ActiveInstancesCollection
-  __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection
-  __testOnly.ComponentDefinitionModel = ComponentDefinitionModel
-  __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
-  __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
-  __testOnly.FilterModel = FilterModel
-  __testOnly.IframeComponent = IframeComponent
+#classes
+__testOnly.ActiveInstancesCollection = ActiveInstancesCollection
+__testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection
+__testOnly.ComponentDefinitionModel = ComponentDefinitionModel
+__testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
+__testOnly.InstanceDefinitionModel = InstanceDefinitionModel
+__testOnly.FilterModel = FilterModel
+__testOnly.IframeComponent = IframeComponent
 
-  #properties
-  __testOnly.router = Router
-  __testOnly._componentDefinitionsCollection = _componentDefinitionsCollection
-  __testOnly._instanceDefinitionsCollection = _instanceDefinitionsCollection
-  __testOnly._activeInstancesCollection = _activeInstancesCollection
-  __testOnly._componentClassName = _componentClassName
-  __testOnly._targetPrefix = _targetPrefix
-  __testOnly._filterModel = _filterModel
-  __testOnly._$context = _$context
+#properties
+__testOnly.router = Router
 
-  # methods
-  __testOnly._parse = _parse
-  __testOnly._previousElement = _previousElement
-  __testOnly._updateActiveComponents = _updateActiveComponents
-  __testOnly._filterInstanceDefinitions = _filterInstanceDefinitions
-  __testOnly._filterInstanceDefinitionsByShowCount = _filterInstanceDefinitionsByShowCount
-  __testOnly._filterInstanceDefinitionsByComponentConditions = _filterInstanceDefinitionsByComponentConditions
-  __testOnly._parseComponentSettings = _parseComponentSettings
-  __testOnly._registerComponents = _registerComponents
-  __testOnly._registerInstanceDefinitons = _registerInstanceDefinitons
-  __testOnly._addInstanceToModel = _addInstanceToModel
-  __testOnly._tryToReAddStraysToDom = _tryToReAddStraysToDom
-  __testOnly._addInstanceToDom = _addInstanceToDom
-  __testOnly._addInstanceInOrder = _addInstanceInOrder
-  __testOnly._isComponentAreaEmpty = _isComponentAreaEmpty
+ComponentManager.__testOnly = __testOnly
+### end-test-block ###
 
-  # callbacks
-  __testOnly._onActiveInstanceAdd = _onActiveInstanceAdd
-  __testOnly._onActiveInstanceChange = _onActiveInstanceChange
-  __testOnly._onActiveInstanceRemoved = _onActiveInstanceRemoved
-  __testOnly._onActiveInstanceOrderChange = _onActiveInstanceOrderChange
-  __testOnly._onActiveInstanceTargetNameChange = _onActiveInstanceTargetNameChange
-
-  componentManager.__testOnly = __testOnly
-  ### end-test-block ###
-
-  _.extend componentManager, Backbone.Events
-  Vigor.componentManager = componentManager
-
+_.extend ComponentManager.prototype, Backbone.Events
+Vigor.ComponentManager = ComponentManager

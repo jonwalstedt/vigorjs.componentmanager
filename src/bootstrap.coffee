@@ -36,4 +36,6 @@
   #= include ./component-manager/active-instances/ActiveInstancesCollection.coffee
   #= include ./component-manager/index.coffee
 
+  Vigor.componentManager = new Vigor.ComponentManager()
+
   return Vigor

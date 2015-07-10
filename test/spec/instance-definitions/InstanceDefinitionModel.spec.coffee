@@ -2,10 +2,11 @@ assert = require 'assert'
 sinon = require 'sinon'
 $ = require 'jquery'
 Backbone = require 'backbone'
+Vigor = require '../../../dist/vigor.componentmanager'
 
-componentManager = require('../../../dist/vigor.componentmanager').componentManager
-InstanceDefinitionModel = componentManager.__testOnly.InstanceDefinitionModel
-router = componentManager.__testOnly.router
+__testOnly = Vigor.ComponentManager.__testOnly
+InstanceDefinitionModel = __testOnly.InstanceDefinitionModel
+router = __testOnly.router
 
 describe 'InstanceDefinitionModel', ->
 

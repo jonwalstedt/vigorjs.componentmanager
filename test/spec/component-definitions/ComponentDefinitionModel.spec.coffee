@@ -1,9 +1,11 @@
 assert = require 'assert'
 sinon = require 'sinon'
+Vigor = require '../../../dist/vigor.componentmanager'
 
-componentManager = require('../../../dist/vigor.componentmanager').componentManager
-ComponentDefinitionModel = componentManager.__testOnly.ComponentDefinitionModel
-IframeComponent = componentManager.__testOnly.IframeComponent
+__testOnly = Vigor.ComponentManager.__testOnly
+
+ComponentDefinitionModel = __testOnly.ComponentDefinitionModel
+IframeComponent = __testOnly.IframeComponent
 
 class DummyComponent
   $el: undefined

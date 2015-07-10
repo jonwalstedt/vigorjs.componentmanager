@@ -1,7 +1,8 @@
 assert = require 'assert'
+Vigor = require '../../../dist/vigor.componentmanager'
+__testOnly = Vigor.ComponentManager.__testOnly
 
-componentManager = require('../../../dist/vigor.componentmanager').componentManager
-FilterModel = componentManager.__testOnly.FilterModel
+FilterModel = __testOnly.FilterModel
 
 describe 'FilterModel', ->
   describe 'default values', ->

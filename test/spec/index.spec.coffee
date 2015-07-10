@@ -1,9 +1,10 @@
 assert = require 'assert'
 sinon = require 'sinon'
-Vigor = require('../../dist/vigor.componentmanager')
+Vigor = require '../../dist/vigor.componentmanager'
 
-componentManager = Vigor.componentManager
-__testOnly = componentManager.__testOnly
+componentManager = new Vigor.ComponentManager()
+__testOnly = Vigor.ComponentManager.__testOnly
+
 clock = undefined
 
 class MockComponent
@@ -446,107 +447,14 @@ describe 'The componentManager', ->
       assert componentManager.removeListeners.called
 
   describe 'addListeners', ->
-    addListenersSpy = undefined
-    settings =
-      componentSettings:
-        components: [
-          {
-            'id': 'mock-component',
-            'src': 'window.MockComponent'
-          }
-        ]
-        instances: [
-          {
-            id: 'instance-1',
-            componentId: 'mock-component',
-            targetName: 'test-prefix--header'
-            urlPattern: 'foo/:id'
-          },
-          {
-            id: 'instance-2',
-            componentId: 'mock-component',
-            targetName: 'test-prefix--main'
-            urlPattern: 'bar/:id'
-          }
-        ]
-
-    beforeEach ->
-      $('body').append '<div class="component-area--header"/>'
-      addListenersSpy = sinon.spy componentManager, 'addListeners'
-      componentManager.initialize settings
-
-    afterEach ->
-      do $('.component-area--header').remove
-      do addListenersSpy.restore
-
     it 'after being called it should update activeComponents when applying new filter (add change listener to _filterModel)', ->
-      assert addListenersSpy.calledOnce
-      filteredComponents = componentManager.getActiveInstances()
-      assert.equal filteredComponents.length, 0
-
-      componentManager.updateSettings settings
-      componentManager.refresh url: 'foo/1'
-
-      filteredComponents = componentManager.getActiveInstances()
-      assert.equal filteredComponents.length, 1
-      assert.equal filteredComponents[0].attr.urlParams[0].url, 'foo/1'
-
     it 'after being called it should update activeComponents when adding new componentDefinitions (add throttled_diff listener to the _componentDefinitionsCollection)', ->
-      dummyComponent =
-        id: "dummy-component",
-        src: "window.MockComponent"
-
-      dummyInstance =
-        id: 'mock-instance',
-        componentId: 'dummy-component'
-        urlPattern: 'baz/:id'
-        targetName: 'componnet-area--header'
-
-      assert addListenersSpy.calledOnce
-      componentManager.refresh url: 'baz/1'
-
-      activeComponents = componentManager.getActiveInstances()
-      assert.equal activeComponents.length, 0
-
-      componentManager.addComponents dummyComponent
-      componentManager.addInstance dummyInstance
-      clock.tick 51
-      filteredComponents = componentManager.getActiveInstances()
-
-      assert.equal filteredComponents.length, 1
-      assert.equal componentManager.getComponents().length, 2
-
-      componentManager.removeComponent dummyComponent.id
-      assert.equal componentManager.getComponents().length, 1
-      # clock.tick 51
-      console.log 'activeComponents >>>', componentManager.getActiveInstances().length
-
     it 'after being called it should update activeComponents when adding new instanceDefinitions (add throttled_diff listener to the _instanceDefinitionsCollection)', ->
-      dummyInstance =
-        id: 'mock-instance',
-        componentId: 'mock-component'
-        urlPattern: 'baz/:id'
-        targetName: 'componnet-area--header'
-
-      assert addListenersSpy.calledOnce
-      componentManager.refresh url: 'baz/1'
-
-      activeComponents = componentManager.getActiveInstances()
-      assert.equal activeComponents.length, 0
-
-      componentManager.addInstance dummyInstance
-      clock.tick 51
-      filteredComponents = componentManager.getActiveInstances()
-
-      assert.equal filteredComponents.length, 1
+    it 'after being called it chould update activeComponents when changing global conditions', ->
 
 
   describe 'addConditions', ->
     it 'should register new conditions', ->
-      # obj = 'test-condition'
-      # componentManager.registerConditions obj
-
-
     it 'should not remove old conditions', ->
     it 'should update existing conditions', ->
 
