@@ -1,6 +1,6 @@
 class ComponentManager
 
-  EVENTS =
+  EVENTS:
     ADD: 'add'
     CHANGE: 'change'
     REMOVE: 'remove'
@@ -27,8 +27,6 @@ class ComponentManager
   # Public methods
   # ============================================================================
   initialize: (settings) ->
-    _.extend @, EVENTS
-
     @_componentDefinitionsCollection = new ComponentDefinitionsCollection()
     @_instanceDefinitionsCollection = new InstanceDefinitionsCollection()
     @_activeInstancesCollection = new ActiveInstancesCollection()
@@ -81,6 +79,7 @@ class ComponentManager
     do @_instanceDefinitionsCollection?.reset
     do @_activeInstancesCollection?.reset
     do @_filterModel?.clear
+    do @_globalConditionsModel?.clear
     @_$context = undefined
     @_componentClassName = 'vigor-component'
     @_targetPrefix = 'component-area'
@@ -91,6 +90,7 @@ class ComponentManager
     do @removeListeners
     @_componentDefinitionsCollection = undefined
     @_instanceDefinitionsCollection = undefined
+    @_globalConditionsModel = undefined
     @_activeInstancesCollection = undefined
     @_filterModel = undefined
 
@@ -116,33 +116,33 @@ class ComponentManager
     # Propagate events
     # Component definitions
     @_componentDefinitionsCollection.on 'add', (model, collection, options) =>
-      @trigger.apply @, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]
+      @trigger.apply @, [@EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]
 
     @_componentDefinitionsCollection.on 'change', (model, options) =>
-      @trigger.apply @, [EVENTS.COMPONENT_CHANGE, [model.toJSON()]]
+      @trigger.apply @, [@EVENTS.COMPONENT_CHANGE, [model.toJSON()]]
 
     @_componentDefinitionsCollection.on 'remove', (model, collection, options) =>
-      @trigger.apply @, [EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]
+      @trigger.apply @, [@EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]
 
     # Instance definitions
     @_instanceDefinitionsCollection.on 'add', (model, collection, options) =>
-      @trigger.apply @, [EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]
+      @trigger.apply @, [@EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]
 
     @_instanceDefinitionsCollection.on 'change', (model, options) =>
-      @trigger.apply @, [EVENTS.INSTANCE_CHANGE, [model.toJSON()]]
+      @trigger.apply @, [@EVENTS.INSTANCE_CHANGE, [model.toJSON()]]
 
     @_instanceDefinitionsCollection.on 'remove', (model, collection, options) =>
-      @trigger.apply @, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]
+      @trigger.apply @, [@EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]
 
     # Active components
     @_activeInstancesCollection.on 'add', (model, collection, options) =>
-      @trigger.apply @, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]
+      @trigger.apply @, [@EVENTS.ADD, [model.toJSON(), collection.toJSON()]]
 
     @_activeInstancesCollection.on 'change', (model, options) =>
-      @trigger.apply @, [EVENTS.CHANGE, [model.toJSON()]]
+      @trigger.apply @, [@EVENTS.CHANGE, [model.toJSON()]]
 
     @_activeInstancesCollection.on 'remove', (model, collection, options) =>
-      @trigger.apply @, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
+      @trigger.apply @, [@EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
 
   addConditions: (conditions, silent = false) ->
     if _.isObject(conditions)

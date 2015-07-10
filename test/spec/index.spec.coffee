@@ -36,203 +36,111 @@ describe 'The componentManager', ->
   beforeEach ->
     sandbox = sinon.sandbox.create()
     clock = sinon.useFakeTimers()
-    do componentManager.initialize
 
   afterEach ->
     do componentManager.dispose
     do sandbox.restore
     do clock.restore
 
+  describe 'ComponentManagers prototype extends', ->
+    it 'underscore events', ->
+      assert Vigor.ComponentManager.prototype.on
+      assert Vigor.ComponentManager.prototype.off
+      assert Vigor.ComponentManager.prototype.once
+      assert Vigor.ComponentManager.prototype.listenTo
+      assert Vigor.ComponentManager.prototype.listenToOnce
+      assert Vigor.ComponentManager.prototype.bind
+      assert Vigor.ComponentManager.prototype.unbind
+      assert Vigor.ComponentManager.prototype.trigger
+      assert Vigor.ComponentManager.prototype.stopListening
+
   describe 'initialize', ->
 
-    it 'should extend underscore events', ->
-      extendSpy = sandbox.spy _, 'extend'
+    it 'instantiate necessary collections and models', ->
+      assert.equal componentManager._componentDefinitionsCollection, undefined
+      assert.equal componentManager._instanceDefinitionsCollection, undefined
+      assert.equal componentManager._activeInstancesCollection, undefined
+      assert.equal componentManager._globalConditionsModel, undefined
+      assert.equal componentManager._filterModel, undefined
+
       do componentManager.initialize
-      assert extendSpy.called
+
+      assert componentManager._componentDefinitionsCollection
+      assert componentManager._instanceDefinitionsCollection
+      assert componentManager._activeInstancesCollection
+      assert componentManager._globalConditionsModel
+      assert componentManager._filterModel
 
     it 'should call addListeners', ->
       addListeners = sandbox.spy componentManager, 'addListeners'
       do componentManager.initialize
       assert addListeners.called
 
-    it 'should parse (covered by updateSettings test, this is just a quick test)', ->
+    it 'should call _parse with passed settings', ->
       settings =
         targetPrefix: 'dummy-prefix'
 
-      expectedResults = settings.targetPrefix
-
-      defaultPrefix = componentManager.getTargetPrefix()
-      assert.equal defaultPrefix, 'component-area'
-
+      parseSpy = sandbox.spy componentManager, '_parse'
       componentManager.initialize settings
-      results = componentManager.getTargetPrefix()
-
-      assert.equal results, expectedResults
+      assert parseSpy.calledWith settings
 
     it 'should return the componentManager for chainability', ->
       cm = componentManager.initialize()
       assert.equal cm, componentManager
 
   describe 'updateSettings', ->
-    it 'should parse and use passed settings', ->
-      $('body').append "<div class='test'></div>"
+    it 'should call _parse with passed settings', ->
       settings =
-        componentClassName: 'test-class-name'
-        $context: '.test'
-        targetPrefix: 'test-prefix'
-        componentSettings:
-          conditions: {
-            testCondition: 'my-condition-reference-to-global-conditions'
-          }
-          hidden: []
-          components: [
-            {
-              'id': 'mock-component',
-              'src': 'window.MockComponent'
-            }
-          ]
-          instances: [
-            {
-              id: 'instance-1',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-            },
-            {
-              id: 'instance-2',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--main'
-            }
-          ]
+        targetPrefix: 'dummy-prefix'
 
-      defaults =
-        componentClassName: 'vigor-component'
-        $context: 'body'
-        targetPrefix: 'component-area'
-        componentSettings:
-          conditions: {}
-          hidden: []
-          components: []
-          instances: []
-
-      results = componentManager.parse componentManager.serialize()
-      assert.deepEqual results, defaults
-
-      componentManager.initialize settings
-      results = componentManager.parse componentManager.serialize()
-
-      assert.equal results.componentClassName, 'test-class-name'
-      assert.equal results.$context, '.test'
-      assert.equal results.targetPrefix, 'test-prefix'
-      assert.equal results.componentSettings.conditions.testCondition, 'my-condition-reference-to-global-conditions'
-      assert.equal results.componentSettings.components.length, 1
-      assert.equal results.componentSettings.hidden.length, 0
-      assert.equal results.componentSettings.instances.length, 2
-      assert.equal results.componentSettings.instances[0].reInstantiateOnUrlParamChange, false
-      assert results.componentSettings.instances[0].urlParamsModel
-      do $('.test').remove
+      parseSpy = sandbox.stub componentManager, '_parse'
+      componentManager.updateSettings settings
+      assert parseSpy.calledWith settings
 
     it 'should return the componentManager for chainability', ->
       cm = componentManager.updateSettings()
       assert.equal cm, componentManager
 
   describe 'refresh', ->
-    it 'should update the active filter with parsed versions of passed options', ->
-      filterOptions =
-        url: 'foo'
-        # conditions: 'bar'
-        hasToMatchString: 'baz'
-
-      expectedResults =
-        url: 'foo'
-        includeIfStringMatches: undefined
-        hasToMatchString: 'baz'
-        cantMatchString: undefined
-
-      componentManager.refresh filterOptions
-      results = componentManager.getActiveFilter()
-      assert.deepEqual results, expectedResults
-
-      filterOptions =
-        url: 'foo'
-        includeIfStringMatches: 'baz'
-        cantMatchString: 'qux'
-
-      expectedResults =
-        url: 'foo'
-        includeIfStringMatches: 'baz'
-        hasToMatchString: undefined
-        cantMatchString: 'qux'
-
-      # note that includeIfStringMatches, hasToMatchString and cantMatchString resets
-      # to default (undefined) by the filter parser even if it had a value the previous
-      # time the filter got updated. This will only happen if their values are not present in
-      # the passed object
-
-      componentManager.refresh filterOptions
-      results = componentManager.getActiveFilter()
-      assert.deepEqual results, expectedResults
-
-    it 'it should clear the filterModel if no filterOptions are passed', ->
+    it 'should set and parse the filterOptions if passed', ->
       filterOptions =
         url: 'foo'
 
-      expectedResults =
-        url: 'foo'
-        includeIfStringMatches: undefined
-        hasToMatchString: undefined
-        cantMatchString: undefined
+      do componentManager.initialize
+      parsedFilterOptions = componentManager._filterModel.parse filterOptions
+
+      filterModelSet = sandbox.stub componentManager._filterModel, 'set'
+      filterModelParse = sandbox.spy componentManager._filterModel, 'parse'
 
       componentManager.refresh filterOptions
-      results = componentManager.getActiveFilter()
-      assert.deepEqual results, expectedResults
 
-      expectedResults = {}
-      componentManager.refresh()
-      results = componentManager.getActiveFilter()
-      assert.deepEqual results, expectedResults
+      assert filterModelParse.calledWith filterOptions
+      assert filterModelSet.calledWith parsedFilterOptions
+
+    it 'clear the filterModel and update activeComponents if no filterOptions was passed', ->
+      do componentManager.initialize
+      filterModelClear = sandbox.spy componentManager._filterModel, 'clear'
+      updateActiveComponents = sandbox.spy componentManager, '_updateActiveComponents'
+
+      do componentManager.refresh
+      assert filterModelClear.called
+      assert updateActiveComponents.called
 
     it 'should return the componentManager for chainability', ->
+      do componentManager.initialize
       cm = componentManager.refresh()
       assert.equal cm, componentManager
 
   describe 'serialize', ->
-    it 'should serialize the data used by the componentManager into a format that it later can read using parse', ->
-      settings =
-        componentClassName: 'test-class-name'
-        $context: $('<div class="test"></div>')
-        targetPrefix: 'test-prefix'
-        componentSettings:
-          conditions:
-            dummyCondition: ->
-              if 10 > 9 then return false
-          hidden: []
-          components: [
-            {
-              'id': 'mock-component',
-              'src': 'window.MockComponent'
-            }
-          ]
-          instances: [
-            {
-              id: 'instance-1',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-            },
-            {
-              id: 'instance-2',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--main'
-            }
-          ]
-
-      expectedResults = '{\"$context\":\"div.test\",\"componentClassName\":\"test-class-name\",\"targetPrefix\":\"test-prefix\",\"componentSettings\":{\"conditions\":{\"dummyCondition\":\"function () {\\n                if (10 > 9) {\\n                  return false;\\n                }\\n              }\"},\"components\":[{\"id\":\"mock-component\",\"src\":\"window.MockComponent\"}],\"hidden\":[],\"instances\":[{\"id\":\"instance-1\",\"componentId\":\"mock-component\",\"targetName\":\"test-prefix--header\",\"urlParamsModel\":{},\"showCount\":0,\"reInstantiateOnUrlParamChange\":false},{\"id\":\"instance-2\",\"componentId\":\"mock-component\",\"targetName\":\"test-prefix--main\",\"urlParamsModel\":{},\"showCount\":0,\"reInstantiateOnUrlParamChange\":false}]}}'
-      results = componentManager.initialize(settings).serialize()
-      assert.equal results, expectedResults
+    it 'should call _serialize', ->
+      serializeStub = sandbox.stub componentManager, 'serialize'
+      do componentManager.serialize
+      assert serializeStub.called
 
   describe 'parse', ->
     settings =
       componentClassName: 'test-class-name'
-      $context: $('<div class="test"></div>')
+      $context: $ '<div class="test"></div>'
       targetPrefix: 'test-prefix'
       componentSettings:
         conditions: 'test-condition': false
@@ -290,7 +198,8 @@ describe 'The componentManager', ->
       serializedResults = componentManager.initialize(settings).serialize()
       results = componentManager.parse serializedResults
 
-      # clean out the added urlParamsModel (a backbone model with generated uniqe id since its id wont be predictable)
+      # clean out the added urlParamsModel (a backbone model with generated
+      # uniqe id since its id wont be predictable)
       for instance in results.componentSettings.instances
         delete instance.urlParamsModel
 
@@ -300,20 +209,29 @@ describe 'The componentManager', ->
       settings.componentSettings.conditions = dummyCondition: ->
         if 500 > 400 then return 30
 
-      # do componentManager.dispose
       serializedResults = componentManager.initialize(settings).serialize()
       results = componentManager.parse serializedResults
       conditionResult = results.componentSettings.conditions.dummyCondition()
 
-      # clean out the added urlParamsModel (a backbone model with generated uniqe id since its id wont be predictable)
+      # clean out the added urlParamsModel (a backbone model with generated
+      # uniqe id since its id wont be predictable)
       for instance in results.componentSettings.instances
         delete instance.urlParamsModel
 
       delete expectedResults.componentSettings.conditions
+      # cleaning out the method since it seems sinon cant compare them properly,
+      # the result is verified by the condition result though
       delete results.componentSettings.conditions
 
       assert.deepEqual results, expectedResults
       assert.equal conditionResult, 30
+
+    it 'should call updateSettings if second param is true', ->
+      updateSettings = true
+      updateSettingsStub = sandbox.stub componentManager, 'updateSettings'
+      serializedResults = componentManager.initialize(settings).serialize()
+      componentManager.parse serializedResults, updateSettings
+      assert updateSettingsStub.called
 
   describe 'clear', ->
     beforeEach ->
@@ -404,6 +322,14 @@ describe 'The componentManager', ->
       filter = componentManager.getActiveFilter()
       assert.deepEqual filter, expectedResults
 
+    it 'should clear all global conditions', ->
+      condition = componentManager.getConditions()
+      globalCondition = 'test-condition': false
+      assert.deepEqual condition, globalCondition
+      do componentManager.clear
+      condition = componentManager.getConditions()
+      assert.deepEqual condition, {}
+
     it 'should clear the context', ->
       $context = componentManager.getContext()
       assert.equal $context.length, 1
@@ -437,14 +363,29 @@ describe 'The componentManager', ->
 
   describe 'dispose', ->
     it 'should call clear', ->
-      sinon.spy componentManager, 'clear'
+      sandbox.spy componentManager, 'clear'
       do componentManager.dispose
       assert componentManager.clear.called
 
     it 'should call removeListeners', ->
-      sinon.spy componentManager, 'removeListeners'
+      sandbox.spy componentManager, 'removeListeners'
       do componentManager.dispose
       assert componentManager.removeListeners.called
+
+    it 'should set class instances to undefined', ->
+      do componentManager.initialize
+      assert componentManager._componentDefinitionsCollection
+      assert componentManager._instanceDefinitionsCollection
+      assert componentManager._activeInstancesCollection
+      assert componentManager._globalConditionsModel
+      assert componentManager._filterModel
+
+      do componentManager.dispose
+      assert.equal componentManager._componentDefinitionsCollection, undefined
+      assert.equal componentManager._instanceDefinitionsCollection, undefined
+      assert.equal componentManager._activeInstancesCollection, undefined
+      assert.equal componentManager._globalConditionsModel, undefined
+      assert.equal componentManager._filterModel, undefined
 
   describe 'addListeners', ->
     it 'after being called it should update activeComponents when applying new filter (add change listener to _filterModel)', ->

@@ -829,8 +829,6 @@
 
     })(BaseCollection);
     ComponentManager = (function() {
-      var EVENTS;
-
       function ComponentManager() {
         this._onActiveInstanceTargetNameChange = bind(this._onActiveInstanceTargetNameChange, this);
         this._onActiveInstanceOrderChange = bind(this._onActiveInstanceOrderChange, this);
@@ -840,7 +838,7 @@
         this._updateActiveComponents = bind(this._updateActiveComponents, this);
       }
 
-      EVENTS = {
+      ComponentManager.prototype.EVENTS = {
         ADD: 'add',
         CHANGE: 'change',
         REMOVE: 'remove',
@@ -869,7 +867,6 @@
       ComponentManager.prototype._targetPrefix = 'component-area';
 
       ComponentManager.prototype.initialize = function(settings) {
-        _.extend(this, EVENTS);
         this._componentDefinitionsCollection = new ComponentDefinitionsCollection();
         this._instanceDefinitionsCollection = new InstanceDefinitionsCollection();
         this._activeInstancesCollection = new ActiveInstancesCollection();
@@ -930,7 +927,7 @@
       };
 
       ComponentManager.prototype.clear = function() {
-        var ref, ref1, ref2, ref3;
+        var ref, ref1, ref2, ref3, ref4;
         if ((ref = this._componentDefinitionsCollection) != null) {
           ref.reset();
         }
@@ -943,6 +940,9 @@
         if ((ref3 = this._filterModel) != null) {
           ref3.clear();
         }
+        if ((ref4 = this._globalConditionsModel) != null) {
+          ref4.clear();
+        }
         this._$context = void 0;
         this._componentClassName = 'vigor-component';
         this._targetPrefix = 'component-area';
@@ -954,6 +954,7 @@
         this.removeListeners();
         this._componentDefinitionsCollection = void 0;
         this._instanceDefinitionsCollection = void 0;
+        this._globalConditionsModel = void 0;
         this._activeInstancesCollection = void 0;
         return this._filterModel = void 0;
       };
@@ -970,47 +971,47 @@
         this._activeInstancesCollection.on('remove', this._onActiveInstanceRemoved);
         this._componentDefinitionsCollection.on('add', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger.apply(_this, [EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
         this._componentDefinitionsCollection.on('change', (function(_this) {
           return function(model, options) {
-            return _this.trigger.apply(_this, [EVENTS.COMPONENT_CHANGE, [model.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.COMPONENT_CHANGE, [model.toJSON()]]);
           };
         })(this));
         this._componentDefinitionsCollection.on('remove', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger.apply(_this, [EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
         this._instanceDefinitionsCollection.on('add', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger.apply(_this, [EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
         this._instanceDefinitionsCollection.on('change', (function(_this) {
           return function(model, options) {
-            return _this.trigger.apply(_this, [EVENTS.INSTANCE_CHANGE, [model.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.INSTANCE_CHANGE, [model.toJSON()]]);
           };
         })(this));
         this._instanceDefinitionsCollection.on('remove', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger.apply(_this, [EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
         this._activeInstancesCollection.on('add', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger.apply(_this, [EVENTS.ADD, [model.toJSON(), collection.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.ADD, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
         this._activeInstancesCollection.on('change', (function(_this) {
           return function(model, options) {
-            return _this.trigger.apply(_this, [EVENTS.CHANGE, [model.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.CHANGE, [model.toJSON()]]);
           };
         })(this));
         return this._activeInstancesCollection.on('remove', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger.apply(_this, [EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
+            return _this.trigger.apply(_this, [_this.EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
       };
