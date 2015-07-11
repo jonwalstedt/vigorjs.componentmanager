@@ -1009,11 +1009,12 @@
             return _this.trigger.apply(_this, [_this.EVENTS.CHANGE, [model.toJSON()]]);
           };
         })(this));
-        return this._activeInstancesCollection.on('remove', (function(_this) {
+        this._activeInstancesCollection.on('remove', (function(_this) {
           return function(model, collection, options) {
             return _this.trigger.apply(_this, [_this.EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
+        return this;
       };
 
       ComponentManager.prototype.addConditions = function(conditions, silent) {

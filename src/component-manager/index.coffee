@@ -144,6 +144,8 @@ class ComponentManager
     @_activeInstancesCollection.on 'remove', (model, collection, options) =>
       @trigger.apply @, [@EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
 
+    return @
+
   addConditions: (conditions, silent = false) ->
     if _.isObject(conditions)
       existingConditions = @_globalConditionsModel.get('conditions') or {}

@@ -280,7 +280,6 @@ describe 'The componentManager', ->
       components = componentManager.getComponents()
       assert.equal components.length, 0
 
-
     it 'should remove all instances', ->
       components = componentManager.getInstances()
       assert.equal components.length, 2
@@ -388,11 +387,217 @@ describe 'The componentManager', ->
       assert.equal componentManager._filterModel, undefined
 
   describe 'addListeners', ->
-    it 'after being called it should update activeComponents when applying new filter (add change listener to _filterModel)', ->
-    it 'after being called it should update activeComponents when adding new componentDefinitions (add throttled_diff listener to the _componentDefinitionsCollection)', ->
-    it 'after being called it should update activeComponents when adding new instanceDefinitions (add throttled_diff listener to the _instanceDefinitionsCollection)', ->
-    it 'after being called it chould update activeComponents when changing global conditions', ->
+    beforeEach ->
+      componentManager._componentDefinitionsCollection = new __testOnly.ComponentDefinitionsCollection()
+      componentManager._instanceDefinitionsCollection = new __testOnly.InstanceDefinitionsCollection()
+      componentManager._activeInstancesCollection = new __testOnly.ActiveInstancesCollection()
+      componentManager._globalConditionsModel = new Backbone.Model()
+      componentManager._filterModel = new __testOnly.FilterModel()
 
+    it 'should add a change listener on the filter model with _updateActiveComponents as callback', ->
+      filterModelOnSpy = sandbox.spy componentManager._filterModel, 'on'
+      updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
+
+      do componentManager.addListeners
+      assert filterModelOnSpy.calledWith 'change', componentManager._updateActiveComponents
+
+      componentManager._filterModel.trigger 'change'
+      assert updateActiveComponentsSpy.called
+
+    it 'should add a throttled_diff listener on the _componentDefinitionsCollection with _updateActiveComponents as callback', ->
+      componentDefinitionsCollectionOnSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'on'
+      updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
+
+      do componentManager.addListeners
+      assert componentDefinitionsCollectionOnSpy.calledWith 'throttled_diff', componentManager._updateActiveComponents
+
+      componentManager._componentDefinitionsCollection.trigger 'change', new Backbone.Model()
+      assert.equal updateActiveComponentsSpy.called, false
+      clock.tick 51
+      assert updateActiveComponentsSpy.called
+
+    it 'should add a throttled_diff listener on the _instanceDefinitionsCollection with _updateActiveComponents as callback', ->
+      instanceDefinitionsCollectionOnSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'on'
+      updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
+
+      do componentManager.addListeners
+      assert instanceDefinitionsCollectionOnSpy.calledWith 'throttled_diff', componentManager._updateActiveComponents
+
+      componentManager._instanceDefinitionsCollection.trigger 'change', new Backbone.Model()
+      assert.equal updateActiveComponentsSpy.called, false
+      clock.tick 51
+      assert updateActiveComponentsSpy.called
+
+    it 'should add a change listener on the gobal conditions model with _updateActiveComponents as callback', ->
+      globalConditionsModelOnSpy = sandbox.spy componentManager._globalConditionsModel, 'on'
+      updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
+
+      do componentManager.addListeners
+      assert globalConditionsModelOnSpy.calledWith 'change', componentManager._updateActiveComponents
+
+      componentManager._globalConditionsModel.trigger 'change'
+      assert updateActiveComponentsSpy.called
+
+    it 'should add a add listener on the _activeInstancesCollection with _onActiveInstanceAdd as callback', ->
+      activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
+      onActiveInstanceAddSpy = sandbox.stub componentManager, '_onActiveInstanceAdd'
+
+      do componentManager.addListeners
+      assert activeInstancesCollectionOnSpy.calledWith 'add', componentManager._onActiveInstanceAdd
+
+      componentManager._activeInstancesCollection.add new Backbone.Model()
+      assert onActiveInstanceAddSpy.called
+
+    it 'should add change listeners on these params on the _activeInstancesCollection: componentId, filterString, conditions, args, showCount, urlPattern, urlParams, reInstantiateOnUrlParamChange with _onActiveInstanceChange as callback', ->
+      activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
+      onActiveInstanceChangeSpy = sandbox.stub componentManager, '_onActiveInstanceChange'
+
+      do componentManager.addListeners
+
+      changes = 'change:componentId
+                change:filterString
+                change:conditions
+                change:args
+                change:showCount
+                change:urlPattern
+                change:urlParams
+                change:reInstantiateOnUrlParamChange'
+
+      assert activeInstancesCollectionOnSpy.calledWith changes, componentManager._onActiveInstanceChange
+
+      componentManager._activeInstancesCollection.trigger 'change:componentId', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+      componentManager._activeInstancesCollection.trigger 'change:filterString', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+      componentManager._activeInstancesCollection.trigger 'change:conditions', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+      componentManager._activeInstancesCollection.trigger 'change:args', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+      componentManager._activeInstancesCollection.trigger 'change:showCount', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+      componentManager._activeInstancesCollection.trigger 'change:urlPattern', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+      componentManager._activeInstancesCollection.trigger 'change:urlParams', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+      componentManager._activeInstancesCollection.trigger 'change:reInstantiateOnUrlParamChange', new Backbone.Model()
+      assert onActiveInstanceChangeSpy.called
+      do onActiveInstanceChangeSpy.reset
+
+    it 'should add a change:order listener on the _activeInstancesCollection with _onActiveInstanceOrderChange as callback', ->
+      activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
+      onActiveInstanceOrderSpy = sandbox.stub componentManager, '_onActiveInstanceOrderChange'
+
+      do componentManager.addListeners
+      assert activeInstancesCollectionOnSpy.calledWith 'change:order', componentManager._onActiveInstanceOrderChange
+
+      componentManager._activeInstancesCollection.trigger 'change:order', new Backbone.Model()
+      assert onActiveInstanceOrderSpy.called
+
+    it 'should add a change:targetName listener on the _activeInstancesCollection with _onActiveInstanceTargetNameChange as callback', ->
+      activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
+      onActiveInstanceTargetNameChangeSpy = sandbox.stub componentManager, '_onActiveInstanceTargetNameChange'
+
+      do componentManager.addListeners
+      assert activeInstancesCollectionOnSpy.calledWith 'change:targetName', componentManager._onActiveInstanceTargetNameChange
+
+      componentManager._activeInstancesCollection.trigger 'change:targetName', new Backbone.Model()
+      assert onActiveInstanceTargetNameChangeSpy.called
+
+    it 'should add a change:remove listener on the _activeInstancesCollection with _onActiveInstanceRemoved as callback', ->
+      activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
+      onActiveInstanceRemovedSpy = sandbox.stub componentManager, '_onActiveInstanceRemoved'
+      sandbox.stub componentManager, '_onActiveInstanceAdd', ->
+
+      do componentManager.addListeners
+      assert activeInstancesCollectionOnSpy.calledWith 'remove', componentManager._onActiveInstanceRemoved
+
+      componentManager._activeInstancesCollection.add { id: 'dummy' }
+      componentManager._activeInstancesCollection.remove 'dummy'
+      assert onActiveInstanceRemovedSpy.called
+
+    it 'should proxy add events from the _componentDefinitionsCollection (EVENTS.COMPONENT_ADD)', ->
+      componentAddSpy = sandbox.spy()
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.COMPONENT_ADD, componentAddSpy
+      componentManager._componentDefinitionsCollection.add new Backbone.Model()
+      assert componentAddSpy.called
+
+    it 'should proxy change events from the _componentDefinitionsCollection (EVENTS.COMPONENT_CHANGE)', ->
+      componentChangeSpy = sandbox.spy()
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.COMPONENT_CHANGE, componentChangeSpy
+      componentManager._componentDefinitionsCollection.trigger 'change', new Backbone.Model()
+      assert componentChangeSpy.called
+
+    it 'should proxy remove events from the _componentDefinitionsCollection (EVENTS.COMPONENT_REMOVE)', ->
+      componentRemoveSpy = sandbox.spy()
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.COMPONENT_REMOVE, componentRemoveSpy
+      componentManager._componentDefinitionsCollection.trigger 'remove', new Backbone.Model(), componentManager._componentDefinitionsCollection
+      assert componentRemoveSpy.called
+
+    it 'should proxy add events from the _instanceDefinitionsCollection (EVENTS.INSTANCE_ADD)', ->
+      instanceAddSpy = sandbox.spy()
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.INSTANCE_ADD, instanceAddSpy
+      componentManager._instanceDefinitionsCollection.add new Backbone.Model()
+      assert instanceAddSpy.called
+
+    it 'should proxy change events from the _instanceDefinitionsCollection (EVENTS.INSTANCE_CHANGE)', ->
+      instanceChangeSpy = sandbox.spy()
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.INSTANCE_CHANGE, instanceChangeSpy
+      componentManager._instanceDefinitionsCollection.trigger 'change', new Backbone.Model()
+      assert instanceChangeSpy.called
+
+    it 'should proxy remove events from the _instanceDefinitionsCollection (EVENTS.INSTANCE_REMOVE)', ->
+      instanceRemoveSpy = sandbox.spy()
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.INSTANCE_REMOVE, instanceRemoveSpy
+      componentManager._instanceDefinitionsCollection.trigger 'remove', new Backbone.Model(), componentManager._instanceDefinitionsCollection
+      assert instanceRemoveSpy.called
+
+    it 'should proxy add events from the _activeInstancesCollection (EVENTS.ADD)', ->
+      addSpy = sandbox.spy()
+      sandbox.stub componentManager, '_onActiveInstanceAdd'
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.ADD, addSpy
+      componentManager._activeInstancesCollection.add new Backbone.Model()
+      assert addSpy.called
+
+    it 'should proxy change events from the _activeInstancesCollection (EVENTS.CHANGE)', ->
+      changeSpy = sandbox.spy()
+      sandbox.stub componentManager, '_onActiveInstanceChange'
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.CHANGE, changeSpy
+      componentManager._activeInstancesCollection.trigger 'change', new Backbone.Model()
+      assert changeSpy.called
+
+    it 'should proxy remove events from the _activeInstancesCollection (EVENTS.REMOVE)', ->
+      removeSpy = sandbox.spy()
+      sandbox.stub componentManager, '_onActiveInstanceRemoved'
+      do componentManager.addListeners
+      componentManager.on componentManager.EVENTS.REMOVE, removeSpy
+      componentManager._activeInstancesCollection.trigger 'remove', new Backbone.Model(), componentManager._activeInstancesCollection
+      assert removeSpy.called
+
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.addListeners()
+      assert.equal cm, componentManager
 
   describe 'addConditions', ->
     it 'should register new conditions', ->
