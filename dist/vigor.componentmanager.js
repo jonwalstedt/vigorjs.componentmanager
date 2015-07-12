@@ -428,8 +428,6 @@
 
     })(Backbone.Model);
     ComponentDefinitionsCollection = (function(superClass) {
-      var ERROR;
-
       extend(ComponentDefinitionsCollection, superClass);
 
       function ComponentDefinitionsCollection() {
@@ -438,7 +436,7 @@
 
       ComponentDefinitionsCollection.prototype.model = ComponentDefinitionModel;
 
-      ERROR = {
+      ComponentDefinitionsCollection.prototype.ERROR = {
         UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?'
       };
 
@@ -446,7 +444,7 @@
         var componentDefinition;
         componentDefinition = this.get(componentId);
         if (!componentDefinition) {
-          throw ERROR.UNKNOWN_COMPONENT_DEFINITION;
+          throw this.ERROR.UNKNOWN_COMPONENT_DEFINITION;
         }
         return componentDefinition;
       };
@@ -719,7 +717,7 @@
 
     })(Backbone.Model);
     InstanceDefinitionsCollection = (function(superClass) {
-      var ERROR, _targetPrefix;
+      var _targetPrefix;
 
       extend(InstanceDefinitionsCollection, superClass);
 
@@ -729,7 +727,7 @@
 
       _targetPrefix = void 0;
 
-      ERROR = {
+      InstanceDefinitionsCollection.prototype.ERROR = {
         UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
       };
 
@@ -747,7 +745,7 @@
         var instanceDefinition;
         instanceDefinition = this.get(instanceId);
         if (!instanceDefinition) {
-          throw ERROR.UNKNOWN_COMPONENT_DEFINITION;
+          throw this.ERROR.UNKNOWN_COMPONENT_DEFINITION;
         }
         return instanceDefinition;
       };
@@ -837,6 +835,12 @@
         this._onActiveInstanceAdd = bind(this._onActiveInstanceAdd, this);
         this._updateActiveComponents = bind(this._updateActiveComponents, this);
       }
+
+      ComponentManager.prototype.ERROR = {
+        CONDITION: {
+          WRONG_FORMAT: 'condition has to be an object with key value pairs'
+        }
+      };
 
       ComponentManager.prototype.EVENTS = {
         ADD: 'add',
@@ -1028,29 +1032,13 @@
           this._globalConditionsModel.set(conditions, {
             silent: silent
           });
+        } else {
+          throw this.ERROR.CONDITION.WRONG_FORMAT;
         }
         return this;
       };
 
-      ComponentManager.prototype.addComponents = function(componentDefinition) {
-        this._componentDefinitionsCollection.set(componentDefinition, {
-          parse: true,
-          validate: true,
-          remove: false
-        });
-        return this;
-      };
-
-      ComponentManager.prototype.addInstance = function(instanceDefinition) {
-        this._instanceDefinitionsCollection.set(instanceDefinition, {
-          parse: true,
-          validate: true,
-          remove: false
-        });
-        return this;
-      };
-
-      ComponentManager.prototype.updateComponents = function(componentDefinitions) {
+      ComponentManager.prototype.addComponents = function(componentDefinitions) {
         this._componentDefinitionsCollection.set(componentDefinitions, {
           parse: true,
           validate: true,
@@ -1059,12 +1047,32 @@
         return this;
       };
 
-      ComponentManager.prototype.updateInstances = function(instanceDefinitions) {
+      ComponentManager.prototype.addInstances = function(instanceDefinitions) {
         this._instanceDefinitionsCollection.set(instanceDefinitions, {
           parse: true,
           validate: true,
           remove: false
         });
+        return this;
+      };
+
+      ComponentManager.prototype.updateComponents = function(componentDefinitions) {
+        this.addComponents(componentDefinitions);
+        return this;
+      };
+
+      ComponentManager.prototype.updateInstances = function(instanceDefinitions) {
+        this.addInstances(instanceDefinitions);
+        return this;
+      };
+
+      ComponentManager.prototype.removeComponent = function(componentDefinitionId) {
+        this._componentDefinitionsCollection.remove(componentDefinitionId);
+        return this;
+      };
+
+      ComponentManager.prototype.removeInstance = function(instanceId) {
+        this._instanceDefinitionsCollection.remove(instanceId);
         return this;
       };
 
@@ -1083,16 +1091,6 @@
           ref3.off();
         }
         return (ref4 = this._globalConditionsModel) != null ? ref4.off() : void 0;
-      };
-
-      ComponentManager.prototype.removeComponent = function(componentDefinitionId) {
-        this._componentDefinitionsCollection.remove(componentDefinitionId);
-        return this;
-      };
-
-      ComponentManager.prototype.removeInstance = function(instanceId) {
-        this._instanceDefinitionsCollection.remove(instanceId);
-        return this;
       };
 
       ComponentManager.prototype.setContext = function(context) {

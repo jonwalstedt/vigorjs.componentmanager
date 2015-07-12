@@ -601,34 +601,257 @@ describe 'The componentManager', ->
 
   describe 'addConditions', ->
     it 'should register new conditions', ->
-    it 'should not remove old conditions', ->
-    it 'should update existing conditions', ->
+      do componentManager.initialize
+      globalConditionsSetSpy = sandbox.spy componentManager._globalConditionsModel, 'set'
+      conditions =
+        'foo': -> return false
+        'bar': -> return true
 
-  describe 'addComponent', ->
-    it 'should validate incoming component data', ->
-    it 'should parse incoming component data', ->
-    it 'should store incoming component data', ->
-    it 'should not remove old components', ->
+      componentManager.addConditions conditions
+      assert globalConditionsSetSpy.calledWith conditions, silent: false
+      assert.deepEqual componentManager._globalConditionsModel.attributes, conditions
+
+    it 'should not remove old conditions', ->
+
+      conditions =
+        'foo': false
+        'bar': true
+
+      secondCondition =
+        'baz': 'qux'
+
+      expectedResults =
+        'foo': false
+        'bar': true
+        'baz': 'qux'
+
+      silent = true
+
+      do componentManager.initialize
+      componentManager.addConditions conditions, silent
+      componentManager.addConditions secondCondition
+
+      assert.deepEqual componentManager._globalConditionsModel.attributes, expectedResults
+
+    it 'should update existing conditions', ->
+      conditions =
+        'foo': false
+        'bar': true
+
+      updatedCondition =
+        'foo': true
+
+      expectedResults =
+        'foo': true
+        'bar': true
+
+      do componentManager.initialize
+
+      componentManager.addConditions conditions
+      assert.deepEqual componentManager._globalConditionsModel.attributes, conditions
+
+      componentManager.addConditions updatedCondition
+      assert.deepEqual componentManager._globalConditionsModel.attributes, expectedResults
+
+    it 'should throw an CONDITION.WRONG_FORMAT error if condition is not an object', ->
+      conditionInWrongFormat = 'string'
+      errorFn = -> componentManager.addConditions conditionInWrongFormat
+      assert.throws (-> errorFn()), /condition has to be an object with key value pairs/
+
+    it 'should return the componentManager for chainability', ->
+      conditions =
+        'foo': -> return false
+        'bar': -> return true
+
+      cm = componentManager.initialize().addConditions conditions
+      assert.equal cm, componentManager
+
+  describe 'addComponents', ->
+    it 'should call set on _componentDefinitionsCollection with passed definitions and parse: true, validate: true and remove: false', ->
+      component =
+        id: 'dummy-component',
+        src: 'http://www.google.com',
+
+      do componentManager.initialize
+      componentDefinitionsCollectionSetSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'set'
+
+      componentManager.addComponents component
+
+      assert componentDefinitionsCollectionSetSpy.calledWith component,
+        parse: true
+        validate: true
+        remove: false
+
+    it 'should be able to add an array of components', ->
+      components = [
+        {
+          id: 'dummy-component',
+          src: 'http://www.google.com',
+        }
+        {
+          id: 'dummy-component2',
+          src: 'http://www.wikipedia.com',
+        }
+      ]
+
+      do componentManager.initialize
+      assert.equal componentManager._componentDefinitionsCollection.toJSON().length, 0
+
+      componentManager.addComponents components
+      assert.equal componentManager._componentDefinitionsCollection.toJSON().length, 2
+
+    it 'should return the componentManager for chainability', ->
+      component =
+        id: 'dummy-component',
+        src: 'http://www.google.com',
+
+      cm = componentManager.initialize().addComponents component
+      assert.equal cm, componentManager
 
   describe 'addInstance', ->
-    it 'should validate incoming instance data', ->
-    it 'should parse incoming instance data', ->
-    it 'should store incoming instance data', ->
-    it 'should not remove old instances', ->
+    it 'should call set on _instanceDefinitionsCollection with passed definitions and parse: true, validate: true and remove: false', ->
+      instance =
+        id: 'dummy-instance',
+        componentId: 'dummy-component',
+        targetName: 'body'
 
-  describe 'updateComponent', ->
-    it 'should validate incomming component data'
+      do componentManager.initialize
+      instanceDefinitionsCollectionSetSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'set'
+
+      componentManager.addInstances instance
+
+      assert instanceDefinitionsCollectionSetSpy.calledWith instance,
+        parse: true
+        validate: true
+        remove: false
+
+    it 'should be able to add an array of instances', ->
+      instances = [
+        {
+          id: 'dummy-instance',
+          componentId: 'dummy-component',
+          targetName: 'body'
+        }
+        {
+          id: 'dummy-instance2',
+          componentId: 'dummy-component2',
+          targetName: 'body'
+        }
+      ]
+
+      do componentManager.initialize
+      assert.equal componentManager._instanceDefinitionsCollection.toJSON().length, 0
+
+      componentManager.addInstances instances
+      assert.equal componentManager._instanceDefinitionsCollection.toJSON().length, 2
+
+    it 'should return the componentManager for chainability', ->
+      instance =
+        id: 'dummy-instance',
+        componentId: 'dummy-component',
+        targetName: 'body'
+
+      cm = componentManager.initialize().addInstances instance
+      assert.equal cm, componentManager
+
+  describe 'updateComponents', ->
+    it 'should call addComponents with passed componentDefinitions', ->
+      component =
+        id: 'dummy-component',
+        src: 'http://www.google.com',
+
+      do componentManager.initialize
+      addComponentsSpy = sandbox.spy componentManager, 'addComponents'
+      componentManager.updateComponents component
+      assert addComponentsSpy.calledWith component
+
     it 'should update a specific component with new data', ->
+      components = [
+        {
+          id: 'dummy-component',
+          src: 'http://www.google.com',
+        }
+        {
+          id: 'dummy-component2',
+          src: 'http://www.wikipedia.com',
+        }
+      ]
+
+      updatedComponent =
+        id: 'dummy-component',
+        src: 'http://www.wikipedia.com',
+
+      do componentManager.initialize
+
+      componentManager.addComponents components
+      assert.equal componentManager._componentDefinitionsCollection.get('dummy-component').toJSON().src, 'http://www.google.com'
+
+      componentManager.updateComponents updatedComponent
+      assert.equal componentManager._componentDefinitionsCollection.get('dummy-component').toJSON().src, 'http://www.wikipedia.com'
+
+    it 'should return the componentManager for chainability', ->
+      component =
+        id: 'dummy-component',
+        src: 'http://www.google.com',
+
+      cm = componentManager.initialize().updateComponents component
+      assert.equal cm, componentManager
+
 
   describe 'updateInstances', ->
-    it 'should validate incomming instance data'
-    it 'should update one or multiple instances with new data', ->
+    it 'should call addInstances with passed instanceDefinitions', ->
+      instance =
+        id: 'dummy-instance',
+        componentId: 'dummy-component',
+        targetName: 'body'
+
+      do componentManager.initialize
+      addInstancesSpy = sandbox.spy componentManager, 'addInstances'
+      componentManager.updateInstances instance
+      assert addInstancesSpy.calledWith instance
+
+    it 'should update a specific instance with new data', ->
+      instances = [
+        {
+          id: 'dummy-instance',
+          componentId: 'dummy-component',
+          targetName: 'body'
+        }
+        {
+          id: 'dummy-instance2',
+          componentId: 'dummy-component2',
+          targetName: 'body'
+        }
+      ]
+
+      updatedInstance =
+        id: 'dummy-instance',
+        targetName: '.header',
+
+      do componentManager.initialize
+
+      componentManager.addInstances instances
+      assert.equal componentManager._instanceDefinitionsCollection.get('dummy-instance').toJSON().targetName, 'body'
+
+      componentManager.updateInstances updatedInstance
+      assert.equal componentManager._instanceDefinitionsCollection.get('dummy-instance').toJSON().targetName, '.header'
+
+    it 'should return the componentManager for chainability', ->
+      instance =
+        id: 'dummy-instance',
+        componentId: 'dummy-component',
+        targetName: 'body'
+
+      cm = componentManager.initialize().updateInstances instance
+      assert.equal cm, componentManager
 
   describe 'removeComponent', ->
     it 'should remove a specific component', ->
 
   describe 'removeInstance', ->
     it 'should remove a specific instance', ->
+
+  describe 'removeListeners', ->
 
   describe 'setContext', ->
     it 'should save the passed context', ->

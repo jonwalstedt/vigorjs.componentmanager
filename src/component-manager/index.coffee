@@ -1,5 +1,9 @@
 class ComponentManager
 
+  ERROR:
+    CONDITION:
+      WRONG_FORMAT: 'condition has to be an object with key value pairs'
+
   EVENTS:
     ADD: 'add'
     CHANGE: 'change'
@@ -152,34 +156,38 @@ class ComponentManager
       conditions = _.extend existingConditions, conditions
 
       @_globalConditionsModel.set conditions, silent: silent
+    else
+      throw @ERROR.CONDITION.WRONG_FORMAT
     return @
 
-  addComponents: (componentDefinition) ->
-    @_componentDefinitionsCollection.set componentDefinition,
-      parse: true
-      validate: true
-      remove: false
-    return @
-
-  addInstance: (instanceDefinition) ->
-    @_instanceDefinitionsCollection.set instanceDefinition,
-      parse: true
-      validate: true
-      remove: false
-    return @
-
-  updateComponents: (componentDefinitions) ->
+  addComponents: (componentDefinitions) ->
     @_componentDefinitionsCollection.set componentDefinitions,
       parse: true
       validate: true
       remove: false
     return @
 
-  updateInstances: (instanceDefinitions) ->
+  addInstances: (instanceDefinitions) ->
     @_instanceDefinitionsCollection.set instanceDefinitions,
       parse: true
       validate: true
       remove: false
+    return @
+
+  updateComponents: (componentDefinitions) ->
+    @addComponents componentDefinitions
+    return @
+
+  updateInstances: (instanceDefinitions) ->
+    @addInstances instanceDefinitions
+    return @
+
+  removeComponent: (componentDefinitionId) ->
+    @_componentDefinitionsCollection.remove componentDefinitionId
+    return @
+
+  removeInstance: (instanceId) ->
+    @_instanceDefinitionsCollection.remove instanceId
     return @
 
   removeListeners: ->
@@ -189,13 +197,6 @@ class ComponentManager
     do @_componentDefinitionsCollection?.off
     do @_globalConditionsModel?.off
 
-  removeComponent: (componentDefinitionId) ->
-    @_componentDefinitionsCollection.remove componentDefinitionId
-    return @
-
-  removeInstance: (instanceId) ->
-    @_instanceDefinitionsCollection.remove instanceId
-    return @
 
   setContext: (context) ->
     if _.isString(context)
