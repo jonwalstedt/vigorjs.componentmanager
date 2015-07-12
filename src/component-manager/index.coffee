@@ -196,7 +196,7 @@ class ComponentManager
     do @_instanceDefinitionsCollection?.off
     do @_componentDefinitionsCollection?.off
     do @_globalConditionsModel?.off
-
+    return @
 
   setContext: (context) ->
     if _.isString(context)

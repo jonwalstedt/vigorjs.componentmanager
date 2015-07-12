@@ -846,10 +846,72 @@ describe 'The componentManager', ->
       assert.equal cm, componentManager
 
   describe 'removeComponent', ->
+    it 'should call remove on the _componentDefinitionsCollection with passed componentDefinitionId', ->
+      componentId = 'dummy-component'
+      do componentManager.initialize
+      removeComponentsSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'remove'
+      componentManager.removeComponent componentId
+      assert removeComponentsSpy.calledWith componentId
+
     it 'should remove a specific component', ->
+      components = [
+        {
+          id: 'dummy-component',
+          src: 'http://www.google.com',
+        }
+        {
+          id: 'dummy-component2',
+          src: 'http://www.wikipedia.com',
+        }
+      ]
+
+      do componentManager.initialize
+      componentManager.addComponents components
+
+      assert.equal componentManager._componentDefinitionsCollection.length, 2
+      componentManager.removeComponent components[0].id
+      assert.equal componentManager._componentDefinitionsCollection.length, 1
+      assert.equal componentManager._componentDefinitionsCollection.toJSON()[0].id, 'dummy-component2'
+
+    it 'should return the componentManager for chainability', ->
+      componentId = 'dummy-component'
+      cm = componentManager.initialize().removeComponent componentId
+      assert.equal cm, componentManager
 
   describe 'removeInstance', ->
+    it 'should call remove on the _instanceDefinitionsCollection with passed instanceDefinitionId', ->
+      instanceId = 'dummy-instance'
+      do componentManager.initialize
+      removeInstanceSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'remove'
+      componentManager.removeInstance instanceId
+      assert removeInstanceSpy.calledWith instanceId
+
     it 'should remove a specific instance', ->
+      instances = [
+        {
+          id: 'dummy-instance',
+          componentId: 'dummy-component',
+          targetName: 'body'
+        }
+        {
+          id: 'dummy-instance2',
+          componentId: 'dummy-component2',
+          targetName: 'body'
+        }
+      ]
+
+      do componentManager.initialize
+      componentManager.addInstances instances
+
+      assert.equal componentManager._instanceDefinitionsCollection.length, 2
+      componentManager.removeInstance instances[0].id
+      assert.equal componentManager._instanceDefinitionsCollection.length, 1
+      assert.equal componentManager._instanceDefinitionsCollection.toJSON()[0].id, 'dummy-instance2'
+
+    it 'should return the componentManager for chainability', ->
+      instanceId = 'dummy-instance'
+      cm = componentManager.initialize().removeInstance instanceId
+      assert.equal cm, componentManager
 
   describe 'removeListeners', ->
 

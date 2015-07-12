@@ -1090,7 +1090,10 @@
         if ((ref3 = this._componentDefinitionsCollection) != null) {
           ref3.off();
         }
-        return (ref4 = this._globalConditionsModel) != null ? ref4.off() : void 0;
+        if ((ref4 = this._globalConditionsModel) != null) {
+          ref4.off();
+        }
+        return this;
       };
 
       ComponentManager.prototype.setContext = function(context) {
