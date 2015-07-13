@@ -827,6 +827,8 @@
 
     })(BaseCollection);
     ComponentManager = (function() {
+      var _defaultComponentClassName, _defaultTargetPrefix;
+
       function ComponentManager() {
         this._onActiveInstanceTargetNameChange = bind(this._onActiveInstanceTargetNameChange, this);
         this._onActiveInstanceOrderChange = bind(this._onActiveInstanceOrderChange, this);
@@ -835,6 +837,10 @@
         this._onActiveInstanceAdd = bind(this._onActiveInstanceAdd, this);
         this._updateActiveComponents = bind(this._updateActiveComponents, this);
       }
+
+      _defaultComponentClassName = 'vigor-component';
+
+      _defaultTargetPrefix = 'component-area';
 
       ComponentManager.prototype.ERROR = {
         CONDITION: {
@@ -866,9 +872,9 @@
 
       ComponentManager.prototype._$context = void 0;
 
-      ComponentManager.prototype._componentClassName = 'vigor-component';
+      ComponentManager.prototype._componentClassName = void 0;
 
-      ComponentManager.prototype._targetPrefix = 'component-area';
+      ComponentManager.prototype._targetPrefix = void 0;
 
       ComponentManager.prototype.initialize = function(settings) {
         this._componentDefinitionsCollection = new ComponentDefinitionsCollection();
@@ -876,6 +882,8 @@
         this._activeInstancesCollection = new ActiveInstancesCollection();
         this._globalConditionsModel = new Backbone.Model();
         this._filterModel = new FilterModel();
+        this.setComponentClassName();
+        this.setTargetPrefix();
         this.addListeners();
         this._parse(settings);
         return this;
@@ -1106,12 +1114,12 @@
       };
 
       ComponentManager.prototype.setComponentClassName = function(componentClassName) {
-        this._componentClassName = componentClassName || this._componentClassName;
+        this._componentClassName = componentClassName || _defaultComponentClassName;
         return this;
       };
 
       ComponentManager.prototype.setTargetPrefix = function(targetPrefix) {
-        this._targetPrefix = targetPrefix || this._targetPrefix;
+        this._targetPrefix = targetPrefix || _defaultTargetPrefix;
         return this;
       };
 

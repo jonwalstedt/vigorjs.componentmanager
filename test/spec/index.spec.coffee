@@ -55,7 +55,6 @@ describe 'The componentManager', ->
       assert Vigor.ComponentManager.prototype.stopListening
 
   describe 'initialize', ->
-
     it 'instantiate necessary collections and models', ->
       assert.equal componentManager._componentDefinitionsCollection, undefined
       assert.equal componentManager._instanceDefinitionsCollection, undefined
@@ -70,6 +69,16 @@ describe 'The componentManager', ->
       assert componentManager._activeInstancesCollection
       assert componentManager._globalConditionsModel
       assert componentManager._filterModel
+
+    it 'should call setComponentClassName', ->
+      setComponentClassName = sandbox.spy componentManager, 'setComponentClassName'
+      do componentManager.initialize
+      assert setComponentClassName.called
+
+    it 'should call setTargetPrefix', ->
+      setTargetPrefix = sandbox.spy componentManager, 'setTargetPrefix'
+      do componentManager.initialize
+      assert setTargetPrefix.called
 
     it 'should call addListeners', ->
       addListeners = sandbox.spy componentManager, 'addListeners'
@@ -914,43 +923,348 @@ describe 'The componentManager', ->
       assert.equal cm, componentManager
 
   describe 'removeListeners', ->
+    it 'should call off on used collections and models', ->
+      do componentManager.initialize
+
+      activeInstancesCollectionOffSpy = sandbox.spy componentManager._activeInstancesCollection, 'off'
+      filterModelOffSpy = sandbox.spy componentManager._filterModel, 'off'
+      instanceDefinitionsCollectionOffSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'off'
+      componentdefinitionsCollectionOffSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'off'
+      globalConditionsModelOffSpy = sandbox.spy componentManager._globalConditionsModel, 'off'
+
+      do componentManager.removeListeners
+
+      assert activeInstancesCollectionOffSpy.called
+      assert filterModelOffSpy.called
+      assert instanceDefinitionsCollectionOffSpy.called
+      assert componentdefinitionsCollectionOffSpy.called
+      assert globalConditionsModelOffSpy.called
+
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.removeListeners()
+      assert.equal cm, componentManager
 
   describe 'setContext', ->
     it 'should save the passed context', ->
+      $context = $('<div/>')
+      componentManager.setContext $context
+      assert.equal componentManager._$context, $context
+
     it 'should save the passed context as a jQuery object if passing a string (using the string as a selector)', ->
+      $context = '.test'
+      componentManager.setContext $context
+      assert.deepEqual componentManager._$context, $('.test')
+
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.setContext()
+      assert.equal cm, componentManager
 
   describe 'setComponentClassName', ->
     it 'should save the componentClassName', ->
+      componentClassName = 'dummy-class-name'
+      componentManager.setComponentClassName componentClassName
+      assert.equal componentManager._componentClassName, componentClassName
+
+    it 'should use default componentClassName if method is called without passing a new name', ->
+      componentClassName = 'dummy-class-name'
+      componentManager.setComponentClassName componentClassName
+      assert.equal componentManager._componentClassName, componentClassName
+
+      do componentManager.setComponentClassName
+      assert.equal componentManager._componentClassName, 'vigor-component'
+
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.setComponentClassName()
+      assert.equal cm, componentManager
 
   describe 'setTargetPrefix', ->
-    it 'should store the target prefix'
+    it 'should store the target prefix', ->
+      targetPrefix = 'dummy-prefix'
+      componentManager.setTargetPrefix targetPrefix
+      assert.equal componentManager._targetPrefix, targetPrefix
+
+    it 'should use default target prefix if method is called without passing a new prefix', ->
+      targetPrefix = 'dummy-prefix'
+      componentManager.setTargetPrefix targetPrefix
+      assert.equal componentManager._targetPrefix, targetPrefix
+
+      do componentManager.setTargetPrefix
+      assert.equal componentManager._targetPrefix, 'component-area'
+
+    it 'should return the componentManager for chainability', ->
+      cm = componentManager.setTargetPrefix()
+      assert.equal cm, componentManager
 
   describe 'getContext', ->
+    it 'should return the context', ->
+      $context = $('<div/>')
+      componentManager.setContext $context
+      result = componentManager.getContext()
+      assert.equal result, $context
 
   describe 'getComponentClassName', ->
+    it 'should return the componentClassName', ->
+      componentClassName = 'dummy-class-name'
+      componentManager.setComponentClassName componentClassName
+      result = componentManager.getComponentClassName()
+      assert.equal result, componentClassName
 
   describe 'getTargetPrefix', ->
     it 'should return a specified prefix or the default prefix', ->
+      targetPrefix = 'dummy-prefix'
+      componentManager.setTargetPrefix targetPrefix
+      result = componentManager.getTargetPrefix()
+      assert.equal result, targetPrefix
 
   describe 'getActiveFilter', ->
     it 'should return currently applied filters', ->
+      do componentManager.initialize
+
+      activeFilter =
+        url: 'foo/bar'
+        includeIfStringMatches: 'baz'
+
+      expectedResults =
+        url: 'foo/bar'
+        includeIfStringMatches: 'baz'
+        hasToMatchString: undefined
+        cantMatchString: undefined
+
+      componentManager.refresh activeFilter
+      result = componentManager.getActiveFilter()
+
+      assert.deepEqual result, expectedResults
 
   describe 'getConditions', ->
     it 'return current conditions', ->
+      do componentManager.initialize
+
+      globalCondition =
+        foo: false
+        bar: true
+
+      componentManager.addConditions globalCondition
+
+      result = componentManager.getConditions()
+
+      assert.deepEqual result, globalCondition
 
   describe 'getComponentById', ->
     it 'should get a JSON representation of the data for a specific component', ->
+      do componentManager.initialize
+
+      components = [
+        {
+          id: 'dummy-component'
+          src: 'http://www.google.com'
+        }
+        {
+          id: 'dummy-component2'
+          src: 'http://www.wikipedia.com'
+        }
+      ]
+
+      expectedResults =
+        args: undefined
+        conditions: undefined
+        height: undefined
+        id: 'dummy-component'
+        instance: undefined
+        maxShowCount: undefined
+        src: 'http://www.google.com'
+
+      do componentManager.initialize
+
+      componentManager.addComponents components
+      result = componentManager.getComponentById 'dummy-component'
+
+      assert.deepEqual result, expectedResults
 
   describe 'getInstanceById', ->
     it 'should get a JSON representation of the data for one specific instance', ->
+      do componentManager.initialize
+
+      instances = [
+        {
+          id: 'dummy-instance',
+          componentId: 'dummy-component',
+          targetName: 'body'
+        }
+        {
+          id: 'dummy-instance2',
+          componentId: 'dummy-component2',
+          targetName: 'body'
+        }
+      ]
+
+      expectedResults =
+        id: 'dummy-instance'
+        componentId: 'dummy-component'
+        filterString: undefined
+        conditions: undefined
+        args: undefined
+        order: undefined
+        targetName: 'body'
+        instance: undefined
+        showCount: 0
+        urlPattern: undefined
+        urlParams: undefined
+        urlParamsModel: undefined
+        reInstantiateOnUrlParamChange: false
+
+      do componentManager.initialize
+
+      componentManager.addInstances instances
+      result = componentManager.getInstanceById 'dummy-instance'
+
+      # Removed the urlParamsModel since it has a unique id and cant be tested properly
+      result.urlParamsModel = undefined
+
+      assert.deepEqual result, expectedResults
 
   describe 'getComponents', ->
-    it 'shuld return an array of all registered components', ->
+    it 'should return an array of all registered components', ->
+      do componentManager.initialize
+
+      components = [
+        {
+          id: 'dummy-component'
+          src: 'http://www.google.com'
+        }
+        {
+          id: 'dummy-component2'
+          src: 'http://www.wikipedia.com'
+        }
+      ]
+
+      expectedResults = [
+        {
+          args: undefined
+          conditions: undefined
+          height: undefined
+          id: 'dummy-component'
+          instance: undefined
+          maxShowCount: undefined
+          src: 'http://www.google.com'
+        }
+        {
+          args: undefined
+          conditions: undefined
+          height: undefined
+          id: 'dummy-component2'
+          instance: undefined
+          maxShowCount: undefined
+          src: 'http://www.wikipedia.com'
+        }
+      ]
+
+      componentManager.addComponents components
+      results = componentManager.getComponents()
+
+      assert.deepEqual results, expectedResults
 
   describe 'getInstances', ->
     it 'should return all instances (even those not currently active)', ->
+      do componentManager.initialize
+
+      instances = [
+        {
+          id: 'dummy-instance',
+          componentId: 'dummy-component',
+          targetName: 'body'
+        }
+        {
+          id: 'dummy-instance2',
+          componentId: 'dummy-component2',
+          targetName: 'body'
+        }
+      ]
+
+      expectedResults = [
+        {
+          id: 'dummy-instance'
+          componentId: 'dummy-component'
+          filterString: undefined
+          conditions: undefined
+          args: undefined
+          order: undefined
+          targetName: 'body'
+          instance: undefined
+          showCount: 0
+          urlPattern: undefined
+          urlParams: undefined
+          urlParamsModel: undefined
+          reInstantiateOnUrlParamChange: false
+        }
+        {
+          id: 'dummy-instance2'
+          componentId: 'dummy-component2'
+          filterString: undefined
+          conditions: undefined
+          args: undefined
+          order: undefined
+          targetName: 'body'
+          instance: undefined
+          showCount: 0
+          urlPattern: undefined
+          urlParams: undefined
+          urlParamsModel: undefined
+          reInstantiateOnUrlParamChange: false
+        }
+      ]
+
+      componentManager.addInstances instances
+
+      results = componentManager.getInstances()
+
+      # Removed the urlParamsModel since it has a unique id and cant be tested properly
+      for result in results
+        result.urlParamsModel = undefined
+
+      assert.deepEqual results, expectedResults
 
   describe 'getActiveInstances', ->
     it 'should return all instances that mataches the current filter', ->
+      do componentManager.initialize
 
+      activeFilter =
+        url: 'foo/bar'
+
+      components = [
+        {
+          id: 'dummy-component'
+          src: 'http://www.google.com'
+        }
+        {
+          id: 'dummy-component2'
+          src: 'http://www.wikipedia.com'
+        }
+      ]
+
+      instances = [
+        {
+          id: 'dummy-instance',
+          componentId: 'dummy-component',
+          targetName: 'body'
+          urlPattern: 'foo/:id'
+        }
+        {
+          id: 'dummy-instance2',
+          componentId: 'dummy-component2',
+          targetName: 'body'
+          urlPattern: 'bar/:id'
+        }
+      ]
+
+      componentManager.addComponents components
+                      .addInstances instances
+
+      componentManager.refresh activeFilter
+
+      results = componentManager.getActiveInstances()
+
+      assert.equal results.length, 1
+      assert.equal results[0].src, 'http://www.google.com'
+      assert.equal results[0].constructor.prototype.tagName, 'iframe'
+      assert.equal results[0].constructor.prototype.className, 'vigor-component--iframe'
 

@@ -1,5 +1,8 @@
 class ComponentManager
 
+  _defaultComponentClassName = 'vigor-component'
+  _defaultTargetPrefix = 'component-area'
+
   ERROR:
     CONDITION:
       WRONG_FORMAT: 'condition has to be an object with key value pairs'
@@ -24,8 +27,8 @@ class ComponentManager
   _filterModel: undefined
 
   _$context: undefined
-  _componentClassName: 'vigor-component'
-  _targetPrefix: 'component-area'
+  _componentClassName: undefined
+  _targetPrefix: undefined
 
   #
   # Public methods
@@ -37,6 +40,8 @@ class ComponentManager
     @_globalConditionsModel = new Backbone.Model()
     @_filterModel = new FilterModel()
 
+    do @setComponentClassName
+    do @setTargetPrefix
     do @addListeners
     @_parse settings
     return @
@@ -206,11 +211,11 @@ class ComponentManager
     return @
 
   setComponentClassName: (componentClassName) ->
-    @_componentClassName = componentClassName or @_componentClassName
+    @_componentClassName = componentClassName or _defaultComponentClassName
     return @
 
   setTargetPrefix: (targetPrefix) ->
-    @_targetPrefix = targetPrefix or @_targetPrefix
+    @_targetPrefix = targetPrefix or _defaultTargetPrefix
     return @
 
   getContext: ->
