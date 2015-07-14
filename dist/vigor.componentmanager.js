@@ -1176,8 +1176,6 @@
       };
 
       ComponentManager.prototype._parse = function(settings) {
-        var componentSettings;
-        componentSettings = (settings != null ? settings.componentSettings : void 0) || settings;
         if (settings != null ? settings.$context : void 0) {
           this.setContext(settings.$context);
         } else {
@@ -1189,24 +1187,34 @@
         if (settings != null ? settings.targetPrefix : void 0) {
           this.setTargetPrefix(settings.targetPrefix);
         }
-        if (componentSettings) {
-          this._parseComponentSettings(componentSettings);
+        if (settings != null ? settings.componentSettings : void 0) {
+          this._parseComponentSettings(settings.componentSettings);
+        } else {
+          if (settings) {
+            this._parseComponentSettings(settings);
+          }
         }
         return this;
       };
 
       ComponentManager.prototype._parseComponentSettings = function(componentSettings) {
         var componentDefinitions, conditions, hidden, instanceDefinitions, silent;
-        conditions = componentSettings != null ? componentSettings.conditions : void 0;
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
         instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions || componentSettings.instances;
         silent = true;
         hidden = componentSettings.hidden;
-        if ((conditions && _.isObject(conditions) && !_.isEmpty(conditions)) || (conditions && _.isString(conditions))) {
-          this.addConditions(conditions, silent);
+        if (componentSettings.conditions) {
+          conditions = componentSettings.conditions;
+          if (_.isObject(conditions) && !_.isEmpty(conditions)) {
+            this.addConditions(conditions, silent);
+          }
         }
-        this._registerComponents(componentDefinitions);
-        this._registerInstanceDefinitons(instanceDefinitions);
+        if (componentDefinitions) {
+          this._registerComponents(componentDefinitions);
+        }
+        if (instanceDefinitions) {
+          this._registerInstanceDefinitons(instanceDefinitions);
+        }
         return this;
       };
 

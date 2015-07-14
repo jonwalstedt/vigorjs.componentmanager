@@ -259,8 +259,6 @@ class ComponentManager
   # Privat methods
   # ============================================================================
   _parse: (settings) ->
-    componentSettings = settings?.componentSettings or settings
-
     if settings?.$context
       @setContext settings.$context
     else
@@ -272,13 +270,15 @@ class ComponentManager
     if settings?.targetPrefix
       @setTargetPrefix settings.targetPrefix
 
-    if componentSettings
-      @_parseComponentSettings componentSettings
+    if settings?.componentSettings
+      @_parseComponentSettings settings.componentSettings
+    else
+      if settings
+        @_parseComponentSettings settings
 
     return @
 
   _parseComponentSettings: (componentSettings) ->
-    conditions = componentSettings?.conditions
 
     componentDefinitions = componentSettings.components or \
     componentSettings.widgets or \
@@ -286,16 +286,24 @@ class ComponentManager
 
     instanceDefinitions = componentSettings.layoutsArray or \
     componentSettings.targets or \
-    componentSettings.instanceDefinitions or componentSettings.instances
+    componentSettings.instanceDefinitions or \
+    componentSettings.instances
 
     silent = true
     hidden = componentSettings.hidden
 
-    if (conditions and _.isObject(conditions) and not _.isEmpty(conditions)) or (conditions and _.isString(conditions))
-      @addConditions conditions, silent
+    if componentSettings.conditions
+      conditions = componentSettings.conditions
 
-    @_registerComponents componentDefinitions
-    @_registerInstanceDefinitons instanceDefinitions
+      if _.isObject(conditions) and not _.isEmpty(conditions)
+        @addConditions conditions, silent
+
+    if componentDefinitions
+      @_registerComponents componentDefinitions
+
+    if instanceDefinitions
+      @_registerInstanceDefinitons instanceDefinitions
+
     return @
 
   _registerComponents: (componentDefinitions) ->
