@@ -1210,15 +1210,15 @@
           }
         }
         if (componentDefinitions) {
-          this._registerComponents(componentDefinitions);
+          this._registerComponentDefinitions(componentDefinitions);
         }
         if (instanceDefinitions) {
-          this._registerInstanceDefinitons(instanceDefinitions);
+          this._registerInstanceDefinitions(instanceDefinitions);
         }
         return this;
       };
 
-      ComponentManager.prototype._registerComponents = function(componentDefinitions) {
+      ComponentManager.prototype._registerComponentDefinitions = function(componentDefinitions) {
         this._componentDefinitionsCollection.set(componentDefinitions, {
           validate: true,
           parse: true,
@@ -1227,8 +1227,8 @@
         return this;
       };
 
-      ComponentManager.prototype._registerInstanceDefinitons = function(instanceDefinitions) {
-        this._instanceDefinitionsCollection.setTargetPrefix(this._targetPrefix);
+      ComponentManager.prototype._registerInstanceDefinitions = function(instanceDefinitions) {
+        this._instanceDefinitionsCollection.setTargetPrefix(this.getTargetPrefix());
         this._instanceDefinitionsCollection.set(instanceDefinitions, {
           validate: true,
           parse: true,

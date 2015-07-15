@@ -279,7 +279,6 @@ class ComponentManager
     return @
 
   _parseComponentSettings: (componentSettings) ->
-
     componentDefinitions = componentSettings.components or \
     componentSettings.widgets or \
     componentSettings.componentDefinitions
@@ -299,22 +298,22 @@ class ComponentManager
         @addConditions conditions, silent
 
     if componentDefinitions
-      @_registerComponents componentDefinitions
+      @_registerComponentDefinitions componentDefinitions
 
     if instanceDefinitions
-      @_registerInstanceDefinitons instanceDefinitions
+      @_registerInstanceDefinitions instanceDefinitions
 
     return @
 
-  _registerComponents: (componentDefinitions) ->
+  _registerComponentDefinitions: (componentDefinitions) ->
     @_componentDefinitionsCollection.set componentDefinitions,
       validate: true
       parse: true
       silent: true
     return @
 
-  _registerInstanceDefinitons: (instanceDefinitions) ->
-    @_instanceDefinitionsCollection.setTargetPrefix @_targetPrefix
+  _registerInstanceDefinitions: (instanceDefinitions) ->
+    @_instanceDefinitionsCollection.setTargetPrefix @getTargetPrefix()
     @_instanceDefinitionsCollection.set instanceDefinitions,
       validate: true
       parse: true

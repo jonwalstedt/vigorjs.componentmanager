@@ -1408,24 +1408,24 @@ describe 'The componentManager', ->
 
         assert.equal addComponentsStub.called, false
 
-      it 'should not call _registerComponents if niether components, widgets or componentDefinitions are defined in componentSettings', ->
-        registerComponentsStub = sandbox.stub componentManager, '_registerComponents'
+      it 'should not call _registerComponentDefinitions if niether components, widgets or componentDefinitions are defined in componentSettings', ->
+        registerComponentsStub = sandbox.stub componentManager, '_registerComponentDefinitions'
         componentSettings =
-          someOtherSettings: 'something not related to _registerComponents'
+          someOtherSettings: 'something not related to _registerComponentDefinitions'
 
         componentManager._parseComponentSettings componentSettings
         assert.equal registerComponentsStub.called, false
 
 
-      it 'should not call _registerInstanceDefinitons if niether layoutsArray, targets, instanceDefinitions, instances are defined in componentSettings', ->
-        registerInstanceDefinitionsStub = sandbox.stub componentManager, '_registerInstanceDefinitons'
+      it 'should not call _registerInstanceDefinitions if niether layoutsArray, targets, instanceDefinitions, instances are defined in componentSettings', ->
+        registerInstanceDefinitionsStub = sandbox.stub componentManager, '_registerInstanceDefinitions'
         componentSettings =
-          someOtherSettings: 'something not related to _registerInstanceDefinitons'
+          someOtherSettings: 'something not related to _registerInstanceDefinitions'
 
         componentManager._parseComponentSettings componentSettings
         assert.equal registerInstanceDefinitionsStub.called, false
 
-      describe 'should call _registerComponents', ->
+      describe 'should call _registerComponentDefinitions', ->
         registerComponentsStub = undefined
         components = [
             {
@@ -1435,7 +1435,7 @@ describe 'The componentManager', ->
           ]
 
         beforeEach ->
-          registerComponentsStub = sandbox.stub componentManager, '_registerComponents'
+          registerComponentsStub = sandbox.stub componentManager, '_registerComponentDefinitions'
 
         it 'if components are defined in the componentSettings object', ->
           componentSettings =
@@ -1458,7 +1458,7 @@ describe 'The componentManager', ->
           componentManager._parseComponentSettings componentSettings
           assert registerComponentsStub.calledWith components
 
-      describe 'should call _registerInstanceDefinitons', ->
+      describe 'should call _registerInstanceDefinitions', ->
         registerInstanceDefinitionsStub = undefined
         instanceDefinitions = [
           {
@@ -1468,7 +1468,7 @@ describe 'The componentManager', ->
         ]
 
         beforeEach ->
-          registerInstanceDefinitionsStub = sandbox.stub componentManager, '_registerInstanceDefinitons'
+          registerInstanceDefinitionsStub = sandbox.stub componentManager, '_registerInstanceDefinitions'
 
         it 'if layoutsArray is defined in the componentSettings object', ->
           componentSettings =
@@ -1502,11 +1502,78 @@ describe 'The componentManager', ->
         cm = componentManager._parseComponentSettings {}
         assert.equal cm, componentManager
 
-    describe '_registerComponents', ->
-      it 'should', ->
+    describe '_registerComponentDefinitions', ->
+      componentDefinitionsCollectionSetStub = undefined
+      components = [
+          {
+            id: "filter-condition-component",
+            src: "app.components.FilterComponent"
+          }
+        ]
 
-    describe '_registerInstanceDefinitons', ->
-      it 'should', ->
+      beforeEach ->
+        componentManager._componentDefinitionsCollection = new __testOnly.ComponentDefinitionsCollection()
+        componentDefinitionsCollectionSetStub = sandbox.stub componentManager._componentDefinitionsCollection, 'set'
+
+      it 'should call _componentDefinitionsCollection.set with passed componentDefinitions, validate: true, parse: true and silent: true', ->
+        configOptions =
+          validate: true
+          parse: true
+          silent: true
+
+        componentManager._registerComponentDefinitions components
+
+        assert componentDefinitionsCollectionSetStub.calledWith components, configOptions
+
+      it 'should return the componentManager for chainability', ->
+        cm = componentManager._registerComponentDefinitions components
+        assert.equal cm, componentManager
+
+    describe '_registerInstanceDefinitions', ->
+      instanceDefinitionsCollectionSetStub = undefined
+      instanceDefinitionsCollectionSetTargetPrefixStub = undefined
+      instanceDefinitions = [
+        {
+          id: 'dummy-instance',
+          componentId: 'dummy-component',
+          targetName: 'body'
+        }
+        {
+          id: 'dummy-instance2',
+          componentId: 'dummy-component2',
+          targetName: 'body'
+        }
+      ]
+
+      beforeEach ->
+        componentManager._instanceDefinitionsCollection = new __testOnly.InstanceDefinitionsCollection()
+        instanceDefinitionsCollectionSetStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'set'
+        instanceDefinitionsCollectionSetTargetPrefixStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'setTargetPrefix'
+
+      it 'should call _instanceDefinitionsCollection.setTargetPrefix with componentManager._targetPrefix', ->
+        configOptions =
+          validate: true
+          parse: true
+          silent: true
+
+        targetPrefix = componentManager.getTargetPrefix()
+        componentManager._registerInstanceDefinitions instanceDefinitions
+
+        assert instanceDefinitionsCollectionSetTargetPrefixStub.calledWith targetPrefix
+
+      it 'should call _instanceDefinitionsCollection.set with passed instanceDefinitions, validate: true, parse: true and silent: true', ->
+        configOptions =
+          validate: true
+          parse: true
+          silent: true
+
+        componentManager._registerInstanceDefinitions instanceDefinitions
+
+        assert instanceDefinitionsCollectionSetStub.calledWith instanceDefinitions, configOptions
+
+      it 'should return the componentManager for chainability', ->
+        cm = componentManager._registerInstanceDefinitions instanceDefinitions
+        assert.equal cm, componentManager
 
     describe '_previousElement', ->
       it 'should', ->
