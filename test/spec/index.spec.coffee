@@ -1631,10 +1631,110 @@ describe 'The componentManager', ->
         assert.equal $result, undefined
 
     describe '_updateActiveComponents', ->
-      it 'should', ->
+      it 'should call _filterInstanceDefinitions and pass current filters as json', ->
+        do componentManager.initialize
+        filterInstanceDefinitionsStub = sandbox.stub componentManager, '_filterInstanceDefinitions'
+        filter =
+          url: 'foo/bar'
+
+        componentManager.refresh filter
+        activeFilter = componentManager.getActiveFilter()
+
+        do componentManager._updateActiveComponents
+        assert filterInstanceDefinitionsStub.calledWith activeFilter
+
+      it 'should call set with filtered instanceDefinitions on the _activeInstancesCollection', ->
+        componentSettings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:id'
+            },
+            {
+              id: 'instance-2',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--main'
+              urlPattern: 'bar/:id'
+            }
+          ]
+
+        componentManager.initialize componentSettings
+        activeInstancesCollectionSetSpy = sandbox.stub componentManager._activeInstancesCollection, 'set'
+
+        expectedInstanceDefinition = componentManager._instanceDefinitionsCollection.get('instance-1')
+        expectedInstanceDefinitions = [expectedInstanceDefinition]
+
+        filter =
+          url: 'foo/bar'
+
+        componentManager.refresh filter
+
+        do componentManager._updateActiveComponents
+        assert activeInstancesCollectionSetSpy.calledWith expectedInstanceDefinitions
+
+      it 'should call _tryToReAddStraysToDom', ->
+        do componentManager.initialize
+        tryToReAddStraysToDomStub = sandbox.stub componentManager, '_tryToReAddStraysToDom'
+
+        do componentManager._updateActiveComponents
+        assert tryToReAddStraysToDomStub.called
+
+      it 'should return the componentManager for chainability', ->
+        do componentManager.initialize
+        cm = componentManager._updateActiveComponents()
+        assert.equal cm, componentManager
 
     describe '_filterInstanceDefinitions', ->
-      it 'should', ->
+      it.only 'should call _instanceDefinitionsCollection.getInstanceDefinitions with filterOptions and globalConditions', ->
+
+        globalConditions =
+          testCondition: false
+
+        filterOptions =
+          url: 'foo/bar'
+          includeIfStringMatches: undefined
+          hasToMatchString: undefined
+          cantMatchString: undefined
+
+        componentSettings =
+          conditions: globalConditions
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:id'
+            },
+            {
+              id: 'instance-2',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--main'
+              urlPattern: 'bar/:id'
+            }
+          ]
+
+        componentManager.initialize componentSettings
+        getInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'getInstanceDefinitions'
+        componentManager._filterInstanceDefinitions filterOptions
+        assert getInstanceDefinitionsStub.calledWith filterOptions, globalConditions
+
+      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions that was returned by _instanceDefinitionsCollection.getInstanceDefinitions', ->
+      it 'should call _filterInstanceDefinitionsByComponentConditions with the filterDefinitions that was returned by _filterInstanceDefinitionsByShowCount', ->
+      it 'should return remaining instanceDefinitions after all previous filters', ->
 
     describe '_filterInstanceDefinitionsByShowCount', ->
       it 'should', ->
