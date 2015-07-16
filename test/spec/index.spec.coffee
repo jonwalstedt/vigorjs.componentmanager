@@ -1575,7 +1575,7 @@ describe 'The componentManager', ->
         cm = componentManager._registerInstanceDefinitions instanceDefinitions
         assert.equal cm, componentManager
 
-    describe.only '_previousElement', ->
+    describe '_previousElement', ->
       beforeEach ->
         $('body').append '<div id="dummy1" class="dummy-elements" data-order="1"></div>'
         $('body').append '<div id="dummy2" class="dummy-elements" data-order="2"></div>'
