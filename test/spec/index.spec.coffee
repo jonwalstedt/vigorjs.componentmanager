@@ -1575,8 +1575,60 @@ describe 'The componentManager', ->
         cm = componentManager._registerInstanceDefinitions instanceDefinitions
         assert.equal cm, componentManager
 
-    describe '_previousElement', ->
-      it 'should', ->
+    describe.only '_previousElement', ->
+      beforeEach ->
+        $('body').append '<div id="dummy1" class="dummy-elements" data-order="1"></div>'
+        $('body').append '<div id="dummy2" class="dummy-elements" data-order="2"></div>'
+        $('body').append '<div id="dummy3" class="some-other-element"></div>'
+        $('body').append '<div id="dummy4" class="dummy-elements" data-order="3"></div>'
+        $('body').append '<div id="dummy5" class="dummy-elements" data-order="4"></div>'
+        $('body').append '<div id="dummy6" class="dummy-elements" data-order="8"></div>'
+
+      afterEach ->
+        do $('.dummy-elements').remove
+        do $('some-other-element').remove
+
+      it 'should return previous element based on the data-order attribute', ->
+        $startEl = $ '.dummy-elements[data-order="4"]'
+        $targetEl = $ '.dummy-elements[data-order="3"]'
+
+        $result = componentManager._previousElement $startEl, $startEl.data('order')
+        resultId = $result.attr 'id'
+        targetId = $targetEl.attr 'id'
+
+        assert.equal resultId, targetId
+
+      it 'should find the previous element even though the order is not strictly sequential', ->
+        $startEl = $ '.dummy-elements[data-order="8"]'
+        $targetEl = $ '.dummy-elements[data-order="4"]'
+
+        $result = componentManager._previousElement $startEl, $startEl.data('order')
+        resultId = $result.attr 'id'
+        targetId = $targetEl.attr 'id'
+
+        assert.equal resultId, targetId
+
+      it 'should skip elements without a data-order attribute', ->
+        $startEl = $ '.dummy-elements[data-order="3"]'
+        $targetEl = $ '.dummy-elements[data-order="2"]'
+
+        $result = componentManager._previousElement $startEl, $startEl.data('order')
+        resultId = $result.attr 'id'
+        targetId = $targetEl.attr 'id'
+
+        assert.equal resultId, targetId
+
+      it 'should return undefined if there is $el.length is 0', ->
+        $startEl = $ '.non-existing-element'
+        $result = componentManager._previousElement $startEl, $startEl.data('order')
+
+        assert.equal $result, undefined
+
+      it 'should return undefined if no previous element can be found', ->
+        $startEl = $ '.dummy-elements[data-order="1"]'
+        $result = componentManager._previousElement $startEl, $startEl.data('order')
+
+        assert.equal $result, undefined
 
     describe '_updateActiveComponents', ->
       it 'should', ->
