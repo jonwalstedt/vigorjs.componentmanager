@@ -10,6 +10,7 @@ class InstanceDefinitionModel extends Backbone.Model
     targetName: undefined
     instance: undefined
     showCount: 0
+    maxShowCount: undefined
     urlPattern: undefined
     urlParams: undefined
     urlParamsModel: undefined

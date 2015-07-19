@@ -1065,21 +1065,14 @@ describe 'The componentManager', ->
           }
         ]
 
-        expectedResults =
-          args: undefined
-          conditions: undefined
-          height: undefined
-          id: 'dummy-component'
-          instance: undefined
-          maxShowCount: undefined
-          src: 'http://www.google.com'
+        expectedResultId = 'dummy-component'
 
         do componentManager.initialize
 
         componentManager.addComponents components
         result = componentManager.getComponentById 'dummy-component'
 
-        assert.deepEqual result, expectedResults
+        assert.equal result.id, expectedResultId
 
     describe 'getInstanceById', ->
       it 'should get a JSON representation of the data for one specific instance', ->
@@ -1098,30 +1091,14 @@ describe 'The componentManager', ->
           }
         ]
 
-        expectedResults =
-          id: 'dummy-instance'
-          componentId: 'dummy-component'
-          filterString: undefined
-          conditions: undefined
-          args: undefined
-          order: undefined
-          targetName: 'body'
-          instance: undefined
-          showCount: 0
-          urlPattern: undefined
-          urlParams: undefined
-          urlParamsModel: undefined
-          reInstantiateOnUrlParamChange: false
-
         do componentManager.initialize
+
+        expectedResultId = 'dummy-instance'
 
         componentManager.addInstances instances
         result = componentManager.getInstanceById 'dummy-instance'
 
-        # Removed the urlParamsModel since it has a unique id and cant be tested properly
-        result.urlParamsModel = undefined
-
-        assert.deepEqual result, expectedResults
+        assert.equal result.id, expectedResultId
 
     describe 'getComponents', ->
       it 'should return an array of all registered components', ->
@@ -1138,31 +1115,15 @@ describe 'The componentManager', ->
           }
         ]
 
-        expectedResults = [
-          {
-            args: undefined
-            conditions: undefined
-            height: undefined
-            id: 'dummy-component'
-            instance: undefined
-            maxShowCount: undefined
-            src: 'http://www.google.com'
-          }
-          {
-            args: undefined
-            conditions: undefined
-            height: undefined
-            id: 'dummy-component2'
-            instance: undefined
-            maxShowCount: undefined
-            src: 'http://www.wikipedia.com'
-          }
-        ]
+        expectedResultsIds = ['dummy-component', 'dummy-component2']
 
         componentManager.addComponents components
         results = componentManager.getComponents()
 
-        assert.deepEqual results, expectedResults
+        assert.equal results.length, 2
+
+        for result, i in results
+          assert.equal result.id, expectedResultsIds[i]
 
     describe 'getInstances', ->
       it 'should return all instances (even those not currently active)', ->
@@ -1181,48 +1142,15 @@ describe 'The componentManager', ->
           }
         ]
 
-        expectedResults = [
-          {
-            id: 'dummy-instance'
-            componentId: 'dummy-component'
-            filterString: undefined
-            conditions: undefined
-            args: undefined
-            order: undefined
-            targetName: 'body'
-            instance: undefined
-            showCount: 0
-            urlPattern: undefined
-            urlParams: undefined
-            urlParamsModel: undefined
-            reInstantiateOnUrlParamChange: false
-          }
-          {
-            id: 'dummy-instance2'
-            componentId: 'dummy-component2'
-            filterString: undefined
-            conditions: undefined
-            args: undefined
-            order: undefined
-            targetName: 'body'
-            instance: undefined
-            showCount: 0
-            urlPattern: undefined
-            urlParams: undefined
-            urlParamsModel: undefined
-            reInstantiateOnUrlParamChange: false
-          }
-        ]
+        expectedResultsIds = ['dummy-instance', 'dummy-instance2']
 
         componentManager.addInstances instances
-
         results = componentManager.getInstances()
 
-        # Removed the urlParamsModel since it has a unique id and cant be tested properly
-        for result in results
-          result.urlParamsModel = undefined
+        assert.equal results.length, 2
 
-        assert.deepEqual results, expectedResults
+        for result, i in results
+          assert.equal result.id, expectedResultsIds[i]
 
     describe 'getActiveInstances', ->
       it 'should return all instances that mataches the current filter', ->
@@ -1693,54 +1621,118 @@ describe 'The componentManager', ->
         assert.equal cm, componentManager
 
     describe '_filterInstanceDefinitions', ->
-      it.only 'should call _instanceDefinitionsCollection.getInstanceDefinitions with filterOptions and globalConditions', ->
+      globalConditions =
+        testCondition: false
 
-        globalConditions =
-          testCondition: false
+      filterOptions =
+        url: 'foo/bar'
+        includeIfStringMatches: undefined
+        hasToMatchString: undefined
+        cantMatchString: undefined
 
-        filterOptions =
-          url: 'foo/bar'
-          includeIfStringMatches: undefined
-          hasToMatchString: undefined
-          cantMatchString: undefined
+      componentSettings =
+        conditions: globalConditions
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header',
+            urlPattern: 'foo/:id'
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--main',
+            urlPattern: 'bar/:id'
+          }
+        ]
 
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should call _instanceDefinitionsCollection.getInstanceDefinitions with filterOptions and globalConditions', ->
+        getInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'getInstanceDefinitions'
+        componentManager._filterInstanceDefinitions filterOptions
+        assert getInstanceDefinitionsStub.calledWith filterOptions, globalConditions
+
+      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions that was returned by _instanceDefinitionsCollection.getInstanceDefinitions', ->
+        expectedInstanceDefinitionId = 'instance-1'
+        filterInstanceDefinitionsByShowCountStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByShowCount'
+        componentManager._filterInstanceDefinitions filterOptions
+
+        assert filterInstanceDefinitionsByShowCountStub.called
+        assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0].length, 1
+        assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
+
+      it 'should call _filterInstanceDefinitionsByComponentConditions with the filterDefinitions that was returned by _filterInstanceDefinitionsByShowCount', ->
+        expectedInstanceDefinitionId = 'instance-1'
+        filterInstanceDefinitionsByComponentConditionsStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByComponentConditions'
+        componentManager._filterInstanceDefinitions filterOptions
+
+        assert filterInstanceDefinitionsByComponentConditionsStub.called
+        assert.equal filterInstanceDefinitionsByComponentConditionsStub.args[0][0].length, 1
+        assert.equal filterInstanceDefinitionsByComponentConditionsStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
+
+      it 'should return remaining instanceDefinitions after all previous filters', ->
+        expectedInstanceDefinitionId = 'instance-1'
+        result = componentManager._filterInstanceDefinitions filterOptions
+
+        assert.equal result.length, 1
+        assert.equal result[0].attributes.id, expectedInstanceDefinitionId
+
+    describe '_filterInstanceDefinitionsByShowCount', ->
+      it 'should return instanceDefinitions that does not exceed their showCount if they have a maxShowCount defined in their componentDefinition', ->
+        expectedInstanceDefinitionId = 'instance-2'
+        componentMaxShowCount = 3
         componentSettings =
-          conditions: globalConditions
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: 'window.MockComponent',
+              maxShowCount: componentMaxShowCount
             }
           ]
           instances: [
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              urlPattern: 'foo/:id'
+              targetName: 'test-prefix--header',
+              showCount: 4
             },
             {
               id: 'instance-2',
               componentId: 'mock-component',
-              targetName: 'test-prefix--main'
-              urlPattern: 'bar/:id'
+              targetName: 'test-prefix--main',
+              showCount: 1
             }
           ]
 
         componentManager.initialize componentSettings
-        getInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'getInstanceDefinitions'
-        componentManager._filterInstanceDefinitions filterOptions
-        assert getInstanceDefinitionsStub.calledWith filterOptions, globalConditions
 
-      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions that was returned by _instanceDefinitionsCollection.getInstanceDefinitions', ->
-      it 'should call _filterInstanceDefinitionsByComponentConditions with the filterDefinitions that was returned by _filterInstanceDefinitionsByShowCount', ->
-      it 'should return remaining instanceDefinitions after all previous filters', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
 
-    describe '_filterInstanceDefinitionsByShowCount', ->
-      it 'should', ->
+        exceedsMaximumShowCountSpies = []
+        for instance in instanceDefinitions
+          exceedsMaximumShowCountSpies.push sandbox.spy(instance, 'exceedsMaximumShowCount')
+
+        assert.equal instanceDefinitions.length, 2
+
+        instanceDefinitions = componentManager._filterInstanceDefinitionsByShowCount instanceDefinitions
+
+        assert exceedsMaximumShowCountSpies[0].calledWith componentMaxShowCount
+        assert exceedsMaximumShowCountSpies[1].calledWith componentMaxShowCount
+
+        assert.equal instanceDefinitions.length, 1
+        assert.equal instanceDefinitions[0].attributes.id, expectedInstanceDefinitionId
 
     describe '_filterInstanceDefinitionsByComponentConditions', ->
-      it 'should', ->
+      it 'should return instanceDefinitions that passes componentConditions if they are defined', ->
 
     describe '_addInstanceToModel', ->
       it 'should', ->
