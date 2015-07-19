@@ -10,15 +10,17 @@
  ✔ Rename filterstring logic and have one including and one excluding filter (ex include everything that matches string, exclude everything that matches string) @done (15-05-12 20:58)
  ✔ Make a small example reordering a list of components using vigorjs and the component manager (produce a list with random) @done (15-06-05 20:40)
  ✔ Add a proper globalConditionsModel to avoid mixup with registered conditions in the filtermodel. Check this all the way through @done (15-06-26 07:52)
- ☐ Improve Controls
- ✔ AMD and Commonjs modules - dont forget the require logic for this @done (15-06-05 20:41)
- ☐ Protected components?
- ☐ Hidden components and the hidden array
- ☐ Readd hidden components
+ ☐ Unit test
  ☐ Send message from iframe to Instance
  ☐ Send message to iframe from instance
+ ☐ Refactor to have all errormessages as constants
+ ☐ Is there a usecase for the hidden array (that belongs inside the componentmanager or should it be handled from the outside)?
+ ☐ Protected components?
+
+ ☐ Hidden components and the hidden array
+ ☐ Readd hidden components
+ ☐ Does fix for global stray components cause memory leak?
+ ✔ AMD and Commonjs modules - dont forget the require logic for this @done (15-06-05 20:41)
  ✔ Change properties on the fly: order, target, urlpattern etc. @done (15-05-10 09:14)
  ✔ Ability to serialize save/get setup and save to local storage @done (15-06-05 20:41)
- ☐ Unit test
  ✔ Improved parsing @done (15-04-29 00:41)
- ☐ Does fix for global stray components cause memory leak?

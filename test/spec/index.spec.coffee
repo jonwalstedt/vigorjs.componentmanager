@@ -1670,9 +1670,9 @@ describe 'The componentManager', ->
         assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0].length, 1
         assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
 
-      it 'should call _filterInstanceDefinitionsByComponentConditions with the filterDefinitions that was returned by _filterInstanceDefinitionsByShowCount', ->
+      it 'should call _filterInstanceDefinitionsByConditions with the filterDefinitions that was returned by _filterInstanceDefinitionsByShowCount', ->
         expectedInstanceDefinitionId = 'instance-1'
-        filterInstanceDefinitionsByComponentConditionsStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByComponentConditions'
+        filterInstanceDefinitionsByComponentConditionsStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByConditions'
         componentManager._filterInstanceDefinitions filterOptions
 
         assert filterInstanceDefinitionsByComponentConditionsStub.called
@@ -1731,8 +1731,94 @@ describe 'The componentManager', ->
         assert.equal instanceDefinitions.length, 1
         assert.equal instanceDefinitions[0].attributes.id, expectedInstanceDefinitionId
 
-    describe '_filterInstanceDefinitionsByComponentConditions', ->
+    describe '_filterInstanceDefinitionsByConditions', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent',
+            conditions: []
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header',
+            showCount: 4
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--main',
+            showCount: 1
+          }
+        ]
+
+
       it 'should return instanceDefinitions that passes componentConditions if they are defined', ->
+        componentManager.initialize componentSettings
+        condition = ->
+          currentTime = 8
+          allowedTime = 4
+          fancySucceedingTimeCheck = currentTime > allowedTime
+          return fancySucceedingTimeCheck
+
+        componentManager._componentDefinitionsCollection.models[0].attributes.conditions.push condition
+        areConditionsMetSpy = sandbox.spy componentManager._componentDefinitionsCollection.models[0], 'areConditionsMet'
+
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 2
+
+        instanceDefinitions = componentManager._filterInstanceDefinitionsByConditions instanceDefinitions
+
+        assert areConditionsMetSpy.calledTwice
+        assert.equal instanceDefinitions.length, 2
+
+      it 'should not return instanceDefinitions that does not pass componentConditions if they are defined', ->
+        componentManager.initialize componentSettings
+        condition = ->
+          currentTime = 2
+          allowedTime = 4
+          fancyFailingTimeCheck = currentTime > allowedTime
+          return fancyFailingTimeCheck
+
+        componentManager._componentDefinitionsCollection.models[0].attributes.conditions.push condition
+        areConditionsMetSpy = sandbox.spy componentManager._componentDefinitionsCollection.models[0], 'areConditionsMet'
+
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 2
+
+        instanceDefinitions = componentManager._filterInstanceDefinitionsByConditions instanceDefinitions
+
+        assert areConditionsMetSpy.calledTwice
+        assert.equal instanceDefinitions.length, 0
+
+      it 'should use global conditions if a string referenced is defined as condition in the condition model', ->
+        componentManager.initialize componentSettings
+        condition =
+          timeCheck: ->
+            currentTime = 2
+            allowedTime = 4
+            fancyFailingTimeCheck = currentTime > allowedTime
+            return fancyFailingTimeCheck
+
+
+        # Register the condition as a global condition
+        componentManager.addConditions condition
+
+        # Reference the global condition key
+        componentManager._componentDefinitionsCollection.models[0].attributes.conditions = ['timeCheck']
+
+        areConditionsMetSpy = sandbox.spy componentManager._componentDefinitionsCollection.models[0], 'areConditionsMet'
+
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 2
+
+        instanceDefinitions = componentManager._filterInstanceDefinitionsByConditions instanceDefinitions
+
+        assert areConditionsMetSpy.calledTwice
+        assert.equal instanceDefinitions.length, 0
 
     describe '_addInstanceToModel', ->
       it 'should', ->

@@ -339,7 +339,7 @@ class ComponentManager
     globalConditions = @_globalConditionsModel.toJSON()
     instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions filterOptions, globalConditions
     instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
-    instanceDefinitions = @_filterInstanceDefinitionsByComponentConditions instanceDefinitions
+    instanceDefinitions = @_filterInstanceDefinitionsByConditions instanceDefinitions
     return instanceDefinitions
 
   _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->
@@ -349,7 +349,7 @@ class ComponentManager
       componentMaxShowCount = componentDefinition.get 'maxShowCount'
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
-  _filterInstanceDefinitionsByComponentConditions: (instanceDefinitions) ->
+  _filterInstanceDefinitionsByConditions: (instanceDefinitions) ->
     globalConditions = @_globalConditionsModel.toJSON()
     _.filter instanceDefinitions, (instanceDefinition) =>
       instanceId = instanceDefinition.get 'componentId'

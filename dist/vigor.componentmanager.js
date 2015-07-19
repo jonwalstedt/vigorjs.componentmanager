@@ -1264,7 +1264,7 @@
         globalConditions = this._globalConditionsModel.toJSON();
         instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(filterOptions, globalConditions);
         instanceDefinitions = this._filterInstanceDefinitionsByShowCount(instanceDefinitions);
-        instanceDefinitions = this._filterInstanceDefinitionsByComponentConditions(instanceDefinitions);
+        instanceDefinitions = this._filterInstanceDefinitionsByConditions(instanceDefinitions);
         return instanceDefinitions;
       };
 
@@ -1280,7 +1280,7 @@
         })(this));
       };
 
-      ComponentManager.prototype._filterInstanceDefinitionsByComponentConditions = function(instanceDefinitions) {
+      ComponentManager.prototype._filterInstanceDefinitionsByConditions = function(instanceDefinitions) {
         var globalConditions;
         globalConditions = this._globalConditionsModel.toJSON();
         return _.filter(instanceDefinitions, (function(_this) {
