@@ -1874,17 +1874,96 @@ describe 'The componentManager', ->
             id: 'instance-1',
             componentId: 'mock-component',
             targetName: 'test-prefix--header'
+            urlPattern: 'foo/:bar'
           }
         ]
 
       beforeEach ->
         componentManager.initialize componentSettings
 
-      it 'should return arguments defined on a component level', ->
-      it 'should return arguments defined on a instance level', ->
+      it 'should add urlParams as an attribute on the args object', ->
+        urlParams =
+          bar: '123'
+          url: 'foo/123'
+
+        filter =
+          url: 'foo/123'
+
+        componentManager.refresh filter
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        result = componentManager._getInstanceArguments instanceDefinition
+        assert.deepEqual result.urlParams, [urlParams]
+
+      it 'should add urlParamsModel as an attribute on the args object', ->
+        urlParams =
+          bar: '123'
+          url: 'foo/123'
+
+        filter =
+          url: 'foo/123'
+
+        componentManager.refresh filter
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        result = componentManager._getInstanceArguments instanceDefinition
+        assert result.urlParamsModel instanceof Backbone.Model
+        assert.deepEqual result.urlParamsModel.attributes, urlParams
+
+      it 'should return arguments (args) defined on a component level', ->
+        args =
+          arg1: 1
+          arg2: 2
+
+        componentManager._componentDefinitionsCollection.models[0].attributes.args = args
+        componentManager._instanceDefinitionsCollection.models[0].attributes.args = undefined
+
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        result = componentManager._getInstanceArguments instanceDefinition
+        assert.equal result.arg1, args.arg1
+        assert.equal result.arg2, args.arg2
+
+      it 'should return arguments (args) defined on a instance level', ->
+        args =
+          arg1: 1
+          arg2: 2
+
+        componentManager._componentDefinitionsCollection.models[0].attributes.args = undefined
+        componentManager._instanceDefinitionsCollection.models[0].attributes.args = args
+
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        result = componentManager._getInstanceArguments instanceDefinition
+        assert.equal result.arg1, args.arg1
+        assert.equal result.arg2, args.arg2
+
       it 'should add and merge iframeAttributes from both component and instance level if its defined on both', ->
-      it 'should merge arguments from both component level and instance level if both are defined', ->
-      it 'should add src as an attribute on the arguments object if its an IframeComponent', ->
+        componentArgs =
+          iframeAttributes:
+            height: 300
+            width: 200
+
+        instanceArgs =
+          iframeAttributes:
+            height: 100
+            border: 0
+
+        expectedResults =
+          iframeAttributes:
+            height: 100
+            width: 200
+            border: 0
+
+        componentManager._componentDefinitionsCollection.models[0].attributes.args = componentArgs
+        componentManager._instanceDefinitionsCollection.models[0].attributes.args = instanceArgs
+
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        result = componentManager._getInstanceArguments instanceDefinition
+
+        assert.deepEqual result.iframeAttributes, expectedResults.iframeAttributes
+
+      it 'should merge arguments (args) from both component level and instance level if both are defined', ->
+      it 'should add src as an attribute on the args object if its an IframeComponent', ->
 
     describe '_addInstanceToModel', ->
       it 'should', ->
