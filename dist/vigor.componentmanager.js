@@ -440,7 +440,19 @@
         UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?'
       };
 
-      ComponentDefinitionsCollection.prototype.getComponentDefinition = function(componentId) {
+      ComponentDefinitionsCollection.prototype.getComponentClassByInstanceDefinition = function(instanceDefinition) {
+        var componentDefinition;
+        componentDefinition = this.getComponentDefinitionByInstanceDefinition(instanceDefinition);
+        return componentDefinition.getClass();
+      };
+
+      ComponentDefinitionsCollection.prototype.getComponentDefinitionByInstanceDefinition = function(instanceDefinition) {
+        var componentId;
+        componentId = instanceDefinition.get('componentId');
+        return this.getComponentDefinitionById(componentId);
+      };
+
+      ComponentDefinitionsCollection.prototype.getComponentDefinitionById = function(componentId) {
         var componentDefinition;
         componentDefinition = this.get(componentId);
         if (!componentDefinition) {
@@ -1145,7 +1157,7 @@
       };
 
       ComponentManager.prototype.getComponentById = function(componentId) {
-        return this._componentDefinitionsCollection.getComponentDefinition(componentId).toJSON();
+        return this._componentDefinitionsCollection.getComponentDefinitionById(componentId).toJSON();
       };
 
       ComponentManager.prototype.getInstanceById = function(instanceId) {
@@ -1271,9 +1283,8 @@
       ComponentManager.prototype._filterInstanceDefinitionsByShowCount = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            var componentDefinition, componentMaxShowCount, instanceId;
-            instanceId = instanceDefinition.get('componentId');
-            componentDefinition = _this._componentDefinitionsCollection.getComponentDefinition(instanceId);
+            var componentDefinition, componentMaxShowCount;
+            componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
             componentMaxShowCount = componentDefinition.get('maxShowCount');
             return !instanceDefinition.exceedsMaximumShowCount(componentMaxShowCount);
           };
@@ -1285,27 +1296,31 @@
         globalConditions = this._globalConditionsModel.toJSON();
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            var componentDefinition, instanceId;
-            instanceId = instanceDefinition.get('componentId');
-            componentDefinition = _this._componentDefinitionsCollection.getComponentDefinition(instanceId);
+            var componentDefinition;
+            componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
             return componentDefinition.areConditionsMet(globalConditions);
           };
         })(this));
       };
 
-      ComponentManager.prototype._addInstanceToModel = function(instanceDefinition) {
-        var args, componentArgs, componentClass, componentDefinition, height, instance, instanceArgs, instanceId;
-        instanceId = instanceDefinition.get('componentId');
-        componentDefinition = this._componentDefinitionsCollection.getComponentDefinition(instanceId);
-        componentClass = componentDefinition.getClass();
+      ComponentManager.prototype._getInstanceHeight = function(instanceDefinition) {
+        var componentDefinition, height;
+        componentDefinition = this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
         height = componentDefinition.get('height');
         if (instanceDefinition.get('height')) {
           height = instanceDefinition.get('height');
         }
+        return height;
+      };
+
+      ComponentManager.prototype._getInstanceArguments = function(instanceDefinition) {
+        var args, componentArgs, componentClass, componentDefinition, instanceArgs;
         args = {
           urlParams: instanceDefinition.get('urlParams'),
           urlParamsModel: instanceDefinition.get('urlParamsModel')
         };
+        componentDefinition = this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
+        componentClass = this._componentDefinitionsCollection.getComponentClassByInstanceDefinition(instanceDefinition);
         componentArgs = componentDefinition.get('args');
         instanceArgs = instanceDefinition.get('args');
         if (((componentArgs != null ? componentArgs.iframeAttributes : void 0) != null) && ((instanceArgs != null ? instanceArgs.iframeAttributes : void 0) != null)) {
@@ -1316,9 +1331,15 @@
         if (componentClass === Vigor.IframeComponent) {
           args.src = componentDefinition.get('src');
         }
-        instance = new componentClass(args);
+        return args;
+      };
+
+      ComponentManager.prototype._addInstanceToModel = function(instanceDefinition) {
+        var componentClass, height, instance;
+        componentClass = this._componentDefinitionsCollection.getComponentClassByInstanceDefinition(instanceDefinition);
+        instance = new componentClass(this._getInstanceArguments(instanceDefinition));
         instance.$el.addClass(this._componentClassName);
-        if (height) {
+        if (height = this._getInstanceHeight(instanceDefinition)) {
           instance.$el.style('height', height + "px");
         }
         instanceDefinition.set({

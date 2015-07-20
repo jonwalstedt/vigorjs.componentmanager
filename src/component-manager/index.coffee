@@ -234,7 +234,7 @@ class ComponentManager
     return @_globalConditionsModel.toJSON()
 
   getComponentById: (componentId) ->
-    return @_componentDefinitionsCollection.getComponentDefinition(componentId).toJSON()
+    return @_componentDefinitionsCollection.getComponentDefinitionById(componentId).toJSON()
 
   getInstanceById: (instanceId) ->
     return @_instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON()
@@ -344,29 +344,30 @@ class ComponentManager
 
   _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) =>
-      instanceId = instanceDefinition.get 'componentId'
-      componentDefinition = @_componentDefinitionsCollection.getComponentDefinition instanceId
+      componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
       componentMaxShowCount = componentDefinition.get 'maxShowCount'
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
   _filterInstanceDefinitionsByConditions: (instanceDefinitions) ->
     globalConditions = @_globalConditionsModel.toJSON()
     _.filter instanceDefinitions, (instanceDefinition) =>
-      instanceId = instanceDefinition.get 'componentId'
-      componentDefinition = @_componentDefinitionsCollection.getComponentDefinition instanceId
+      componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
       return componentDefinition.areConditionsMet globalConditions
 
-  _addInstanceToModel: (instanceDefinition) ->
-    instanceId = instanceDefinition.get 'componentId'
-    componentDefinition = @_componentDefinitionsCollection.getComponentDefinition instanceId
-    componentClass = componentDefinition.getClass()
+  _getInstanceHeight: (instanceDefinition) ->
+    componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
     height = componentDefinition.get 'height'
     if instanceDefinition.get('height')
       height = instanceDefinition.get 'height'
+    return height
 
+  _getInstanceArguments: (instanceDefinition) ->
     args =
       urlParams: instanceDefinition.get 'urlParams'
       urlParamsModel: instanceDefinition.get 'urlParamsModel'
+
+    componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
+    componentClass = @_componentDefinitionsCollection.getComponentClassByInstanceDefinition instanceDefinition
 
     componentArgs = componentDefinition.get 'args'
     instanceArgs = instanceDefinition.get 'args'
@@ -380,10 +381,15 @@ class ComponentManager
     if componentClass is Vigor.IframeComponent
       args.src = componentDefinition.get 'src'
 
-    instance = new componentClass args
+    return args
+
+  _addInstanceToModel: (instanceDefinition) ->
+    componentClass = @_componentDefinitionsCollection.getComponentClassByInstanceDefinition instanceDefinition
+
+    instance = new componentClass @_getInstanceArguments(instanceDefinition)
     instance.$el.addClass @_componentClassName
 
-    if height
+    if height = @_getInstanceHeight(instanceDefinition)
       instance.$el.style 'height', "#{height}px"
 
     instanceDefinition.set

@@ -1803,7 +1803,6 @@ describe 'The componentManager', ->
             fancyFailingTimeCheck = currentTime > allowedTime
             return fancyFailingTimeCheck
 
-
         # Register the condition as a global condition
         componentManager.addConditions condition
 
@@ -1819,6 +1818,73 @@ describe 'The componentManager', ->
 
         assert areConditionsMetSpy.calledTwice
         assert.equal instanceDefinitions.length, 0
+
+    describe '_getInstanceHeight', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+          }
+        ]
+
+      height = 400
+
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should return height defined on a component level if the height on an instance level is not defined', ->
+        componentManager._componentDefinitionsCollection.models[0].attributes.height = height
+        componentManager._instanceDefinitionsCollection.models[0].attributes.height = undefined
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        result = componentManager._getInstanceHeight instanceDefinition
+        assert.equal result, height
+
+      it 'should return height defined on an instance level if it is defined', ->
+        componentManager._componentDefinitionsCollection.models[0].attributes.height = undefined
+        componentManager._instanceDefinitionsCollection.models[0].attributes.height = height
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        result = componentManager._getInstanceHeight instanceDefinition
+        assert.equal result, height
+
+      it 'should return undefined if the height is niether defined on an component level or on an instance level', ->
+        componentManager._componentDefinitionsCollection.models[0].attributes.height = undefined
+        componentManager._instanceDefinitionsCollection.models[0].attributes.height = undefined
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        result = componentManager._getInstanceHeight instanceDefinition
+        assert.equal result, undefined
+
+    describe '_getInstanceArguments', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+          }
+        ]
+
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should return arguments defined on a component level', ->
+      it 'should return arguments defined on a instance level', ->
+      it 'should add and merge iframeAttributes from both component and instance level if its defined on both', ->
+      it 'should merge arguments from both component level and instance level if both are defined', ->
+      it 'should add src as an attribute on the arguments object if its an IframeComponent', ->
 
     describe '_addInstanceToModel', ->
       it 'should', ->

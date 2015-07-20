@@ -16,6 +16,7 @@
  ☐ Refactor to have all errormessages as constants
  ☐ Is there a usecase for the hidden array (that belongs inside the componentmanager or should it be handled from the outside)?
  ☐ Protected components?
+ ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable
 
  ☐ Hidden components and the hidden array
  ☐ Readd hidden components
