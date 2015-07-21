@@ -1868,6 +1868,10 @@ describe 'The componentManager', ->
             id: 'mock-component',
             src: 'window.MockComponent'
           }
+          {
+            id: 'mock-iframe-component',
+            src: 'http://www.github.com'
+          }
         ]
         instances: [
           {
@@ -1875,6 +1879,12 @@ describe 'The componentManager', ->
             componentId: 'mock-component',
             targetName: 'test-prefix--header'
             urlPattern: 'foo/:bar'
+          }
+          {
+            id: 'instance-2',
+            componentId: 'mock-iframe-component',
+            targetName: 'test-prefix--header'
+            urlPattern: 'bar/:foo'
           }
         ]
 
@@ -1963,7 +1973,53 @@ describe 'The componentManager', ->
         assert.deepEqual result.iframeAttributes, expectedResults.iframeAttributes
 
       it 'should merge arguments (args) from both component level and instance level if both are defined', ->
+        componentArgs =
+          height: 300
+          width: 200
+
+        instanceArgs =
+          randomNr: 1234
+          iframeAttributes:
+            height: 100
+            border: 0
+
+        expectedResults =
+          height: 300
+          width: 200
+          randomNr: 1234
+          urlParams: undefined
+          iframeAttributes:
+            height: 100
+            border: 0
+
+        componentManager._componentDefinitionsCollection.models[0].attributes.args = componentArgs
+        componentManager._instanceDefinitionsCollection.models[0].attributes.args = instanceArgs
+
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        result = componentManager._getInstanceArguments instanceDefinition
+        # urlParamsModel has a generated id that might change and therefore is not suitable for testing
+        # because of that its removed from the result (we need predictable results)
+        delete result.urlParamsModel
+
+        assert.deepEqual result, expectedResults
+
       it 'should add src as an attribute on the args object if its an IframeComponent', ->
+        args =
+          foo: 'bar'
+
+        expectedResults =
+          foo: 'bar'
+          src: 'http://www.github.com'
+
+        componentManager._componentDefinitionsCollection.models[1].attributes.args = args
+
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[1]
+
+        result = componentManager._getInstanceArguments instanceDefinition
+
+        assert.equal result.src, expectedResults.src
+
 
     describe '_addInstanceToModel', ->
       it 'should', ->
