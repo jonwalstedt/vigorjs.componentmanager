@@ -387,10 +387,10 @@ class ComponentManager
     componentClass = @_componentDefinitionsCollection.getComponentClassByInstanceDefinition instanceDefinition
 
     instance = new componentClass @_getInstanceArguments(instanceDefinition)
-    instance.$el.addClass @_componentClassName
+    instance.$el.addClass @getComponentClassName()
 
     if height = @_getInstanceHeight(instanceDefinition)
-      instance.$el.style 'height', "#{height}px"
+      instance.$el.css 'height', "#{height}px"
 
     instanceDefinition.set
       'instance': instance

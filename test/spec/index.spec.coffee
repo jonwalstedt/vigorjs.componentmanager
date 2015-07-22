@@ -28,7 +28,7 @@ class MockComponent2
     return @
 
 window.MockComponent = MockComponent
-window.MockComponent2 = MockComponent
+window.MockComponent2 = MockComponent2
 
 describe 'The componentManager', ->
   sandbox = undefined
@@ -2020,9 +2020,109 @@ describe 'The componentManager', ->
 
         assert.equal result.src, expectedResults.src
 
-
     describe '_addInstanceToModel', ->
-      it 'should', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+            urlPattern: 'foo/:bar'
+          }
+        ]
+
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should call getComponentClassByInstanceDefinition on the componentDefinitionsCollection to get the the component Class which to create an instance from', ->
+        getComponentClassByInstanceDefinitionSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'getComponentClassByInstanceDefinition'
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        assert getComponentClassByInstanceDefinitionSpy.calledWith instanceDefinition
+
+      it 'should call _getInstanceArguments to get arguments to pass along when creating the instance', ->
+        getInstanceArgumentsSpy = sandbox.spy componentManager, '_getInstanceArguments'
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        assert getInstanceArgumentsSpy.calledWith instanceDefinition
+
+      it 'should call getComponentClassName to get the common dom classname thats used for all components', ->
+        getComponentClassNameSpy = sandbox.spy componentManager, 'getComponentClassName'
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        assert getComponentClassNameSpy.calledOnce
+
+      it 'should call _getInstanceHeight to get instance height if set (main use case is iframe components)', ->
+        getInstanceHeightSpy = sandbox.spy componentManager, '_getInstanceHeight'
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        assert getInstanceHeightSpy.calledWith instanceDefinition
+
+      it 'it should create a new instance of the class defined in the componentDefinition and update the instanceDefinition with the instance', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        instanceDefinitionSetSpy = sandbox.spy instanceDefinition, 'set'
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        instance = instanceDefinitionSetSpy.args[0][0].instance
+        silentSetting = instanceDefinitionSetSpy.args[0][1]
+
+        assert instanceDefinitionSetSpy.called
+        assert instance instanceof window.MockComponent
+        assert.equal silentSetting.silent, true
+
+      it 'should add _componentClassName to instance.$el', ->
+        # Default classname
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        instanceDefinitionSetSpy = sandbox.spy instanceDefinition, 'set'
+        expectedClassName = componentManager.getComponentClassName()
+        newComponentClassName = 'new-component-class-name'
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        instance = instanceDefinitionSetSpy.args[0][0].instance
+
+        assert instance.$el.hasClass(expectedClassName)
+
+        # custom classname
+        do instanceDefinitionSetSpy.reset
+        componentManager.setComponentClassName newComponentClassName
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        instance = instanceDefinitionSetSpy.args[0][0].instance
+
+        assert instance.$el.hasClass(newComponentClassName)
+
+      it 'if a height is defined it should add it to the instance.$el', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        instanceDefinition.set 'height', 200
+        instanceDefinitionSetSpy = sandbox.spy instanceDefinition, 'set'
+
+        componentManager._addInstanceToModel instanceDefinition
+
+        instance = instanceDefinitionSetSpy.args[0][0].instance
+
+        assert.equal instance.$el.get(0).style.height, '200px'
+
+      it 'it should return the passed instanceDefinition', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        returnedInstanceDefinition = componentManager._addInstanceToModel instanceDefinition
+        assert.equal instanceDefinition, returnedInstanceDefinition
 
     describe '_tryToReAddStraysToDom', ->
       it 'should', ->
