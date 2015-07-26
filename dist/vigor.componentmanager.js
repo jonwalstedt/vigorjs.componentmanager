@@ -1359,7 +1359,7 @@
           render = false;
           if (this._addInstanceToDom(stray, render)) {
             instance = stray.get('instance');
-            if ((instance != null ? instance.delegateEvents : void 0) != null) {
+            if (((instance != null ? instance.delegateEvents : void 0) != null) && _.isFunction(instance != null ? instance.delegateEvents : void 0)) {
               results.push(instance.delegateEvents());
             } else {
               results.push(void 0);

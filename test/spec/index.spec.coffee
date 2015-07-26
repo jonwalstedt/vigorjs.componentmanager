@@ -17,6 +17,9 @@ class MockComponent
   render: ->
     return @
 
+  delegateEvents: ->
+
+
 class MockComponent2
   $el: undefined
   attr: undefined
@@ -2124,8 +2127,67 @@ describe 'The componentManager', ->
         returnedInstanceDefinition = componentManager._addInstanceToModel instanceDefinition
         assert.equal instanceDefinition, returnedInstanceDefinition
 
-    describe '_tryToReAddStraysToDom', ->
-      it 'should', ->
+    describe.only '_tryToReAddStraysToDom', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+            urlPattern: 'foo/:bar'
+          }
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--footer'
+            urlPattern: 'foo/:bar'
+          }
+        ]
+
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should call _activeInstancesCollection.getStrays', ->
+        getStraysSpy = sandbox.spy componentManager._activeInstancesCollection, 'getStrays'
+        do componentManager._tryToReAddStraysToDom
+        assert getStraysSpy.called
+
+      it 'should call _addInstanceToDom and pass the stray and render = false for each stray returnd by getStrays', ->
+        filter =
+          url: 'foo/bar'
+
+        componentManager.refresh filter
+        addInstancesToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
+        do componentManager._tryToReAddStraysToDom
+
+        firstCallArgs = addInstancesToDomStub.args[0]
+        secondCallArgs = addInstancesToDomStub.args[1]
+
+        assert addInstancesToDomStub.calledTwice
+        assert.equal firstCallArgs[0].id, 'instance-1'
+        assert.equal firstCallArgs[1], false
+
+        assert.equal secondCallArgs[0].id, 'instance-2'
+        assert.equal secondCallArgs[1], false
+
+      it 'if the instance was added to dom and there is a delegateEvents method is should be called', ->
+        # filter =
+        #   url: 'foo/bar'
+
+        # componentManager.refresh filter
+        # addInstancesToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
+        # do componentManager._tryToReAddStraysToDom
+
+        # firstCallArgs = addInstancesToDomStub.args[0]
+        # secondCallArgs = addInstancesToDomStub.args[1]
+
+      it 'if the instance was not added to the dom it means that there was no target for this instance and therefore it should be disposed', ->
 
     describe '_addInstanceToDom', ->
       it 'should', ->

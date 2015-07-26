@@ -403,7 +403,7 @@ class ComponentManager
       render = false
       if @_addInstanceToDom(stray, render)
         instance = stray.get 'instance'
-        if instance?.delegateEvents?
+        if instance?.delegateEvents? and _.isFunction(instance?.delegateEvents)
           do instance.delegateEvents
       else
         do stray.disposeInstance
