@@ -1,7 +1,17 @@
 assert = require 'assert'
+Vigor = require '../../../dist/vigor.componentmanager'
 
-componentManager = require('../../../dist/vigor.componentmanager').componentManager
-ComponentDefinitionsCollection = componentManager.__testOnly.ComponentDefinitionsCollection
+__testOnly = Vigor.ComponentManager.__testOnly
+
+ComponentDefinitionsCollection = __testOnly.ComponentDefinitionsCollection
 
 describe 'ComponentDefinitionsCollection', ->
-  it 'is a regular Backbone.Collection without additional logic at the moment - no tests so far', ->
+  describe 'getComponentClassByInstanceDefinition', ->
+    it 'TODO: unit test me', ->
+
+  describe 'getComponentDefinitionByInstanceDefinition', ->
+    it 'TODO: unit test me', ->
+
+  describe 'getComponentDefinitionById', ->
+    it 'TODO: unit test me', ->
+

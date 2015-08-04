@@ -1,8 +1,10 @@
 assert = require 'assert'
 sinon = require 'sinon'
+Vigor = require '../../../dist/vigor.componentmanager'
 
-componentManager = require('../../../dist/vigor.componentmanager').componentManager
-InstanceDefinitionsCollection = componentManager.__testOnly.InstanceDefinitionsCollection
+__testOnly = Vigor.ComponentManager.__testOnly
+
+InstanceDefinitionsCollection = __testOnly.InstanceDefinitionsCollection
 
 class DummyModel
   set: ->

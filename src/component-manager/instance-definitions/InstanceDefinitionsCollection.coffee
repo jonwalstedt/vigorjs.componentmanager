@@ -1,6 +1,10 @@
 class InstanceDefinitionsCollection extends BaseCollection
 
   _targetPrefix = undefined
+
+  ERROR:
+    UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
+
   model: InstanceDefinitionModel
 
   setTargetPrefix: (targetPrefix) ->
@@ -8,6 +12,16 @@ class InstanceDefinitionsCollection extends BaseCollection
 
   getTargetPrefix: ->
     return _targetPrefix
+
+  getInstanceDefinition: (instanceId) ->
+    instanceDefinition = @get instanceId
+    unless instanceDefinition
+      throw @ERROR.UNKNOWN_COMPONENT_DEFINITION
+    return instanceDefinition
+
+  getInstanceDefinitions: (filter, globalConditions) ->
+    return @filter (instanceDefinitionModel) ->
+      instanceDefinitionModel.passesFilter filter, globalConditions
 
   parse: (data, options) ->
     parsedResponse = undefined
@@ -40,10 +54,6 @@ class InstanceDefinitionsCollection extends BaseCollection
     if instanceDefinition.urlPattern is 'global'
       instanceDefinition.urlPattern = ['*notFound', '*action']
     return instanceDefinition
-
-  getInstanceDefinitions: (filter, globalConditions) ->
-    return @filter (instanceDefinitionModel) ->
-      instanceDefinitionModel.passesFilter filter, globalConditions
 
   addUrlParams: (instanceDefinitions, url) ->
     for instanceDefinitionModel in instanceDefinitions

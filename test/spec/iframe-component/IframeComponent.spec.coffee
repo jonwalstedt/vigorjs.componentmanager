@@ -1,8 +1,10 @@
 assert = require 'assert'
 sinon = require 'sinon'
+Vigor = require '../../../dist/vigor.componentmanager'
 
-componentManager = require('../../../dist/vigor.componentmanager').componentManager
-IframeComponent = componentManager.__testOnly.IframeComponent
+__testOnly = Vigor.ComponentManager.__testOnly
+
+IframeComponent = __testOnly.IframeComponent
 
 describe 'IframeComponent', ->
   describe 'constructor', ->

@@ -1,13 +1,16 @@
 assert = require 'assert'
-componentManager = require('../../../dist/vigor.componentmanager').componentManager
-ActiveInstancesCollection = componentManager.__testOnly.ActiveInstancesCollection
+Vigor = require '../../../dist/vigor.componentmanager'
+
+__testOnly = Vigor.ComponentManager.__testOnly
+
+ActiveInstancesCollection = __testOnly.ActiveInstancesCollection
 
 class DummyComponent
   $el: undefined
   el: undefined
   render: ->
-    @$el = $('<div class="dummy-component"></div>')
-    @el = @$el.get(0)
+    @$el = $ '<div class="dummy-component"></div>'
+    @el = @$el.get 0
     return @
 
 dummyInstanceDefinitionObj =
