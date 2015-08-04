@@ -2127,7 +2127,7 @@ describe 'The componentManager', ->
         returnedInstanceDefinition = componentManager._addInstanceToModel instanceDefinition
         assert.equal instanceDefinition, returnedInstanceDefinition
 
-    describe.only '_tryToReAddStraysToDom', ->
+    describe '_tryToReAddStraysToDom', ->
       componentSettings =
         components: [
           {
