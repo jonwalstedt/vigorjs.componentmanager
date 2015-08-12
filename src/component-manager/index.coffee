@@ -410,15 +410,13 @@ class ComponentManager
 
   _addInstanceToDom: (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
-    didAddToDom = false
 
     if render
       do instanceDefinition.renderInstance
 
     if $target.length > 0
       @_addInstanceInOrder instanceDefinition
-      @_isComponentAreaEmpty $target
-      didAddToDom = true
+      @_setComponentAreaHasComponentState $target
 
     return instanceDefinition.isAttached()
 
@@ -452,9 +450,10 @@ class ComponentManager
     return @
 
   _isComponentAreaEmpty: ($componentArea) ->
-    isEmpty = $componentArea.length > 0
-    $componentArea.toggleClass 'component-area--has-component', isEmpty
-    return isEmpty
+    $componentArea.children().length > 0
+
+  _setComponentAreaHasComponentState: ($componentArea) ->
+    $componentArea.toggleClass "#{@_targetPrefix}--has-component", @_isComponentAreaEmpty($componentArea)
 
   _serialize: ->
     hidden = []
@@ -510,7 +509,7 @@ class ComponentManager
   _onActiveInstanceRemoved: (instanceDefinition) =>
     do instanceDefinition.disposeInstance
     $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
-    @_isComponentAreaEmpty $target
+    @_setComponentAreaHasComponentState $target
 
   _onActiveInstanceOrderChange: (instanceDefinition) =>
     @_addInstanceToDom instanceDefinition

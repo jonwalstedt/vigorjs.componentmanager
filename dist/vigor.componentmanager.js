@@ -1372,19 +1372,17 @@
       };
 
       ComponentManager.prototype._addInstanceToDom = function(instanceDefinition, render) {
-        var $target, didAddToDom;
+        var $target;
         if (render == null) {
           render = true;
         }
         $target = $("." + (instanceDefinition.get('targetName')), this._$context);
-        didAddToDom = false;
         if (render) {
           instanceDefinition.renderInstance();
         }
         if ($target.length > 0) {
           this._addInstanceInOrder(instanceDefinition);
-          this._isComponentAreaEmpty($target);
-          didAddToDom = true;
+          this._setComponentAreaHasComponentState($target);
         }
         return instanceDefinition.isAttached();
       };
@@ -1423,10 +1421,11 @@
       };
 
       ComponentManager.prototype._isComponentAreaEmpty = function($componentArea) {
-        var isEmpty;
-        isEmpty = $componentArea.length > 0;
-        $componentArea.toggleClass('component-area--has-component', isEmpty);
-        return isEmpty;
+        return $componentArea.children().length > 0;
+      };
+
+      ComponentManager.prototype._setComponentAreaHasComponentState = function($componentArea) {
+        return $componentArea.toggleClass(this._targetPrefix + "--has-component", this._isComponentAreaEmpty($componentArea));
       };
 
       ComponentManager.prototype._serialize = function() {
@@ -1489,7 +1488,7 @@
         var $target;
         instanceDefinition.disposeInstance();
         $target = $("." + (instanceDefinition.get('targetName')), this._$context);
-        return this._isComponentAreaEmpty($target);
+        return this._setComponentAreaHasComponentState($target);
       };
 
       ComponentManager.prototype._onActiveInstanceOrderChange = function(instanceDefinition) {
@@ -1504,19 +1503,6 @@
 
     })();
 
-    /* start-test-block */
-    __testOnly = {};
-    __testOnly.ActiveInstancesCollection = ActiveInstancesCollection;
-    __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection;
-    __testOnly.ComponentDefinitionModel = ComponentDefinitionModel;
-    __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection;
-    __testOnly.InstanceDefinitionModel = InstanceDefinitionModel;
-    __testOnly.FilterModel = FilterModel;
-    __testOnly.IframeComponent = IframeComponent;
-    __testOnly.router = Router;
-    ComponentManager.__testOnly = __testOnly;
-
-    /* end-test-block */
     _.extend(ComponentManager.prototype, Backbone.Events);
     Vigor.ComponentManager = ComponentManager;
     Vigor.componentManager = new Vigor.ComponentManager();

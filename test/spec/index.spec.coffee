@@ -2211,7 +2211,51 @@ describe 'The componentManager', ->
         assert disposeInstanceSpy.called
 
     describe '_addInstanceToDom', ->
-      it 'should', ->
+
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+            urlPattern: 'foo/:bar'
+          }
+        ]
+
+      beforeEach ->
+        $('body').append '<div class="test-prefix--header"></div>'
+        componentManager.initialize componentSettings
+
+      afterEach ->
+        do $('.test-prefix--header').remove
+
+      it 'should call renderInstance if passed render argument is truthy', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        render = true
+        componentManager._addInstanceToModel instanceDefinition
+        renderInstanceSpy = sandbox.spy instanceDefinition, 'renderInstance'
+        componentManager._addInstanceToDom instanceDefinition, render
+        assert renderInstanceSpy.called
+
+      it 'should not call renderInstance if passed render argument is falsy', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        render = false
+        componentManager._addInstanceToModel instanceDefinition
+        renderInstanceSpy = sandbox.spy instanceDefinition, 'renderInstance'
+        componentManager._addInstanceToDom instanceDefinition, render
+        assert.equal renderInstanceSpy.called, false
+
+      it 'should call _addInstanceInOrder and pass the instanceDefinition if there is a targe present in the dom', ->
+      it 'should call _setComponentAreaHasComponentState and pass the $target if there is a targe present in the dom', ->
+      it 'should call instanceDefinition.isAttached()', ->
+      it 'should return true if the instance is present in the dom', ->
+      it 'should return false if the instance is not present in the dom', ->
 
     describe '_addInstanceInOrder', ->
       it 'should', ->
