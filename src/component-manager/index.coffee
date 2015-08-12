@@ -403,14 +403,14 @@ class ComponentManager
       render = false
       if @_addInstanceToDom(stray, render)
         instance = stray.get 'instance'
-        if instance?.delegateEvents? and _.isFunction(instance?.delegateEvents)
+        if instance?.delegateEvents and _.isFunction(instance?.delegateEvents)
           do instance.delegateEvents
       else
         do stray.disposeInstance
 
   _addInstanceToDom: (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
-    success = false
+    didAddToDom = false
 
     if render
       do instanceDefinition.renderInstance
@@ -418,9 +418,9 @@ class ComponentManager
     if $target.length > 0
       @_addInstanceInOrder instanceDefinition
       @_isComponentAreaEmpty $target
-      success = true
+      didAddToDom = true
 
-    return success
+    return instanceDefinition.isAttached()
 
   _addInstanceInOrder: (instanceDefinition) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", @_$context

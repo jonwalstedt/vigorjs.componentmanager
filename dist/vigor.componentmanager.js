@@ -1359,7 +1359,7 @@
           render = false;
           if (this._addInstanceToDom(stray, render)) {
             instance = stray.get('instance');
-            if (((instance != null ? instance.delegateEvents : void 0) != null) && _.isFunction(instance != null ? instance.delegateEvents : void 0)) {
+            if ((instance != null ? instance.delegateEvents : void 0) && _.isFunction(instance != null ? instance.delegateEvents : void 0)) {
               results.push(instance.delegateEvents());
             } else {
               results.push(void 0);
@@ -1372,21 +1372,21 @@
       };
 
       ComponentManager.prototype._addInstanceToDom = function(instanceDefinition, render) {
-        var $target, success;
+        var $target, didAddToDom;
         if (render == null) {
           render = true;
         }
         $target = $("." + (instanceDefinition.get('targetName')), this._$context);
-        success = false;
+        didAddToDom = false;
         if (render) {
           instanceDefinition.renderInstance();
         }
         if ($target.length > 0) {
           this._addInstanceInOrder(instanceDefinition);
           this._isComponentAreaEmpty($target);
-          success = true;
+          didAddToDom = true;
         }
-        return success;
+        return instanceDefinition.isAttached();
       };
 
       ComponentManager.prototype._addInstanceInOrder = function(instanceDefinition) {
@@ -1504,6 +1504,19 @@
 
     })();
 
+    /* start-test-block */
+    __testOnly = {};
+    __testOnly.ActiveInstancesCollection = ActiveInstancesCollection;
+    __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection;
+    __testOnly.ComponentDefinitionModel = ComponentDefinitionModel;
+    __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection;
+    __testOnly.InstanceDefinitionModel = InstanceDefinitionModel;
+    __testOnly.FilterModel = FilterModel;
+    __testOnly.IframeComponent = IframeComponent;
+    __testOnly.router = Router;
+    ComponentManager.__testOnly = __testOnly;
+
+    /* end-test-block */
     _.extend(ComponentManager.prototype, Backbone.Events);
     Vigor.ComponentManager = ComponentManager;
     Vigor.componentManager = new Vigor.ComponentManager();
