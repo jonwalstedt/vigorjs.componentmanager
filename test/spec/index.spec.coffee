@@ -2229,7 +2229,7 @@ describe 'The componentManager', ->
         ]
 
       beforeEach ->
-        $('body').append '<div class="test-prefix--header"></div>'
+        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
         componentManager.initialize componentSettings
 
       afterEach ->
@@ -2251,14 +2251,179 @@ describe 'The componentManager', ->
         componentManager._addInstanceToDom instanceDefinition, render
         assert.equal renderInstanceSpy.called, false
 
-      it 'should call _addInstanceInOrder and pass the instanceDefinition if there is a targe present in the dom', ->
-      it 'should call _setComponentAreaHasComponentState and pass the $target if there is a targe present in the dom', ->
+      it 'should not call _addInstanceInOrder and pass the instanceDefinition if there is not a target present in the dom', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        render = true
+        do $('.test-prefix--header').remove
+        addInstanceInOrderStub = sandbox.stub componentManager, '_addInstanceInOrder'
+        componentManager._addInstanceToDom instanceDefinition, render
+        assert.equal addInstanceInOrderStub.called, false
+
+      it 'should call _addInstanceInOrder and pass the instanceDefinition if there is a target present in the dom', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        render = true
+        addInstanceInOrderStub = sandbox.stub componentManager, '_addInstanceInOrder'
+        componentManager._addInstanceToDom instanceDefinition, render
+        assert addInstanceInOrderStub.calledWith instanceDefinition
+
+      it 'should call _setComponentAreaHasComponentState and pass the $target if there is a target present in the dom', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        do $('.test-prefix--header').remove
+        render = true
+        setComponentAreaHasComponentStateStub = sandbox.stub componentManager, '_setComponentAreaHasComponentState'
+        componentManager._addInstanceToDom instanceDefinition, render
+
+        assert.equal setComponentAreaHasComponentStateStub.called, false
+
+      it 'should call _setComponentAreaHasComponentState and pass the $target if there is a target present in the dom', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        $target = $ '.test-prefix--header'
+        render = true
+        sandbox.stub componentManager, '_addInstanceInOrder'
+        setComponentAreaHasComponentStateStub = sandbox.stub componentManager, '_setComponentAreaHasComponentState'
+        componentManager._addInstanceToDom instanceDefinition, render
+
+        $passedTarget = setComponentAreaHasComponentStateStub.args[0][0]
+
+        assert setComponentAreaHasComponentStateStub.called
+        assert.equal $target.attr('id'), $passedTarget.attr('id')
+
       it 'should call instanceDefinition.isAttached()', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        render = true
+        componentManager._addInstanceToModel instanceDefinition
+        isAttachedSpy = sandbox.spy instanceDefinition, 'isAttached'
+        isAddedToDom = componentManager._addInstanceToDom instanceDefinition, render
+
+        assert.equal isAttachedSpy.called, true
+
       it 'should return true if the instance is present in the dom', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        render = true
+        componentManager._addInstanceToModel instanceDefinition
+        isAttachedSpy = sandbox.spy instanceDefinition, 'isAttached'
+        isAddedToDom = componentManager._addInstanceToDom instanceDefinition, render
+
+        assert.equal isAttachedSpy.called, true
+        assert.equal isAddedToDom, true
+        assert.equal $('body').find('#test-header').length, 1
+
       it 'should return false if the instance is not present in the dom', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        render = true
+        componentManager._addInstanceToModel instanceDefinition
+        isAttachedSpy = sandbox.spy instanceDefinition, 'isAttached'
+        do $('.test-prefix--header').remove
+        isAddedToDom = componentManager._addInstanceToDom instanceDefinition, render
+
+        assert.equal isAttachedSpy.called, true
+        assert.equal isAddedToDom, false
+        assert.equal $('body').find('#test-header').length, 0
 
     describe '_addInstanceInOrder', ->
-      it 'should', ->
+      beforeEach ->
+        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
+
+      afterEach ->
+        do $('.test-prefix--header').remove
+
+      describe 'should add elements in order', ->
+        componentSettings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 1
+            }
+            {
+              id: 'instance-2',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 2
+            }
+            {
+              id: 'instance-3',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 5
+            }
+            {
+              id: 'instance-4',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 7
+            }
+          ]
+
+
+        it 'should add components in an ascending order', ->
+          componentManager.initialize componentSettings
+
+          filter =
+            url: 'foo/1'
+
+          componentManager.refresh filter
+
+          $target = $ '.test-prefix--header'
+          $children = $target.children()
+
+          first = $children.eq(0).data 'order'
+          second = $children.eq(1).data 'order'
+          third = $children.eq(2).data 'order'
+          fourth = $children.eq(3).data 'order'
+
+          assert.equal first, 1
+          assert.equal second, 2
+          assert.equal third, 5
+          assert.equal fourth, 7
+
+        it 'it should add components in an ascending order even though there are already elements without an order attribut in the dom', ->
+          elements = '<div id="dummy1"></div>'
+          elements += '<div id="dummy2"></div>'
+          elements += '<div id="dummy3"></div>'
+
+          $('.test-prefix--header').append elements
+          componentManager.initialize componentSettings
+
+          filter =
+            url: 'foo/1'
+
+          componentManager.refresh filter
+
+          $target = $ '.test-prefix--header'
+          $children = $target.children()
+
+          first = $children.eq(0).data 'order'
+          second = $children.eq(1).data 'order'
+          third = $children.eq(2).data 'order'
+          fourth = $children.eq(3).data 'order'
+
+          fifth = $children.eq(4).attr 'id'
+          sixth = $children.eq(5).attr 'id'
+          seventh = $children.eq(6).attr 'id'
+
+          assert.equal first, 1
+          assert.equal second, 2
+          assert.equal third, 5
+          assert.equal fourth, 7
+
+          assert.equal fifth, 'dummy1'
+          assert.equal sixth, 'dummy2'
+          assert.equal seventh, 'dummy3'
+
+
+        it 'it should add components in an ascending order even though there are already elements with an order attribut in the dom', ->
 
     describe '_isComponentAreaEmpty', ->
       it 'should', ->
