@@ -8,21 +8,25 @@ __testOnly = Vigor.ComponentManager.__testOnly
 clock = undefined
 
 class MockComponent
+
   $el: undefined
   attr: undefined
+
   constructor: (attr) ->
     @attr = attr
     @$el = $ '<div clas="mock-component"></div>'
+    if @attr?.id
+      @$el.attr 'id', @attr?.id
 
   delegateEvents: ->
     eventsDelegated = true
-    console.log 'yeeey someone called me'
     return eventsDelegated
 
   render: ->
     return @
 
-
+  onAddedToDom: ->
+    return @
 
 class MockComponent2
   $el: undefined
@@ -2328,46 +2332,55 @@ describe 'The componentManager', ->
         do $('.test-prefix--header').remove
 
       describe 'should add elements in order', ->
-        componentSettings =
-          components: [
-            {
-              id: 'mock-component',
-              src: 'window.MockComponent'
-            }
-          ]
-          instances: [
-            {
-              id: 'instance-1',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              urlPattern: 'foo/:bar'
-              order: 1
-            }
-            {
-              id: 'instance-2',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              urlPattern: 'foo/:bar'
-              order: 2
-            }
-            {
-              id: 'instance-3',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              urlPattern: 'foo/:bar'
-              order: 5
-            }
-            {
-              id: 'instance-4',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              urlPattern: 'foo/:bar'
-              order: 7
-            }
-          ]
+        componentSettings = undefined
+        beforeEach ->
+          componentSettings =
+            components: [
+              {
+                id: 'mock-component',
+                src: 'window.MockComponent'
+              }
+            ]
+            instances: [
+              {
+                id: 'instance-1',
+                componentId: 'mock-component',
+                targetName: 'test-prefix--header'
+                urlPattern: 'foo/:bar'
+                order: 1
+                args:
+                  id: 'instance-1'
+              }
+              {
+                id: 'instance-2',
+                componentId: 'mock-component',
+                targetName: 'test-prefix--header'
+                urlPattern: 'foo/:bar'
+                order: 2
+                args:
+                  id: 'instance-2'
+              }
+              {
+                id: 'instance-3',
+                componentId: 'mock-component',
+                targetName: 'test-prefix--header'
+                urlPattern: 'foo/:bar'
+                order: 5
+                args:
+                  id: 'instance-3'
+              }
+              {
+                id: 'instance-4',
+                componentId: 'mock-component',
+                targetName: 'test-prefix--header'
+                urlPattern: 'foo/:bar'
+                order: 7
+                args:
+                  id: 'instance-4'
+              }
+            ]
 
-
-        it 'should add components in an ascending order', ->
+        it 'should add components with an order attribute in an ascending order', ->
           componentManager.initialize componentSettings
 
           filter =
@@ -2378,17 +2391,20 @@ describe 'The componentManager', ->
           $target = $ '.test-prefix--header'
           $children = $target.children()
 
-          first = $children.eq(0).data 'order'
-          second = $children.eq(1).data 'order'
-          third = $children.eq(2).data 'order'
-          fourth = $children.eq(3).data 'order'
+          first = $children.eq(0).attr 'id'
+          second = $children.eq(1).attr 'id'
+          third = $children.eq(2).attr 'id'
+          fourth = $children.eq(3).attr 'id'
 
-          assert.equal first, 1
-          assert.equal second, 2
-          assert.equal third, 5
-          assert.equal fourth, 7
+          assert.equal first, 'instance-1'
+          assert.equal second, 'instance-2'
+          assert.equal third, 'instance-3'
+          assert.equal fourth, 'instance-4'
 
-        it 'it should add components in an ascending order even though there are already elements without an order attribut in the dom', ->
+        it 'it should add components in an ascending order even though there are
+        already elements without an order attribute in the dom (elements without
+        an order attributes should be pushed to the bottom)', ->
+
           elements = '<div id="dummy1"></div>'
           elements += '<div id="dummy2"></div>'
           elements += '<div id="dummy3"></div>'
@@ -2404,26 +2420,192 @@ describe 'The componentManager', ->
           $target = $ '.test-prefix--header'
           $children = $target.children()
 
-          first = $children.eq(0).data 'order'
-          second = $children.eq(1).data 'order'
-          third = $children.eq(2).data 'order'
-          fourth = $children.eq(3).data 'order'
+          first = $children.eq(0).attr 'id'
+          second = $children.eq(1).attr 'id'
+          third = $children.eq(2).attr 'id'
+          fourth = $children.eq(3).attr 'id'
 
           fifth = $children.eq(4).attr 'id'
           sixth = $children.eq(5).attr 'id'
           seventh = $children.eq(6).attr 'id'
 
-          assert.equal first, 1
-          assert.equal second, 2
-          assert.equal third, 5
-          assert.equal fourth, 7
+          assert.equal first, 'instance-1'
+          assert.equal second, 'instance-2'
+          assert.equal third, 'instance-3'
+          assert.equal fourth, 'instance-4'
 
           assert.equal fifth, 'dummy1'
           assert.equal sixth, 'dummy2'
           assert.equal seventh, 'dummy3'
 
+        it 'it should add components in an ascending order even though there are
+        already elements with an order attribute in the dom', ->
 
-        it 'it should add components in an ascending order even though there are already elements with an order attribut in the dom', ->
+          elements = '<div id="dummy1" data-order="3"></div>'
+          elements += '<div id="dummy2" data-order="4"></div>'
+          elements += '<div id="dummy3" data-order="6"></div>'
+
+          $('.test-prefix--header').append elements
+          componentManager.initialize componentSettings
+
+          filter =
+            url: 'foo/1'
+
+          componentManager.refresh filter
+
+          $target = $ '.test-prefix--header'
+          $children = $target.children()
+
+          first = $children.eq(0).attr 'id'
+          second = $children.eq(1).attr 'id'
+          third = $children.eq(2).attr 'id'
+          fourth = $children.eq(3).attr 'id'
+          fifth = $children.eq(4).attr 'id'
+          sixth = $children.eq(5).attr 'id'
+          seventh = $children.eq(6).attr 'id'
+
+          assert.equal first, 'instance-1'
+          assert.equal second, 'instance-2'
+          assert.equal third, 'dummy1'
+          assert.equal fourth, 'dummy2'
+          assert.equal fifth, 'instance-3'
+          assert.equal sixth, 'dummy3'
+          assert.equal seventh, 'instance-4'
+
+        it 'should add components with order set to "top" first - before any
+        other elements', ->
+          componentSettings.instances[2].order = 'top'
+          componentManager.initialize componentSettings
+
+          filter =
+            url: 'foo/1'
+
+          componentManager.refresh filter
+
+          $target = $ '.test-prefix--header'
+          $children = $target.children()
+
+          first = $children.eq(0).attr 'id'
+          second = $children.eq(1).attr 'id'
+          third = $children.eq(2).attr 'id'
+          fourth = $children.eq(3).attr 'id'
+
+          assert.equal first, 'instance-3'
+          assert.equal second, 'instance-1'
+          assert.equal third, 'instance-2'
+          assert.equal fourth, 'instance-4'
+
+        it 'should add components with order set to "bottom" last - after any
+        other elements', ->
+          componentSettings.instances[2].order = 'bottom'
+          componentManager.initialize componentSettings
+
+          filter =
+            url: 'foo/1'
+
+          componentManager.refresh filter
+
+          $target = $ '.test-prefix--header'
+          $children = $target.children()
+
+          first = $children.eq(0).attr 'id'
+          second = $children.eq(1).attr 'id'
+          third = $children.eq(2).attr 'id'
+          fourth = $children.eq(3).attr 'id'
+
+          assert.equal first, 'instance-1'
+          assert.equal second, 'instance-2'
+          assert.equal third, 'instance-4'
+          assert.equal fourth, 'instance-3'
+
+        it 'should add components without any order attribute last', ->
+          componentSettings.instances[2].order = undefined
+          componentManager.initialize componentSettings
+
+          filter =
+            url: 'foo/1'
+
+          componentManager.refresh filter
+
+          $target = $ '.test-prefix--header'
+          $children = $target.children()
+
+          first = $children.eq(0).attr 'id'
+          second = $children.eq(1).attr 'id'
+          third = $children.eq(2).attr 'id'
+          fourth = $children.eq(3).attr 'id'
+
+          assert.equal first, 'instance-1'
+          assert.equal second, 'instance-2'
+          assert.equal third, 'instance-4'
+          assert.equal fourth, 'instance-3'
+
+      it 'after adding the instance $el to the dom it should verify that its present
+      and if the instance has an onAddedToDom method it should be called', ->
+
+        componentSettings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 1
+              args:
+                id: 'instance-1'
+            }
+          ]
+
+        componentManager.initialize componentSettings
+
+        filter =
+          url: 'foo/1'
+
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+        isAttachedSpy = sandbox.spy instanceDefinition, 'isAttached'
+        onAddedToDomSpy = sandbox.spy MockComponent.prototype, 'onAddedToDom'
+
+        componentManager.refresh filter
+
+        assert isAttachedSpy.called
+        assert onAddedToDomSpy.called
+
+      it 'should return the componentManager for chainability', ->
+        componentSettings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 1
+              args:
+                id: 'instance-1'
+            }
+          ]
+
+        componentManager.initialize componentSettings
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+        filter =
+          url: 'foo/1'
+
+        componentManager.refresh filter
+
+        cm = componentManager._addInstanceInOrder instanceDefinition
+        assert.equal cm, componentManager
 
     describe '_isComponentAreaEmpty', ->
       it 'should', ->
