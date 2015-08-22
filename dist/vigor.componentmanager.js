@@ -1382,7 +1382,7 @@
         }
         if ($target.length > 0) {
           this._addInstanceInOrder(instanceDefinition);
-          this._setComponentAreaHasComponentState($target);
+          this._setComponentAreaPopulatedState($target);
         }
         return instanceDefinition.isAttached();
       };
@@ -1420,12 +1420,12 @@
         return this;
       };
 
-      ComponentManager.prototype._isComponentAreaEmpty = function($componentArea) {
+      ComponentManager.prototype._isComponentAreaPopulated = function($componentArea) {
         return $componentArea.children().length > 0;
       };
 
-      ComponentManager.prototype._setComponentAreaHasComponentState = function($componentArea) {
-        return $componentArea.toggleClass(this._targetPrefix + "--has-component", this._isComponentAreaEmpty($componentArea));
+      ComponentManager.prototype._setComponentAreaPopulatedState = function($componentArea) {
+        return $componentArea.toggleClass(this._targetPrefix + "--has-components", this._isComponentAreaPopulated($componentArea));
       };
 
       ComponentManager.prototype._serialize = function() {
@@ -1488,7 +1488,7 @@
         var $target;
         instanceDefinition.disposeInstance();
         $target = $("." + (instanceDefinition.get('targetName')), this._$context);
-        return this._setComponentAreaHasComponentState($target);
+        return this._setComponentAreaPopulatedState($target);
       };
 
       ComponentManager.prototype._onActiveInstanceOrderChange = function(instanceDefinition) {

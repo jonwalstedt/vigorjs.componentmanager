@@ -2270,21 +2270,21 @@ describe 'The componentManager', ->
         componentManager._addInstanceToDom instanceDefinition, render
         assert addInstanceInOrderStub.calledWith instanceDefinition
 
-      it 'should call _setComponentAreaHasComponentState and pass the $target if there is a target present in the dom', ->
+      it 'should call _setComponentAreaPopulatedState and pass the $target if there is a target present in the dom', ->
         instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
         do $('.test-prefix--header').remove
         render = true
-        setComponentAreaHasComponentStateStub = sandbox.stub componentManager, '_setComponentAreaHasComponentState'
+        setComponentAreaHasComponentStateStub = sandbox.stub componentManager, '_setComponentAreaPopulatedState'
         componentManager._addInstanceToDom instanceDefinition, render
 
         assert.equal setComponentAreaHasComponentStateStub.called, false
 
-      it 'should call _setComponentAreaHasComponentState and pass the $target if there is a target present in the dom', ->
+      it 'should call _setComponentAreaPopulatedState and pass the $target if there is a target present in the dom', ->
         instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
         $target = $ '.test-prefix--header'
         render = true
         sandbox.stub componentManager, '_addInstanceInOrder'
-        setComponentAreaHasComponentStateStub = sandbox.stub componentManager, '_setComponentAreaHasComponentState'
+        setComponentAreaHasComponentStateStub = sandbox.stub componentManager, '_setComponentAreaPopulatedState'
         componentManager._addInstanceToDom instanceDefinition, render
 
         $passedTarget = setComponentAreaHasComponentStateStub.args[0][0]
@@ -2540,7 +2540,7 @@ describe 'The componentManager', ->
           assert.equal third, 'instance-4'
           assert.equal fourth, 'instance-3'
 
-      it 'after adding the instance $el to the dom it should verify that its present
+      it 'after adding instance $el to the dom it should verify that its present
       and if the instance has an onAddedToDom method it should be called', ->
 
         componentSettings =
@@ -2607,8 +2607,52 @@ describe 'The componentManager', ->
         cm = componentManager._addInstanceInOrder instanceDefinition
         assert.equal cm, componentManager
 
-    describe '_isComponentAreaEmpty', ->
-      it 'should', ->
+    describe '_isComponentAreaPopulated', ->
+      beforeEach ->
+        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
+
+      afterEach ->
+        do $('.test-prefix--header').remove
+
+      it 'should return true if passed element has children', ->
+        $componentArea = $ '#test-header'
+        $componentArea.append '<div class="dummy-component"></div>'
+        isPopulated = componentManager._isComponentAreaPopulated $componentArea
+        assert.equal isPopulated, true
+
+      it 'should return false if passed element has no children', ->
+        $componentArea = $ '#test-header'
+        isPopulated = componentManager._isComponentAreaPopulated $componentArea
+        assert.equal isPopulated, false
+
+    describe '_setComponentAreaPopulatedState', ->
+      beforeEach ->
+        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
+
+      afterEach ->
+        do $('.test-prefix--header').remove
+
+      it 'should add a --has-components variation class to the component area
+        ex: component-area--has-components if it holds components', ->
+
+        componentManager.setTargetPrefix 'test-prefix'
+        $componentArea = $ '#test-header'
+        $componentArea.append '<div class="vigor-component"></div>'
+
+        componentManager._setComponentAreaPopulatedState $componentArea
+
+        assert $componentArea.hasClass('test-prefix--has-components')
+
+
+      it 'should remove the --has-components variation class to the component area
+      does not hold any components', ->
+
+        componentManager.setTargetPrefix 'test-prefix'
+        $componentArea = $ '#test-header'
+
+        componentManager._setComponentAreaPopulatedState $componentArea
+
+        assert.equal $componentArea.hasClass('test-prefix--has-components'), false
 
     describe '_serialize', ->
       it 'should', ->
