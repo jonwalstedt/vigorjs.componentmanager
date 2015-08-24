@@ -921,7 +921,42 @@
       };
 
       ComponentManager.prototype.serialize = function() {
-        return this._serialize();
+        var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
+        hidden = [];
+        componentSettings = {};
+        conditions = this._globalConditionsModel.toJSON();
+        components = this._componentDefinitionsCollection.toJSON();
+        instances = this._instanceDefinitionsCollection.toJSON();
+        for (j = 0, len = instances.length; j < len; j++) {
+          instanceDefinition = instances[j];
+          instanceDefinition.instance = void 0;
+        }
+        $context = this.getContext();
+        if ($context.length > 0) {
+          tagName = $context.prop('tagName').toLowerCase();
+          classes = (ref = $context.attr('class')) != null ? ref.replace(' ', '.') : void 0;
+          contextSelector = $context.selector || (tagName + "." + classes);
+        } else {
+          contextSelector = 'body';
+        }
+        settings = {
+          $context: contextSelector,
+          componentClassName: this.getComponentClassName(),
+          targetPrefix: this.getTargetPrefix(),
+          componentSettings: {
+            conditions: conditions,
+            components: components,
+            hidden: hidden,
+            instances: instances
+          }
+        };
+        filter = function(key, value) {
+          if (typeof value === 'function') {
+            return value.toString();
+          }
+          return value;
+        };
+        return JSON.stringify(settings, filter);
       };
 
       ComponentManager.prototype.parse = function(jsonString, updateSettings) {
@@ -1426,45 +1461,6 @@
 
       ComponentManager.prototype._setComponentAreaPopulatedState = function($componentArea) {
         return $componentArea.toggleClass(this._targetPrefix + "--has-components", this._isComponentAreaPopulated($componentArea));
-      };
-
-      ComponentManager.prototype._serialize = function() {
-        var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
-        hidden = [];
-        componentSettings = {};
-        conditions = this._globalConditionsModel.toJSON();
-        components = this._componentDefinitionsCollection.toJSON();
-        instances = this._instanceDefinitionsCollection.toJSON();
-        for (j = 0, len = instances.length; j < len; j++) {
-          instanceDefinition = instances[j];
-          instanceDefinition.instance = void 0;
-        }
-        $context = this.getContext();
-        if ($context.length > 0) {
-          tagName = $context.prop('tagName').toLowerCase();
-          classes = (ref = $context.attr('class')) != null ? ref.replace(' ', '.') : void 0;
-          contextSelector = $context.selector || (tagName + "." + classes);
-        } else {
-          contextSelector = 'body';
-        }
-        settings = {
-          $context: contextSelector,
-          componentClassName: this.getComponentClassName(),
-          targetPrefix: this.getTargetPrefix(),
-          componentSettings: {
-            conditions: conditions,
-            components: components,
-            hidden: hidden,
-            instances: instances
-          }
-        };
-        filter = function(key, value) {
-          if (typeof value === 'function') {
-            return value.toString();
-          }
-          return value;
-        };
-        return JSON.stringify(settings, filter);
       };
 
       ComponentManager.prototype._onActiveInstanceAdd = function(instanceDefinition) {

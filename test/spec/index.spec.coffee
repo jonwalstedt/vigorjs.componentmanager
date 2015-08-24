@@ -152,11 +152,96 @@ describe 'The componentManager', ->
         cm = componentManager.refresh()
         assert.equal cm, componentManager
 
-    describe 'serialize', ->
-      it 'should call _serialize', ->
-        serializeStub = sandbox.stub componentManager, 'serialize'
+    describe.only 'serialize', ->
+      settings = undefined
+      beforeEach ->
+        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
+        settings =
+          $context: '.test-prefix--header'
+          componentClassName: 'test-component'
+          targetPrefix: 'test-prefix'
+          componentSettings:
+            conditions:
+              isValWithinLimit: ->
+                limit = 300
+                val = 100
+                return val < limit
+
+            components: [
+              {
+                id: 'mock-component',
+                src: 'window.MockComponent'
+              }
+            ]
+
+            instances: [
+              {
+                id: 'instance-1',
+                componentId: 'mock-component',
+                targetName: 'test-prefix--header'
+                urlPattern: 'foo/:bar'
+                order: 1
+                args:
+                  id: 'instance-1'
+              }
+            ]
+
+      afterEach ->
+        do $('.test-prefix--header').remove
+
+      it 'should call toJSON on the globalConditionsModel', ->
+        componentManager.initialize settings
+        toJSONSpy = sandbox.spy componentManager._globalConditionsModel, 'toJSON'
         do componentManager.serialize
-        assert serializeStub.called
+        assert toJSONSpy.called
+
+      it 'should call toJSON on the _componentDefinitionsCollection', ->
+        componentManager.initialize settings
+        toJSONSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'toJSON'
+        do componentManager.serialize
+        assert toJSONSpy.called
+
+      it 'should call toJSON on the _instanceDefinitionsCollection', ->
+        componentManager.initialize settings
+        toJSONSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'toJSON'
+        do componentManager.serialize
+        assert toJSONSpy.called
+
+      it 'should call getComponentClassName', ->
+        componentManager.initialize settings
+        getComponentClassNameSpy = sandbox.spy componentManager, 'getComponentClassName'
+        do componentManager.serialize
+        assert getComponentClassNameSpy.called
+
+      it 'should call getTargetPrefix', ->
+        componentManager.initialize settings
+        getTargetPrefixSpy = sandbox.spy componentManager, 'getTargetPrefix'
+        do componentManager.serialize
+        assert getTargetPrefixSpy.called
+
+      it 'should stringify current state of the componentManager so that it can
+      be parsed back at a later time', ->
+        componentManager.initialize settings
+        serialized = do componentManager.serialize
+        parsed = componentManager.parse serialized
+
+        firstSettingsInstance = settings.componentSettings.instances[0]
+        firstParsedInstance = parsed.componentSettings.instances[0]
+
+        assert parsed
+        assert.equal parsed.$context, settings.$context
+        assert.equal parsed.componentClassName, settings.componentClassName
+        assert.equal parsed.targetPrefix, settings.targetPrefix
+
+        assert.equal JSON.stringify(parsed.componentSettings.conditions), JSON.stringify(settings.componentSettings.conditions)
+        assert.equal parsed.componentSettings.conditions.isValWithinLimit(), settings.componentSettings.conditions.isValWithinLimit()
+
+        assert.equal firstParsedInstance.id, firstSettingsInstance.id
+        assert.equal firstParsedInstance.componentId, firstSettingsInstance.componentId
+        assert.equal firstParsedInstance.targetName, firstSettingsInstance.targetName
+        assert.equal firstParsedInstance.urlPattern, firstSettingsInstance.urlPattern
+        assert.equal firstParsedInstance.order, firstSettingsInstance.order
+        assert.deepEqual firstParsedInstance.args, firstSettingsInstance.args
 
     describe 'parse', ->
       settings =
@@ -2654,8 +2739,6 @@ describe 'The componentManager', ->
 
         assert.equal $componentArea.hasClass('test-prefix--has-components'), false
 
-    describe '_serialize', ->
-      it 'should', ->
 
 
   # Callbacks

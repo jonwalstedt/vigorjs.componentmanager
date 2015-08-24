@@ -59,7 +59,39 @@ class ComponentManager
     return @
 
   serialize: ->
-    return @_serialize()
+    hidden = []
+    componentSettings = {}
+    conditions = @_globalConditionsModel.toJSON()
+    components = @_componentDefinitionsCollection.toJSON()
+    instances = @_instanceDefinitionsCollection.toJSON()
+
+    for instanceDefinition in instances
+      instanceDefinition.instance = undefined
+
+    $context = @getContext()
+    if $context.length > 0
+      tagName = $context.prop('tagName').toLowerCase()
+      classes = $context.attr('class')?.replace ' ', '.'
+      contextSelector = $context.selector or "#{tagName}.#{classes}"
+    else
+      contextSelector = 'body'
+
+    settings =
+      $context: contextSelector
+      componentClassName: @getComponentClassName()
+      targetPrefix: @getTargetPrefix()
+      componentSettings:
+        conditions: conditions
+        components: components
+        hidden: hidden
+        instances: instances
+
+    filter = (key, value) ->
+      if typeof value is 'function'
+          return value.toString()
+      return value
+
+    return JSON.stringify(settings, filter)
 
   parse: (jsonString, updateSettings = false) ->
     filter = (key, value) ->
@@ -454,41 +486,6 @@ class ComponentManager
 
   _setComponentAreaPopulatedState: ($componentArea) ->
     $componentArea.toggleClass "#{@_targetPrefix}--has-components", @_isComponentAreaPopulated($componentArea)
-
-  _serialize: ->
-    hidden = []
-    componentSettings = {}
-    conditions = @_globalConditionsModel.toJSON()
-    components = @_componentDefinitionsCollection.toJSON()
-    instances = @_instanceDefinitionsCollection.toJSON()
-
-    for instanceDefinition in instances
-      instanceDefinition.instance = undefined
-
-    $context = @getContext()
-    if $context.length > 0
-      tagName = $context.prop('tagName').toLowerCase()
-      classes = $context.attr('class')?.replace ' ', '.'
-      contextSelector = $context.selector or "#{tagName}.#{classes}"
-    else
-      contextSelector = 'body'
-
-    settings =
-      $context: contextSelector
-      componentClassName: @getComponentClassName()
-      targetPrefix: @getTargetPrefix()
-      componentSettings:
-        conditions: conditions
-        components: components
-        hidden: hidden
-        instances: instances
-
-    filter = (key, value) ->
-      if typeof value is 'function'
-          return value.toString()
-      return value
-
-    return JSON.stringify(settings, filter)
 
   #
   # Callbacks

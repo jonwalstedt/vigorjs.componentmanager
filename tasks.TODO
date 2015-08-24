@@ -11,14 +11,16 @@
  ✔ Make a small example reordering a list of components using vigorjs and the component manager (produce a list with random) @done (15-06-05 20:40)
  ✔ Add a proper globalConditionsModel to avoid mixup with registered conditions in the filtermodel. Check this all the way through @done (15-06-26 07:52)
  ☐ Unit test
+ ☐ Unit test ComponentDefinitionsCollection
+ ☐ Pass arguments to conditions?
  ☐ Send message from iframe to Instance
  ☐ Send message to iframe from instance
  ☐ Refactor to have all errormessages as constants
  ☐ Is there a usecase for the hidden array (that belongs inside the componentmanager or should it be handled from the outside)?
+ ☐ Hidden components and the hidden array
  ☐ Protected components?
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable
 
- ☐ Hidden components and the hidden array
  ☐ Readd hidden components
  ☐ Does fix for global stray components cause memory leak?
  ✔ AMD and Commonjs modules - dont forget the require logic for this @done (15-06-05 20:41)
