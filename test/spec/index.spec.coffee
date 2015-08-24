@@ -152,7 +152,7 @@ describe 'The componentManager', ->
         cm = componentManager.refresh()
         assert.equal cm, componentManager
 
-    describe.only 'serialize', ->
+    describe 'serialize', ->
       settings = undefined
       beforeEach ->
         $('body').append '<div class="test-prefix--header" id="test-header"></div>'
