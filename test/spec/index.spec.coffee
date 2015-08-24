@@ -2745,7 +2745,48 @@ describe 'The componentManager', ->
   ##############################################################################
   describe 'callbacks', ->
     describe '_onActiveInstanceAdd', ->
-      it 'should', ->
+      componentSettings = undefined
+      instanceDefinition = undefined
+      beforeEach ->
+        componentSettings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 1
+              args:
+                id: 'instance-1'
+            }
+          ]
+
+        componentManager.initialize componentSettings
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
+      it 'should call _addInstanceToModel and pass the added instanceDefinition', ->
+        addInstanceToModelStub = sandbox.stub componentManager, '_addInstanceToModel'
+        componentManager._onActiveInstanceAdd instanceDefinition
+
+        assert addInstanceToModelStub.calledWith instanceDefinition
+
+      it 'should call _addInstanceToDom and pass the added instanceDefinition', ->
+        addInstanceToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
+        componentManager._onActiveInstanceAdd instanceDefinition
+
+        assert addInstanceToDomStub.calledWith instanceDefinition
+
+      it 'should call incrementShowCount on the added instanceDefinition', ->
+        incrementShowCountStub = sandbox.stub instanceDefinition, 'incrementShowCount'
+        componentManager._onActiveInstanceAdd instanceDefinition
+
+        assert incrementShowCountStub.called
 
     describe '_onActiveInstanceChange', ->
       it 'should', ->
