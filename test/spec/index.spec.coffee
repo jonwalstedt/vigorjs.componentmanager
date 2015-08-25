@@ -1,45 +1,15 @@
 assert = require 'assert'
 sinon = require 'sinon'
 Vigor = require '../../dist/vigor.componentmanager'
+mockComponents = require './mockComponents'
 
 componentManager = new Vigor.ComponentManager()
 __testOnly = Vigor.ComponentManager.__testOnly
 
+MockComponent = window.MockComponent = mockComponents.MockComponent
+MockComponent2 = window.MockComponent2 = mockComponents.MockComponent2
+
 clock = undefined
-
-class MockComponent
-
-  $el: undefined
-  attr: undefined
-
-  constructor: (attr) ->
-    @attr = attr
-    @$el = $ '<div clas="mock-component"></div>'
-    if @attr?.id
-      @$el.attr 'id', @attr?.id
-
-  delegateEvents: ->
-    eventsDelegated = true
-    return eventsDelegated
-
-  render: ->
-    return @
-
-  onAddedToDom: ->
-    return @
-
-class MockComponent2
-  $el: undefined
-  attr: undefined
-  constructor: (attr) ->
-    @attr = attr
-    @$el = $ '<div clas="mock-component2"></div>'
-
-  render: ->
-    return @
-
-window.MockComponent = MockComponent
-window.MockComponent2 = MockComponent2
 
 describe 'The componentManager', ->
   sandbox = undefined
