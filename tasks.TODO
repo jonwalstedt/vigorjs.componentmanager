@@ -16,9 +16,9 @@ Completed
  ✔ Ability to serialize save/get setup and save to local storage @done (15-06-05 20:41)
  ✔ Improved parsing @done (15-04-29 00:41)
  ✔ Unit test @done (15-08-25 23:31)
+ ✔ Unit test ComponentDefinitionsCollection @done (15-08-26 00:35)
 
  Next up
- ☐ Unit test ComponentDefinitionsCollection
  ☐ Refactor to have all errormessages as constants
  ☐ Send message from iframe to Instance
  ☐ Send message to iframe from instance
