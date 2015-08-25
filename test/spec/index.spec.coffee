@@ -2744,32 +2744,32 @@ describe 'The componentManager', ->
   # Callbacks
   ##############################################################################
   describe 'callbacks', ->
+    componentSettings = undefined
+    instanceDefinition = undefined
+    beforeEach ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+            urlPattern: 'foo/:bar'
+            order: 1
+            args:
+              id: 'instance-1'
+          }
+        ]
+
+      componentManager.initialize componentSettings
+      instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
+
     describe '_onActiveInstanceAdd', ->
-      componentSettings = undefined
-      instanceDefinition = undefined
-      beforeEach ->
-        componentSettings =
-          components: [
-            {
-              id: 'mock-component',
-              src: 'window.MockComponent'
-            }
-          ]
-          instances: [
-            {
-              id: 'instance-1',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              urlPattern: 'foo/:bar'
-              order: 1
-              args:
-                id: 'instance-1'
-            }
-          ]
-
-        componentManager.initialize componentSettings
-        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
-
       it 'should call _addInstanceToModel and pass the added instanceDefinition', ->
         addInstanceToModelStub = sandbox.stub componentManager, '_addInstanceToModel'
         componentManager._onActiveInstanceAdd instanceDefinition
@@ -2789,13 +2789,61 @@ describe 'The componentManager', ->
         assert incrementShowCountStub.called
 
     describe '_onActiveInstanceChange', ->
-      it 'should', ->
+      it 'should call toJSON on the _filterModel', ->
+        toJSONSpy = sandbox.spy componentManager._filterModel, 'toJSON'
+        componentManager._onActiveInstanceChange instanceDefinition
+
+        assert toJSONSpy.called
+
+      it 'should call toJSON on the _globalConditionsModel', ->
+        toJSONSpy = sandbox.spy componentManager._globalConditionsModel, 'toJSON'
+        componentManager._onActiveInstanceChange instanceDefinition
+
+        assert toJSONSpy.called
+
+      it 'should call passesFilter on the instanceDefinition and pass active filters and global conditions', ->
+        passesFilterSpy = sandbox.spy instanceDefinition, 'passesFilter'
+        filter = componentManager._filterModel.toJSON()
+        globalConditions = componentManager._globalConditionsModel.toJSON()
+        componentManager._onActiveInstanceChange instanceDefinition
+
+        assert passesFilterSpy.calledWith filter, globalConditions
+
+      describe 'if the changed instanceDefinition passes the filter check', ->
+        it 'it should call disposeInstance on the instanceDefinition', ->
+          disposeInstanceSpy = sandbox.spy instanceDefinition, 'disposeInstance'
+          componentManager._onActiveInstanceChange instanceDefinition
+          assert disposeInstanceSpy.called
+
+        it 'it should call _addInstanceToModel and pass the instanceDefinition', ->
+          addInstanceToModelStub = sandbox.spy componentManager, '_addInstanceToModel'
+          componentManager._onActiveInstanceChange instanceDefinition
+          assert addInstanceToModelStub.calledWith instanceDefinition
+
+        it 'it should call _addInstanceToDom and pass the instanceDefinition', ->
+          addInstanceToDomStub = sandbox.spy componentManager, '_addInstanceToDom'
+          componentManager._onActiveInstanceChange instanceDefinition
+          assert addInstanceToDomStub.calledWith instanceDefinition
 
     describe '_onActiveInstanceRemoved', ->
-      it 'should', ->
+      it 'should call disposeInstance on the instanceDefinition', ->
+        disposeInstanceSpy = sandbox.spy instanceDefinition, 'disposeInstance'
+        componentManager._onActiveInstanceRemoved instanceDefinition
+        assert disposeInstanceSpy.called
+
+      it 'should call _setComponentAreaPopulatedState and pass the removed instance target', ->
+        setComponentAreaPopulatedStateSpy = sandbox.spy componentManager, '_setComponentAreaPopulatedState'
+        componentManager._onActiveInstanceRemoved instanceDefinition
+        assert setComponentAreaPopulatedStateSpy.called
 
     describe '_onActiveInstanceOrderChange', ->
-      it 'should', ->
+      it 'should call _addInstanceToDom and pass the changed instanceDefinition', ->
+        addInstanceToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
+        componentManager._onActiveInstanceOrderChange instanceDefinition
+        assert addInstanceToDomStub.called
 
     describe '_onActiveInstanceTargetNameChange', ->
-      it 'should', ->
+      it 'should call _addInstanceToDom and pass the changed instanceDefinition', ->
+        addInstanceToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
+        componentManager._onActiveInstanceOrderChange instanceDefinition
+        assert addInstanceToDomStub.called
