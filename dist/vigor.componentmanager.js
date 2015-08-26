@@ -195,6 +195,14 @@
         return BaseCollection.__super__.constructor.apply(this, arguments);
       }
 
+      BaseCollection.prototype.THROTTLED_DIFF = 'throttled_diff';
+
+      BaseCollection.prototype.THROTTLED_ADD = 'throttled_add';
+
+      BaseCollection.prototype.THROTTLED_CHANGE = 'throttled_change';
+
+      BaseCollection.prototype.THROTTLED_REMOVE = 'throttled_remove';
+
       BaseCollection.prototype._throttledAddedModels = void 0;
 
       BaseCollection.prototype._throttledChangedModels = void 0;
@@ -315,14 +323,6 @@
         return this._throttledDiff(this._throttledAdd(), this._throttledChange(), this._throttledRemove());
       };
 
-      BaseCollection.prototype.THROTTLED_DIFF = 'throttled_diff';
-
-      BaseCollection.prototype.THROTTLED_ADD = 'throttled_add';
-
-      BaseCollection.prototype.THROTTLED_CHANGE = 'throttled_change';
-
-      BaseCollection.prototype.THROTTLED_REMOVE = 'throttled_remove';
-
       return BaseCollection;
 
     })(Backbone.Collection);
@@ -332,6 +332,24 @@
       function ComponentDefinitionModel() {
         return ComponentDefinitionModel.__super__.constructor.apply(this, arguments);
       }
+
+      ComponentDefinitionModel.prototype.ERROR = {
+        VALIDATION: {
+          ID_UNDEFINED: 'id cant be undefined',
+          ID_NOT_A_STRING: 'id should be a string',
+          ID_IS_EMPTY_STRING: 'id can not be an empty string',
+          SRC_UNDEFINED: 'src cant be undefined',
+          SRC_WRONG_TYPE: 'src should be a string or a constructor function',
+          SRC_IS_EMPTY_STRING: 'src can not be an empty string'
+        },
+        MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested',
+        NO_CONSTRUCTOR_FOUND: function(src) {
+          return "No constructor function found for " + src;
+        },
+        MISSING_CONDITION: function(condition) {
+          return "Trying to verify condition " + condition + " but it has not been registered yet";
+        }
+      };
 
       ComponentDefinitionModel.prototype.defaults = {
         id: void 0,
@@ -346,23 +364,23 @@
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
         var isValidType;
         if (!attrs.id) {
-          throw 'id cant be undefined';
+          throw this.ERROR.VALIDATION.ID_UNDEFINED;
         }
         if (typeof attrs.id !== 'string') {
-          throw 'id should be a string';
+          throw this.ERROR.VALIDATION.ID_NOT_A_STRING;
         }
         if (/^\s+$/g.test(attrs.id)) {
-          throw 'id can not be an empty string';
+          throw this.ERROR.VALIDATION.ID_IS_EMPTY_STRING;
         }
         if (!attrs.src) {
-          throw 'src cant be undefined';
+          throw this.ERROR.VALIDATION.SRC_UNDEFINED;
         }
         isValidType = _.isString(attrs.src) || _.isFunction(attrs.src);
         if (!isValidType) {
-          throw 'src should be a string or a constructor function';
+          throw this.ERROR.VALIDATION.SRC_WRONG_TYPE;
         }
         if (_.isString(attrs.src) && /^\s+$/g.test(attrs.src)) {
-          throw 'src can not be an empty string';
+          throw this.ERROR.VALIDATION.SRC_IS_EMPTY_STRING;
         }
       };
 
@@ -383,7 +401,7 @@
           componentClass = src;
         }
         if (!_.isFunction(componentClass)) {
-          throw "No constructor function found for " + src;
+          throw this.ERROR.NO_CONSTRUCTOR_FOUND(src);
         }
         return componentClass;
       };
@@ -403,10 +421,10 @@
               break;
             } else if (_.isString(condition)) {
               if (!globalConditions) {
-                throw 'No global conditions was passed, condition could not be tested';
+                throw this.ERROR.MISSING_GLOBAL_CONDITIONS;
               }
               if (globalConditions[condition] == null) {
-                throw "Trying to verify condition " + condition + " but it has not been registered yet";
+                throw this.ERROR.MISSING_CONDITION(condition);
               }
               shouldBeIncluded = !!globalConditions[condition]();
               if (!shouldBeIncluded) {
@@ -471,6 +489,25 @@
         return InstanceDefinitionModel.__super__.constructor.apply(this, arguments);
       }
 
+      InstanceDefinitionModel.prototype.ERROR = {
+        VALIDATION: {
+          ID_UNDEFINED: 'id cant be undefined',
+          ID_NOT_A_STRING: 'id should be a string',
+          ID_IS_EMPTY_STRING: 'id can not be an empty string',
+          COMPONENT_ID_UNDEFINED: 'componentId cant be undefined',
+          COMPONENT_ID_NOT_A_STRING: 'componentId should be a string',
+          COMPONENT_ID_IS_EMPTY_STRING: 'componentId can not be an empty string',
+          TARGET_NAME_UNDEFINED: 'targetName cant be undefined'
+        },
+        MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested',
+        MISSING_RENDER_METHOD: function(id) {
+          return "The instance for " + id + " does not have a render method";
+        },
+        MISSING_CONDITION: function(condition) {
+          return "Trying to verify condition " + condition + " but it has not been registered yet";
+        }
+      };
+
       InstanceDefinitionModel.prototype.defaults = {
         id: void 0,
         componentId: void 0,
@@ -490,25 +527,25 @@
 
       InstanceDefinitionModel.prototype.validate = function(attrs, options) {
         if (!attrs.id) {
-          throw 'id cant be undefined';
+          throw this.ERROR.VALIDATION.ID_UNDEFINED;
         }
         if (!_.isString(attrs.id)) {
-          throw 'id should be a string';
+          throw this.ERROR.VALIDATION.ID_NOT_A_STRING;
         }
         if (!/^.*[^ ].*$/.test(attrs.id)) {
-          throw 'id can not be an empty string';
+          throw this.ERROR.VALIDATION.ID_IS_EMPTY_STRING;
         }
         if (!attrs.componentId) {
-          throw 'componentId cant be undefined';
+          throw this.ERROR.VALIDATION.COMPONENT_ID_UNDEFINED;
         }
         if (!_.isString(attrs.componentId)) {
-          throw 'componentId should be a string';
+          throw this.ERROR.VALIDATION.COMPONENT_ID_NOT_A_STRING;
         }
         if (!/^.*[^ ].*$/.test(attrs.componentId)) {
-          throw 'componentId can not be an empty string';
+          throw this.ERROR.VALIDATION.COMPONENT_ID_IS_EMPTY_STRING;
         }
         if (!attrs.targetName) {
-          throw 'targetName cant be undefined';
+          throw this.ERROR.VALIDATION.TARGET_NAME_UNDEFINED;
         }
       };
 
@@ -551,7 +588,7 @@
           return;
         }
         if (!instance.render) {
-          throw "The instance for " + (this.get('id')) + " does not have a render method";
+          throw this.ERROR.MISSING_RENDER_METHOD(this.get('id'));
         }
         if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
           instance.preRender();
@@ -689,10 +726,10 @@
               break;
             } else if (_.isString(condition)) {
               if (!globalConditions) {
-                throw 'No global conditions was passed, condition could not be tested';
+                throw this.ERROR.MISSING_GLOBAL_CONDITIONS;
               }
               if (globalConditions[condition] == null) {
-                throw "Trying to verify condition " + condition + " but it has not been registered yet";
+                throw this.ERROR.MISSING_CONDITION(condition);
               }
               shouldBeIncluded = globalConditions[condition]();
               if (!shouldBeIncluded) {

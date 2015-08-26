@@ -1,5 +1,24 @@
 class InstanceDefinitionModel extends Backbone.Model
 
+  ERROR:
+    VALIDATION:
+      ID_UNDEFINED: 'id cant be undefined'
+      ID_NOT_A_STRING: 'id should be a string'
+      ID_IS_EMPTY_STRING: 'id can not be an empty string'
+      COMPONENT_ID_UNDEFINED: 'componentId cant be undefined'
+      COMPONENT_ID_NOT_A_STRING: 'componentId should be a string'
+      COMPONENT_ID_IS_EMPTY_STRING: 'componentId can not be an empty string'
+      TARGET_NAME_UNDEFINED: 'targetName cant be undefined'
+
+    MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested'
+
+    MISSING_RENDER_METHOD: (id) ->
+      return "The instance for #{id} does not have a render method"
+
+    MISSING_CONDITION: (condition) ->
+      return "Trying to verify condition #{condition} but it has not been registered yet"
+
+
   defaults:
     id: undefined
     componentId: undefined
@@ -18,25 +37,25 @@ class InstanceDefinitionModel extends Backbone.Model
 
   validate: (attrs, options) ->
     unless attrs.id
-      throw 'id cant be undefined'
+      throw @ERROR.VALIDATION.ID_UNDEFINED
 
     unless _.isString(attrs.id)
-      throw 'id should be a string'
+      throw @ERROR.VALIDATION.ID_NOT_A_STRING
 
     unless /^.*[^ ].*$/.test(attrs.id)
-      throw 'id can not be an empty string'
+      throw @ERROR.VALIDATION.ID_IS_EMPTY_STRING
 
     unless attrs.componentId
-      throw 'componentId cant be undefined'
+      throw @ERROR.VALIDATION.COMPONENT_ID_UNDEFINED
 
     unless _.isString(attrs.componentId)
-      throw 'componentId should be a string'
+      throw @ERROR.VALIDATION.COMPONENT_ID_NOT_A_STRING
 
     unless /^.*[^ ].*$/.test(attrs.componentId)
-      throw 'componentId can not be an empty string'
+      throw @ERROR.VALIDATION.COMPONENT_ID_IS_EMPTY_STRING
 
     unless attrs.targetName
-      throw 'targetName cant be undefined'
+      throw @ERROR.VALIDATION.TARGET_NAME_UNDEFINED
 
   isAttached: ->
     instance = @get 'instance'
@@ -63,7 +82,7 @@ class InstanceDefinitionModel extends Backbone.Model
     instance = @get 'instance'
     unless instance then return
     unless instance.render
-      throw "The instance for #{@get('id')} does not have a render method"
+      throw @ERROR.MISSING_RENDER_METHOD @get('id')
 
     if instance.preRender? and _.isFunction(instance.preRender)
       do instance.preRender
@@ -170,10 +189,10 @@ class InstanceDefinitionModel extends Backbone.Model
 
         else if _.isString(condition)
           unless globalConditions
-            throw 'No global conditions was passed, condition could not be tested'
+            throw @ERROR.MISSING_GLOBAL_CONDITIONS
 
           unless globalConditions[condition]?
-            throw "Trying to verify condition #{condition} but it has not been registered yet"
+            throw @ERROR.MISSING_CONDITION condition
 
           shouldBeIncluded = globalConditions[condition]()
           if not shouldBeIncluded

@@ -2,6 +2,11 @@
 # hard dependency to the Vigorjs lib
 class BaseCollection extends Backbone.Collection
 
+  THROTTLED_DIFF: 'throttled_diff'
+  THROTTLED_ADD: 'throttled_add'
+  THROTTLED_CHANGE: 'throttled_change'
+  THROTTLED_REMOVE: 'throttled_remove'
+
   _throttledAddedModels: undefined
   _throttledChangedModels: undefined
   _throttledRemovedModels: undefined
@@ -91,7 +96,3 @@ class BaseCollection extends Backbone.Collection
   _triggerUpdates: =>
     @_throttledDiff @_throttledAdd(), @_throttledChange(), @_throttledRemove()
 
-  THROTTLED_DIFF: 'throttled_diff'
-  THROTTLED_ADD: 'throttled_add'
-  THROTTLED_CHANGE: 'throttled_change'
-  THROTTLED_REMOVE: 'throttled_remove'

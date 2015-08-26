@@ -17,9 +17,9 @@ Completed
  ✔ Improved parsing @done (15-04-29 00:41)
  ✔ Unit test @done (15-08-25 23:31)
  ✔ Unit test ComponentDefinitionsCollection @done (15-08-26 00:35)
+ ✔ Refactor to have all errormessages as constants @done (15-08-27 00:56)
 
  Next up
- ☐ Refactor to have all errormessages as constants
  ☐ Send message from iframe to Instance
  ☐ Send message to iframe from instance
  ☐ Pass arguments to conditions?

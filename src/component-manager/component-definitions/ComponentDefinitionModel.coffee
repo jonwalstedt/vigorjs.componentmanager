@@ -1,4 +1,22 @@
 class ComponentDefinitionModel extends Backbone.Model
+
+  ERROR:
+    VALIDATION:
+      ID_UNDEFINED: 'id cant be undefined'
+      ID_NOT_A_STRING: 'id should be a string'
+      ID_IS_EMPTY_STRING: 'id can not be an empty string'
+      SRC_UNDEFINED: 'src cant be undefined'
+      SRC_WRONG_TYPE: 'src should be a string or a constructor function'
+      SRC_IS_EMPTY_STRING: 'src can not be an empty string'
+
+    MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested'
+
+    NO_CONSTRUCTOR_FOUND: (src) ->
+      return "No constructor function found for #{src}"
+
+    MISSING_CONDITION: (condition) ->
+      return "Trying to verify condition #{condition} but it has not been registered yet"
+
   defaults:
     id: undefined
     src: undefined
@@ -10,23 +28,23 @@ class ComponentDefinitionModel extends Backbone.Model
 
   validate: (attrs, options) ->
     unless attrs.id
-      throw 'id cant be undefined'
+      throw @ERROR.VALIDATION.ID_UNDEFINED
 
     unless typeof attrs.id is 'string'
-      throw 'id should be a string'
+      throw @ERROR.VALIDATION.ID_NOT_A_STRING
 
     if /^\s+$/g.test(attrs.id)
-      throw 'id can not be an empty string'
+      throw @ERROR.VALIDATION.ID_IS_EMPTY_STRING
 
     unless attrs.src
-      throw 'src cant be undefined'
+      throw @ERROR.VALIDATION.SRC_UNDEFINED
 
     isValidType = _.isString(attrs.src) or _.isFunction(attrs.src)
     unless isValidType
-      throw 'src should be a string or a constructor function'
+      throw @ERROR.VALIDATION.SRC_WRONG_TYPE
 
     if _.isString(attrs.src) and /^\s+$/g.test(attrs.src)
-      throw 'src can not be an empty string'
+      throw @ERROR.VALIDATION.SRC_IS_EMPTY_STRING
 
 
   getClass: ->
@@ -47,7 +65,7 @@ class ComponentDefinitionModel extends Backbone.Model
       componentClass = src
 
     unless _.isFunction(componentClass)
-      throw "No constructor function found for #{src}"
+      throw @ERROR.NO_CONSTRUCTOR_FOUND src
 
     return componentClass
 
@@ -66,10 +84,10 @@ class ComponentDefinitionModel extends Backbone.Model
 
         else if _.isString(condition)
           unless globalConditions
-            throw 'No global conditions was passed, condition could not be tested'
+            throw @ERROR.MISSING_GLOBAL_CONDITIONS
 
           unless globalConditions[condition]?
-            throw "Trying to verify condition #{condition} but it has not been registered yet"
+            throw @ERROR.MISSING_CONDITION condition
 
           shouldBeIncluded = !!globalConditions[condition]()
           if not shouldBeIncluded
