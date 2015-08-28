@@ -158,6 +158,8 @@
       IframeComponent.prototype.src = void 0;
 
       function IframeComponent(attrs) {
+        this.onMessageReceived = bind(this.onMessageReceived, this);
+        this.onIframeLoaded = bind(this.onIframeLoaded, this);
         _.extend(this.attributes, attrs != null ? attrs.iframeAttributes : void 0);
         IframeComponent.__super__.constructor.apply(this, arguments);
       }
@@ -179,6 +181,10 @@
       };
 
       IframeComponent.prototype.onIframeLoaded = function(event) {};
+
+      IframeComponent.prototype.onMessageReceived = function(event) {
+        return console.log('instance should handle incomming message', event.data);
+      };
 
       return IframeComponent;
 
@@ -880,6 +886,7 @@
       var _defaultComponentClassName, _defaultTargetPrefix;
 
       function ComponentManager() {
+        this._onMessageReceived = bind(this._onMessageReceived, this);
         this._onActiveInstanceTargetNameChange = bind(this._onActiveInstanceTargetNameChange, this);
         this._onActiveInstanceOrderChange = bind(this._onActiveInstanceOrderChange, this);
         this._onActiveInstanceRemoved = bind(this._onActiveInstanceRemoved, this);
@@ -1057,6 +1064,7 @@
       };
 
       ComponentManager.prototype.addListeners = function() {
+        var eventMethod, eventer, messageEvent;
         this._filterModel.on('change', this._updateActiveComponents);
         this._componentDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
         this._instanceDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
@@ -1111,6 +1119,10 @@
             return _this.trigger.apply(_this, [_this.EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
+        eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
+        eventer = window[eventMethod];
+        messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message';
+        eventer(messageEvent, this._onMessageReceived, false);
         return this;
       };
 
@@ -1258,6 +1270,18 @@
           };
         })(this));
         return instances;
+      };
+
+      ComponentManager.prototype.postMessageToInstance = function(id, message) {
+        var instance;
+        if (!id) {
+          throw 'The id of targeted instance must be passed as first argument';
+        }
+        if (!message) {
+          throw 'No message was passed';
+        }
+        instance = this.getInstances(id);
+        return console.log('postMessageToInstance:', id, message);
       };
 
       ComponentManager.prototype._parse = function(settings) {
@@ -1530,6 +1554,13 @@
 
       ComponentManager.prototype._onActiveInstanceTargetNameChange = function(instanceDefinition) {
         return this._addInstanceToDom(instanceDefinition);
+      };
+
+      ComponentManager.prototype._onMessageReceived = function(event) {
+        var data, id;
+        id = event.data.id;
+        data = event.data.data;
+        return this.postMessageToInstance(id, data);
       };
 
       return ComponentManager;

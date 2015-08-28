@@ -1,10 +1,10 @@
 var app = app || {};
 app.components = app.components || {};
 
-app.components.ExtendedIframeComponent = Vigor.IframeComponent.extend({
+app.components.ExtendedIframeComponentThatSendsMessage = Vigor.IframeComponent.extend({
 
   initialize: function (args) {
-    console.log('ExtendedIframeComponent initialized', args);
+    console.log('ExtendedIframeComponentThatSendsMessage initialized', args);
   },
 
    dispose: function () {

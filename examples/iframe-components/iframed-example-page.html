@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <title>Iframed example page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
+    <script>
+      var id = window.location.search.substring(window.location.search.indexOf('id=') + 3);
+
+      if (id.indexOf('&') >= 0) {
+          id = id.substring(0, id.indexOf('&'));
+      }
+
+      function postMsg() {
+        var data = {
+          id: id,
+          data: {
+            val1: 1,
+            val2: 2
+          }
+        }
+        parent.postMessage(data, 'http://localhost:7070');
+      }
+
+      $(document).ready(function() {
+        $('.send-msg-button').on('click', postMsg);
+      });
+
+    </script>
+
+  </head>
+  <body>
+    <h1>Click button below to send message to parent</h1>
+    <button class="send-msg-button">Send message</button>
+  </body>
+</html>

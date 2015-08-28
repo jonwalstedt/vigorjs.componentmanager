@@ -185,6 +185,12 @@ class ComponentManager
     @_activeInstancesCollection.on 'remove', (model, collection, options) =>
       @trigger.apply @, [@EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
 
+    eventMethod = if window.addEventListener then 'addEventListener' else 'attachEvent'
+    eventer = window[eventMethod]
+    messageEvent = if eventMethod is 'attachEvent' then 'onmessage' else 'message'
+
+    eventer messageEvent, @_onMessageReceived, false
+
     return @
 
   addConditions: (conditions, silent = false) ->
@@ -286,7 +292,15 @@ class ComponentManager
       return instance
     return instances
 
+  postMessageToInstance: (id, message) ->
+    unless id
+      throw 'The id of targeted instance must be passed as first argument'
 
+    unless message
+      throw 'No message was passed'
+
+    instance = @getInstances id
+    console.log 'postMessageToInstance:', id, message
   #
   # Privat methods
   # ============================================================================
@@ -514,7 +528,11 @@ class ComponentManager
   _onActiveInstanceTargetNameChange: (instanceDefinition) =>
     @_addInstanceToDom instanceDefinition
 
+  _onMessageReceived: (event) =>
+    id = event.data.id
+    data = event.data.data
 
+    @postMessageToInstance id, data
 
 ### start-test-block ###
 # this will be removed in distribution build

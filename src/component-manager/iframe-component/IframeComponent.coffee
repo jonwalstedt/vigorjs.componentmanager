@@ -26,6 +26,9 @@ class IframeComponent extends Backbone.View
     @$el.off 'load', @onIframeLoaded
     do @remove
 
-  onIframeLoaded: (event) ->
+  onIframeLoaded: (event) =>
+
+  onMessageReceived: (event) =>
+    console.log 'instance should handle incomming message', event.data
 
 Vigor.IframeComponent = IframeComponent

@@ -23,6 +23,7 @@ Completed
  ☐ Send message from iframe to Instance
  ☐ Send message to iframe from instance
  ☐ Pass arguments to conditions?
+ ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)
 
  To consider
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable

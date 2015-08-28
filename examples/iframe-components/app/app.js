@@ -4,7 +4,6 @@ var app = app || {};
   'use strict';
 
   app.Filter = Backbone.View.extend({
-    router: undefined,
     events: {},
 
     initialize: function () {
@@ -13,8 +12,8 @@ var app = app || {};
         $context: this.$el
       });
 
-      this.router = new app.Router();
       Backbone.history.start({root: '/examples/iframe-component/'});
+      Vigor.componentManager.refresh();
     }
 });
 
