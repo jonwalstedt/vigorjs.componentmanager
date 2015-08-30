@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>Iframed example page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.js"></script>
+    <script>
+      var id1 = window.location.search.substring(window.location.search.indexOf('id1=') + 4),
+          id2 = window.location.search.substring(window.location.search.indexOf('id2=') + 4),
+          eventMethod = window.addEventListener ? 'addEventListener': 'attachEvent',
+          eventer = window[eventMethod],
+          messageEvent = eventMethod == 'attachEvent' ? 'onmessage': 'message';
+
+      eventer(messageEvent, onMessageReceived, false);
+
+      if (id1.indexOf('&') >= 0) {
+        id1 = id1.substring(0, id1.indexOf('&'));
+      }
+
+      if (id2.indexOf('&') >= 0) {
+        id2 = id2.substring(0, id2.indexOf('&'));
+      }
+
+      // An example of the child parent communication
+      function postMsg(id, data) {
+        var data = {
+          id: id,
+          data: data
+        },
+        targetOrigin = 'http://localhost:7070';
+        parent.postMessage(data, targetOrigin);
+      }
+
+      // An example of the parent child communication
+      function onMessageReceived (event) {
+        console.log('Message sent from the componentManager and recieved within the iframe: ', event.data);
+      }
+
+      $(document).ready(function () {
+        $('.send-msg-button-1').on('click', function () {
+          var data = {
+            width: 300,
+            height: 200
+          }
+          postMsg(id1, data);
+        });
+
+        $('.send-msg-button-2').on('click', function () {
+          var data = {
+            width: 300,
+            height: 200
+          }
+          postMsg(id2, data);
+        });
+
+        $('.send-msg-button-3').on('click', function () {
+          var data = {
+            width: 600,
+            height: 400
+          }
+          postMsg(id1, data);
+          postMsg(id2, data);
+        });
+      });
+
+    </script>
+
+  </head>
+  <body>
+    <h1>Click button below to send message to parent</h1>
+    <p>Send any data supported by the postMessage api to the iframeComponent from within current iframe by using 'postMessage' and the componentManager</p>
+
+    <p>You can send a message to any iframe if you know the id of th IframeInstance, and of course the targetOrigin must match. You can also send data into an iframe through the componentManagers postMessageToInstance method.</p>
+
+    <button class="send-msg-button-1">Resize this iframe</button>
+    <button class="send-msg-button-2">Resize second iframe</button>
+    <button class="send-msg-button-3">Reset iframes</button>
+  </body>
+</html>

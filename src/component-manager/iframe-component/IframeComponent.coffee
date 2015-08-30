@@ -9,6 +9,7 @@ class IframeComponent extends Backbone.View
     frameborder: 0
 
   src: undefined
+  targetOrigin: 'http://localhost:7070'
 
   constructor: (attrs) ->
     _.extend @attributes, attrs?.iframeAttributes
@@ -17,7 +18,14 @@ class IframeComponent extends Backbone.View
   initialize: (attrs) ->
     if attrs?.src?
       @src = attrs.src
+
+    do @addListeners
+
+  addListeners: ->
     @$el.on 'load', @onIframeLoaded
+
+  removeListeners: ->
+    @$el.off 'load', @onIframeLoaded
 
   render: ->
     @$el.attr 'src', @src
@@ -25,6 +33,12 @@ class IframeComponent extends Backbone.View
   dispose: ->
     @$el.off 'load', @onIframeLoaded
     do @remove
+
+  receiveMessage: (message) ->
+
+  postMessageToIframe: (message) ->
+    iframeWin = @$el.get(0).contentWindow
+    iframeWin.postMessage message, @targetOrigin
 
   onIframeLoaded: (event) =>
 

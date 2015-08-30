@@ -7,9 +7,10 @@ app.components.ExtendedIframeComponentThatSendsMessage = Vigor.IframeComponent.e
     console.log('ExtendedIframeComponentThatSendsMessage initialized', args);
   },
 
-   dispose: function () {
-    console.log('component disposed');
-    this.remove();
-  },
+  receiveMessage: function (message) {
+    this.postMessageToIframe(message);
+    this.$el.width(message.width);
+    this.$el.height(message.height);
+  }
 
 });

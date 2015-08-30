@@ -59,7 +59,7 @@ var componentSettings = {
             "width": 600,
             "height": 400,
             "style": "border: 1px solid red",
-            "src": "http://localhost:7070/examples/iframe-components/iframed-example-page.html?id=iframe-instance-3"
+            "src": "http://localhost:7070/examples/iframe-components/iframed-example-page-1.html?id1=iframe-instance-3&=id2=iframe-instance-4"
           }
         },
         "urlPattern": "global"
@@ -72,7 +72,7 @@ var componentSettings = {
             "width": 600,
             "height": 400,
             "style": "border: 1px solid blue",
-            "src": "http://localhost:7070/examples/iframe-components/iframed-example-page.html?id=iframe-instance-4"
+            "src": "http://localhost:7070/examples/iframe-components/iframed-example-page-2.html"
           }
         },
         "urlPattern": "global"

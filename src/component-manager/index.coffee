@@ -6,6 +6,9 @@ class ComponentManager
   ERROR:
     CONDITION:
       WRONG_FORMAT: 'condition has to be an object with key value pairs'
+    MESSAGE:
+      MISSING_ID: 'The id of targeted instance must be passed as first argument'
+      MISSING_MESSAGE: 'No message was passed'
 
   EVENTS:
     ADD: 'add'
@@ -292,15 +295,19 @@ class ComponentManager
       return instance
     return instances
 
+  getActiveInstanceById: (instanceId) ->
+    return @_activeInstancesCollection.get(instanceId).toJSON()
+
   postMessageToInstance: (id, message) ->
     unless id
-      throw 'The id of targeted instance must be passed as first argument'
+      throw @ERROR.MESSAGE.MISSING_ID
 
     unless message
-      throw 'No message was passed'
+      throw @ERROR.MESSAGE.MISSING_MESSAGE
 
-    instance = @getInstances id
-    console.log 'postMessageToInstance:', id, message
+    instance = @getActiveInstanceById(id).instance
+    if _.isFunction(instance?.receiveMessage)
+      instance.receiveMessage message
   #
   # Privat methods
   # ============================================================================
@@ -531,7 +538,6 @@ class ComponentManager
   _onMessageReceived: (event) =>
     id = event.data.id
     data = event.data.data
-
     @postMessageToInstance id, data
 
 ### start-test-block ###

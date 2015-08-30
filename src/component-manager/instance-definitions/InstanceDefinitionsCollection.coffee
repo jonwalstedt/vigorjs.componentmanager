@@ -16,7 +16,7 @@ class InstanceDefinitionsCollection extends BaseCollection
   getInstanceDefinition: (instanceId) ->
     instanceDefinition = @get instanceId
     unless instanceDefinition
-      throw @ERROR.UNKNOWN_COMPONENT_DEFINITION
+      throw @ERROR.UNKNOWN_INSTANCE_DEFINITION
     return instanceDefinition
 
   getInstanceDefinitions: (filter, globalConditions) ->
