@@ -157,6 +157,8 @@
 
       IframeComponent.prototype.src = void 0;
 
+      IframeComponent.prototype.targetOrigin = 'http://localhost:7070';
+
       function IframeComponent(attrs) {
         this.onMessageReceived = bind(this.onMessageReceived, this);
         this.onIframeLoaded = bind(this.onIframeLoaded, this);
@@ -168,7 +170,15 @@
         if ((attrs != null ? attrs.src : void 0) != null) {
           this.src = attrs.src;
         }
+        return this.addListeners();
+      };
+
+      IframeComponent.prototype.addListeners = function() {
         return this.$el.on('load', this.onIframeLoaded);
+      };
+
+      IframeComponent.prototype.removeListeners = function() {
+        return this.$el.off('load', this.onIframeLoaded);
       };
 
       IframeComponent.prototype.render = function() {
@@ -178,6 +188,14 @@
       IframeComponent.prototype.dispose = function() {
         this.$el.off('load', this.onIframeLoaded);
         return this.remove();
+      };
+
+      IframeComponent.prototype.receiveMessage = function(message) {};
+
+      IframeComponent.prototype.postMessageToIframe = function(message) {
+        var iframeWin;
+        iframeWin = this.$el.get(0).contentWindow;
+        return iframeWin.postMessage(message, this.targetOrigin);
       };
 
       IframeComponent.prototype.onIframeLoaded = function(event) {};
@@ -801,7 +819,7 @@
         var instanceDefinition;
         instanceDefinition = this.get(instanceId);
         if (!instanceDefinition) {
-          throw this.ERROR.UNKNOWN_COMPONENT_DEFINITION;
+          throw this.ERROR.UNKNOWN_INSTANCE_DEFINITION;
         }
         return instanceDefinition;
       };
@@ -902,6 +920,10 @@
       ComponentManager.prototype.ERROR = {
         CONDITION: {
           WRONG_FORMAT: 'condition has to be an object with key value pairs'
+        },
+        MESSAGE: {
+          MISSING_ID: 'The id of targeted instance must be passed as first argument',
+          MISSING_MESSAGE: 'No message was passed'
         }
       };
 
@@ -1272,16 +1294,22 @@
         return instances;
       };
 
+      ComponentManager.prototype.getActiveInstanceById = function(instanceId) {
+        return this._activeInstancesCollection.get(instanceId).toJSON();
+      };
+
       ComponentManager.prototype.postMessageToInstance = function(id, message) {
         var instance;
         if (!id) {
-          throw 'The id of targeted instance must be passed as first argument';
+          throw this.ERROR.MESSAGE.MISSING_ID;
         }
         if (!message) {
-          throw 'No message was passed';
+          throw this.ERROR.MESSAGE.MISSING_MESSAGE;
         }
-        instance = this.getInstances(id);
-        return console.log('postMessageToInstance:', id, message);
+        instance = this.getActiveInstanceById(id).instance;
+        if (_.isFunction(instance != null ? instance.receiveMessage : void 0)) {
+          return instance.receiveMessage(message);
+        }
       };
 
       ComponentManager.prototype._parse = function(settings) {
