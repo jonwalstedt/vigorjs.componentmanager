@@ -16,10 +16,9 @@ class IframeComponent extends Backbone.View
     super
 
   initialize: (attrs) ->
+    do @addListeners
     if attrs?.src?
       @src = attrs.src
-
-    do @addListeners
 
   addListeners: ->
     @$el.on 'load', @onIframeLoaded
@@ -31,18 +30,17 @@ class IframeComponent extends Backbone.View
     @$el.attr 'src', @src
 
   dispose: ->
-    @$el.off 'load', @onIframeLoaded
+    do @removeListeners
     do @remove
-
-  receiveMessage: (message) ->
 
   postMessageToIframe: (message) ->
     iframeWin = @$el.get(0).contentWindow
     iframeWin.postMessage message, @targetOrigin
 
-  onIframeLoaded: (event) =>
+  # Default implementation is a noop.
+  receiveMessage: (message) ->
 
-  onMessageReceived: (event) =>
-    console.log 'instance should handle incomming message', event.data
+  # Default implementation is a noop.
+  onIframeLoaded: (event) =>
 
 Vigor.IframeComponent = IframeComponent

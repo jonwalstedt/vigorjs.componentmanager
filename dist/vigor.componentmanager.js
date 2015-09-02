@@ -160,17 +160,16 @@
       IframeComponent.prototype.targetOrigin = 'http://localhost:7070';
 
       function IframeComponent(attrs) {
-        this.onMessageReceived = bind(this.onMessageReceived, this);
         this.onIframeLoaded = bind(this.onIframeLoaded, this);
         _.extend(this.attributes, attrs != null ? attrs.iframeAttributes : void 0);
         IframeComponent.__super__.constructor.apply(this, arguments);
       }
 
       IframeComponent.prototype.initialize = function(attrs) {
+        this.addListeners();
         if ((attrs != null ? attrs.src : void 0) != null) {
-          this.src = attrs.src;
+          return this.src = attrs.src;
         }
-        return this.addListeners();
       };
 
       IframeComponent.prototype.addListeners = function() {
@@ -186,11 +185,9 @@
       };
 
       IframeComponent.prototype.dispose = function() {
-        this.$el.off('load', this.onIframeLoaded);
+        this.removeListeners();
         return this.remove();
       };
-
-      IframeComponent.prototype.receiveMessage = function(message) {};
 
       IframeComponent.prototype.postMessageToIframe = function(message) {
         var iframeWin;
@@ -198,11 +195,9 @@
         return iframeWin.postMessage(message, this.targetOrigin);
       };
 
-      IframeComponent.prototype.onIframeLoaded = function(event) {};
+      IframeComponent.prototype.receiveMessage = function(message) {};
 
-      IframeComponent.prototype.onMessageReceived = function(event) {
-        return console.log('instance should handle incomming message', event.data);
-      };
+      IframeComponent.prototype.onIframeLoaded = function(event) {};
 
       return IframeComponent;
 

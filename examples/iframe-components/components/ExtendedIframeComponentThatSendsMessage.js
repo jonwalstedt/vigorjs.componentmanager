@@ -5,6 +5,7 @@ app.components.ExtendedIframeComponentThatSendsMessage = Vigor.IframeComponent.e
 
   initialize: function (args) {
     console.log('ExtendedIframeComponentThatSendsMessage initialized', args);
+    Vigor.IframeComponent.prototype.initialize.call(this);
   },
 
   receiveMessage: function (message) {
