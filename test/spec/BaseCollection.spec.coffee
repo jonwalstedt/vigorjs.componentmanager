@@ -2,14 +2,15 @@ assert = require 'assert'
 sinon = require 'sinon'
 Vigor = require '../../dist/vigor.componentmanager'
 __testOnly = Vigor.ComponentManager.__testOnly
+BaseCollection = __testOnly.BaseCollection
 
 clock = undefined
-collection = undefined
 
 describe 'A BaseCollection', ->
+  collection = undefined
 
   beforeEach ->
-    collection = new __testOnly.BaseCollection()
+    collection = new BaseCollection()
     clock = sinon.useFakeTimers()
 
   afterEach ->

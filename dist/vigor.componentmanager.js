@@ -501,31 +501,6 @@
       return ComponentDefinitionsCollection;
 
     })(BaseCollection);
-    BaseInstanceCollection = (function(superClass) {
-      extend(BaseInstanceCollection, superClass);
-
-      function BaseInstanceCollection() {
-        return BaseInstanceCollection.__super__.constructor.apply(this, arguments);
-      }
-
-      BaseInstanceCollection.prototype.ERROR = {
-        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
-      };
-
-      BaseInstanceCollection.prototype.model = InstanceDefinitionModel;
-
-      BaseInstanceCollection.prototype.getInstanceDefinition = function(instanceId) {
-        var instanceDefinition;
-        instanceDefinition = this.get(instanceId);
-        if (!instanceDefinition) {
-          throw this.ERROR.UNKNOWN_INSTANCE_DEFINITION;
-        }
-        return instanceDefinition;
-      };
-
-      return BaseInstanceCollection;
-
-    })(BaseCollection);
     InstanceDefinitionModel = (function(superClass) {
       extend(InstanceDefinitionModel, superClass);
 
@@ -810,6 +785,31 @@
       return InstanceDefinitionModel;
 
     })(Backbone.Model);
+    BaseInstanceCollection = (function(superClass) {
+      extend(BaseInstanceCollection, superClass);
+
+      function BaseInstanceCollection() {
+        return BaseInstanceCollection.__super__.constructor.apply(this, arguments);
+      }
+
+      BaseInstanceCollection.prototype.ERROR = {
+        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
+      };
+
+      BaseInstanceCollection.prototype.model = InstanceDefinitionModel;
+
+      BaseInstanceCollection.prototype.getInstanceDefinition = function(instanceId) {
+        var instanceDefinition;
+        instanceDefinition = this.get(instanceId);
+        if (!instanceDefinition) {
+          throw this.ERROR.UNKNOWN_INSTANCE_DEFINITION;
+        }
+        return instanceDefinition;
+      };
+
+      return BaseInstanceCollection;
+
+    })(BaseCollection);
     InstanceDefinitionsCollection = (function(superClass) {
       var _targetPrefix;
 
