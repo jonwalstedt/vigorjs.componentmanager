@@ -2,22 +2,11 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
 
   _targetPrefix = undefined
 
-  ERROR:
-    UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
-
-  model: InstanceDefinitionModel
-
   setTargetPrefix: (targetPrefix) ->
     _targetPrefix = targetPrefix
 
   getTargetPrefix: ->
     return _targetPrefix
-
-  getInstanceDefinition: (instanceId) ->
-    instanceDefinition = @get instanceId
-    unless instanceDefinition
-      throw @ERROR.UNKNOWN_INSTANCE_DEFINITION
-    return instanceDefinition
 
   getInstanceDefinitions: (filter, globalConditions) ->
     return @filter (instanceDefinitionModel) ->

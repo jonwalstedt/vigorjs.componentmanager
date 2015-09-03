@@ -821,27 +821,12 @@
 
       _targetPrefix = void 0;
 
-      InstanceDefinitionsCollection.prototype.ERROR = {
-        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
-      };
-
-      InstanceDefinitionsCollection.prototype.model = InstanceDefinitionModel;
-
       InstanceDefinitionsCollection.prototype.setTargetPrefix = function(targetPrefix) {
         return _targetPrefix = targetPrefix;
       };
 
       InstanceDefinitionsCollection.prototype.getTargetPrefix = function() {
         return _targetPrefix;
-      };
-
-      InstanceDefinitionsCollection.prototype.getInstanceDefinition = function(instanceId) {
-        var instanceDefinition;
-        instanceDefinition = this.get(instanceId);
-        if (!instanceDefinition) {
-          throw this.ERROR.UNKNOWN_INSTANCE_DEFINITION;
-        }
-        return instanceDefinition;
       };
 
       InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter, globalConditions) {
@@ -906,8 +891,6 @@
       function ActiveInstancesCollection() {
         return ActiveInstancesCollection.__super__.constructor.apply(this, arguments);
       }
-
-      ActiveInstancesCollection.prototype.model = InstanceDefinitionModel;
 
       ActiveInstancesCollection.prototype.getStrays = function() {
         return _.filter(this.models, (function(_this) {
