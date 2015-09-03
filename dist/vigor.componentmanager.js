@@ -943,7 +943,8 @@
         },
         MESSAGE: {
           MISSING_ID: 'The id of targeted instance must be passed as first argument',
-          MISSING_MESSAGE: 'No message was passed'
+          MISSING_MESSAGE: 'No message was passed',
+          MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
         }
       };
 
@@ -1329,6 +1330,8 @@
         instance = this.getActiveInstanceById(id);
         if (_.isFunction(instance != null ? instance.receiveMessage : void 0)) {
           return instance.receiveMessage(message);
+        } else {
+          throw this.ERROR.MESSAGE.MISSING_RECEIVE_MESSAGE_METHOD;
         }
       };
 

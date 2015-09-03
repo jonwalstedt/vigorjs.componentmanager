@@ -9,6 +9,7 @@ class ComponentManager
     MESSAGE:
       MISSING_ID: 'The id of targeted instance must be passed as first argument'
       MISSING_MESSAGE: 'No message was passed'
+      MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
 
   EVENTS:
     ADD: 'add'
@@ -308,6 +309,8 @@ class ComponentManager
     instance = @getActiveInstanceById id
     if _.isFunction(instance?.receiveMessage)
       instance.receiveMessage message
+    else
+      throw @ERROR.MESSAGE.MISSING_RECEIVE_MESSAGE_METHOD
   #
   # Privat methods
   # ============================================================================
@@ -552,6 +555,8 @@ __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
 __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
 __testOnly.FilterModel = FilterModel
 __testOnly.IframeComponent = IframeComponent
+__testOnly.BaseCollection = BaseCollection
+__testOnly.BaseInstanceCollection = BaseInstanceCollection
 
 #properties
 __testOnly.router = Router
