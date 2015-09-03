@@ -25,7 +25,7 @@
       root.Vigor = factory(root, root.Backbone, root._, root.$);
     }
   })(this, function(root, Backbone, _, $) {
-    var ActiveInstancesCollection, BaseCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, ComponentManager, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, __testOnly, router;
+    var ActiveInstancesCollection, BaseCollection, BaseInstanceCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, ComponentManager, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, __testOnly, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
     Router = (function(superClass) {
@@ -501,6 +501,31 @@
       return ComponentDefinitionsCollection;
 
     })(BaseCollection);
+    BaseInstanceCollection = (function(superClass) {
+      extend(BaseInstanceCollection, superClass);
+
+      function BaseInstanceCollection() {
+        return BaseInstanceCollection.__super__.constructor.apply(this, arguments);
+      }
+
+      BaseInstanceCollection.prototype.ERROR = {
+        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
+      };
+
+      BaseInstanceCollection.prototype.model = InstanceDefinitionModel;
+
+      BaseInstanceCollection.prototype.getInstanceDefinition = function(instanceId) {
+        var instanceDefinition;
+        instanceDefinition = this.get(instanceId);
+        if (!instanceDefinition) {
+          throw this.ERROR.UNKNOWN_INSTANCE_DEFINITION;
+        }
+        return instanceDefinition;
+      };
+
+      return BaseInstanceCollection;
+
+    })(BaseCollection);
     InstanceDefinitionModel = (function(superClass) {
       extend(InstanceDefinitionModel, superClass);
 
@@ -874,7 +899,7 @@
 
       return InstanceDefinitionsCollection;
 
-    })(BaseCollection);
+    })(BaseInstanceCollection);
     ActiveInstancesCollection = (function(superClass) {
       extend(ActiveInstancesCollection, superClass);
 
@@ -894,7 +919,7 @@
 
       return ActiveInstancesCollection;
 
-    })(BaseCollection);
+    })(BaseInstanceCollection);
     ComponentManager = (function() {
       var _defaultComponentClassName, _defaultTargetPrefix;
 
@@ -1290,7 +1315,7 @@
       };
 
       ComponentManager.prototype.getActiveInstanceById = function(instanceId) {
-        return this._activeInstancesCollection.get(instanceId).toJSON();
+        return this._activeInstancesCollection.getInstanceDefinition(instanceId).get('instance');
       };
 
       ComponentManager.prototype.postMessageToInstance = function(id, message) {
@@ -1301,7 +1326,7 @@
         if (!message) {
           throw this.ERROR.MESSAGE.MISSING_MESSAGE;
         }
-        instance = this.getActiveInstanceById(id).instance;
+        instance = this.getActiveInstanceById(id);
         if (_.isFunction(instance != null ? instance.receiveMessage : void 0)) {
           return instance.receiveMessage(message);
         }

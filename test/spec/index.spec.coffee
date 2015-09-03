@@ -1263,6 +1263,11 @@ describe 'The componentManager', ->
         assert.equal results[0].constructor.prototype.tagName, 'iframe'
         assert.equal results[0].constructor.prototype.className, 'vigor-component--iframe'
 
+
+    describe 'getActiveInstanceById', ->
+
+    describe 'postMessageToInstance', ->
+
   # Private methods
   ##############################################################################
   describe 'private methods', ->

@@ -1,4 +1,4 @@
-class InstanceDefinitionsCollection extends BaseCollection
+class InstanceDefinitionsCollection extends BaseInstanceCollection
 
   _targetPrefix = undefined
 

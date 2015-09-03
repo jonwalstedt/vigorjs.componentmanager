@@ -20,6 +20,9 @@ Completed
  ✔ Refactor to have all errormessages as constants @done (15-08-27 00:56)
 
  Next up
+ ☐ Implement BaseInstanceCollection and use for common logic between ActiveInstancesCollection and InstanceDefinitionsCollection
+ ☐ Move ActiveInstanceCollection and BaseInstanceCollection into the instance-defintions folder
+ ☐ Unittest BaseCollection,  BaseInstanceCollection and new logic in index.coffee
  ☐ Send message from iframe to Instance
  ☐ Send message to iframe from instance
  ☐ Pass arguments to conditions?

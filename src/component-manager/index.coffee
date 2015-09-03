@@ -94,7 +94,7 @@ class ComponentManager
           return value.toString()
       return value
 
-    return JSON.stringify(settings, filter)
+    return JSON.stringify settings, filter
 
   parse: (jsonString, updateSettings = false) ->
     filter = (key, value) ->
@@ -296,7 +296,7 @@ class ComponentManager
     return instances
 
   getActiveInstanceById: (instanceId) ->
-    return @_activeInstancesCollection.get(instanceId).toJSON()
+    return @_activeInstancesCollection.getInstanceDefinition(instanceId).get 'instance'
 
   postMessageToInstance: (id, message) ->
     unless id
@@ -305,7 +305,7 @@ class ComponentManager
     unless message
       throw @ERROR.MESSAGE.MISSING_MESSAGE
 
-    instance = @getActiveInstanceById(id).instance
+    instance = @getActiveInstanceById id
     if _.isFunction(instance?.receiveMessage)
       instance.receiveMessage message
   #

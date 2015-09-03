@@ -1,4 +1,4 @@
-class ActiveInstancesCollection extends BaseCollection
+class ActiveInstancesCollection extends BaseInstanceCollection
 
   model: InstanceDefinitionModel
 
