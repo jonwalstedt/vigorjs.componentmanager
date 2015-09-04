@@ -18,13 +18,15 @@ Completed
  ✔ Unit test @done (15-08-25 23:31)
  ✔ Unit test ComponentDefinitionsCollection @done (15-08-26 00:35)
  ✔ Refactor to have all errormessages as constants @done (15-08-27 00:56)
+ ✔ Implement BaseInstanceCollection and use for common logic between ActiveInstancesCollection and InstanceDefinitionsCollection @done (15-09-04 11:27)
+ ✔ Move ActiveInstanceCollection and BaseInstanceCollection into the instance-defintions folder @done (15-09-04 11:27)
 
- Next up
- ☐ Implement BaseInstanceCollection and use for common logic between ActiveInstancesCollection and InstanceDefinitionsCollection
- ☐ Move ActiveInstanceCollection and BaseInstanceCollection into the instance-defintions folder
+ In progress
  ☐ Unittest BaseCollection,  BaseInstanceCollection and new logic in index.coffee
  ☐ Send message from iframe to Instance
  ☐ Send message to iframe from instance
+
+ Next up
  ☐ Pass arguments to conditions?
  ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)
 
