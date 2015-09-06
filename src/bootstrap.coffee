@@ -32,8 +32,9 @@
   #= include ./component-manager/component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-manager/component-definitions/ComponentDefinitionsCollection.coffee
   #= include ./component-manager/instance-definitions/InstanceDefinitionModel.coffee
+  #= include ./component-manager/instance-definitions/BaseInstanceCollection.coffee
   #= include ./component-manager/instance-definitions/InstanceDefinitionsCollection.coffee
-  #= include ./component-manager/active-instances/ActiveInstancesCollection.coffee
+  #= include ./component-manager/instance-definitions/ActiveInstancesCollection.coffee
   #= include ./component-manager/index.coffee
 
   Vigor.componentManager = new Vigor.ComponentManager()

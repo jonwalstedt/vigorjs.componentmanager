@@ -299,7 +299,7 @@ describe 'InstanceDefinitionModel', ->
       passesFilter = instanceDefinitionModel.passesFilter(filter)
       assert.equal passesFilter, false
 
-    it 'returns true if all filter passed', ->
+    it 'returns true if all filter passes', ->
       instanceDefinitionModel.set
         'urlPattern': 'foo/:bar/:baz'
         'filterString': 'foo'
@@ -312,7 +312,7 @@ describe 'InstanceDefinitionModel', ->
       passesFilter = instanceDefinitionModel.passesFilter(filter)
       assert.equal passesFilter, true
 
-    it 'returns false if any of the filters doesnt pass', ->
+    it 'returns false if any of the filters doesnt pass - in this case it passes the hasToMatchString filter butthe conditions does not pass', ->
       instanceDefinitionModel.set
         'urlPattern': 'foo/:bar/:baz'
         'filterString': 'foo'
@@ -325,7 +325,7 @@ describe 'InstanceDefinitionModel', ->
       passesFilter = instanceDefinitionModel.passesFilter(filter)
       assert.equal passesFilter, false
 
-    it 'returns false if any of the filters doesnt pass', ->
+    it 'returns false if any of the filters doesnt pass - in this case the url pattern does not match', ->
       instanceDefinitionModel.set
         'urlPattern': 'bar/:baz/:qux'
         'filterString': 'foo'
@@ -338,14 +338,14 @@ describe 'InstanceDefinitionModel', ->
       passesFilter = instanceDefinitionModel.passesFilter(filter)
       assert.equal passesFilter, false
 
-    it 'returns false if any of the filters doesnt pass', ->
+    it 'returns false if any of the filters doesnt pass - in this case the filterString cant match foo', ->
       instanceDefinitionModel.set
         'urlPattern': 'foo/:baz/:qux'
         'filterString': 'foo'
         'conditions': -> return true
 
       filter =
-        url: 'bar/1/2'
+        url: 'foo/1/2'
         cantMatchString: 'foo'
 
       passesFilter = instanceDefinitionModel.passesFilter(filter)

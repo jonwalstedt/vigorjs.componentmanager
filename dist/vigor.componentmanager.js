@@ -25,7 +25,7 @@
       root.Vigor = factory(root, root.Backbone, root._, root.$);
     }
   })(this, function(root, Backbone, _, $) {
-    var ActiveInstancesCollection, BaseCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, ComponentManager, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, __testOnly, router;
+    var ActiveInstancesCollection, BaseCollection, BaseInstanceCollection, ComponentDefinitionModel, ComponentDefinitionsCollection, ComponentManager, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, __testOnly, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
     Router = (function(superClass) {
@@ -157,16 +157,27 @@
 
       IframeComponent.prototype.src = void 0;
 
+      IframeComponent.prototype.targetOrigin = 'http://localhost:7070';
+
       function IframeComponent(attrs) {
+        this.onIframeLoaded = bind(this.onIframeLoaded, this);
         _.extend(this.attributes, attrs != null ? attrs.iframeAttributes : void 0);
         IframeComponent.__super__.constructor.apply(this, arguments);
       }
 
       IframeComponent.prototype.initialize = function(attrs) {
+        this.addListeners();
         if ((attrs != null ? attrs.src : void 0) != null) {
-          this.src = attrs.src;
+          return this.src = attrs.src;
         }
+      };
+
+      IframeComponent.prototype.addListeners = function() {
         return this.$el.on('load', this.onIframeLoaded);
+      };
+
+      IframeComponent.prototype.removeListeners = function() {
+        return this.$el.off('load', this.onIframeLoaded);
       };
 
       IframeComponent.prototype.render = function() {
@@ -174,9 +185,17 @@
       };
 
       IframeComponent.prototype.dispose = function() {
-        this.$el.off('load', this.onIframeLoaded);
+        this.removeListeners();
         return this.remove();
       };
+
+      IframeComponent.prototype.postMessageToIframe = function(message) {
+        var iframeWin;
+        iframeWin = this.$el.get(0).contentWindow;
+        return iframeWin.postMessage(message, this.targetOrigin);
+      };
+
+      IframeComponent.prototype.receiveMessage = function(message) {};
 
       IframeComponent.prototype.onIframeLoaded = function(event) {};
 
@@ -194,6 +213,14 @@
         this._onAdd = bind(this._onAdd, this);
         return BaseCollection.__super__.constructor.apply(this, arguments);
       }
+
+      BaseCollection.prototype.THROTTLED_DIFF = 'throttled_diff';
+
+      BaseCollection.prototype.THROTTLED_ADD = 'throttled_add';
+
+      BaseCollection.prototype.THROTTLED_CHANGE = 'throttled_change';
+
+      BaseCollection.prototype.THROTTLED_REMOVE = 'throttled_remove';
 
       BaseCollection.prototype._throttledAddedModels = void 0;
 
@@ -315,14 +342,6 @@
         return this._throttledDiff(this._throttledAdd(), this._throttledChange(), this._throttledRemove());
       };
 
-      BaseCollection.prototype.THROTTLED_DIFF = 'throttled_diff';
-
-      BaseCollection.prototype.THROTTLED_ADD = 'throttled_add';
-
-      BaseCollection.prototype.THROTTLED_CHANGE = 'throttled_change';
-
-      BaseCollection.prototype.THROTTLED_REMOVE = 'throttled_remove';
-
       return BaseCollection;
 
     })(Backbone.Collection);
@@ -332,6 +351,24 @@
       function ComponentDefinitionModel() {
         return ComponentDefinitionModel.__super__.constructor.apply(this, arguments);
       }
+
+      ComponentDefinitionModel.prototype.ERROR = {
+        VALIDATION: {
+          ID_UNDEFINED: 'id cant be undefined',
+          ID_NOT_A_STRING: 'id should be a string',
+          ID_IS_EMPTY_STRING: 'id can not be an empty string',
+          SRC_UNDEFINED: 'src cant be undefined',
+          SRC_WRONG_TYPE: 'src should be a string or a constructor function',
+          SRC_IS_EMPTY_STRING: 'src can not be an empty string'
+        },
+        MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested',
+        NO_CONSTRUCTOR_FOUND: function(src) {
+          return "No constructor function found for " + src;
+        },
+        MISSING_CONDITION: function(condition) {
+          return "Trying to verify condition " + condition + " but it has not been registered yet";
+        }
+      };
 
       ComponentDefinitionModel.prototype.defaults = {
         id: void 0,
@@ -346,23 +383,23 @@
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
         var isValidType;
         if (!attrs.id) {
-          throw 'id cant be undefined';
+          throw this.ERROR.VALIDATION.ID_UNDEFINED;
         }
         if (typeof attrs.id !== 'string') {
-          throw 'id should be a string';
+          throw this.ERROR.VALIDATION.ID_NOT_A_STRING;
         }
         if (/^\s+$/g.test(attrs.id)) {
-          throw 'id can not be an empty string';
+          throw this.ERROR.VALIDATION.ID_IS_EMPTY_STRING;
         }
         if (!attrs.src) {
-          throw 'src cant be undefined';
+          throw this.ERROR.VALIDATION.SRC_UNDEFINED;
         }
         isValidType = _.isString(attrs.src) || _.isFunction(attrs.src);
         if (!isValidType) {
-          throw 'src should be a string or a constructor function';
+          throw this.ERROR.VALIDATION.SRC_WRONG_TYPE;
         }
         if (_.isString(attrs.src) && /^\s+$/g.test(attrs.src)) {
-          throw 'src can not be an empty string';
+          throw this.ERROR.VALIDATION.SRC_IS_EMPTY_STRING;
         }
       };
 
@@ -383,7 +420,7 @@
           componentClass = src;
         }
         if (!_.isFunction(componentClass)) {
-          throw "No constructor function found for " + src;
+          throw this.ERROR.NO_CONSTRUCTOR_FOUND(src);
         }
         return componentClass;
       };
@@ -403,10 +440,10 @@
               break;
             } else if (_.isString(condition)) {
               if (!globalConditions) {
-                throw 'No global conditions was passed, condition could not be tested';
+                throw this.ERROR.MISSING_GLOBAL_CONDITIONS;
               }
               if (globalConditions[condition] == null) {
-                throw "Trying to verify condition " + condition + " but it has not been registered yet";
+                throw this.ERROR.MISSING_CONDITION(condition);
               }
               shouldBeIncluded = !!globalConditions[condition]();
               if (!shouldBeIncluded) {
@@ -471,6 +508,25 @@
         return InstanceDefinitionModel.__super__.constructor.apply(this, arguments);
       }
 
+      InstanceDefinitionModel.prototype.ERROR = {
+        VALIDATION: {
+          ID_UNDEFINED: 'id cant be undefined',
+          ID_NOT_A_STRING: 'id should be a string',
+          ID_IS_EMPTY_STRING: 'id can not be an empty string',
+          COMPONENT_ID_UNDEFINED: 'componentId cant be undefined',
+          COMPONENT_ID_NOT_A_STRING: 'componentId should be a string',
+          COMPONENT_ID_IS_EMPTY_STRING: 'componentId can not be an empty string',
+          TARGET_NAME_UNDEFINED: 'targetName cant be undefined'
+        },
+        MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested',
+        MISSING_RENDER_METHOD: function(id) {
+          return "The instance for " + id + " does not have a render method";
+        },
+        MISSING_CONDITION: function(condition) {
+          return "Trying to verify condition " + condition + " but it has not been registered yet";
+        }
+      };
+
       InstanceDefinitionModel.prototype.defaults = {
         id: void 0,
         componentId: void 0,
@@ -490,25 +546,25 @@
 
       InstanceDefinitionModel.prototype.validate = function(attrs, options) {
         if (!attrs.id) {
-          throw 'id cant be undefined';
+          throw this.ERROR.VALIDATION.ID_UNDEFINED;
         }
         if (!_.isString(attrs.id)) {
-          throw 'id should be a string';
+          throw this.ERROR.VALIDATION.ID_NOT_A_STRING;
         }
         if (!/^.*[^ ].*$/.test(attrs.id)) {
-          throw 'id can not be an empty string';
+          throw this.ERROR.VALIDATION.ID_IS_EMPTY_STRING;
         }
         if (!attrs.componentId) {
-          throw 'componentId cant be undefined';
+          throw this.ERROR.VALIDATION.COMPONENT_ID_UNDEFINED;
         }
         if (!_.isString(attrs.componentId)) {
-          throw 'componentId should be a string';
+          throw this.ERROR.VALIDATION.COMPONENT_ID_NOT_A_STRING;
         }
         if (!/^.*[^ ].*$/.test(attrs.componentId)) {
-          throw 'componentId can not be an empty string';
+          throw this.ERROR.VALIDATION.COMPONENT_ID_IS_EMPTY_STRING;
         }
         if (!attrs.targetName) {
-          throw 'targetName cant be undefined';
+          throw this.ERROR.VALIDATION.TARGET_NAME_UNDEFINED;
         }
       };
 
@@ -551,7 +607,7 @@
           return;
         }
         if (!instance.render) {
-          throw "The instance for " + (this.get('id')) + " does not have a render method";
+          throw this.ERROR.MISSING_RENDER_METHOD(this.get('id'));
         }
         if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
           instance.preRender();
@@ -689,10 +745,10 @@
               break;
             } else if (_.isString(condition)) {
               if (!globalConditions) {
-                throw 'No global conditions was passed, condition could not be tested';
+                throw this.ERROR.MISSING_GLOBAL_CONDITIONS;
               }
               if (globalConditions[condition] == null) {
-                throw "Trying to verify condition " + condition + " but it has not been registered yet";
+                throw this.ERROR.MISSING_CONDITION(condition);
               }
               shouldBeIncluded = globalConditions[condition]();
               if (!shouldBeIncluded) {
@@ -729,6 +785,31 @@
       return InstanceDefinitionModel;
 
     })(Backbone.Model);
+    BaseInstanceCollection = (function(superClass) {
+      extend(BaseInstanceCollection, superClass);
+
+      function BaseInstanceCollection() {
+        return BaseInstanceCollection.__super__.constructor.apply(this, arguments);
+      }
+
+      BaseInstanceCollection.prototype.ERROR = {
+        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
+      };
+
+      BaseInstanceCollection.prototype.model = InstanceDefinitionModel;
+
+      BaseInstanceCollection.prototype.getInstanceDefinition = function(instanceId) {
+        var instanceDefinition;
+        instanceDefinition = this.get(instanceId);
+        if (!instanceDefinition) {
+          throw this.ERROR.UNKNOWN_INSTANCE_DEFINITION;
+        }
+        return instanceDefinition;
+      };
+
+      return BaseInstanceCollection;
+
+    })(BaseCollection);
     InstanceDefinitionsCollection = (function(superClass) {
       var _targetPrefix;
 
@@ -740,27 +821,12 @@
 
       _targetPrefix = void 0;
 
-      InstanceDefinitionsCollection.prototype.ERROR = {
-        UNKNOWN_INSTANCE_DEFINITION: 'Unknown instanceDefinition, are you referencing correct instanceId?'
-      };
-
-      InstanceDefinitionsCollection.prototype.model = InstanceDefinitionModel;
-
       InstanceDefinitionsCollection.prototype.setTargetPrefix = function(targetPrefix) {
         return _targetPrefix = targetPrefix;
       };
 
       InstanceDefinitionsCollection.prototype.getTargetPrefix = function() {
         return _targetPrefix;
-      };
-
-      InstanceDefinitionsCollection.prototype.getInstanceDefinition = function(instanceId) {
-        var instanceDefinition;
-        instanceDefinition = this.get(instanceId);
-        if (!instanceDefinition) {
-          throw this.ERROR.UNKNOWN_COMPONENT_DEFINITION;
-        }
-        return instanceDefinition;
       };
 
       InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter, globalConditions) {
@@ -818,15 +884,13 @@
 
       return InstanceDefinitionsCollection;
 
-    })(BaseCollection);
+    })(BaseInstanceCollection);
     ActiveInstancesCollection = (function(superClass) {
       extend(ActiveInstancesCollection, superClass);
 
       function ActiveInstancesCollection() {
         return ActiveInstancesCollection.__super__.constructor.apply(this, arguments);
       }
-
-      ActiveInstancesCollection.prototype.model = InstanceDefinitionModel;
 
       ActiveInstancesCollection.prototype.getStrays = function() {
         return _.filter(this.models, (function(_this) {
@@ -838,11 +902,12 @@
 
       return ActiveInstancesCollection;
 
-    })(BaseCollection);
+    })(BaseInstanceCollection);
     ComponentManager = (function() {
       var _defaultComponentClassName, _defaultTargetPrefix;
 
       function ComponentManager() {
+        this._onMessageReceived = bind(this._onMessageReceived, this);
         this._onActiveInstanceTargetNameChange = bind(this._onActiveInstanceTargetNameChange, this);
         this._onActiveInstanceOrderChange = bind(this._onActiveInstanceOrderChange, this);
         this._onActiveInstanceRemoved = bind(this._onActiveInstanceRemoved, this);
@@ -858,6 +923,11 @@
       ComponentManager.prototype.ERROR = {
         CONDITION: {
           WRONG_FORMAT: 'condition has to be an object with key value pairs'
+        },
+        MESSAGE: {
+          MISSING_ID: 'The id of targeted instance must be passed as first argument',
+          MISSING_MESSAGE: 'No message was passed',
+          MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
         }
       };
 
@@ -921,7 +991,42 @@
       };
 
       ComponentManager.prototype.serialize = function() {
-        return this._serialize();
+        var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
+        hidden = [];
+        componentSettings = {};
+        conditions = this._globalConditionsModel.toJSON();
+        components = this._componentDefinitionsCollection.toJSON();
+        instances = this._instanceDefinitionsCollection.toJSON();
+        for (j = 0, len = instances.length; j < len; j++) {
+          instanceDefinition = instances[j];
+          instanceDefinition.instance = void 0;
+        }
+        $context = this.getContext();
+        if ($context.length > 0) {
+          tagName = $context.prop('tagName').toLowerCase();
+          classes = (ref = $context.attr('class')) != null ? ref.replace(' ', '.') : void 0;
+          contextSelector = $context.selector || (tagName + "." + classes);
+        } else {
+          contextSelector = 'body';
+        }
+        settings = {
+          $context: contextSelector,
+          componentClassName: this.getComponentClassName(),
+          targetPrefix: this.getTargetPrefix(),
+          componentSettings: {
+            conditions: conditions,
+            components: components,
+            hidden: hidden,
+            instances: instances
+          }
+        };
+        filter = function(key, value) {
+          if (typeof value === 'function') {
+            return value.toString();
+          }
+          return value;
+        };
+        return JSON.stringify(settings, filter);
       };
 
       ComponentManager.prototype.parse = function(jsonString, updateSettings) {
@@ -985,6 +1090,7 @@
       };
 
       ComponentManager.prototype.addListeners = function() {
+        var eventMethod, eventer, messageEvent;
         this._filterModel.on('change', this._updateActiveComponents);
         this._componentDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
         this._instanceDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
@@ -1039,6 +1145,10 @@
             return _this.trigger.apply(_this, [_this.EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
+        eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
+        eventer = window[eventMethod];
+        messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message';
+        eventer(messageEvent, this._onMessageReceived, false);
         return this;
       };
 
@@ -1186,6 +1296,26 @@
           };
         })(this));
         return instances;
+      };
+
+      ComponentManager.prototype.getActiveInstanceById = function(instanceId) {
+        return this._activeInstancesCollection.getInstanceDefinition(instanceId).get('instance');
+      };
+
+      ComponentManager.prototype.postMessageToInstance = function(id, message) {
+        var instance;
+        if (!id) {
+          throw this.ERROR.MESSAGE.MISSING_ID;
+        }
+        if (!message) {
+          throw this.ERROR.MESSAGE.MISSING_MESSAGE;
+        }
+        instance = this.getActiveInstanceById(id);
+        if (_.isFunction(instance != null ? instance.receiveMessage : void 0)) {
+          return instance.receiveMessage(message);
+        } else {
+          throw this.ERROR.MESSAGE.MISSING_RECEIVE_MESSAGE_METHOD;
+        }
       };
 
       ComponentManager.prototype._parse = function(settings) {
@@ -1359,7 +1489,7 @@
           render = false;
           if (this._addInstanceToDom(stray, render)) {
             instance = stray.get('instance');
-            if (((instance != null ? instance.delegateEvents : void 0) != null) && _.isFunction(instance != null ? instance.delegateEvents : void 0)) {
+            if ((instance != null ? instance.delegateEvents : void 0) && _.isFunction(instance != null ? instance.delegateEvents : void 0)) {
               results.push(instance.delegateEvents());
             } else {
               results.push(void 0);
@@ -1372,21 +1502,19 @@
       };
 
       ComponentManager.prototype._addInstanceToDom = function(instanceDefinition, render) {
-        var $target, success;
+        var $target;
         if (render == null) {
           render = true;
         }
         $target = $("." + (instanceDefinition.get('targetName')), this._$context);
-        success = false;
         if (render) {
           instanceDefinition.renderInstance();
         }
         if ($target.length > 0) {
           this._addInstanceInOrder(instanceDefinition);
-          this._isComponentAreaEmpty($target);
-          success = true;
+          this._setComponentAreaPopulatedState($target);
         }
-        return success;
+        return instanceDefinition.isAttached();
       };
 
       ComponentManager.prototype._addInstanceInOrder = function(instanceDefinition) {
@@ -1422,50 +1550,12 @@
         return this;
       };
 
-      ComponentManager.prototype._isComponentAreaEmpty = function($componentArea) {
-        var isEmpty;
-        isEmpty = $componentArea.length > 0;
-        $componentArea.toggleClass('component-area--has-component', isEmpty);
-        return isEmpty;
+      ComponentManager.prototype._isComponentAreaPopulated = function($componentArea) {
+        return $componentArea.children().length > 0;
       };
 
-      ComponentManager.prototype._serialize = function() {
-        var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
-        hidden = [];
-        componentSettings = {};
-        conditions = this._globalConditionsModel.toJSON();
-        components = this._componentDefinitionsCollection.toJSON();
-        instances = this._instanceDefinitionsCollection.toJSON();
-        for (j = 0, len = instances.length; j < len; j++) {
-          instanceDefinition = instances[j];
-          instanceDefinition.instance = void 0;
-        }
-        $context = this.getContext();
-        if ($context.length > 0) {
-          tagName = $context.prop('tagName').toLowerCase();
-          classes = (ref = $context.attr('class')) != null ? ref.replace(' ', '.') : void 0;
-          contextSelector = $context.selector || (tagName + "." + classes);
-        } else {
-          contextSelector = 'body';
-        }
-        settings = {
-          $context: contextSelector,
-          componentClassName: this.getComponentClassName(),
-          targetPrefix: this.getTargetPrefix(),
-          componentSettings: {
-            conditions: conditions,
-            components: components,
-            hidden: hidden,
-            instances: instances
-          }
-        };
-        filter = function(key, value) {
-          if (typeof value === 'function') {
-            return value.toString();
-          }
-          return value;
-        };
-        return JSON.stringify(settings, filter);
+      ComponentManager.prototype._setComponentAreaPopulatedState = function($componentArea) {
+        return $componentArea.toggleClass(this._targetPrefix + "--has-components", this._isComponentAreaPopulated($componentArea));
       };
 
       ComponentManager.prototype._onActiveInstanceAdd = function(instanceDefinition) {
@@ -1489,7 +1579,7 @@
         var $target;
         instanceDefinition.disposeInstance();
         $target = $("." + (instanceDefinition.get('targetName')), this._$context);
-        return this._isComponentAreaEmpty($target);
+        return this._setComponentAreaPopulatedState($target);
       };
 
       ComponentManager.prototype._onActiveInstanceOrderChange = function(instanceDefinition) {
@@ -1498,6 +1588,13 @@
 
       ComponentManager.prototype._onActiveInstanceTargetNameChange = function(instanceDefinition) {
         return this._addInstanceToDom(instanceDefinition);
+      };
+
+      ComponentManager.prototype._onMessageReceived = function(event) {
+        var data, id;
+        id = event.data.id;
+        data = event.data.data;
+        return this.postMessageToInstance(id, data);
       };
 
       return ComponentManager;

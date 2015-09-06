@@ -66,11 +66,27 @@ describe 'IframeComponent', ->
 
       assert.equal iframeComponent.src, 'http://www.google.com'
 
-    it 'should add load listener', ->
+    it 'should call addListeners', ->
+      iframeComponent = new IframeComponent()
+      addListenersSpy = sinon.spy iframeComponent, 'addListeners'
+      do iframeComponent.initialize
+      assert addListenersSpy.called
 
+  describe 'addListeners', ->
+    it 'should add an on load listener by calling the "on" method with the
+    correct arguments', ->
       iframeComponent = new IframeComponent()
       listener = sinon.spy iframeComponent.$el, 'on'
-      do iframeComponent.initialize
+      do iframeComponent.addListeners
+
+      assert listener.calledWith 'load', iframeComponent.onIframeLoaded
+
+  describe 'removeListeners', ->
+    it 'should remove the on load listener by calling off and passing theh
+    correct arguments', ->
+      iframeComponent = new IframeComponent()
+      listener = sinon.spy iframeComponent.$el, 'off'
+      do iframeComponent.removeListeners
 
       assert listener.calledWith 'load', iframeComponent.onIframeLoaded
 
@@ -82,20 +98,44 @@ describe 'IframeComponent', ->
         src: 'http://www.google.com'
 
       iframeComponent.initialize attrs
-      do iframeComponent.render
+      assert.equal iframeComponent.el.src, ''
 
+      do iframeComponent.render
       assert.equal iframeComponent.el.src, 'http://www.google.com'
 
   describe 'dispose', ->
-    it 'shuld remove load listener and call this.remove', ->
-
+    it 'should call remove', ->
       iframeComponent = new IframeComponent()
-      listener = sinon.spy iframeComponent.$el, 'off'
-      remove = sinon.spy iframeComponent, 'remove'
+      removeSpy = sinon.spy iframeComponent, 'remove'
       do iframeComponent.dispose
+      assert removeSpy.called
 
-      assert listener.calledWith 'load', iframeComponent.onIframeLoaded
-      assert listener.called
+    it 'should call removeListeners', ->
+      iframeComponent = new IframeComponent()
+      listenerSpy = sinon.spy iframeComponent.$el, 'off'
+      do iframeComponent.dispose
+      assert listenerSpy.called
 
+  describe 'postMessageToIframe', ->
+    it 'should call postMessage with the passed message and the targetOrigin', ->
+      iframeComponent = new IframeComponent()
+      contentWindow = iframeComponent.$el.get(0).contentWindow
+      postMessageSpy = contentWindow.postMessage = sinon.stub()
+      message = 'dummy message'
+      iframeComponent.postMessageToIframe message, iframeComponent.targetOrigin
+      assert postMessageSpy.calledWith message, iframeComponent.targetOrigin
+
+  # Default implementation is a noop.
+  describe 'receiveMessage', ->
+    it 'the default implementation does nothing but is called by
+    componentLoader.postMessageToInstance', ->
+
+  # Default implementation is a noop.
   describe 'onIframeLoaded', ->
-    it 'should be called after iframe content has been loaded, no tests yet..', ->
+    it 'should be called after iframe content has been loaded (when the load
+      event is triggered)', ->
+      onIframeLoadedSpy = sinon.spy IframeComponent.prototype, 'onIframeLoaded'
+      iframeComponent = new IframeComponent()
+      iframeComponent.$el.trigger 'load'
+      assert onIframeLoadedSpy.calledOnce
+

@@ -171,17 +171,6 @@ describe 'Router', ->
 
       assert.deepEqual paramsObject, expectedResults
 
-    it 'should extract multiple optional params', ->
-      urlPattern = 'foo(/:bar)(/:baz)(/:qux)'
-      extractedParams = ['val1', 'val2', 'val3']
-      paramsObject = router.prototype._getParamsObject(urlPattern, extractedParams)
-      expectedResults =
-        bar: 'val1'
-        baz: 'val2'
-        qux: 'val3'
-
-      assert.deepEqual paramsObject, expectedResults
-
     it 'should extract params for patterns like search/:query/p:page', ->
       urlPattern = 'search/:query/p:page'
       extractedParams = ['myquery', '12']
@@ -192,7 +181,7 @@ describe 'Router', ->
 
       assert.deepEqual paramsObject, expectedResults
 
-    it 'should extract params for  patterns like folder/:name-:mode', ->
+    it 'should extract params for patterns like folder/:name-:mode', ->
       urlPattern = 'folder/:name-:mode'
       extractedParams = ['myname', 'mymode']
       paramsObject = router.prototype._getParamsObject(urlPattern, extractedParams)

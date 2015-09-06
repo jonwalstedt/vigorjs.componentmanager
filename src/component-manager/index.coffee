@@ -6,6 +6,10 @@ class ComponentManager
   ERROR:
     CONDITION:
       WRONG_FORMAT: 'condition has to be an object with key value pairs'
+    MESSAGE:
+      MISSING_ID: 'The id of targeted instance must be passed as first argument'
+      MISSING_MESSAGE: 'No message was passed'
+      MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
 
   EVENTS:
     ADD: 'add'
@@ -59,7 +63,39 @@ class ComponentManager
     return @
 
   serialize: ->
-    return @_serialize()
+    hidden = []
+    componentSettings = {}
+    conditions = @_globalConditionsModel.toJSON()
+    components = @_componentDefinitionsCollection.toJSON()
+    instances = @_instanceDefinitionsCollection.toJSON()
+
+    for instanceDefinition in instances
+      instanceDefinition.instance = undefined
+
+    $context = @getContext()
+    if $context.length > 0
+      tagName = $context.prop('tagName').toLowerCase()
+      classes = $context.attr('class')?.replace ' ', '.'
+      contextSelector = $context.selector or "#{tagName}.#{classes}"
+    else
+      contextSelector = 'body'
+
+    settings =
+      $context: contextSelector
+      componentClassName: @getComponentClassName()
+      targetPrefix: @getTargetPrefix()
+      componentSettings:
+        conditions: conditions
+        components: components
+        hidden: hidden
+        instances: instances
+
+    filter = (key, value) ->
+      if typeof value is 'function'
+          return value.toString()
+      return value
+
+    return JSON.stringify settings, filter
 
   parse: (jsonString, updateSettings = false) ->
     filter = (key, value) ->
@@ -152,6 +188,12 @@ class ComponentManager
 
     @_activeInstancesCollection.on 'remove', (model, collection, options) =>
       @trigger.apply @, [@EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
+
+    eventMethod = if window.addEventListener then 'addEventListener' else 'attachEvent'
+    eventer = window[eventMethod]
+    messageEvent = if eventMethod is 'attachEvent' then 'onmessage' else 'message'
+
+    eventer messageEvent, @_onMessageReceived, false
 
     return @
 
@@ -254,7 +296,21 @@ class ComponentManager
       return instance
     return instances
 
+  getActiveInstanceById: (instanceId) ->
+    return @_activeInstancesCollection.getInstanceDefinition(instanceId).get 'instance'
 
+  postMessageToInstance: (id, message) ->
+    unless id
+      throw @ERROR.MESSAGE.MISSING_ID
+
+    unless message
+      throw @ERROR.MESSAGE.MISSING_MESSAGE
+
+    instance = @getActiveInstanceById id
+    if _.isFunction(instance?.receiveMessage)
+      instance.receiveMessage message
+    else
+      throw @ERROR.MESSAGE.MISSING_RECEIVE_MESSAGE_METHOD
   #
   # Privat methods
   # ============================================================================
@@ -403,24 +459,22 @@ class ComponentManager
       render = false
       if @_addInstanceToDom(stray, render)
         instance = stray.get 'instance'
-        if instance?.delegateEvents? and _.isFunction(instance?.delegateEvents)
+        if instance?.delegateEvents and _.isFunction(instance?.delegateEvents)
           do instance.delegateEvents
       else
         do stray.disposeInstance
 
   _addInstanceToDom: (instanceDefinition, render = true) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
-    success = false
 
     if render
       do instanceDefinition.renderInstance
 
     if $target.length > 0
       @_addInstanceInOrder instanceDefinition
-      @_isComponentAreaEmpty $target
-      success = true
+      @_setComponentAreaPopulatedState $target
 
-    return success
+    return instanceDefinition.isAttached()
 
   _addInstanceInOrder: (instanceDefinition) ->
     $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
@@ -451,45 +505,11 @@ class ComponentManager
 
     return @
 
-  _isComponentAreaEmpty: ($componentArea) ->
-    isEmpty = $componentArea.length > 0
-    $componentArea.toggleClass 'component-area--has-component', isEmpty
-    return isEmpty
+  _isComponentAreaPopulated: ($componentArea) ->
+    $componentArea.children().length > 0
 
-  _serialize: ->
-    hidden = []
-    componentSettings = {}
-    conditions = @_globalConditionsModel.toJSON()
-    components = @_componentDefinitionsCollection.toJSON()
-    instances = @_instanceDefinitionsCollection.toJSON()
-
-    for instanceDefinition in instances
-      instanceDefinition.instance = undefined
-
-    $context = @getContext()
-    if $context.length > 0
-      tagName = $context.prop('tagName').toLowerCase()
-      classes = $context.attr('class')?.replace ' ', '.'
-      contextSelector = $context.selector or "#{tagName}.#{classes}"
-    else
-      contextSelector = 'body'
-
-    settings =
-      $context: contextSelector
-      componentClassName: @getComponentClassName()
-      targetPrefix: @getTargetPrefix()
-      componentSettings:
-        conditions: conditions
-        components: components
-        hidden: hidden
-        instances: instances
-
-    filter = (key, value) ->
-      if typeof value is 'function'
-          return value.toString()
-      return value
-
-    return JSON.stringify(settings, filter)
+  _setComponentAreaPopulatedState: ($componentArea) ->
+    $componentArea.toggleClass "#{@_targetPrefix}--has-components", @_isComponentAreaPopulated($componentArea)
 
   #
   # Callbacks
@@ -510,7 +530,7 @@ class ComponentManager
   _onActiveInstanceRemoved: (instanceDefinition) =>
     do instanceDefinition.disposeInstance
     $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
-    @_isComponentAreaEmpty $target
+    @_setComponentAreaPopulatedState $target
 
   _onActiveInstanceOrderChange: (instanceDefinition) =>
     @_addInstanceToDom instanceDefinition
@@ -518,7 +538,10 @@ class ComponentManager
   _onActiveInstanceTargetNameChange: (instanceDefinition) =>
     @_addInstanceToDom instanceDefinition
 
-
+  _onMessageReceived: (event) =>
+    id = event.data.id
+    data = event.data.data
+    @postMessageToInstance id, data
 
 ### start-test-block ###
 # this will be removed in distribution build
@@ -532,6 +555,8 @@ __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
 __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
 __testOnly.FilterModel = FilterModel
 __testOnly.IframeComponent = IframeComponent
+__testOnly.BaseCollection = BaseCollection
+__testOnly.BaseInstanceCollection = BaseInstanceCollection
 
 #properties
 __testOnly.router = Router

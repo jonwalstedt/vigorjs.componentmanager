@@ -20,61 +20,56 @@ describe 'ComponentDefinitionModel', ->
   describe 'validate', ->
     attrs = undefined
     options= undefined
+    model = undefined
 
     beforeEach ->
+      model = new ComponentDefinitionModel()
       attrs = {}
       options = {}
 
     it 'should throw an error if attrs.id is undefined', ->
-      model = new ComponentDefinitionModel()
       errorFn = -> model.validate attrs, options
-      assert.throws (-> errorFn()), /id cant be undefined/
-
+      assert.throws (-> errorFn()), model.ERROR.VALIDATION.ID_UNDEFINED
 
     it 'should throw an error if attrs.id is not a string', ->
-      model = new ComponentDefinitionModel()
       attrs.id = 123
       errorFn = -> model.validate attrs, options
-      assert.throws (-> errorFn()), /id should be a string/
+      assert.throws (-> errorFn()), model.ERROR.VALIDATION.ID_NOT_A_STRING
 
     it 'should throw an error if attrs.id is an empty string', ->
-      model = new ComponentDefinitionModel()
       attrs.id = ' '
       errorFn = -> model.validate attrs, options
-      assert.throws (-> errorFn()), /id can not be an empty string/
+      assert.throws (-> errorFn()), model.ERROR.VALIDATION.ID_IS_EMPTY_STRING
 
     it 'should throw an error if attrs.src is undefined', ->
-      model = new ComponentDefinitionModel()
       attrs.id = 'test'
       attrs.src = undefined
       errorFn = -> model.validate attrs, options
-      assert.throws (-> errorFn()), /src cant be undefined/
+      assert.throws (-> errorFn()), model.ERROR.VALIDATION.SRC_UNDEFINED
 
     it 'should throw an error if attrs.src is not a string or a constructor function', ->
-      model = new ComponentDefinitionModel()
       attrs.id = 'test'
       attrs.src = 123
       errorFn = -> model.validate attrs, options
-      assert.throws (-> errorFn()), /src should be a string or a constructor function/
+      assert.throws (-> errorFn()), model.ERROR.VALIDATION.SRC_WRONG_TYPE
 
       model = new ComponentDefinitionModel()
       attrs.id = 'test'
       attrs.src = 'window.app.test'
       errorFn = -> model.validate attrs, options
-      assert.doesNotThrow (-> errorFn()), /src should be a string or a constructor function/
+      assert.doesNotThrow (-> errorFn()), model.ERROR.VALIDATION.SRC_WRONG_TYPE
 
       model = new ComponentDefinitionModel()
       attrs.id = 'test'
       attrs.src = DummyComponent
       errorFn = -> model.validate attrs, options
-      assert.doesNotThrow (-> errorFn()), /src should be a string or a constructor function/
+      assert.doesNotThrow (-> errorFn()), model.ERROR.VALIDATION.SRC_WRONG_TYPE
 
     it 'should throw an error if attrs.src is an empty string', ->
-      model = new ComponentDefinitionModel()
       attrs.id = 'test'
       attrs.src = ' '
       errorFn = -> model.validate attrs, options
-      assert.throws (-> errorFn()), /src can not be an empty string/
+      assert.throws (-> errorFn()), model.ERROR.VALIDATION.SRC_IS_EMPTY_STRING
 
 
   describe 'getClass', ->
@@ -121,7 +116,7 @@ describe 'ComponentDefinitionModel', ->
       model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
 
       errorFn = -> model.getClass()
-      assert.throws (-> errorFn()), /No constructor function found for app.test.TummyComponent/
+      assert.throws (-> errorFn()), model.ERROR.NO_CONSTRUCTOR_FOUND(dummyComponentDefinitionObj.src)
 
   describe 'areConditionsMet', ->
     it 'should return false if the condition is a method that returns falsy', ->
@@ -248,7 +243,7 @@ describe 'ComponentDefinitionModel', ->
 
       model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
       errorFn = -> model.areConditionsMet()
-      assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
+      assert.throws (-> errorFn()), model.ERROR.MISSING_GLOBAL_CONDITIONS
 
     it 'should throw an error if the condition is a string and no mehod is registered with the string as a key in the globalConditions object', ->
       dummyComponentDefinitionObj =
@@ -261,7 +256,7 @@ describe 'ComponentDefinitionModel', ->
 
       model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
       errorFn = -> model.areConditionsMet(globalConditions)
-      assert.throws (-> errorFn()), /Trying to verify condition truthyMethod but it has not been registered yet/
+      assert.throws (-> errorFn()), model.ERROR.MISSING_CONDITION dummyComponentDefinitionObj.conditions
 
   describe '_isUrl', ->
     it 'should return true if string is url', ->
