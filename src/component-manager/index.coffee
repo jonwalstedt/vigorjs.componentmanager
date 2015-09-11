@@ -297,7 +297,7 @@ class ComponentManager
     return instances
 
   getActiveInstanceById: (instanceId) ->
-    return @_activeInstancesCollection.getInstanceDefinition(instanceId).get 'instance'
+    return @_activeInstancesCollection.getInstanceDefinition(instanceId)?.get 'instance'
 
   postMessageToInstance: (id, message) ->
     unless id

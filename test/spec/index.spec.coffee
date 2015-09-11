@@ -784,7 +784,7 @@ describe 'The componentManager', ->
         cm = componentManager.initialize().addComponents component
         assert.equal cm, componentManager
 
-    describe 'addInstance', ->
+    describe 'addInstances', ->
       it 'should call set on _instanceDefinitionsCollection with passed definitions and parse: true, validate: true and remove: false', ->
         instance =
           id: 'dummy-instance',
@@ -1265,6 +1265,63 @@ describe 'The componentManager', ->
 
 
     describe 'getActiveInstanceById', ->
+      componentSettings = undefined
+
+      beforeEach ->
+        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
+        componentSettings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 1
+              args:
+                id: 'instance-1'
+            }
+          ]
+
+        afterEach ->
+          do $('.test-prefix--header').remove
+
+        componentManager.initialize componentSettings
+
+      it 'should call _activeInstancesCollection.getInstanceDefinition with the passed id', ->
+        getInstanceDefinitionSpy = sandbox.stub componentManager._activeInstancesCollection, 'getInstanceDefinition'
+        id = 'instance-1'
+        componentManager.getActiveInstanceById id
+        assert getInstanceDefinitionSpy.calledWith(id)
+
+      it 'should return the instance from the instanceDefinitionModel if it exists', ->
+        getInstanceDefinitionSpy = sandbox.spy componentManager._activeInstancesCollection, 'getInstanceDefinition'
+        id = 'instance-1'
+        filter =
+          url: 'foo/1'
+
+        componentManager.refresh filter
+
+        instance = componentManager.getActiveInstanceById id
+        assert instance instanceof window.MockComponent
+
+      it 'should return undefined if there is no instance in the targeted instanceDefinition', ->
+        getInstanceDefinitionSpy = sandbox.spy componentManager._activeInstancesCollection, 'getInstanceDefinition'
+        id = 'instance-1'
+        filter =
+          url: 'foo/1'
+
+        # If we remove the target the instance will never be created
+        do $('.test-prefix--header').remove
+        componentManager.refresh filter
+
+        instance = componentManager.getActiveInstanceById id
+        assert.equal instance, undefined
 
     describe 'postMessageToInstance', ->
 

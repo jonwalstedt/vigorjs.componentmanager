@@ -1299,7 +1299,8 @@
       };
 
       ComponentManager.prototype.getActiveInstanceById = function(instanceId) {
-        return this._activeInstancesCollection.getInstanceDefinition(instanceId).get('instance');
+        var ref;
+        return (ref = this._activeInstancesCollection.getInstanceDefinition(instanceId)) != null ? ref.get('instance') : void 0;
       };
 
       ComponentManager.prototype.postMessageToInstance = function(id, message) {
