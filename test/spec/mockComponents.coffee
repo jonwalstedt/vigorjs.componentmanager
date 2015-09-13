@@ -19,6 +19,9 @@ class MockComponent
   onAddedToDom: ->
     return @
 
+  receiveMessage: (message) ->
+    return @
+
 class MockComponent2
   $el: undefined
   attr: undefined

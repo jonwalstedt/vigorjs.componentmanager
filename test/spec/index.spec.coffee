@@ -1325,6 +1325,67 @@ describe 'The componentManager', ->
 
     describe 'postMessageToInstance', ->
 
+      componentSettings = undefined
+
+      beforeEach ->
+        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
+        componentSettings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            }
+          ]
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'test-prefix--header'
+              urlPattern: 'foo/:bar'
+              order: 1
+              args:
+                id: 'instance-1'
+            }
+          ]
+
+        afterEach ->
+          do $('.test-prefix--header').remove
+
+        filter =
+          url: 'foo/1'
+
+        componentManager.initialize componentSettings
+        componentManager.refresh filter
+
+      it 'should throw a MISSING_ID error if no id was passed', ->
+        errorFn = -> do componentManager.postMessageToInstance
+        assert.throws (-> errorFn()), /The id of targeted instance must be passed as first argument/
+
+        errorFn = -> do componentManager.postMessageToInstance undefined, 'this is my message '
+        assert.throws (-> errorFn()), /The id of targeted instance must be passed as first argument/
+
+      it 'should throw a MISSING_MESSAGE if no message was passed', ->
+        id = 'instance-1'
+        errorFn = -> componentManager.postMessageToInstance id
+        assert.throws (-> errorFn()), /No message was passed/
+
+      it 'should call receiveMessage and pass the message if it exist', ->
+        id = 'instance-1'
+        message = 'this is my message'
+        instance = componentManager._activeInstancesCollection.get('instance-1').get 'instance'
+        receiveMessageSpy = sandbox.spy instance, 'receiveMessage'
+        componentManager.postMessageToInstance id, message
+        assert receiveMessageSpy.calledWith message
+
+      it 'should throw an MISSING_RECEIVE_MESSAGE_METHOD error if receiveMessage does not exist', ->
+        id = 'instance-1'
+        message = 'this is my message'
+        instance = componentManager._activeInstancesCollection.get('instance-1').get 'instance'
+        instance.receiveMessage = undefined
+        errorFn = -> componentManager.postMessageToInstance id, message
+        assert.throws (-> errorFn()), /The instance does not seem to have a receiveMessage method/
+
+
   # Private methods
   ##############################################################################
   describe 'private methods', ->
