@@ -33,6 +33,7 @@ class ComponentManager
   _$context: undefined
   _componentClassName: undefined
   _targetPrefix: undefined
+  _listenForMessages: false
 
   #
   # Public methods
@@ -46,6 +47,10 @@ class ComponentManager
 
     do @setComponentClassName
     do @setTargetPrefix
+
+    if settings?.listenForMessages
+      @_listenForMessages = true
+
     do @addListeners
     @_parse settings
     return @
@@ -189,11 +194,12 @@ class ComponentManager
     @_activeInstancesCollection.on 'remove', (model, collection, options) =>
       @trigger.apply @, [@EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
 
-    eventMethod = if window.addEventListener then 'addEventListener' else 'attachEvent'
-    eventer = window[eventMethod]
-    messageEvent = if eventMethod is 'attachEvent' then 'onmessage' else 'message'
+    if @_listenForMessages
+      eventMethod = if window.addEventListener then 'addEventListener' else 'attachEvent'
+      eventer = window[eventMethod]
+      messageEvent = if eventMethod is 'attachEvent' then 'onmessage' else 'message'
 
-    eventer messageEvent, @_onMessageReceived, false
+      eventer messageEvent, @_onMessageReceived, false
 
     return @
 
@@ -243,6 +249,13 @@ class ComponentManager
     do @_instanceDefinitionsCollection?.off
     do @_componentDefinitionsCollection?.off
     do @_globalConditionsModel?.off
+
+    if @_listenForMessages
+      eventMethod = if window.removeEventListener then 'removeEventListener' else 'detachEvent'
+      eventer = window[eventMethod]
+      messageEvent = if eventMethod is 'detachEvent' then 'onmessage' else 'message'
+      eventer messageEvent, @_onMessageReceived
+
     return @
 
   setContext: (context) ->

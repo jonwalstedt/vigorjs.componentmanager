@@ -22,9 +22,9 @@ ul, li {
 .examples {
   position: fixed;
   top: 0;
-  width: 240px;
+  width: 340px;
   height: 340px;
-  right: -200px;
+  right: -300px;
   z-index: 100;
   transition: all 0.3s ease-out;
 }
@@ -54,7 +54,7 @@ ul, li {
   position: absolute;
   font-size: 16px;
   transform: rotate(-90deg);
-  left: -55px;
+  left: -54px;
   top: 55px;
   padding: 10px 20px;
 }

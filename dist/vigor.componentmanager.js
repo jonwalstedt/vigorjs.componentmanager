@@ -959,6 +959,8 @@
 
       ComponentManager.prototype._targetPrefix = void 0;
 
+      ComponentManager.prototype._listenForMessages = false;
+
       ComponentManager.prototype.initialize = function(settings) {
         this._componentDefinitionsCollection = new ComponentDefinitionsCollection();
         this._instanceDefinitionsCollection = new InstanceDefinitionsCollection();
@@ -967,6 +969,9 @@
         this._filterModel = new FilterModel();
         this.setComponentClassName();
         this.setTargetPrefix();
+        if (settings != null ? settings.listenForMessages : void 0) {
+          this._listenForMessages = true;
+        }
         this.addListeners();
         this._parse(settings);
         return this;
@@ -1145,10 +1150,12 @@
             return _this.trigger.apply(_this, [_this.EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]);
           };
         })(this));
-        eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
-        eventer = window[eventMethod];
-        messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message';
-        eventer(messageEvent, this._onMessageReceived, false);
+        if (this._listenForMessages) {
+          eventMethod = window.addEventListener ? 'addEventListener' : 'attachEvent';
+          eventer = window[eventMethod];
+          messageEvent = eventMethod === 'attachEvent' ? 'onmessage' : 'message';
+          eventer(messageEvent, this._onMessageReceived, false);
+        }
         return this;
       };
 
@@ -1208,7 +1215,7 @@
       };
 
       ComponentManager.prototype.removeListeners = function() {
-        var ref, ref1, ref2, ref3, ref4;
+        var eventMethod, eventer, messageEvent, ref, ref1, ref2, ref3, ref4;
         if ((ref = this._activeInstancesCollection) != null) {
           ref.off();
         }
@@ -1223,6 +1230,12 @@
         }
         if ((ref4 = this._globalConditionsModel) != null) {
           ref4.off();
+        }
+        if (this._listenForMessages) {
+          eventMethod = window.removeEventListener ? 'removeEventListener' : 'detachEvent';
+          eventer = window[eventMethod];
+          messageEvent = eventMethod === 'detachEvent' ? 'onmessage' : 'message';
+          eventer(messageEvent, this._onMessageReceived);
         }
         return this;
       };
