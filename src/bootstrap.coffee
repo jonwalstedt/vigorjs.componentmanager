@@ -3,7 +3,7 @@
 
     # AMD. Register as an anonymous module.
     define ['backbone', 'underscore', 'jquery'], (Backbone, _, $) ->
-      return factory(root, Backbone, _)
+      return factory(root, Backbone, _, $)
 
   else if typeof exports is "object"
     Backbone = require 'backbone'

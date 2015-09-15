@@ -14,7 +14,7 @@
     var $, Backbone, _;
     if (typeof define === "function" && define.amd) {
       define(['backbone', 'underscore', 'jquery'], function(Backbone, _, $) {
-        return factory(root, Backbone, _);
+        return factory(root, Backbone, _, $);
       });
     } else if (typeof exports === "object") {
       Backbone = require('backbone');
