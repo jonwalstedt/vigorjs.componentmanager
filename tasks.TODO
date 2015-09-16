@@ -20,14 +20,14 @@ Completed
  ✔ Refactor to have all errormessages as constants @done (15-08-27 00:56)
  ✔ Implement BaseInstanceCollection and use for common logic between ActiveInstancesCollection and InstanceDefinitionsCollection @done (15-09-04 11:27)
  ✔ Move ActiveInstanceCollection and BaseInstanceCollection into the instance-defintions folder @done (15-09-04 11:27)
+ ✔ Unittest BaseCollection,  BaseInstanceCollection and new logic in index.coffee @done (15-09-16 22:55)
+ ✔ Send message from iframe to Instance @done (15-09-16 22:55)
+ ✔ Send message to iframe from instance @done (15-09-16 22:55)
+ ✔ Add the possibility to pass callback when doing a refresh - method should be called when the refresh is done (pass an array of active instances) @done (15-09-16 22:55)
 
  In progress
- ☐ Unittest BaseCollection,  BaseInstanceCollection and new logic in index.coffee
- ☐ Send message from iframe to Instance
- ☐ Send message to iframe from instance
 
  Next up
- ☐ Add the possibility to pass callback when doing a refresh - method should be called when the refresh is done (pass an array of active instances)
  ☐ Add possibility to call method(s) on each component when doing a refresh? ex getRenderDonePromises? (probably not needed, the call ack should be enough)
  ☐ Pass arguments to conditions?
  ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)

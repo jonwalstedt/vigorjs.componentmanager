@@ -18,7 +18,9 @@ var app = app || {};
       var filterOptions = {
         url: Backbone.history.fragment
       };
-      Vigor.componentManager.refresh(filterOptions);
+      Vigor.componentManager.refresh(filterOptions, function (activeInstances) {
+        console.log('activeInstances: ',  activeInstances);
+      });
     }
 
   });

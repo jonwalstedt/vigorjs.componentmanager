@@ -122,6 +122,45 @@ describe 'The componentManager', ->
         cm = componentManager.refresh()
         assert.equal cm, componentManager
 
+      it 'should call the callback and pass activeInstances if a callback method is passed', ->
+        cb = sandbox.spy()
+        settings =
+          components: [
+            {
+              id: 'mock-component',
+              src: 'window.MockComponent'
+            },
+            {
+              id: 'mock-component-2',
+              src: 'window.MockComponent2'
+            }
+          ]
+
+          instances: [
+            {
+              id: 'instance-1',
+              componentId: 'mock-component',
+              targetName: 'body'
+              urlPattern: 'foo/:bar'
+            },
+            {
+              id: 'instance-2',
+              componentId: 'mock-component-2',
+              targetName: 'body'
+              urlPattern: 'bar/:baz'
+            }
+          ]
+
+        filter =
+          url: 'foo/1'
+
+        componentManager.initialize settings
+        componentManager.refresh filter, cb
+        instances = componentManager.getActiveInstances()
+
+        assert cb.calledWith(instances)
+        assert instances[0] instanceof MockComponent
+
     describe 'serialize', ->
       settings = undefined
       beforeEach ->

@@ -1,6 +1,6 @@
 /**
  * vigorjs.componentmanager - Helps you decouple Backbone applications
- * @version v0.0.2
+ * @version v0.0.3
  * @link 
  * @license MIT
  */
@@ -982,8 +982,11 @@
         return this;
       };
 
-      ComponentManager.prototype.refresh = function(filterOptions) {
+      ComponentManager.prototype.refresh = function(filterOptions, cb) {
         var ref;
+        if (cb == null) {
+          cb = void 0;
+        }
         if (filterOptions) {
           this._filterModel.set(this._filterModel.parse(filterOptions));
         } else {
@@ -991,6 +994,9 @@
             ref.clear();
           }
           this._updateActiveComponents();
+        }
+        if (cb) {
+          cb(this.getActiveInstances());
         }
         return this;
       };
