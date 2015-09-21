@@ -117,7 +117,7 @@ class InstanceDefinitionModel extends Backbone.Model
           return false
 
     if @get('conditions')
-      areConditionsMet = @areConditionsMet globalConditions
+      areConditionsMet = @areConditionsMet globalConditions, filter
       if areConditionsMet?
         return false unless areConditionsMet
 
@@ -174,7 +174,7 @@ class InstanceDefinitionModel extends Backbone.Model
     else
       return undefined
 
-  areConditionsMet: (globalConditions) ->
+  areConditionsMet: (globalConditions, filter) ->
     instanceConditions = @get 'conditions'
     shouldBeIncluded = true
 
@@ -183,7 +183,7 @@ class InstanceDefinitionModel extends Backbone.Model
         instanceConditions = [instanceConditions]
 
       for condition in instanceConditions
-        if _.isFunction(condition) and not condition()
+        if _.isFunction(condition) and not condition(filter, @get('args'))
           shouldBeIncluded = false
           break
 
@@ -194,7 +194,7 @@ class InstanceDefinitionModel extends Backbone.Model
           unless globalConditions[condition]?
             throw @ERROR.MISSING_CONDITION condition
 
-          shouldBeIncluded = globalConditions[condition]()
+          shouldBeIncluded = globalConditions[condition](filter, @get('args'))
           if not shouldBeIncluded
             break
 

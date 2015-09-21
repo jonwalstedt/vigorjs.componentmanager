@@ -654,7 +654,7 @@
           }
         }
         if (this.get('conditions')) {
-          areConditionsMet = this.areConditionsMet(globalConditions);
+          areConditionsMet = this.areConditionsMet(globalConditions, filter);
           if (areConditionsMet != null) {
             if (!areConditionsMet) {
               return false;
@@ -730,7 +730,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.areConditionsMet = function(globalConditions) {
+      InstanceDefinitionModel.prototype.areConditionsMet = function(globalConditions, filter) {
         var condition, instanceConditions, j, len, shouldBeIncluded;
         instanceConditions = this.get('conditions');
         shouldBeIncluded = true;
@@ -740,7 +740,7 @@
           }
           for (j = 0, len = instanceConditions.length; j < len; j++) {
             condition = instanceConditions[j];
-            if (_.isFunction(condition) && !condition()) {
+            if (_.isFunction(condition) && !condition(filter, this.get('args'))) {
               shouldBeIncluded = false;
               break;
             } else if (_.isString(condition)) {
@@ -750,7 +750,7 @@
               if (globalConditions[condition] == null) {
                 throw this.ERROR.MISSING_CONDITION(condition);
               }
-              shouldBeIncluded = globalConditions[condition]();
+              shouldBeIncluded = globalConditions[condition](filter, this.get('args'));
               if (!shouldBeIncluded) {
                 break;
               }
