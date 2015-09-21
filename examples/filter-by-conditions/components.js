@@ -1,5 +1,5 @@
 var componentSettings = {
-  "conditions": {
+  conditions: {
     withinTimeSpan: function () {
       var today = new Date().getHours(),
           startTime = 0,
@@ -10,31 +10,29 @@ var componentSettings = {
     }
   },
 
-  "components": [{
-    "id": "filter-condition-component",
-    "src": "app.components.FilterComponent",
-    "conditions": ["withinTimeSpan"]
+  components: [{
+    id: "filter-condition-component",
+    src: "app.components.FilterComponent",
+    conditions: ["withinTimeSpan"]
   }],
 
-  "hidden": [],
-
-  "targets": {
-    "main": [
+  targets: {
+    main: [
       {
-        "id": "filter-instance-1",
-        "componentId": "filter-condition-component",
-        "args": {
-          "title": "id: filter-instance-1",
-          "background": "red"
+        id: "filter-instance-1",
+        componentId: "filter-condition-component",
+        args: {
+          title: "id: filter-instance-1",
+          background: "red"
         }
       },
 
       {
-        "id": "filter-instance-2",
-        "componentId": "filter-condition-component",
-        "args": {
-          "title": "id: filter-instance-2",
-          "background": "silver"
+        id: "filter-instance-2",
+        componentId: "filter-condition-component",
+        args: {
+          title: "id: filter-instance-2",
+          background: "silver"
         }
       }
     ]
