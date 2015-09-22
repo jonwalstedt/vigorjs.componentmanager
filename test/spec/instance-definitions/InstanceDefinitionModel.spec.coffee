@@ -196,108 +196,175 @@ describe 'InstanceDefinitionModel', ->
       assert.equal instance, undefined
 
   describe 'passesFilter', ->
-    it 'should return true if filter.url matches urlPattern and no other filters are defined', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      passesFilter = instanceDefinitionModel.passesFilter url: 'foo/123'
-      assert.equal passesFilter, true
+    describe 'url filter', ->
+      it 'should return true if filter.url matches urlPattern and no other filters are defined', ->
+        instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+        passesFilter = instanceDefinitionModel.passesFilter url: 'foo/123'
+        assert.equal passesFilter, true
 
-    it 'should return false if filter.url doesnt match urlPattern and no other filters are defined', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      passesFilter = instanceDefinitionModel.passesFilter url: 'bar/123'
-      assert.equal passesFilter, false
+      it 'should return false if filter.url doesnt match urlPattern and no other filters are defined', ->
+        instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+        passesFilter = instanceDefinitionModel.passesFilter url: 'bar/123'
+        assert.equal passesFilter, false
 
-    it 'should call areConditionsMet if conditions are set', ->
-      instanceDefinitionModel.set 'conditions', -> return false
-      sinon.spy instanceDefinitionModel, 'areConditionsMet'
-      instanceDefinitionModel.passesFilter()
-      assert instanceDefinitionModel.areConditionsMet.called
+    describe 'conditions', ->
+      it 'should call areConditionsMet if conditions are set', ->
+        instanceDefinitionModel.set 'conditions', -> return false
+        sinon.spy instanceDefinitionModel, 'areConditionsMet'
+        instanceDefinitionModel.passesFilter()
+        assert instanceDefinitionModel.areConditionsMet.called
 
-    it 'should return true if conditions passes and no other filters are defined', ->
-      instanceDefinitionModel.set 'conditions', -> return true
+      it 'should return true if conditions passes and no other filters are defined', ->
+        instanceDefinitionModel.set 'conditions', -> return true
+        passesFilter = instanceDefinitionModel.passesFilter()
+        assert.equal passesFilter, true
+
+      it 'should return false if conditions doesnt pass and no other filters are defined', ->
+        instanceDefinitionModel.set 'conditions', -> return false
+        passesFilter = instanceDefinitionModel.passesFilter()
+        assert.equal passesFilter, false
+
+      it 'should return true if globalConditions passes and no other filters are defined', ->
+        instanceDefinitionModel.set 'conditions', 'foo'
+        globalConditions =
+          foo: -> return true
+
+        passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
+        assert.equal passesFilter, true
+
+      it 'should return false if globalConditions doesnt pass and no other filters are defined', ->
+        instanceDefinitionModel.set 'conditions', 'foo'
+        globalConditions =
+          foo: -> return false
+
+        passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
+        assert.equal passesFilter, false
+
+    describe 'stringMatching - using a filterString on the passed filter', ->
+      describe 'filterStringHasToMatch', ->
+        it 'should return true if filterStringHasToMatch passes and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterStringHasToMatch', 'foo'
+          filter =
+            filterString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return false if filterStringHasToMatch doesnt pass and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterStringHasToMatch', 'bar'
+          filter =
+            filterString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+        it 'should return true if filterStringHasToMatch isnt defined and no other filters are defined - even if a filterString is set on the passed filter', ->
+          instanceDefinitionModel.set 'filterStringHasToMatch', undefined
+          filter =
+            filterString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+      describe 'filterStringCantMatch', ->
+        it 'should return true if filterStringCantMatch passes and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterStringCantMatch', 'bar'
+          filter =
+            filterString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return false if filterStringCantMatch doesnt pass and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterStringCantMatch', 'foo'
+          filter =
+            filterString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+        it 'should return true if filterStringCantMatch isnt defined and no other filters are defined - even if a filterString is set on the passed filter', ->
+          instanceDefinitionModel.set 'filterStringCantMatch', undefined
+          filter =
+            filterString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+
+    describe 'stringMatching - using a filterString on the instanceDefinition', ->
+      describe 'includeIfStringMatches', ->
+        it 'should return true if includeIfStringMatches matches and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            includeIfStringMatches: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return false if includeIfStringMatches doesnt match and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            includeIfStringMatches: 'bar'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+        it 'should return true if includeIfStringMatches returns undefined and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterString', undefined
+          filter =
+            includeIfStringMatches: 'bar'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+      describe 'hasToMatchString', ->
+        it 'should return true if hasToMatchString matches and no other filters are defnied', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            hasToMatchString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return false if hasToMatchString doesnt match and no other filters are defnied', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            hasToMatchString: 'bar'
+
+        it 'should return false if hasToMatchString is passed as a filter and no filterString is registered and no other filters are defnied', ->
+          instanceDefinitionModel.set 'filterString', undefined
+          filter =
+            hasToMatchString: 'bar'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+      describe 'cantMatchString', ->
+        it 'should return true if cantMatchString passes and no other filters are defnied', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            cantMatchString: 'bar'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return false if cantMatchString doesnt pass and no other filters are defnied', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            cantMatchString: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+    it 'should return true if no filter is passed', ->
+      instanceDefinitionModel.set
+        'urlPattern': 'foo/:bar/:baz'
+        'filterString': 'foo'
+        'conditions': -> return true
+
       passesFilter = instanceDefinitionModel.passesFilter()
       assert.equal passesFilter, true
-
-    it 'should return false if conditions doesnt pass and no other filters are defined', ->
-      instanceDefinitionModel.set 'conditions', -> return false
-      passesFilter = instanceDefinitionModel.passesFilter()
-      assert.equal passesFilter, false
-
-    it 'should return true if globalConditions passes and no other filters are defined', ->
-      instanceDefinitionModel.set 'conditions', 'foo'
-      globalConditions =
-        foo: -> return true
-
-      passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
-      assert.equal passesFilter, true
-
-    it 'should return false if globalConditions doesnt pass and no other filters are defined', ->
-      instanceDefinitionModel.set 'conditions', 'foo'
-      globalConditions =
-        foo: -> return false
-
-      passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
-      assert.equal passesFilter, false
-
-    it 'should return true if includeIfStringMatches matches and no other filters are defined', ->
-      instanceDefinitionModel.set 'filterString', 'foo'
-      filter =
-        includeIfStringMatches: 'foo'
-
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
-      assert.equal passesFilter, true
-
-    it 'should return false if includeIfStringMatches doesnt match and no other filters are defined', ->
-      instanceDefinitionModel.set 'filterString', 'foo'
-      filter =
-        includeIfStringMatches: 'bar'
-
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
-      assert.equal passesFilter, false
-
-    it 'should return true if includeIfStringMatches returns undefined and no other filters are defined', ->
-      instanceDefinitionModel.set 'filterString', undefined
-      filter =
-        includeIfStringMatches: 'bar'
-
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
-      assert.equal passesFilter, true
-
-    it 'should return true if hasToMatchString matches and no other filters are defnied', ->
-      instanceDefinitionModel.set 'filterString', 'foo'
-      filter =
-        hasToMatchString: 'foo'
-
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
-      assert.equal passesFilter, true
-
-    it 'should return false if hasToMatchString doesnt match and no other filters are defnied', ->
-      instanceDefinitionModel.set 'filterString', 'foo'
-      filter =
-        hasToMatchString: 'bar'
-
-    it 'should return false if hasToMatchString is passed as a filter and no filterString is registered and no other filters are defnied', ->
-      instanceDefinitionModel.set 'filterString', undefined
-      filter =
-        hasToMatchString: 'bar'
-
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
-      assert.equal passesFilter, false
-
-    it 'should return true if cantMatchString passes and no other filters are defnied', ->
-      instanceDefinitionModel.set 'filterString', 'foo'
-      filter =
-        cantMatchString: 'bar'
-
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
-      assert.equal passesFilter, true
-
-    it 'should return false if cantMatchString doesnt pass and no other filters are defnied', ->
-      instanceDefinitionModel.set 'filterString', 'foo'
-      filter =
-        cantMatchString: 'foo'
-
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
-      assert.equal passesFilter, false
 
     it 'returns true if all filter passes', ->
       instanceDefinitionModel.set
@@ -309,7 +376,7 @@ describe 'InstanceDefinitionModel', ->
         url: 'foo/1/2'
         hasToMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      passesFilter = instanceDefinitionModel.passesFilter filter
       assert.equal passesFilter, true
 
     it 'returns false if any of the filters doesnt pass - in this case it passes the hasToMatchString filter butthe conditions does not pass', ->
@@ -322,7 +389,7 @@ describe 'InstanceDefinitionModel', ->
         url: 'foo/1/2'
         hasToMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      passesFilter = instanceDefinitionModel.passesFilter filter
       assert.equal passesFilter, false
 
     it 'returns false if any of the filters doesnt pass - in this case the url pattern does not match', ->
@@ -335,7 +402,7 @@ describe 'InstanceDefinitionModel', ->
         url: 'foo/1/2'
         hasToMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      passesFilter = instanceDefinitionModel.passesFilter filter
       assert.equal passesFilter, false
 
     it 'returns false if any of the filters doesnt pass - in this case the filterString cant match foo', ->
@@ -348,7 +415,7 @@ describe 'InstanceDefinitionModel', ->
         url: 'foo/1/2'
         cantMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter(filter)
+      passesFilter = instanceDefinitionModel.passesFilter filter
       assert.equal passesFilter, false
 
   describe 'exceedsMaximumShowCount', ->
@@ -457,6 +524,69 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.set 'filterString', 'foo/bar/baz'
       matches = instanceDefinitionModel.includeIfStringMatches /[a-z]+/g
       assert.equal matches, true
+
+  # describe 'includeIfFilterStringMatches', ->
+  #   it 'should return true if includeIfFilterStringMatches is defined and matches filterString', ->
+  #     instanceDefinitionModel.set 'includeIfFilterStringMatches', 'lorem ipsum'
+  #     matches = instanceDefinitionModel.includeIfFilterStringMatches 'lorem ipsum dolor'
+  #     assert.equal matches, true
+
+  #   it 'should return false if the includeIfFilterStringMatches doesnt match the filterString', ->
+  #     instanceDefinitionModel.set 'includeIfFilterStringMatches', 'foo bar'
+  #     matches = instanceDefinitionModel.includeIfFilterStringMatches 'lorem ipsum'
+  #     assert.equal matches, false
+
+  #   it 'should return undefined if includeIfFilterStringMatches is undefined', ->
+  #     instanceDefinitionModel.set 'includeIfFilterStringMatches', undefined
+  #     matches = instanceDefinitionModel.includeIfFilterStringMatches 'lorem ipsum'
+  #     assert.equal matches, undefined
+
+  #   it 'should handle a regexp as includeIfFilterStringMatches', ->
+  #     instanceDefinitionModel.set 'includeIfFilterStringMatches', /[a-z]+/g
+  #     matches = instanceDefinitionModel.includeIfFilterStringMatches 'foo/bar/baz'
+  #     assert.equal matches, true
+
+  describe 'filterStringHasToMatch', ->
+    it 'should return true if filterStringHasToMatch is defined and matches filterString', ->
+      instanceDefinitionModel.set 'filterStringHasToMatch', 'lorem ipsum'
+      matches = instanceDefinitionModel.filterStringHasToMatch 'lorem ipsum dolor'
+      assert.equal matches, true
+
+    it 'should return false if filterStringHasToMatch is defined and does not match the filterString', ->
+      instanceDefinitionModel.set 'filterStringHasToMatch', 'lorem ipsum'
+      matches = instanceDefinitionModel.filterStringHasToMatch 'foo bar'
+      assert.equal matches, false
+
+    it 'should return false if filterStringHasToMatch is defined and filterString is undefined', ->
+      instanceDefinitionModel.set 'filterStringHasToMatch', 'lorem ipsum'
+      matches = instanceDefinitionModel.filterStringHasToMatch undefined
+      assert.equal matches, false
+
+    it 'should return undefined if filterStringHasToMatch is undefined', ->
+      instanceDefinitionModel.set 'filterStringHasToMatch', undefined
+      matches = instanceDefinitionModel.filterStringHasToMatch 'lorem ipsum'
+      assert.equal matches, undefined
+
+  describe 'filterStringCantMatch', ->
+    it 'should return false if filterStringCantMatch is defined and matches filterString', ->
+      instanceDefinitionModel.set 'filterStringCantMatch', 'lorem ipsum'
+      matches = instanceDefinitionModel.filterStringCantMatch 'lorem ipsum dolor'
+      assert.equal matches, false
+
+    it 'should return true if filterStringCantMatch is defined and does not match the filterString', ->
+      instanceDefinitionModel.set 'filterStringCantMatch', 'lorem ipsum'
+      matches = instanceDefinitionModel.filterStringCantMatch 'foo bar'
+      assert.equal matches, true
+
+    it 'should return false if filterStringCantMatch is defined and filterString is undefined', ->
+      instanceDefinitionModel.set 'filterStringCantMatch', 'lorem ipsum'
+      matches = instanceDefinitionModel.filterStringCantMatch undefined
+      assert.equal matches, false
+
+    it 'should return undefined if filterStringCantMatch is undefined', ->
+      instanceDefinitionModel.set 'filterStringCantMatch', undefined
+      matches = instanceDefinitionModel.filterStringCantMatch 'lorem ipsum'
+      assert.equal matches, undefined
 
   describe 'doesUrlPatternMatch', ->
     it 'should call router.routeToRegExp with the urlPattern', ->

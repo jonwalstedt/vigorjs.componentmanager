@@ -22,18 +22,23 @@ class InstanceDefinitionModel extends Backbone.Model
   defaults:
     id: undefined
     componentId: undefined
-    filterString: undefined
-    conditions: undefined
     args: undefined
     order: undefined
     targetName: undefined
     instance: undefined
     showCount: 0
-    maxShowCount: undefined
-    urlPattern: undefined
     urlParams: undefined
     urlParamsModel: undefined
     reInstantiateOnUrlParamChange: false
+
+    # filterproperties
+    filterString: undefined
+    # includeIfFilterStringMatches: undefined
+    filterStringHasToMatch: undefined
+    filterStringCantMatch: undefined
+    conditions: undefined
+    maxShowCount: undefined
+    urlPattern: undefined
 
   validate: (attrs, options) ->
     unless attrs.id
@@ -121,16 +126,29 @@ class InstanceDefinitionModel extends Backbone.Model
       if areConditionsMet?
         return false unless areConditionsMet
 
+    if filter?.filterString
+      # not needed?
+      # if includeIfMatch = @includeIfFilterStringMatches(filter.filterString)
+      #   return includeIfMatch
+
+      hasToMatch = @filterStringHasToMatch filter.filterString
+      if hasToMatch?
+        return hasToMatch
+
+      cantMatch = @filterStringCantMatch filter.filterString
+      if cantMatch?
+        return cantMatch
+
     if filter?.includeIfStringMatches
-      filterStringMatch = @includeIfStringMatches(filter.includeIfStringMatches)
+      filterStringMatch = @includeIfStringMatches filter.includeIfStringMatches
       if filterStringMatch?
         return filterStringMatch
 
     if filter?.hasToMatchString
-      return @hasToMatchString(filter.hasToMatchString)
+      return @hasToMatchString filter.hasToMatchString
 
     if filter?.cantMatchString
-      return @cantMatchString(filter.cantMatchString)
+      return @cantMatchString filter.cantMatchString
 
     return true
 
@@ -149,7 +167,7 @@ class InstanceDefinitionModel extends Backbone.Model
     return exceedsShowCount
 
   hasToMatchString: (filterString) ->
-    return !!@includeIfStringMatches(filterString)
+    return !!@includeIfStringMatches filterString
 
   cantMatchString: (filterString) ->
     return not @hasToMatchString filterString
@@ -158,6 +176,22 @@ class InstanceDefinitionModel extends Backbone.Model
     filter = @get 'filterString'
     if filter
       return !!filter.match filterString
+
+  # includeIfFilterStringMatches: (filterString) ->
+  #   filter = @get 'includeIfFilterStringMatches'
+  #   if filter
+  #     return !!filterString?.match filter
+
+  filterStringHasToMatch: (filterString) ->
+    filter = @get 'filterStringHasToMatch'
+    if filter
+      return !!filterString?.match filter
+
+  filterStringCantMatch: (filterString) ->
+    unless filterString then return false
+    filter = @get 'filterStringCantMatch'
+    if filter
+      return not !!filterString?.match filter
 
   doesUrlPatternMatch: (url) ->
     match = false

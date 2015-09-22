@@ -117,6 +117,7 @@
 
       FilterModel.prototype.defaults = {
         url: void 0,
+        filterString: void 0,
         includeIfStringMatches: void 0,
         hasToMatchString: void 0,
         cantMatchString: void 0
@@ -131,6 +132,7 @@
         }
         newValues = {
           url: url,
+          filterString: (attrs != null ? attrs.filterString : void 0) || void 0,
           includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
           hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
           cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0
@@ -530,18 +532,20 @@
       InstanceDefinitionModel.prototype.defaults = {
         id: void 0,
         componentId: void 0,
-        filterString: void 0,
-        conditions: void 0,
         args: void 0,
         order: void 0,
         targetName: void 0,
         instance: void 0,
         showCount: 0,
-        maxShowCount: void 0,
-        urlPattern: void 0,
         urlParams: void 0,
         urlParamsModel: void 0,
-        reInstantiateOnUrlParamChange: false
+        reInstantiateOnUrlParamChange: false,
+        filterString: void 0,
+        filterStringHasToMatch: void 0,
+        filterStringCantMatch: void 0,
+        conditions: void 0,
+        maxShowCount: void 0,
+        urlPattern: void 0
       };
 
       InstanceDefinitionModel.prototype.validate = function(attrs, options) {
@@ -642,7 +646,7 @@
       };
 
       InstanceDefinitionModel.prototype.passesFilter = function(filter, globalConditions) {
-        var areConditionsMet, filterStringMatch, urlMatch;
+        var areConditionsMet, cantMatch, filterStringMatch, hasToMatch, urlMatch;
         if ((filter != null ? filter.url : void 0) || (filter != null ? filter.url : void 0) === '') {
           urlMatch = this.doesUrlPatternMatch(filter.url);
           if (urlMatch != null) {
@@ -659,6 +663,16 @@
             if (!areConditionsMet) {
               return false;
             }
+          }
+        }
+        if (filter != null ? filter.filterString : void 0) {
+          hasToMatch = this.filterStringHasToMatch(filter.filterString);
+          if (hasToMatch != null) {
+            return hasToMatch;
+          }
+          cantMatch = this.filterStringCantMatch(filter.filterString);
+          if (cantMatch != null) {
+            return cantMatch;
           }
         }
         if (filter != null ? filter.includeIfStringMatches : void 0) {
@@ -705,6 +719,25 @@
         filter = this.get('filterString');
         if (filter) {
           return !!filter.match(filterString);
+        }
+      };
+
+      InstanceDefinitionModel.prototype.filterStringHasToMatch = function(filterString) {
+        var filter;
+        filter = this.get('filterStringHasToMatch');
+        if (filter) {
+          return !!(filterString != null ? filterString.match(filter) : void 0);
+        }
+      };
+
+      InstanceDefinitionModel.prototype.filterStringCantMatch = function(filterString) {
+        var filter;
+        if (!filterString) {
+          return false;
+        }
+        filter = this.get('filterStringCantMatch');
+        if (filter) {
+          return !!!(filterString != null ? filterString.match(filter) : void 0);
         }
       };
 

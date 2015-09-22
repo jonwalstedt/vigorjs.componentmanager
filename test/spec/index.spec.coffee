@@ -423,6 +423,7 @@ describe 'The componentManager', ->
         filter = componentManager.getActiveFilter()
         expectedResults =
           url: 'foo/1'
+          filterString: undefined
           includeIfStringMatches: undefined
           hasToMatchString: undefined
           cantMatchString: undefined
@@ -1132,6 +1133,7 @@ describe 'The componentManager', ->
 
         expectedResults =
           url: 'foo/bar'
+          filterString: undefined
           includeIfStringMatches: 'baz'
           hasToMatchString: undefined
           cantMatchString: undefined
