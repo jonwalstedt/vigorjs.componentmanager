@@ -9,7 +9,9 @@ var app = app || {};
       "": "home",
       "include-if-string-matches": "includeIfStringMatches",
       "has-to-match-string": "hasToMatchString",
-      "cant-match-string": "cantMatchString"
+      "cant-match-string": "cantMatchString",
+      "filter-string-has-to-match": "filterStringHasToMatch",
+      "filter-string-cant-match": "filterStringCantMatch",
     },
 
     home: function () {
@@ -19,29 +21,42 @@ var app = app || {};
 
     includeIfStringMatches: function () {
       console.log('includeIfStringMatches');
-      var filterOptions = {
-        url: Backbone.history.fragment,
+      var filter = {
         includeIfStringMatches: 'test'
       };
-      Vigor.componentManager.refresh(filterOptions);
+      Vigor.componentManager.refresh(filter);
     },
 
     hasToMatchString: function () {
       console.log('hasToMatchString');
-      var filterOptions = {
-        url: Backbone.history.fragment,
+      var filter = {
         hasToMatchString: 'test'
       };
-      Vigor.componentManager.refresh(filterOptions);
+      Vigor.componentManager.refresh(filter);
     },
 
     cantMatchString: function () {
       console.log('cantMatchString');
-      var filterOptions = {
-        url: Backbone.history.fragment,
+      var filter = {
         cantMatchString: 'test'
       };
-      Vigor.componentManager.refresh(filterOptions);
+      Vigor.componentManager.refresh(filter);
+    },
+
+    filterStringHasToMatch: function () {
+      console.log('filterStringHasToMatch');
+      var filter = {
+        filterString: 'test1'
+      };
+      Vigor.componentManager.refresh(filter);
+    },
+
+    filterStringCantMatch: function () {
+      console.log('filterStringCantMatch');
+      var filter = {
+        filterString: 'test2'
+      };
+      Vigor.componentManager.refresh(filter);
     }
   });
 
