@@ -11,8 +11,7 @@ var componentSettings = {
         args: {
           title: "id: 1",
           filterString: "This instance does not have a filterString (it will be undefined)"
-        },
-        urlPattern: "global"
+        }
       },
 
       {
@@ -22,7 +21,6 @@ var componentSettings = {
           title: "id: 2",
           filterString: "lorem/ipsum/test"
         },
-        urlPattern: "global",
         filterString: "lorem/ipsum/test"
       },
 
@@ -33,8 +31,27 @@ var componentSettings = {
           title: "id: 3",
           filterString: "a filter string could be any string"
         },
-        urlPattern: "global",
         filterString: "a filter string could be any string"
+      },
+
+      {
+        id: "filter-string-instance-4",
+        componentId: "filter-string-component",
+        args: {
+          title: "id: 4",
+          filterString: "undefined - the filterString is set on the filter passed to the refresh method"
+        },
+        filterStringHasToMatch: "test1"
+      },
+
+      {
+        id: "filter-string-instance-5",
+        componentId: "filter-string-component",
+        args: {
+          title: "id: 5",
+          filterString: "undefined - the filterString is set on the filter passed to the refresh method"
+        },
+        filterStringCantMatch: "test1"
       }
     ]
   }

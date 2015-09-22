@@ -9,24 +9,29 @@
     <div class="app-wrapper">
       <header class="example-header">
         <h2>Filter components by string matching</h2>
-        <ul>
-          <li><a href="#include-if-string-matches">includeIfStringMatches</a>
-          </li>
-          <li><a href="#has-to-match-string">hasToMatchString</a></li>
-          <li><a href="#cant-match-string">cantMatchString</a></li>
-        </ul>
       </header>
-      <div class="description">
-        <p>There are three different default ways of filtering on a string: </p>
+      <div class="first-example">
+        <h3>filterString on the instanceDefintion</h3>
+        <p>These examples have the filterString defined on the instanceDefinitions and sets the properties "includeIfStringMatches", "hasToMatchString" or "cantMatchString" on the passed filter. This approach allows for an easy and convenient way of grouping components using the filterString property on the instanceDefinition (ex. using the property for grouping by type)</p>
         <ul>
-          <li>
-            Either the filter will include the component if the string matches but also include all components that doesnt have a filter string
+          <li><a href="#">Restore</a>
+          <li><a href="#include-if-string-matches">includeIfStringMatches "test"</a>
           </li>
-          <li>Or it will return only components matching the string passed to the filter</li>
-          <li>Or it will return only components NOT matching the string passed to the filter</li>
+          <li><a href="#has-to-match-string">hasToMatchString "test"</a></li>
+          <li><a href="#cant-match-string">cantMatchString "test"</a></li>
         </ul>
-        <p>Try passing the string "test" to the three different methods of filtering by clicking the links above.</p>
-
+      </div>
+      <div class="second-example">
+        <h3>filterString on the filter</h3>
+        <p>These examples have the filterString defined on the filter passed to the refresh method. This approach is pretty much the opposite of the previous example - here the properties "filterStringHasToMatch" and "filterStringCantMatch" are set on the instanceDefinition. This allows for an easy way to filter instances on a common string, ex. a string containing the application state, if you want to show certain components for a specific language or anything else that is not necessarily contained in the url.</p>
+        <ul>
+          <li><a href="#">Restore</a>
+          </li>
+          <li><a href="#filter-string-has-to-match">filterStringHasToMatch "test"</a></li>
+          <li><a href="#filter-string-cant-match">filterStringCantMatch "test"</a></li>
+        </ul>
+      </div>
+      <div class="description">
         <p>Take a look at components.js to see component the setup for this example</p>
       </div>
       <div class="component-area--main"></div>
