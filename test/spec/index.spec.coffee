@@ -122,7 +122,7 @@ describe 'The componentManager', ->
         cm = componentManager.refresh()
         assert.equal cm, componentManager
 
-      it 'should call the callback and pass activeInstances if a callback method is passed', ->
+      it 'should call the callback and pass the filter and  activeInstances if a callback method is passed', ->
         cb = sandbox.spy()
         settings =
           components: [
@@ -158,7 +158,7 @@ describe 'The componentManager', ->
         componentManager.refresh filter, cb
         instances = componentManager.getActiveInstances()
 
-        assert cb.calledWith(instances)
+        assert cb.calledWith(filter, instances)
         assert instances[0] instanceof MockComponent
 
     describe 'serialize', ->

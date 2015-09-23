@@ -59,14 +59,14 @@ class ComponentManager
     @_parse settings
     return @
 
-  refresh: (filterOptions, cb = undefined) ->
-    if filterOptions
-      @_filterModel.set @_filterModel.parse(filterOptions)
+  refresh: (filter, cb = undefined) ->
+    if filter
+      @_filterModel.set @_filterModel.parse(filter)
     else
       do @_filterModel?.clear
       do @_updateActiveComponents
     if cb
-      cb @getActiveInstances()
+      cb filter, @getActiveInstances()
     return @
 
   serialize: ->
