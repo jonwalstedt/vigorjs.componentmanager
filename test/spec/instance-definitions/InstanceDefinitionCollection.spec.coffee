@@ -304,8 +304,22 @@ describe 'InstanceDefinitionsCollection', ->
         assert.equal filteredInstances[0].get('id'), 'instance-2'
         assert.equal filteredInstances[1].get('id'), 'instance-4'
 
+      it 'should return instanceDefintions that has a filterString that doesnt matches the string defined in excludeIfStringMatches and instanceDefintions that doesnt have a filterString defined', ->
+        filter =
+          excludeIfStringMatches: 'bar'
 
-      it 'should return instanceDefintions that has a filterString that doesnt matches the string defined in includeIfStringMatches and instanceDefintions that doesnt have a filterString defined', ->
+        globalConditions =
+          foo: -> return true
+
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+
+        # one component matching the string and the component that doesn't have any filterString defined
+        assert.equal filteredInstances.length, 3
+        assert.equal filteredInstances[0].get('id'), 'instance-1'
+        assert.equal filteredInstances[1].get('id'), 'instance-3'
+        assert.equal filteredInstances[2].get('id'), 'instance-4'
+
+      it 'should return instanceDefintions that has a filterString that doesnt matches the string defined in includeIfStringMatches', ->
         filter =
           cantMatchString: 'bar'
 
@@ -315,11 +329,9 @@ describe 'InstanceDefinitionsCollection', ->
         filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
 
         # all components except the one with bar defined as a filterString
-        assert.equal filteredInstances.length, 3
+        assert.equal filteredInstances.length, 2
         assert.equal filteredInstances[0].get('id'), 'instance-1'
         assert.equal filteredInstances[1].get('id'), 'instance-3'
-        assert.equal filteredInstances[2].get('id'), 'instance-4'
-
 
   describe 'addUrlParams', ->
     it 'should call addUrlParams and pass along the url to all instanceDefinitionModels passed to the method', ->

@@ -119,6 +119,7 @@
         url: void 0,
         filterString: void 0,
         includeIfStringMatches: void 0,
+        excludeIfStringMatches: void 0,
         hasToMatchString: void 0,
         cantMatchString: void 0
       };
@@ -134,6 +135,7 @@
           url: url,
           filterString: (attrs != null ? attrs.filterString : void 0) || void 0,
           includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
+          excludeIfStringMatches: (attrs != null ? attrs.excludeIfStringMatches : void 0) || void 0,
           hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
           cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0
         };
@@ -541,8 +543,8 @@
         urlParamsModel: void 0,
         reInstantiateOnUrlParamChange: false,
         filterString: void 0,
-        filterStringHasToMatch: void 0,
-        filterStringCantMatch: void 0,
+        includeIfFilterStringMatches: void 0,
+        excludeIfFilterStringMatches: void 0,
         conditions: void 0,
         maxShowCount: void 0,
         urlPattern: void 0
@@ -646,7 +648,7 @@
       };
 
       InstanceDefinitionModel.prototype.passesFilter = function(filter, globalConditions) {
-        var areConditionsMet, cantMatch, filterStringMatch, hasToMatch, urlMatch;
+        var areConditionsMet, filterStringMatch, urlMatch;
         if ((filter != null ? filter.url : void 0) || (filter != null ? filter.url : void 0) === '') {
           urlMatch = this.doesUrlPatternMatch(filter.url);
           if (urlMatch != null) {
@@ -666,26 +668,54 @@
           }
         }
         if (filter != null ? filter.filterString : void 0) {
-          hasToMatch = this.filterStringHasToMatch(filter.filterString);
-          if (hasToMatch != null) {
-            return hasToMatch;
+          if (this.get('includeIfFilterStringMatches') != null) {
+            filterStringMatch = this.includeIfFilterStringMatches(filter.filterString);
+            if (filterStringMatch != null) {
+              if (!filterStringMatch) {
+                return false;
+              }
+            }
           }
-          cantMatch = this.filterStringCantMatch(filter.filterString);
-          if (cantMatch != null) {
-            return cantMatch;
+          if (this.get('excludeIfFilterStringMatches') != null) {
+            filterStringMatch = this.excludeIfFilterStringMatches(filter.filterString);
+            if (filterStringMatch != null) {
+              if (!filterStringMatch) {
+                return false;
+              }
+            }
           }
         }
         if (filter != null ? filter.includeIfStringMatches : void 0) {
           filterStringMatch = this.includeIfStringMatches(filter.includeIfStringMatches);
           if (filterStringMatch != null) {
-            return filterStringMatch;
+            if (!filterStringMatch) {
+              return false;
+            }
+          }
+        }
+        if (filter != null ? filter.excludeIfStringMatches : void 0) {
+          filterStringMatch = this.excludeIfStringMatches(filter.excludeIfStringMatches);
+          if (filterStringMatch != null) {
+            if (!filterStringMatch) {
+              return false;
+            }
           }
         }
         if (filter != null ? filter.hasToMatchString : void 0) {
-          return this.hasToMatchString(filter.hasToMatchString);
+          filterStringMatch = this.hasToMatchString(filter.hasToMatchString);
+          if (filterStringMatch != null) {
+            if (!filterStringMatch) {
+              return false;
+            }
+          }
         }
         if (filter != null ? filter.cantMatchString : void 0) {
-          return this.cantMatchString(filter.cantMatchString);
+          filterStringMatch = this.cantMatchString(filter.cantMatchString);
+          if (filterStringMatch != null) {
+            if (!filterStringMatch) {
+              return false;
+            }
+          }
         }
         return true;
       };
@@ -706,14 +736,6 @@
         return exceedsShowCount;
       };
 
-      InstanceDefinitionModel.prototype.hasToMatchString = function(filterString) {
-        return !!this.includeIfStringMatches(filterString);
-      };
-
-      InstanceDefinitionModel.prototype.cantMatchString = function(filterString) {
-        return !this.hasToMatchString(filterString);
-      };
-
       InstanceDefinitionModel.prototype.includeIfStringMatches = function(filterString) {
         var filter;
         filter = this.get('filterString');
@@ -722,20 +744,33 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.filterStringHasToMatch = function(filterString) {
+      InstanceDefinitionModel.prototype.excludeIfStringMatches = function(filterString) {
         var filter;
-        filter = this.get('filterStringHasToMatch');
+        filter = this.get('filterString');
+        if (filter) {
+          return !!!filter.match(filterString);
+        }
+      };
+
+      InstanceDefinitionModel.prototype.hasToMatchString = function(filterString) {
+        return !!this.includeIfStringMatches(filterString);
+      };
+
+      InstanceDefinitionModel.prototype.cantMatchString = function(filterString) {
+        return !!this.excludeIfStringMatches(filterString);
+      };
+
+      InstanceDefinitionModel.prototype.includeIfFilterStringMatches = function(filterString) {
+        var filter;
+        filter = this.get('includeIfFilterStringMatches');
         if (filter) {
           return !!(filterString != null ? filterString.match(filter) : void 0);
         }
       };
 
-      InstanceDefinitionModel.prototype.filterStringCantMatch = function(filterString) {
+      InstanceDefinitionModel.prototype.excludeIfFilterStringMatches = function(filterString) {
         var filter;
-        if (!filterString) {
-          return false;
-        }
-        filter = this.get('filterStringCantMatch');
+        filter = this.get('excludeIfFilterStringMatches');
         if (filter) {
           return !!!(filterString != null ? filterString.match(filter) : void 0);
         }
@@ -1015,13 +1050,13 @@
         return this;
       };
 
-      ComponentManager.prototype.refresh = function(filterOptions, cb) {
+      ComponentManager.prototype.refresh = function(filter, cb) {
         var ref;
         if (cb == null) {
           cb = void 0;
         }
-        if (filterOptions) {
-          this._filterModel.set(this._filterModel.parse(filterOptions));
+        if (filter) {
+          this._filterModel.set(this._filterModel.parse(filter));
         } else {
           if ((ref = this._filterModel) != null) {
             ref.clear();
@@ -1029,7 +1064,7 @@
           this._updateActiveComponents();
         }
         if (cb) {
-          cb(this.getActiveInstances());
+          cb(filter, this.getActiveInstances());
         }
         return this;
       };

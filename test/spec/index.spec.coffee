@@ -425,6 +425,7 @@ describe 'The componentManager', ->
           url: 'foo/1'
           filterString: undefined
           includeIfStringMatches: undefined
+          excludeIfStringMatches: undefined
           hasToMatchString: undefined
           cantMatchString: undefined
 
@@ -1135,6 +1136,7 @@ describe 'The componentManager', ->
           url: 'foo/bar'
           filterString: undefined
           includeIfStringMatches: 'baz'
+          excludeIfStringMatches: undefined
           hasToMatchString: undefined
           cantMatchString: undefined
 

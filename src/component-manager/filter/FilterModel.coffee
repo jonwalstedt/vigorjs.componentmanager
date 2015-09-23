@@ -4,6 +4,7 @@ class FilterModel extends Backbone.Model
     url: undefined
     filterString: undefined
     includeIfStringMatches: undefined
+    excludeIfStringMatches: undefined
     hasToMatchString: undefined
     cantMatchString: undefined
 
@@ -18,6 +19,7 @@ class FilterModel extends Backbone.Model
       url: url
       filterString: attrs?.filterString or undefined
       includeIfStringMatches: attrs?.includeIfStringMatches or undefined
+      excludeIfStringMatches: attrs?.excludeIfStringMatches or undefined
       hasToMatchString: attrs?.hasToMatchString or undefined
       cantMatchString: attrs?.cantMatchString or undefined
 

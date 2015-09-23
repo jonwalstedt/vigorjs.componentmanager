@@ -33,9 +33,8 @@ class InstanceDefinitionModel extends Backbone.Model
 
     # filterproperties
     filterString: undefined
-    # includeIfFilterStringMatches: undefined
-    filterStringHasToMatch: undefined
-    filterStringCantMatch: undefined
+    includeIfFilterStringMatches: undefined
+    excludeIfFilterStringMatches: undefined
     conditions: undefined
     maxShowCount: undefined
     urlPattern: undefined
@@ -114,7 +113,7 @@ class InstanceDefinitionModel extends Backbone.Model
 
   passesFilter: (filter, globalConditions) ->
     if filter?.url or filter?.url is ''
-      urlMatch = @doesUrlPatternMatch(filter.url)
+      urlMatch = @doesUrlPatternMatch filter.url
       if urlMatch?
         if urlMatch is true
           @addUrlParams filter.url
@@ -127,28 +126,35 @@ class InstanceDefinitionModel extends Backbone.Model
         return false unless areConditionsMet
 
     if filter?.filterString
-      # not needed?
-      # if includeIfMatch = @includeIfFilterStringMatches(filter.filterString)
-      #   return includeIfMatch
+      if @get('includeIfFilterStringMatches')?
+        filterStringMatch = @includeIfFilterStringMatches filter.filterString
+        if filterStringMatch?
+          return false unless filterStringMatch
 
-      hasToMatch = @filterStringHasToMatch filter.filterString
-      if hasToMatch?
-        return hasToMatch
-
-      cantMatch = @filterStringCantMatch filter.filterString
-      if cantMatch?
-        return cantMatch
+      if @get('excludeIfFilterStringMatches')?
+        filterStringMatch = @excludeIfFilterStringMatches filter.filterString
+        if filterStringMatch?
+          return false unless filterStringMatch
 
     if filter?.includeIfStringMatches
       filterStringMatch = @includeIfStringMatches filter.includeIfStringMatches
       if filterStringMatch?
-        return filterStringMatch
+        return false unless filterStringMatch
+
+    if filter?.excludeIfStringMatches
+      filterStringMatch = @excludeIfStringMatches filter.excludeIfStringMatches
+      if filterStringMatch?
+        return false unless filterStringMatch
 
     if filter?.hasToMatchString
-      return @hasToMatchString filter.hasToMatchString
+      filterStringMatch = @hasToMatchString filter.hasToMatchString
+      if filterStringMatch?
+        return false unless filterStringMatch
 
     if filter?.cantMatchString
-      return @cantMatchString filter.cantMatchString
+      filterStringMatch = @cantMatchString filter.cantMatchString
+      if filterStringMatch?
+        return false unless filterStringMatch
 
     return true
 
@@ -166,30 +172,29 @@ class InstanceDefinitionModel extends Backbone.Model
 
     return exceedsShowCount
 
-  hasToMatchString: (filterString) ->
-    return !!@includeIfStringMatches filterString
-
-  cantMatchString: (filterString) ->
-    return not @hasToMatchString filterString
-
   includeIfStringMatches: (filterString) ->
     filter = @get 'filterString'
     if filter
       return !!filter.match filterString
 
-  # includeIfFilterStringMatches: (filterString) ->
-  #   filter = @get 'includeIfFilterStringMatches'
-  #   if filter
-  #     return !!filterString?.match filter
+  excludeIfStringMatches: (filterString) ->
+    filter = @get 'filterString'
+    if filter
+      return not !!filter.match filterString
 
-  filterStringHasToMatch: (filterString) ->
-    filter = @get 'filterStringHasToMatch'
+  hasToMatchString: (filterString) ->
+    return !!@includeIfStringMatches filterString
+
+  cantMatchString: (filterString) ->
+    return !!@excludeIfStringMatches filterString
+
+  includeIfFilterStringMatches: (filterString) ->
+    filter = @get 'includeIfFilterStringMatches'
     if filter
       return !!filterString?.match filter
 
-  filterStringCantMatch: (filterString) ->
-    unless filterString then return false
-    filter = @get 'filterStringCantMatch'
+  excludeIfFilterStringMatches: (filterString) ->
+    filter = @get 'excludeIfFilterStringMatches'
     if filter
       return not !!filterString?.match filter
 
