@@ -2,6 +2,21 @@
   <head>
     <title>Vigorjs componentmanager</title>
     <link rel="stylesheet" href="../common/styles.css">
+    <style>
+      .msg-wrapper {
+        background: #ffbac9;
+        padding: 10px;
+      }
+      .component-area {
+        margin-bottom: 40px;
+      }
+      .vigor-component h4 {
+        margin: 4px 0 6px;
+      }
+      .vigor-component p {
+        margin: 0;
+      }
+    </style>
   </head>
   <body>
     <iframe src="../common/example-menu.html" frameborder="0" class="examples"></iframe>
@@ -12,29 +27,37 @@
       </header>
       <div class="first-example">
         <h3>filterString on the instanceDefintion</h3>
-        <p>These examples have the filterString defined on the instanceDefinitions and sets the properties "includeIfStringMatches", "hasToMatchString" or "cantMatchString" on the passed filter. This approach allows for an easy and convenient way of grouping components using the filterString property on the instanceDefinition (ex. using the property for grouping by type)</p>
+        <p>These examples have the filterString defined on the instanceDefinitions and sets the properties "includeIfStringMatches", "hasToMatchString" or "cantMatchString" on the filter passed to the refresh method.</p>
         <ul>
           <li><a href="#">Restore</a>
-          <li><a href="#include-if-string-matches">includeIfStringMatches "test"</a>
+          <li><a href="#include-if-string-matches">includeIfStringMatches "first"</a>
           </li>
-          <li><a href="#has-to-match-string">hasToMatchString "test"</a></li>
-          <li><a href="#cant-match-string">cantMatchString "test"</a></li>
+          <li><a href="#exclude-if-string-matches">excludeIfStringMatches "first"</a>
+          <li><a href="#has-to-match-string">hasToMatchString "first"</a></li>
+          <li><a href="#cant-match-string">cantMatchString "first"</a></li>
         </ul>
       </div>
       <div class="second-example">
         <h3>filterString on the filter</h3>
-        <p>These examples have the filterString defined on the filter passed to the refresh method. This approach is pretty much the opposite of the previous example - here the properties "filterStringHasToMatch" and "filterStringCantMatch" are set on the instanceDefinition. This allows for an easy way to filter instances on a common string, ex. a string containing the application state, if you want to show certain components for a specific language or anything else that is not necessarily contained in the url.</p>
+        <p>These examples have the filterString defined on the filter passed to the refresh method. This approach is pretty much the opposite of the previous example - here the properties "includeIfFilterStringMatches" and "excludeIfFilterStringMatches" are set on the instanceDefinition. This allows for an easy way to filter instances on a common string defined on the filter instead of on each instanceDefinition.</p>
         <ul>
           <li><a href="#">Restore</a>
           </li>
-          <li><a href="#filter-string-has-to-match">filterStringHasToMatch "test"</a></li>
-          <li><a href="#filter-string-cant-match">filterStringCantMatch "test"</a></li>
+          <li><a href="#update-filter-string-lang-en-gb">set filterString to "state=one|lang=en_GB"</a></li>
+          <li><a href="#update-filter-string-lang-sv-se">set filterString to "state=one|lang=sv_SE"</a></li>
+          <li><a href="#update-filter-string-url">set filterString to "state=one|lang=sv_SE|http://www.google.com"</a></li>
         </ul>
       </div>
       <div class="description">
+        <p>You can use regular regex on all the different way of string filtering (to match against the filterString - either pass regex to the filter or define it in each instanceDefinition you want to act on the filterString).</p>
         <p>Take a look at components.js to see component the setup for this example</p>
       </div>
-      <div class="component-area--main"></div>
+      <div class="active-filter"></div>
+      <div class="msg-wrapper"></div>
+      <h3>First examples</h3>
+      <div class="component-area component-area--first"></div>
+      <h3>Second examples</h3>
+      <div class="component-area component-area--second"></div>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
@@ -48,6 +71,19 @@
     <script src="./components/FilterComponent.js"></script>
     <script src="./app/app.js"></script>
 
+    <script type="text/template" class="filter-template">
+      <h4>Active filter</h4>
+<pre>
+{
+  url: <%=url%>
+  filterString: <%= filterString %>
+  includeIfStringMatches: <%= includeIfStringMatches %>
+  excludeIfStringMatches: <%= excludeIfStringMatches %>
+  hasToMatchString: <%= hasToMatchString %>
+  cantMatchString: <%= cantMatchString %>
+}
+</pre>
+    </script>
     <script type="text/javascript">
       var app = app || {},
           filter;
