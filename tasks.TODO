@@ -24,12 +24,12 @@ Completed
  ✔ Send message from iframe to Instance @done (15-09-16 22:55)
  ✔ Send message to iframe from instance @done (15-09-16 22:55)
  ✔ Add the possibility to pass callback when doing a refresh - method should be called when the refresh is done (pass an array of active instances) @done (15-09-16 22:55)
+ ✔ Pass arguments to conditions? @done (15-09-24 10:17)
 
  In progress
 
  Next up
  ☐ Add possibility to call method(s) on each component when doing a refresh? ex getRenderDonePromises? (probably not needed, the call ack should be enough)
- ☐ Pass arguments to conditions?
  ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)
 
  To consider
