@@ -31,6 +31,7 @@ Completed
  Next up
  ☐ Add possibility to call method(s) on each component when doing a refresh? ex getRenderDonePromises? (probably not needed, the call ack should be enough)
  ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)
+ ☐ Listen for reset on collectiond
 
  To consider
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable
