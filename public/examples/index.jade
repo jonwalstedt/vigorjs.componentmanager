@@ -28,7 +28,7 @@ block sidebar
         a(href="/examples/multiple-layouts" class="sidebar__link #{ current.path[1] == 'multiple-layouts' ? 'sidebar__link--active' : '' }") Multiple layouts
 
 block content
-  p Index page of examples
+  != partial("./examples")
 
 block common-example-scripts
 

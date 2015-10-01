@@ -1,5 +1,11 @@
 .sidebar {
   background: #2a2d33;
+  color: #eee;
+  padding: 10px;
+}
+
+.sidebar__title {
+
 }
 
 .sidebar_list {
@@ -9,7 +15,7 @@
 }
 
 .sidebar__link {
-  color: #eee;
+  color: inherit;
   text-decoration: none;
   display: block;
   line-height: 40px;
