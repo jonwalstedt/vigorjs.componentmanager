@@ -6,7 +6,7 @@
   // fake loggedin status
   window.localStorage.setItem('isAuthenticated', isAuthenticated);
 
-  app.HelloWorld = Backbone.View.extend({
+  app.ExampleApp = Backbone.View.extend({
     router: undefined,
     startTime: 18,
     endTime: 21,

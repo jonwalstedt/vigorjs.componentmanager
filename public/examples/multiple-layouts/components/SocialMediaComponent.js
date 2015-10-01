@@ -3,7 +3,7 @@ app.components = app.components || {};
 
 app.components.SocialMediaComponent = Backbone.View.extend({
 
-  className: 'social-media',
+  className: 'example-social-media',
   template: _.template($('script.social-media-template').html()),
 
   render: function () {

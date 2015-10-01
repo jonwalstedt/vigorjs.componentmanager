@@ -3,7 +3,7 @@ app.components = app.components || {};
 
 app.components.ProfileOverViewComponent = Backbone.View.extend({
 
-  className: 'profile-overview',
+  className: 'example-profile-overview',
   template: _.template($('script.profile-overview-template').html()),
 
   render: function () {

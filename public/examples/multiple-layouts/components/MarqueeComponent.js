@@ -3,7 +3,7 @@ app.components = app.components || {};
 
 app.components.MarqueeComponent = Backbone.View.extend({
 
-  className: 'marquee',
+  className: 'example-marquee',
   template: _.template($('script.marquee-template').html()),
 
   render: function () {

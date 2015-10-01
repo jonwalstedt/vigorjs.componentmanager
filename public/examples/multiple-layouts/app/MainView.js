@@ -5,7 +5,7 @@ var app = app || {};
 
   app.MainView = Backbone.View.extend({
 
-    className: 'layout layout-main',
+    className: 'example-layout example-layout-main',
     template: _.template($('script.main-template').html()),
     hasRendered: false,
 
@@ -23,13 +23,13 @@ var app = app || {};
 
     showSidePanel: function () {
       _.defer(_.bind(function () {
-        this.$el.addClass('layout-main--show-sidepanel');
+        this.$el.addClass('example-layout-main--show-sidepanel');
       }, this));
     },
 
     hideSidePanel: function () {
       _.defer(_.bind(function () {
-        this.$el.removeClass('layout-main--show-sidepanel');
+        this.$el.removeClass('example-layout-main--show-sidepanel');
       }, this));
     }
   });

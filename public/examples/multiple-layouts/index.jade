@@ -1,0 +1,113 @@
+extends ../index.jade
+
+block includes
+  link(rel="stylesheet" href="styles/styles.css")
+
+block content
+  //- Templates
+  script(type="text/template" class="login-template").
+    <input type="text" placeholder="Username" class="login__field login__field--username"/>
+    <input type="password" placeholder="Password" class="login__field login__field--password"/>
+    <button type="button" class="login__button login__submit">Login</button>
+
+  script(type="text/template" class="navigation-template").
+    <ul class="example-main-menu">
+      <li class="main-menu__list-item"><a href="#home" class="link main-menu__link">Home</a></li>
+      <li class="main-menu__list-item"><a href="#news" class="link main-menu__link">News</a></li>
+      <li class="main-menu__list-item"><a href="#logout" class="link main-menu__link">Logout</a></li>
+    </ul>
+
+  script(type="text/template" class="marquee-template").
+    <p>Marquee</p>
+
+  script(type="text/template" class="profile-overview-template").
+    <p>Profile Overview</p>
+
+  script(type="text/template" class="social-media-template").
+    <a href="http://www.facebook.com?share=blabla">Share on Facebook</a>
+    <a href="http://www.twitter.com?share=blabla">Share on Twitter</a>
+    <a href="http://www.linkedin.com?share=blabla">Share on LinkedIn</a>
+    <a href="http://www.googleplus.com?share=blabla">Share on Google+</a>
+
+  script(type="text/template" class="list-template").
+    <div class="list-header">
+      List of stuff <%= id %>
+    </div>
+    <ul class="example-generic-list">
+      <li class="list__list-item"><a href="#event/1" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/2" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/3" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/4" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/5" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/6" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/7" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/8" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/9" class="list__link">List Item</a></li>
+      <li class="list__list-item"><a href="#event/10" class="list__link">List Item</a></li>
+    </ul>
+
+  script(type="text/template" class="landing-template").
+    <header class="example-header">
+      <h1>Multiple Layouts - Example</h1>
+      <div class="component-area component-area--header"></div>
+    </header>
+    <div class="component-area component-area--main"></div>
+    <footer class"example-footer component-area component-area--footer"></footer>
+
+  script(type="text/template" class="main-template").
+    <aside class="example-sidebar">
+      <div class="component-area component-area--sidebar-top"></div>
+      <ul class="example-sub-menu">
+        <li><a href="#route1/1" class="link sub-menu__link">link1</a></li>
+        <li><a href="#route1/1" class="link sub-menu__link">link2</a></li>
+        <li><a href="#route1/1" class="link sub-menu__link">link3</a></li>
+        <li><a href="#route1/1" class="link sub-menu__link">link4</a></li>
+      </ul>
+      <div class="component-area component-area--sidebar-bottom"></div>
+    </aside>
+
+    <div class="example-content-wrapper">
+      <header class="example-header">
+        <h1>Multiple layouts - Example</h1>
+        <div class="component-area component-area--header"></div>
+      </header>
+
+      <div class="example-main-content-wrapper">
+        <div class="component-area component-area--below-header"></div>
+
+        <section class="example-main-section">
+          <div class="example-main-content component-area component-area--main"> </div>
+
+          <aside class="example-right-column component-area component-area--right-column">
+            <a href="#home" clasS="right-column__back-btn">Back</a>
+          </aside>
+        </section>
+      </div>
+    </div>
+
+    <footer class="example-footer component-area component-area--footer"></footer>
+
+  != partial("./multiple-layouts")
+  div.app-wrapper
+
+block scripts
+  script(src="./components/ListComponent.js")
+  script(src="./components/LoginComponent.js")
+  script(src="./components/MarqueeComponent.js")
+  script(src="./components/NavigationComponent.js")
+  script(src="./components/ProfileOverViewComponent.js")
+  script(src="./components/SocialMediaComponent.js")
+
+  script(src="./components.js")
+  script(src="./app/Router.js")
+  script(src="./app/MainView.js")
+  script(src="./app/LandingView.js")
+  script(src="./app/app.js")
+
+  script.
+    $(document).ready(function () {
+      new app.ExampleApp({
+        el: '.app-wrapper'
+      });
+    });
+

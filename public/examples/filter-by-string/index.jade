@@ -1,12 +1,6 @@
 extends ../index.jade
 
 block content
-  script(type="text/template" class="filter-component-template").
-    <h2>Filter component: <%= title %></h2>
-    <p>filterString: <%= filterString %></p>
-    <p><%= includeIfFilterStringMatches %></p>
-    <p><%= excludeIfFilterStringMatches %></p>
-
   != partial("./filter-components-by-string-matching")
 
   div.app-wrapper

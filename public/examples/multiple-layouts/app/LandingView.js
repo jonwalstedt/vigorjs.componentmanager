@@ -5,7 +5,7 @@ var app = app || {};
 
   app.LandingView = Backbone.View.extend({
 
-    className: 'layout layout-landing',
+    className: 'example-layout example-layout-landing',
     template: _.template($('script.landing-template').html()),
 
     initialize: function () {

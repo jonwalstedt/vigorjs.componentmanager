@@ -1,57 +1,55 @@
 /*
 General
  */
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: sans-serif;
-  max-width: none;
-}
-
-a {
-  color: #00bfdd;
-  transition: all 0.3s ease-out;
-}
-
 .link {
   text-decoration: none;
 }
 
 .vigor-component {
   border: none;
+  padding: 0;
+}
+
+.component-area {
+  position: relative;
+  padding: 0;
+  border: none;
+}
+
+.app-wrapper {
+  position: relative;
 }
 
 /*
 Layouts
  */
-.app-wrapper {
+.example-app-wrapper {
   position: relative;
   min-height: 100%;
 }
 
-.header {
+.example-header {
   position: relative;
   padding: 0px 20px;
   height: 80px;
 }
 
-.content-wrapper {
+.example-content-wrapper {
   position: relative;
   padding: 0 0 100px 260px;
 }
 
-.main-section {
+.example-main-section {
   position: relative;
 }
 
-.main-content {
+.example-main-content {
   position: relative;
   width: 100%;
   transition: width 0.2s ease-in;
 }
 
-.right-column {
+.example-right-column {
   position: absolute;
   top: 0;
   right: 0;
@@ -62,15 +60,15 @@ Layouts
   transition: width 0.2s ease-in;
 }
 
-.layout-main--show-sidepanel .main-content {
+.example-layout-main--show-sidepanel .example-main-content {
   width: 40%;
 }
 
-.layout-main--show-sidepanel .right-column {
+.example-layout-main--show-sidepanel .example-right-column {
   width: 60%;
 }
 
-.footer {
+.example-footer {
   width: 100%;
   height: 100px;
   position: absolute;
@@ -81,7 +79,7 @@ Layouts
 /*
 Header
  */
-.header h1 {
+.example-header h1 {
   margin: 0;
   padding: 0;
   float: left;
@@ -100,7 +98,7 @@ Header
   height: 100%;
 }
 
-.main-menu {
+.example-main-menu {
   padding: 0;
   margin: 0;
   height: 80px;
@@ -129,7 +127,7 @@ Header
 /*
 Sidebar
  */
-.sidebar {
+.example-sidebar {
   width: 260px;
   position: absolute;
   top: 0;
@@ -142,7 +140,7 @@ Sidebar
 /*
 Submenu
  */
-.sub-menu {
+.example-sub-menu {
   list-style: none;
   border-top: 1px solid #333;
   border-bottom: 1px solid #333;
@@ -169,7 +167,7 @@ Submenu
 Example components
 */
 /* Login*/
-.login {
+.example-login {
   height: 300px;
   margin: 100px auto;
   width: 100%;
@@ -198,18 +196,18 @@ Example components
 
 
 /*Marquee*/
-.marquee {
+.example-marquee {
   position: relative;
   max-height: 400px;
   background: pink;
 }
-.marquee::after {
+.example-marquee::after {
   content: "";
   display: block;
   padding-bottom: 57%;
 }
 
-.marquee p {
+.example-marquee p {
   position: absolute;
   top: 50%;
   width: 100%;
@@ -218,12 +216,12 @@ Example components
 }
 
 /*Profile Overview*/
-.profile-overview {
+.example-profile-overview {
   position: relative;
   height: 220px;
   background: silver;
 }
-.profile-overview p {
+.example-profile-overview p {
   position: absolute;
   top: 50%;
   width: 100%;
@@ -232,11 +230,11 @@ Example components
 }
 
 /* Social Media Component*/
-.social-media {
+.example-social-media {
   position: relative;
 }
 
-.social-media a {
+.example-social-media a {
   display: block;
   width: 25%;
   height: 50px;
@@ -248,18 +246,18 @@ Example components
   box-sizing: border-box;
   border: 1px solid rgb(75, 75, 75);
 }
-.social-media a:hover {
+.example-social-media a:hover {
   background: rgb(15, 140, 255);
 }
 
 /* List Component*/
-.list {
+.example-list {
   position: relative;
   max-width: 600px;
   margin: 40px auto;
 }
 
-.generic-list {
+.example-generic-list {
   list-style: none;
   margin: 0;
   padding: 0;

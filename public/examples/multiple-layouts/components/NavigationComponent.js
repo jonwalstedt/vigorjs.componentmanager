@@ -4,7 +4,7 @@ app.components = app.components || {};
 app.components.NavigationComponent = Backbone.View.extend({
 
   tagName: 'nav',
-  className: 'navigation',
+  className: 'example-navigation',
   template: _.template($('script.navigation-template').html()),
 
   render: function () {

@@ -3,7 +3,7 @@ app.components = app.components || {};
 
 app.components.ListComponent = Backbone.View.extend({
 
-  className: 'list',
+  className: 'example-list',
   template: _.template($('script.list-template').html()),
   urlParams: undefined,
 

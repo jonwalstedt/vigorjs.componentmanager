@@ -3,7 +3,7 @@ app.components = app.components || {};
 
 app.components.LoginComponent = Backbone.View.extend({
 
-  className: 'login',
+  className: 'example-login',
   template: _.template($('script.login-template').html()),
   events: {
     'click .login__button': '_onLoginClick',
