@@ -1,0 +1,31 @@
+extends ../index.jade
+
+block content
+  != partial("./serialize")
+  div.app-wrapper
+    div.controls
+      button.randomize Randomize
+      button.serialize Serialize
+      button.save Save to localStorage
+      button.clear Remove from localStorage
+
+    small info
+    div.examples-info
+
+    small .serialized-output
+    pre.serialized-output
+
+    small .component-area--main
+    div.component-area.component-area--main
+
+block scripts
+  script(src="./components/FilterComponent.js")
+  script(src="./components.js")
+  script(src="./app/app.js")
+  script.
+    $(document).ready(function () {
+      new app.Filter({
+        el: '.app-wrapper'
+      });
+    });
+

@@ -1,25 +1,20 @@
 config  = require '../config'
 gulp  = require 'gulp'
-http = require "http"
-nodeStatic = require "node-static"
-livereload = require "gulp-livereload"
+harp = require 'harp'
+browserSync = require 'browser-sync'
+reload = browserSync.reload
 
-# Start server and redirect to index.html
-gulp.task 'server', ->
-  file = new nodeStatic.Server('./', cache: 0)
+gulp.task 'server', ['coffee'], ->
   port = process.env.PORT || 7070
-  reloadPort = parseInt(port, 10) + 1
-  livereload.listen
-    port: reloadPort
+  harp.server '.',
+    port: port
+  , ->
+    browserSync
+      proxy: "localhost:#{port}"
+      notify: false
 
-  http.createServer((req, res) ->
-    req.addListener('end', ->
-      file.serve req, res, (err, result) ->
-        if err
-          console.log 'Error serving %s - %s', req.url, err.message
-          res.writeHead(err.status, err.headers)
-          res.end()
-      ).resume()
-  ).listen(port)
+    gulp.watch "**/*.scss", ->
+      reload "**/*.css", {stream: true}
 
-  console.log('Development server running at http://localhost:%d', port)
+    gulp.watch ["**/*.jade", "**/*.json", "**/*.md"], ->
+      reload()

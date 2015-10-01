@@ -1,0 +1,56 @@
+extends ../index.jade
+
+block content
+  script(type="text/template" class="filter-component-template").
+    <h2>Filter component: <%= title %></h2>
+    <p>filterString: <%= filterString %></p>
+    <p><%= includeIfFilterStringMatches %></p>
+    <p><%= excludeIfFilterStringMatches %></p>
+
+  != partial("./filter-components-by-string-matching")
+
+  div.app-wrapper
+
+    div.example-one
+      != partial("./filter-string-on-instance-definition")
+
+      div.controls
+        button.restore Restore
+        button.include-if-string-matches includeIfStringMatches "first"
+        button.exclude-if-string-matches excludeIfStringMatches "first"
+        button.has-to-match-string hasToMatchString "first"
+        button.cant-match-string cantMatchString "first"
+
+      div.active-filter
+      small info
+      div.examples-info
+
+      small .component-area--first-examples
+      div.component-area.component-area--first-examples
+
+    div.example-two
+      != partial("./filter-string-on-filter")
+
+      div.controls
+        button.restore Restore
+        button.update-filter-string-lang-en-gb set filterString to "state=one|lang=en_GB"
+        button.update-filter-string-lang-sv-se set filterString to "state=one|lang=sv_SE"
+        button.update-filter-string-url set filterString to "state=one|lang=sv_SE|http://www.google.com"
+
+      div.active-filter
+      small info
+      div.examples-info
+
+      small .component-area--second-examples
+      div.component-area.component-area--second-examples
+
+block scripts
+  script(src="./components.js")
+  script(src="./app/app.js")
+  script.
+    $(document).ready(function () {
+      new app.Filter({
+        el: '.app-wrapper'
+      });
+    });
+

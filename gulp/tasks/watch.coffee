@@ -1,9 +1,5 @@
 config = require '../config'
 gulp = require 'gulp'
-livereload = require 'gulp-livereload'
 
-gulp.task 'watch', ['server', 'coffee'], ->
-  livereload.listen({ basePath: config.dest});
+gulp.task 'watch', ['coffee', 'server'], ->
   gulp.watch ["#{config.src}/**/*.coffee"], ['coffee']
-  gulp.watch ["./examples/**/*.html"], ['reload']
-  gulp.watch ['./examples/**/*.css'], ['reload']

@@ -1,0 +1,29 @@
+extends ../index.jade
+
+block content
+  != partial("./iframe-components")
+  div.app-wrapper
+    != partial("./iframe-components-example-1")
+    small .component-area--first
+    div.component-area.component-area--first
+
+    != partial("./iframe-components-example-2")
+    small .component-area--second
+    div.component-area.component-area--second
+
+    != partial("./iframe-components-example-3")
+    small .component-area--third
+    div.component-area.component-area--third
+
+block scripts
+  script(src="./components.js")
+  script(src="./app/app.js")
+  script(src="./components/ExtendedIframeComponent.js")
+  script(src="./components/ExtendedIframeComponentThatSendsMessage.js")
+  script.
+    $(document).ready(function () {
+      new app.Filter({
+        el: '.app-wrapper'
+      });
+    });
+

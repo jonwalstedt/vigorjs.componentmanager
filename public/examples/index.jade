@@ -1,0 +1,89 @@
+extends ../_custom_layout.jade
+
+block sidebar
+  aside.sidebar
+    ul.sidebar_list
+      li.sidebar_list-item
+        a(href="/examples/hello-world" class="sidebar__link #{ current.path[1] == 'hello-world' ? 'sidebar__link--active' : '' }") Hello World
+
+      li.sidebar_list-item
+        a(href="/examples/filter-by-conditions" class="sidebar__link #{ current.path[1] == 'filter-by-conditions' ? 'sidebar__link--active' : '' }") Filter by conditions
+
+      li.sidebar_list-item
+        a(href="/examples/filter-by-string" class="sidebar__link #{ current.path[1] == 'filter-by-string' ? 'sidebar__link--active' : '' }") Filter by string
+
+      li.sidebar_list-item
+        a(href="/examples/filter-by-url" class="sidebar__link #{ current.path[1] == 'filter-by-url' ? 'sidebar__link--active' : '' }") Filter by url
+
+      li.sidebar_list-item
+        a(href="/examples/iframe-components" class="sidebar__link #{ current.path[1] == 'iframe-components' ? 'sidebar__link--active' : '' }") Iframe Components
+
+      li.sidebar_list-item
+        a(href="/examples/reorder-components" class="sidebar__link #{ current.path[1] == 'reorder-components' ? 'sidebar__link--active' : '' }") Reorder components
+
+      li.sidebar_list-item
+        a(href="/examples/serialize" class="sidebar__link #{ current.path[1] == 'serialize' ? 'sidebar__link--active' : '' }") Serialize
+
+      li.sidebar_list-item
+        a(href="/examples/multiple-layouts" class="sidebar__link #{ current.path[1] == 'multiple-layouts' ? 'sidebar__link--active' : '' }") Multiple layouts
+
+block content
+  p Index page of examples
+
+block common-example-scripts
+
+  script(type="text/template" class="example-component-template").
+    <h2>ExampleComponent: <%= title %></h2>
+    <pre>
+    tilte: <%= title %>
+    urlPattern: <%= urlPattern %>
+    filterString: <%= filterString %>
+    includeIfFilterStringMatches: <%= includeIfFilterStringMatches %>
+    excludeIfFilterStringMatches: <%= excludeIfFilterStringMatches %>
+    conditions: <%= conditions %>
+    urlParamsModel: <%= urlParamsModel %>
+    args: <%= args %>
+    </pre>
+    <div class="component-output"></div>
+
+  script(type="text/template" class="active-filter-template").
+    <pre>
+    {
+      url: <%=url%>
+      filterString: <%= filterString %>
+      includeIfStringMatches: <%= includeIfStringMatches %>
+      excludeIfStringMatches: <%= excludeIfStringMatches %>
+      hasToMatchString: <%= hasToMatchString %>
+      cantMatchString: <%= cantMatchString %>
+    }
+    </pre>
+
+  script(type="text/javascript" src="/examples/ExampleComponent.js")
+
+  script.
+    // Methods below is just used to display the filter on the example page
+    var activeFilterTemplate = _.template($('.active-filter-template').html());
+
+    showMsg = function (msg, filter) {
+      filter = setFilterDefaults(filter);
+      $('.active-filter').html(activeFilterTemplate(filter));
+      $('.examples-info').html(msg);
+    },
+
+    setFilterDefaults = function (filter) {
+      filter = filter || {}
+      filter.url = filter.url || 'undefined';
+      filter.filterString = filter.filterString || 'undefined';
+      filter.includeIfStringMatches = filter.includeIfStringMatches || 'undefined';
+      filter.excludeIfStringMatches = filter.excludeIfStringMatches || 'undefined';
+      filter.hasToMatchString = filter.hasToMatchString || 'undefined';
+      filter.cantMatchString = filter.cantMatchString || 'undefined';
+
+      for (var key in filter) {
+        if (filter[key] !== 'undefined') {
+          filter[key] = '<b>' + filter[key] + '</b>';
+        }
+      }
+
+      return filter;
+    }

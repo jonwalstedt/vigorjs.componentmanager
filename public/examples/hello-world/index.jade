@@ -1,0 +1,26 @@
+extends ../index.jade
+
+block content
+  != partial("./hello-world")
+  div.app-wrapper
+
+    small active filter
+    div.active-filter
+
+    small info
+    div.examples-info
+
+    small .component-area--main
+    div.component-area.component-area--main
+
+block scripts
+  script(src="./app/Router.js")
+  script(src="./components.js")
+  script(src="./app/app.js")
+  script.
+    $(document).ready(function () {
+      new app.HelloWorld({
+        el: '.app-wrapper'
+      });
+    });
+

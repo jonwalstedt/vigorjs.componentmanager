@@ -1,0 +1,52 @@
+.header {
+  position: relative;
+  height: $headerHeight;
+}
+
+.header-content {
+  position: relative;
+  max-width: $pageMaxWidth;
+}
+
+.header h1 {
+  margin: 0;
+  padding: 0;
+  width: $sidebarWidth;
+  text-align: center;
+}
+
+.header__title {
+  display: block;
+  font-size: 16px;
+  font-weight: normal;
+  margin: 0;
+  padding: 0 10px;
+  line-height: $headerHeight;
+  text-decoration: none;
+  color: #555;
+}
+
+.main-navigation {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+}
+
+.main-navigation__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.main-navigation__list-item {
+  float: left;
+  margin: 0 10px;
+}
+
+.main-navigation__link {
+  line-height: $headerHeight;
+}
+
+.main-navigation__link--active {
+  font-weight: bold;
+}

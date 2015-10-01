@@ -1,0 +1,28 @@
+extends ../index.jade
+
+block content
+  != partial("./filter-by-condition")
+
+  div.app-wrapper
+    div.controls
+      button.register-condition Register condition
+      button.apply-condition-to-component Add condition to component "filter-condition-component"
+      button.apply-condition-to-instance Add condition to instance "filter-instance-2"
+      button.reset Reset components
+
+    small info
+    div.examples-info
+
+    small .component-area--main
+    div.component-area.component-area--main
+
+block scripts
+  script(src="./components.js")
+  script(src="./app/app.js")
+  script.
+    $(document).ready(function () {
+      new app.Filter({
+        el: '.app-wrapper'
+      });
+    });
+

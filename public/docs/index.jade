@@ -1,0 +1,11 @@
+extends ../_custom_layout.jade
+
+block sidebar
+  aside.sidebar
+    ul.sidebar_list
+      li.sidebar_list-item
+        a.sidebar__link(href="#initialize") Initialize
+
+block content
+  != partial("./vigorjs.componentmanager.docs")
+

@@ -1,0 +1,21 @@
+.sidebar {
+  background: #2a2d33;
+}
+
+.sidebar_list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar__link {
+  color: #eee;
+  text-decoration: none;
+  display: block;
+  line-height: 40px;
+  padding: 4px 16px;
+}
+
+.sidebar__link--active {
+  background: #222;
+}
