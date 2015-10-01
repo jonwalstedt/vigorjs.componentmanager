@@ -8,11 +8,13 @@ Changing the order on the fly only changes the property on the targeted instance
 
 ### Example Instance definition
 
-    {
-      "id": "order-instance-1",
-      "componentId": "order-component",
-      "order": 1,
-      "args": {
-        "background": "aqua"
-      }
-    }
+```javascript
+{
+  "id": "order-instance-1",
+  "componentId": "order-component",
+  "order": 1,
+  "args": {
+    "background": "aqua"
+  }
+}
+```

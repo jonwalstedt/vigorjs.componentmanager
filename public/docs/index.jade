@@ -1,12 +1,12 @@
 extends ../_custom_layout.jade
 
 block sidebar
+  - links = ['initialize', 'updateSettings', 'refresh', 'serialize', 'parse', 'clear', 'dispose', 'addListeners', 'addConditions', 'addComponents', 'addInstances', 'updateComponents', 'updateInstances', 'removeComponent', 'removeInstance', 'removeListeners', 'setContext', 'setComponentClassName', 'setTargetPrefix', 'getComponentClassName', 'getTargetPrefix', 'getActiveFilter', 'getConditions', 'getComponentById', 'getInstanceById', 'getComponents', 'getInstances', 'getActiveInstances', 'getActiveInstanceById', 'postMessageToInstance']
   aside.sidebar
-    - links = ['initalize', 'updateSettings', 'refresh', 'serialize', 'parse', 'clear', 'dispose', 'addListeners', 'addConditions', 'addComponents', 'addInstances', 'updateComponents', 'updateInstances', 'removeComponent', 'removeInstance', 'removeListeners', 'setContext', 'setComponentClassName', 'setTargetPrefix', 'getComponentClassName', 'getTargetPrefix', 'getActiveFilter', 'getConditions', 'getComponentById', 'getInstanceById', 'getComponents', 'getInstances', 'getActiveInstances', 'getActiveInstanceById', 'postMessageToInstance']
     h4.sidebar__title Settings
     ul.sidebar_list
       li.sidebar_list-item
-        a.sidebar__link(href="#settings") The "settings" object
+        a.sidebar__link(href="#settings") Available Settings
 
     h4.sidebar__title Public methods
     ul.sidebar_list
@@ -19,5 +19,11 @@ block sidebar
       li.sidebar_list-item
 
 block content
-  != partial("./vigorjs.componentmanager.docs")
+  h2 Settings
+  != partial('./settings')
 
+  h2 Public methods
+  each link in links
+    != partial(link)
+
+  h2 Events
