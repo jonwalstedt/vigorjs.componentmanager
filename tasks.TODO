@@ -33,6 +33,7 @@ Completed
  ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
  ☐ Add documentation
  ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)
+ ☐ Listen for reset on collectiond
 
  To consider
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable
