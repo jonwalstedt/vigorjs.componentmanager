@@ -2,9 +2,9 @@ extends ../index.jade
 
 block content
   != partial("./filter-components-by-string-matching")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '7'})
 
   div.app-wrapper
-
     div.example-one
       != partial("./filter-string-on-instance-definition")
 

@@ -34,7 +34,7 @@ a {
 }
 
 pre {
-  border: 1px solid #555;
+  border: 1px solid #ccc;
   padding: 10px;
   line-height: 20px;
   word-wrap: break-word;
@@ -134,5 +134,22 @@ pre {
   button {
     display: inline-block;
     margin: 0 4px 4px 0;
+  }
+}
+
+.components-js__code {
+  display: none;
+}
+
+.components-js {
+  h4 {
+    margin-bottom: 8px;
+  }
+  p {
+    margin-top: 0;
+  }
+  span strong {
+    display: inline-block;
+    margin: 0 10px;
   }
 }

@@ -2,6 +2,7 @@ extends ../index.jade
 
 block content
   != partial("./filter-by-url")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '6'})
 
   div.app-wrapper
     small .component-area--main

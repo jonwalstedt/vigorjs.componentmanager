@@ -2,6 +2,8 @@ extends ../index.jade
 
 block content
   != partial("./serialize")
+  != partial("../_components", {code: partial("./components"), conditions: '1', components: '1', instances: '5'})
+
   div.app-wrapper
     div.controls
       button.randomize Randomize

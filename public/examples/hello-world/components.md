@@ -1,3 +1,4 @@
+```javascript
 var componentSettings = {
   components: [{
     id: "hello-world-component",
@@ -11,10 +12,11 @@ var componentSettings = {
         urlPattern: "add-hello-world", // #add-hello-world
         args: {
           title: "hello-world-instance",
-          urlPattern: "add-hello-world",
+          urlPattern: "add-hello-world"
           background: "#F6FFBA"
         }
       }
     ]
   }
 }
+```

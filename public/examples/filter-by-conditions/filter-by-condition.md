@@ -5,8 +5,6 @@ One or multiple conditions can be set on both a component level and an instance 
 
 In this example we add differnt conditions and update components and instances to only be allowed if the conditions are met.
 
-Take a look at components.js to see component the setup for this example.
-
 ### Example condition: "withinTimeSpan"
 This condition is defined in the components.js file and passed along with the componentSettings object to the initialize method. componentDefinitions and instanceDefinitions then reference this condition by using its key as value for their conditions property. In this case it will allways return true unless you play around with the start and end time.
 

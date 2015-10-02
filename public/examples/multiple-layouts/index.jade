@@ -4,6 +4,9 @@ block includes
   link(rel="stylesheet" href="styles/styles.css")
 
 block content
+  != partial("./multiple-layouts")
+  != partial("../_components", {code: partial("./components"), conditions: '2', components: '7', instances: '8'})
+
   //- Templates
   script(type="text/template" class="login-template").
     <input type="text" placeholder="Username" class="login__field login__field--username"/>
@@ -87,7 +90,6 @@ block content
 
     <footer class="example-footer component-area component-area--footer"></footer>
 
-  != partial("./multiple-layouts")
   div.app-wrapper
 
 block scripts

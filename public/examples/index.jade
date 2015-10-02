@@ -62,7 +62,18 @@ block common-example-scripts
 
   script.
     // Methods below is just used to display the filter on the example page
-    var activeFilterTemplate = _.template($('.active-filter-template').html());
+    var activeFilterTemplate = _.template($('.active-filter-template').html()),
+        isToggled = false;
+
+    $('.components-js__toggle').on('click', function () {
+      $('.components-js__code').slideToggle(300);
+      if (isToggled) {
+        $(this).html('Show components.js');
+      } else {
+        $(this).html('Hide components.js');
+      }
+      isToggled = !isToggled;
+    });
 
     showMsg = function (msg, filter) {
       filter = setFilterDefaults(filter);

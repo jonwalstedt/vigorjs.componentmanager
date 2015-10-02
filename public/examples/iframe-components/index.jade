@@ -2,6 +2,8 @@ extends ../index.jade
 
 block content
   != partial("./iframe-components")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '3', instances: '4'})
+
   div.app-wrapper
     != partial("./iframe-components-example-1")
     small .component-area--first

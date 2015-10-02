@@ -2,6 +2,8 @@ extends ../index.jade
 
 block content
   != partial("./reorder-components")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '5'})
+
   div.app-wrapper
     div.controls
       button.decrement Decrement instance 1s ordernr

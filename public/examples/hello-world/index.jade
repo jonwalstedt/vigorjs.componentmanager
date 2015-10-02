@@ -2,7 +2,15 @@ extends ../index.jade
 
 block content
   != partial("./hello-world")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '1'})
+
   div.app-wrapper
+    div.controls
+      ul
+        li
+          a(href="#add-hello-world") Add Hello World
+        li
+          a(href="#remove-hello-world") Remove Hello World
 
     small active filter
     div.active-filter
