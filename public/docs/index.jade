@@ -6,7 +6,20 @@ block sidebar
     h4.sidebar__title Settings
     ul.sidebar_list
       li.sidebar_list-item
-        a.sidebar__link(href="#settings") Available Settings
+        a.sidebar__link(href="#settings") The settings object
+
+      li.sidebar_list-item
+        a.sidebar__link(href="#component-definitions") componentDefinitions
+
+      li.sidebar_list-item
+        a.sidebar__link(href="#instance-definitions") instanceDefinitions
+
+      li.sidebar_list-item
+        a.sidebar__link(href="#conditions") conditions
+
+      li.sidebar_list-item
+        a.sidebar__link(href="#other-settings") Other settings
+
 
     h4.sidebar__title Public methods
     ul.sidebar_list
@@ -19,8 +32,13 @@ block sidebar
       li.sidebar_list-item
 
 block content
+
   h2 Settings
   != partial('./settings')
+  != partial('./componentDefinitions')
+  != partial('./instanceDefinitions')
+  != partial('./conditions')
+  != partial('./other-settings')
 
   h2 Public methods
   each link in links

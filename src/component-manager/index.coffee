@@ -1,7 +1,7 @@
 class ComponentManager
 
-  _defaultComponentClassName = 'vigor-component'
-  _defaultTargetPrefix = 'component-area'
+  COMPONENT_CLASS_NAME = 'vigor-component'
+  TARGET_PREFIX = 'component-area'
 
   ERROR:
     CONDITION:
@@ -268,11 +268,11 @@ class ComponentManager
     return @
 
   setComponentClassName: (componentClassName) ->
-    @_componentClassName = componentClassName or _defaultComponentClassName
+    @_componentClassName = componentClassName or COMPONENT_CLASS_NAME
     return @
 
   setTargetPrefix: (targetPrefix) ->
-    @_targetPrefix = targetPrefix or _defaultTargetPrefix
+    @_targetPrefix = targetPrefix or TARGET_PREFIX
     return @
 
   getContext: ->

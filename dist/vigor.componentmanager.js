@@ -972,7 +972,7 @@
 
     })(BaseInstanceCollection);
     ComponentManager = (function() {
-      var _defaultComponentClassName, _defaultTargetPrefix;
+      var COMPONENT_CLASS_NAME, TARGET_PREFIX;
 
       function ComponentManager() {
         this._onMessageReceived = bind(this._onMessageReceived, this);
@@ -984,9 +984,9 @@
         this._updateActiveComponents = bind(this._updateActiveComponents, this);
       }
 
-      _defaultComponentClassName = 'vigor-component';
+      COMPONENT_CLASS_NAME = 'vigor-component';
 
-      _defaultTargetPrefix = 'component-area';
+      TARGET_PREFIX = 'component-area';
 
       ComponentManager.prototype.ERROR = {
         CONDITION: {
@@ -1324,12 +1324,12 @@
       };
 
       ComponentManager.prototype.setComponentClassName = function(componentClassName) {
-        this._componentClassName = componentClassName || _defaultComponentClassName;
+        this._componentClassName = componentClassName || COMPONENT_CLASS_NAME;
         return this;
       };
 
       ComponentManager.prototype.setTargetPrefix = function(targetPrefix) {
-        this._targetPrefix = targetPrefix || _defaultTargetPrefix;
+        this._targetPrefix = targetPrefix || TARGET_PREFIX;
         return this;
       };
 
