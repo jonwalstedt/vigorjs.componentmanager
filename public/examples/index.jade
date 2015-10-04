@@ -2,6 +2,7 @@ extends ../_custom_layout.jade
 
 block sidebar
   aside.sidebar
+    h4 Features
     ul.sidebar_list
       li.sidebar_list-item
         a(href="/examples/hello-world" class="sidebar__link #{ current.path[1] == 'hello-world' ? 'sidebar__link--active' : '' }") Hello World
@@ -24,8 +25,14 @@ block sidebar
       li.sidebar_list-item
         a(href="/examples/serialize" class="sidebar__link #{ current.path[1] == 'serialize' ? 'sidebar__link--active' : '' }") Serialize
 
+
+    h4 Concepts
+    ul.sidebar_list
       li.sidebar_list-item
         a(href="/examples/multiple-layouts" class="sidebar__link #{ current.path[1] == 'multiple-layouts' ? 'sidebar__link--active' : '' }") Multiple layouts
+
+      li.sidebar_list-item
+        a(href="/examples/render-done" class="sidebar__link #{ current.path[1] == 'render-done' ? 'sidebar__link--active' : '' }") Render done
 
 block content
   != partial("./examples")

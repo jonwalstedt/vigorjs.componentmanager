@@ -1,0 +1,18 @@
+.app-wrapper {
+  position: relative;
+  width: 320px;
+  height: 480px;
+}
+
+.component-area--main {
+  height: 100%;
+  width: 100%;
+}
+
+.vigor-component {
+  visibility: hidden;
+  position: absolute;
+}
+
+@import "preloader";
+@import "list-component";

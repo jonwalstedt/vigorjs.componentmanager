@@ -1,0 +1,31 @@
+extends ../index.jade
+
+block includes
+  link(rel="stylesheet" href="./css/styles.css")
+
+block content
+  != partial("./render-done")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '5'})
+
+  div.app-wrapper
+    div.preloader
+      button.start-example-btn Start Application
+      div.preloader-wrapper
+        div.preloader__text 0/0 loaded
+        div.preloader__progress
+          div.preloader__fill
+
+    div.component-area.component-area--main
+
+block scripts
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js")
+  script(src="./components/FilterComponent.js")
+  script(src="./components.js")
+  script(src="./app/app.js")
+  script.
+    $(document).ready(function () {
+      new app.Filter({
+        el: '.app-wrapper'
+      });
+    });
+
