@@ -1,18 +1,48 @@
-.app-wrapper {
-  position: relative;
-  width: 320px;
-  height: 480px;
-}
-
-.component-area--main {
-  height: 100%;
-  width: 100%;
-}
-
-.vigor-component {
-  visibility: hidden;
-  position: absolute;
-}
-
 @import "preloader";
-@import "list-component";
+@import "dashboard-component";
+
+.render-done-example {
+  position: relative;
+  min-height: 300px;
+  margin-top: 20px;
+  background: #18222d;
+
+  .header {
+    height: 50px;
+    background: #33455e;
+  }
+
+  .component-area--main {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    // border: none;
+    padding: 0;
+    &:after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+  }
+
+  .component-area--menu{
+    border: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: 200px;
+    z-index: 0;
+  }
+
+  .vigor-component {
+    visibility: hidden;
+    position: absolute;
+  }
+
+  .dashboard-component {
+    float: left;
+    padding: 5px;
+  }
+}

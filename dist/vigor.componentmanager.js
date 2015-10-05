@@ -121,8 +121,7 @@
         includeIfStringMatches: void 0,
         excludeIfStringMatches: void 0,
         hasToMatchString: void 0,
-        cantMatchString: void 0,
-        dryRun: false
+        cantMatchString: void 0
       };
 
       FilterModel.prototype.parse = function(attrs) {
@@ -138,8 +137,7 @@
           includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
           excludeIfStringMatches: (attrs != null ? attrs.excludeIfStringMatches : void 0) || void 0,
           hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
-          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0,
-          dryRun: (attrs != null ? attrs.dryRun : void 0) || false
+          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0
         };
         return newValues;
       };

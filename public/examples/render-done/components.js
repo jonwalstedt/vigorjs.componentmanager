@@ -1,7 +1,7 @@
 var componentSettings = {
   components: [{
     id: "order-component",
-    src: "app.components.FilterComponent"
+    src: "app.components.DashboardComponent"
   }],
 
   targets: {
@@ -12,7 +12,7 @@ var componentSettings = {
         order: 1,
         args: {
           order: "1",
-          background: "aqua",
+          background: "#B4EFFF",
           url: '#stats'
         },
         urlPattern: "global"
@@ -23,7 +23,7 @@ var componentSettings = {
         order: 2,
         args: {
           order: "2",
-          background: "green"
+          background: "#67DEFF"
         },
         urlPattern: "global"
       },
@@ -33,7 +33,7 @@ var componentSettings = {
         order: 3,
         args: {
           order: "3",
-          background: "silver"
+          background: "#90BFCC"
         },
         urlPattern: "global"
       },
@@ -43,7 +43,7 @@ var componentSettings = {
         order: 4,
         args: {
           order: "4",
-          background: "yellow"
+          background: "#5A777F"
         },
         urlPattern: "global"
       },
@@ -53,7 +53,7 @@ var componentSettings = {
         order: 5,
         args: {
           order: "5",
-          background: "pink"
+          background: "#346F7F"
         },
         urlPattern: "global"
       }

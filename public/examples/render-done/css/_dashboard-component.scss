@@ -1,0 +1,38 @@
+$dashboardComponentMinHeight: 250px;
+
+.dashboard-component {
+  position: relative;
+  padding: 0;
+  min-height: $dashboardComponentMinHeight;
+  // min-width: 300px;
+  width: 100%;
+
+}
+
+.dashboard-component__content {
+  min-height: $dashboardComponentMinHeight;
+  background: #263849;
+}
+
+.dashboard-component__header {
+  height: 40px;
+  background: #33455e;
+  text-align: center;
+  line-height: 40px;
+  a {
+    display: block;
+    color: #eee;
+  }
+}
+
+@media (min-width: 620px) {
+  .dashboard-component {
+    width: 50%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-component {
+    width: 33.3%;
+  }
+}

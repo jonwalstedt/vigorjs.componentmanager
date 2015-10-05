@@ -7,7 +7,13 @@ block content
   != partial("./render-done")
   != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '5'})
 
-  div.app-wrapper
+  //- Templates
+  script(type="text/template" class="dashboard-component-template").
+    <div class="dashboard-component__content">
+      <div class="dashboard-component__header"></div>
+    </div>
+
+  div.app-wrapper.render-done-example
     div.preloader
       button.start-example-btn Start Application
       div.preloader-wrapper
@@ -15,10 +21,14 @@ block content
         div.preloader__progress
           div.preloader__fill
 
+    div.header
+      button.menu Menu
+    div.component-area.component-area--menu
     div.component-area.component-area--main
 
 block scripts
   script(src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js")
+  script(src="./components/BaseComponent.js")
   script(src="./components/FilterComponent.js")
   script(src="./components.js")
   script(src="./app/app.js")

@@ -1,39 +1,36 @@
 var app = app || {};
 app.components = app.components || {};
 
-app.components.FilterComponent = Backbone.View.extend({
+app.components.DashboardComponent = app.components.BaseComponent.extend({
 
-  _renderDeferred: undefined,
-  className: 'list-component',
+  className: 'dashboard-component',
+  template: _.template($('script.dashboard-component-template').html()),
+  $header: undefined,
   order: undefined,
 
   initialize: function (args) {
     console.log('component initialized', args);
     this.order = args.order;
     this.url = args.url;
-    this.$el.css("background", args.background);
-    this._renderDeferred = $.Deferred();
+
+    this.$el.html(this.template());
+    this.$header = $('.dashboard-component__header', this.$el);
+    // this.$content.css("background", args.background);
+
+    app.components.BaseComponent.prototype.initialize.call(this);
   },
 
   render: function () {
+    // Fake async data fetching before rendering
+
     setTimeout(_.bind(function () {
       markup = '<a href="' + this.url + '">Instance with order: ' + this.order + '</a>';
-      this.$el.html(markup);
+      this.$header.html(markup);
 
       this._renderDeferred.resolve();
       console.log('promise resolved');
-    }, this), Math.random()*1000);
+    }, this), Math.random()*200);
 
     return this;
-  },
-
-  dispose: function () {
-    console.log('component disposed');
-    this.remove();
-  },
-
-  getRenderDonePromise: function () {
-    return this._renderDeferred.promise();
   }
-
 });

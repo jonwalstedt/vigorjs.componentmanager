@@ -7,7 +7,6 @@ class FilterModel extends Backbone.Model
     excludeIfStringMatches: undefined
     hasToMatchString: undefined
     cantMatchString: undefined
-    dryRun: false
 
   parse: (attrs) ->
 
@@ -23,7 +22,6 @@ class FilterModel extends Backbone.Model
       excludeIfStringMatches: attrs?.excludeIfStringMatches or undefined
       hasToMatchString: attrs?.hasToMatchString or undefined
       cantMatchString: attrs?.cantMatchString or undefined
-      dryRun: attrs?.dryRun or false
 
     return newValues
 

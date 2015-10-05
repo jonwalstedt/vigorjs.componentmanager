@@ -58,7 +58,7 @@ var app = app || {};
 
     loadingComplete: function () {
       console.log('loadingComplete');
-      TweenMax.staggerFromTo($('.vigor-component'), 4, {autoAlpha: 0}, {autoAlpha: 1, position: 'relative'}, 0.1);
+      TweenMax.staggerFromTo($('.vigor-component'), 4, {autoAlpha: 0}, {autoAlpha: 1, position: 'relative'}, 0.2);
     }
 
 });
