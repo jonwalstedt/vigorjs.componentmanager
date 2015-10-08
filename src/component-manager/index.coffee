@@ -10,6 +10,8 @@ class ComponentManager
       MISSING_ID: 'The id of targeted instance must be passed as first argument'
       MISSING_MESSAGE: 'No message was passed'
       MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
+    CONTEXT:
+      WRONG_FORMAT: 'context should be a string or a jquery object'
 
   EVENTS:
     ADD: 'add'
@@ -69,6 +71,33 @@ class ComponentManager
       cb filter, @getActiveInstances()
     return @
 
+  addInstancesMatchingFilter: (filter, cb = undefined) ->
+    instanceDefinitions = @_filterInstanceDefinitions filter
+    instanceDefinitions = _.difference instanceDefinitions, @_activeInstancesCollection.models
+
+    @_createAndAddInstances instanceDefinitions
+    do @_tryToReAddStraysToDom
+
+    instances = _.map instanceDefinitions, (instanceDefinition) =>
+      instanceDefinition.get 'instance'
+
+    @_activeInstancesCollection.add instanceDefinitions, silent: true
+
+    for instanceDefinition in instanceDefinitions
+      @trigger @EVENTS.ADD, instanceDefinition.toJSON(), @_activeInstancesCollection.toJSON()
+
+    if cb
+      cb filter, instances
+
+    return @
+
+  removeInstancesNotMatchingFilter: (filter) ->
+    returnNotMatching = true
+    instanceDefinitions = @_filterInstanceDefinitions filter, returnNotMatching
+    instanceDefinitionsToKeep = _.difference @_activeInstancesCollection.models, instanceDefinitions
+    @_activeInstancesCollection.set instanceDefinitionsToKeep
+    return @
+
   serialize: ->
     hidden = []
     componentSettings = {}
@@ -88,7 +117,7 @@ class ComponentManager
       contextSelector = 'body'
 
     settings =
-      $context: contextSelector
+      context: contextSelector
       componentClassName: @getComponentClassName()
       targetPrefix: @getTargetPrefix()
       componentSettings:
@@ -223,7 +252,11 @@ class ComponentManager
     return @
 
   addInstances: (instanceDefinitions) ->
-    @_instanceDefinitionsCollection.set instanceDefinitions,
+    data =
+      instanceDefinitions: instanceDefinitions
+      targetPrefix: @getTargetPrefix()
+
+    @_instanceDefinitionsCollection.set data,
       parse: true
       validate: true
       remove: false
@@ -260,11 +293,13 @@ class ComponentManager
 
     return @
 
-  setContext: (context) ->
+  setContext: (context = 'body') ->
     if _.isString(context)
       @_$context = $ context
-    else
+    else if context instanceof $
       @_$context = context
+    else
+      throw @ERROR.CONTEXT.WRONG_FORMAT
     return @
 
   setComponentClassName: (componentClassName) ->
@@ -282,7 +317,7 @@ class ComponentManager
     return @_componentClassName
 
   getTargetPrefix: ->
-    return @_targetPrefix
+    return @_targetPrefix or TARGET_PREFIX
 
   getActiveFilter: ->
     return @_filterModel.toJSON()
@@ -314,6 +349,13 @@ class ComponentManager
   getActiveInstanceById: (instanceId) ->
     return @_activeInstancesCollection.getInstanceDefinition(instanceId)?.get 'instance'
 
+  getInstancesMatchingFilter: (filter, createNewInstancesIfUndefined = false) ->
+    return @_filterInstances filter, createNewInstancesIfUndefined
+
+  getInstancesNotMatchingFilter: (filter, createNewInstancesIfUndefined = false) ->
+    returnNotMatching = true
+    return @_filterInstances filter, createNewInstancesIfUndefined, returnNotMatching
+
   postMessageToInstance: (id, message) ->
     unless id
       throw @ERROR.MESSAGE.MISSING_ID
@@ -330,8 +372,8 @@ class ComponentManager
   # Privat methods
   # ============================================================================
   _parse: (settings) ->
-    if settings?.$context
-      @setContext settings.$context
+    if settings?.context
+      @setContext settings.context
     else
       @setContext $('body')
 
@@ -384,11 +426,15 @@ class ComponentManager
     return @
 
   _registerInstanceDefinitions: (instanceDefinitions) ->
-    @_instanceDefinitionsCollection.setTargetPrefix @getTargetPrefix()
-    @_instanceDefinitionsCollection.set instanceDefinitions,
+    data =
+      instanceDefinitions: instanceDefinitions
+      targetPrefix: @getTargetPrefix()
+
+    @_instanceDefinitionsCollection.set data,
       validate: true
       parse: true
       silent: true
+
     return @
 
   _previousElement: ($el, order = 0) ->
@@ -406,11 +452,25 @@ class ComponentManager
     do @_tryToReAddStraysToDom
     return @
 
-  _filterInstanceDefinitions: (filterOptions) ->
+  _filterInstances: (filter, createNewInstancesIfUndefined = false, returnNotMatching = false) ->
+    instanceDefinitions = @_filterInstanceDefinitions filter, returnNotMatching
+    instances = _.map instanceDefinitions, (instanceDefinition) =>
+      instance = instanceDefinition.get 'instance'
+      if createNewInstancesIfUndefined and not instance?
+        @_addInstanceToModel instanceDefinition
+        instance = instanceDefinition.get 'instance'
+      return instance
+    return _.compact(instances)
+
+  _filterInstanceDefinitions: (filterOptions, returnNotMatching = false) ->
     globalConditions = @_globalConditionsModel.toJSON()
     instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions filterOptions, globalConditions
     instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByConditions instanceDefinitions
+
+    if returnNotMatching
+      instanceDefinitions = _.difference @_instanceDefinitionsCollection.models, instanceDefinitions
+
     return instanceDefinitions
 
   _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->
@@ -480,7 +540,7 @@ class ComponentManager
         do stray.disposeInstance
 
   _addInstanceToDom: (instanceDefinition, render = true) ->
-    $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
+    $target = @_getTarget instanceDefinition
 
     if render
       do instanceDefinition.renderInstance
@@ -492,7 +552,7 @@ class ComponentManager
     return instanceDefinition.isAttached()
 
   _addInstanceInOrder: (instanceDefinition) ->
-    $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
+    $target = @_getTarget instanceDefinition
     order = instanceDefinition.get 'order'
     instance = instanceDefinition.get 'instance'
 
@@ -526,13 +586,30 @@ class ComponentManager
   _setComponentAreaPopulatedState: ($componentArea) ->
     $componentArea.toggleClass "#{@_targetPrefix}--has-components", @_isComponentAreaPopulated($componentArea)
 
+  _createAndAddInstances: (instanceDefinitions = []) ->
+    unless _.isArray(instanceDefinitions)
+      instanceDefinitions = [instanceDefinitions]
+
+    for instanceDefinition in instanceDefinitions
+      @_addInstanceToModel instanceDefinition
+      @_addInstanceToDom instanceDefinition
+      do instanceDefinition.incrementShowCount
+
+    return instanceDefinitions
+
+  _getTarget: (instanceDefinition) ->
+    targetName = instanceDefinition.getTargetName()
+    if targetName is 'body'
+      $target = $ targetName
+    else
+      $target = $ targetName, @_$context
+    return $target
+
   #
   # Callbacks
   # ============================================================================
   _onActiveInstanceAdd: (instanceDefinition) =>
-    @_addInstanceToModel instanceDefinition
-    @_addInstanceToDom instanceDefinition
-    do instanceDefinition.incrementShowCount
+    @_createAndAddInstances [instanceDefinition]
 
   _onActiveInstanceChange: (instanceDefinition) =>
     filter = @_filterModel.toJSON()
@@ -544,7 +621,7 @@ class ComponentManager
 
   _onActiveInstanceRemoved: (instanceDefinition) =>
     do instanceDefinition.disposeInstance
-    $target = $ ".#{instanceDefinition.get('targetName')}", @_$context
+    $target = @_getTarget instanceDefinition
     @_setComponentAreaPopulatedState $target
 
   _onActiveInstanceOrderChange: (instanceDefinition) =>

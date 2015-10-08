@@ -850,6 +850,15 @@
         }
       };
 
+      InstanceDefinitionModel.prototype.getTargetName = function() {
+        var targetName;
+        targetName = this.get('targetName');
+        if (targetName !== 'body') {
+          targetName = "." + targetName;
+        }
+        return targetName;
+      };
+
       return InstanceDefinitionModel;
 
     })(Backbone.Model);
@@ -879,23 +888,11 @@
 
     })(BaseCollection);
     InstanceDefinitionsCollection = (function(superClass) {
-      var _targetPrefix;
-
       extend(InstanceDefinitionsCollection, superClass);
 
       function InstanceDefinitionsCollection() {
         return InstanceDefinitionsCollection.__super__.constructor.apply(this, arguments);
       }
-
-      _targetPrefix = void 0;
-
-      InstanceDefinitionsCollection.prototype.setTargetPrefix = function(targetPrefix) {
-        return _targetPrefix = targetPrefix;
-      };
-
-      InstanceDefinitionsCollection.prototype.getTargetPrefix = function() {
-        return _targetPrefix;
-      };
 
       InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter, globalConditions) {
         return this.filter(function(instanceDefinitionModel) {
@@ -904,31 +901,41 @@
       };
 
       InstanceDefinitionsCollection.prototype.parse = function(data, options) {
-        var i, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, k, len, len1, parsedResponse, targetName;
+        var i, incomingInstanceDefinitions, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, k, len, len1, parsedResponse, targetName, targetPrefix, trgtName;
         parsedResponse = void 0;
         instanceDefinitionsArray = [];
-        if (_.isObject(data) && !_.isArray(data)) {
-          for (targetName in data) {
-            instanceDefinitions = data[targetName];
+        targetPrefix = data.targetPrefix;
+        incomingInstanceDefinitions = data.instanceDefinitions;
+        if (_.isObject(incomingInstanceDefinitions) && !_.isArray(incomingInstanceDefinitions)) {
+          for (targetName in incomingInstanceDefinitions) {
+            instanceDefinitions = incomingInstanceDefinitions[targetName];
             if (_.isArray(instanceDefinitions)) {
               for (j = 0, len = instanceDefinitions.length; j < len; j++) {
                 instanceDefinition = instanceDefinitions[j];
-                instanceDefinition.targetName = _targetPrefix + "--" + targetName;
+                instanceDefinition.targetName = targetPrefix + "--" + targetName;
                 this.parseInstanceDefinition(instanceDefinition);
                 instanceDefinitionsArray.push(instanceDefinition);
               }
               parsedResponse = instanceDefinitionsArray;
             } else {
-              parsedResponse = this.parseInstanceDefinition(data);
+              trgtName = incomingInstanceDefinitions.targetName;
+              if ((trgtName != null) && trgtName !== 'body' && trgtName.indexOf(targetPrefix) < 0) {
+                incomingInstanceDefinitions.targetName = targetPrefix + "--" + trgtName;
+              }
+              parsedResponse = this.parseInstanceDefinition(incomingInstanceDefinitions);
               break;
             }
           }
-        } else if (_.isArray(data)) {
-          for (i = k = 0, len1 = data.length; k < len1; i = ++k) {
-            instanceDefinition = data[i];
-            data[i] = this.parseInstanceDefinition(instanceDefinition);
+        } else if (_.isArray(incomingInstanceDefinitions)) {
+          for (i = k = 0, len1 = incomingInstanceDefinitions.length; k < len1; i = ++k) {
+            instanceDefinition = incomingInstanceDefinitions[i];
+            targetName = instanceDefinition.targetName;
+            if ((targetName != null) && targetName !== 'body' && targetName.indexOf(targetPrefix) < 0) {
+              instanceDefinition.targetName = targetPrefix + "--" + targetName;
+            }
+            incomingInstanceDefinitions[i] = this.parseInstanceDefinition(instanceDefinition);
           }
-          parsedResponse = data;
+          parsedResponse = incomingInstanceDefinitions;
         }
         return parsedResponse;
       };
@@ -996,6 +1003,9 @@
           MISSING_ID: 'The id of targeted instance must be passed as first argument',
           MISSING_MESSAGE: 'No message was passed',
           MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
+        },
+        CONTEXT: {
+          WRONG_FORMAT: 'context should be a string or a jquery object'
         }
       };
 
@@ -1069,6 +1079,42 @@
         return this;
       };
 
+      ComponentManager.prototype.addInstancesMatchingFilter = function(filter, cb) {
+        var instanceDefinition, instanceDefinitions, instances, j, len;
+        if (cb == null) {
+          cb = void 0;
+        }
+        instanceDefinitions = this._filterInstanceDefinitions(filter);
+        instanceDefinitions = _.difference(instanceDefinitions, this._activeInstancesCollection.models);
+        this._createAndAddInstances(instanceDefinitions);
+        this._tryToReAddStraysToDom();
+        instances = _.map(instanceDefinitions, (function(_this) {
+          return function(instanceDefinition) {
+            return instanceDefinition.get('instance');
+          };
+        })(this));
+        this._activeInstancesCollection.add(instanceDefinitions, {
+          silent: true
+        });
+        for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+          instanceDefinition = instanceDefinitions[j];
+          this.trigger(this.EVENTS.ADD, instanceDefinition.toJSON(), this._activeInstancesCollection.toJSON());
+        }
+        if (cb) {
+          cb(filter, instances);
+        }
+        return this;
+      };
+
+      ComponentManager.prototype.removeInstancesNotMatchingFilter = function(filter) {
+        var instanceDefinitions, instanceDefinitionsToKeep, returnNotMatching;
+        returnNotMatching = true;
+        instanceDefinitions = this._filterInstanceDefinitions(filter, returnNotMatching);
+        instanceDefinitionsToKeep = _.difference(this._activeInstancesCollection.models, instanceDefinitions);
+        this._activeInstancesCollection.set(instanceDefinitionsToKeep);
+        return this;
+      };
+
       ComponentManager.prototype.serialize = function() {
         var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
         hidden = [];
@@ -1089,7 +1135,7 @@
           contextSelector = 'body';
         }
         settings = {
-          $context: contextSelector,
+          context: contextSelector,
           componentClassName: this.getComponentClassName(),
           targetPrefix: this.getTargetPrefix(),
           componentSettings: {
@@ -1260,7 +1306,12 @@
       };
 
       ComponentManager.prototype.addInstances = function(instanceDefinitions) {
-        this._instanceDefinitionsCollection.set(instanceDefinitions, {
+        var data;
+        data = {
+          instanceDefinitions: instanceDefinitions,
+          targetPrefix: this.getTargetPrefix()
+        };
+        this._instanceDefinitionsCollection.set(data, {
           parse: true,
           validate: true,
           remove: false
@@ -1315,10 +1366,15 @@
       };
 
       ComponentManager.prototype.setContext = function(context) {
+        if (context == null) {
+          context = 'body';
+        }
         if (_.isString(context)) {
           this._$context = $(context);
-        } else {
+        } else if (context instanceof $) {
           this._$context = context;
+        } else {
+          throw this.ERROR.CONTEXT.WRONG_FORMAT;
         }
         return this;
       };
@@ -1342,7 +1398,7 @@
       };
 
       ComponentManager.prototype.getTargetPrefix = function() {
-        return this._targetPrefix;
+        return this._targetPrefix || TARGET_PREFIX;
       };
 
       ComponentManager.prototype.getActiveFilter = function() {
@@ -1390,6 +1446,22 @@
         return (ref = this._activeInstancesCollection.getInstanceDefinition(instanceId)) != null ? ref.get('instance') : void 0;
       };
 
+      ComponentManager.prototype.getInstancesMatchingFilter = function(filter, createNewInstancesIfUndefined) {
+        if (createNewInstancesIfUndefined == null) {
+          createNewInstancesIfUndefined = false;
+        }
+        return this._filterInstances(filter, createNewInstancesIfUndefined);
+      };
+
+      ComponentManager.prototype.getInstancesNotMatchingFilter = function(filter, createNewInstancesIfUndefined) {
+        var returnNotMatching;
+        if (createNewInstancesIfUndefined == null) {
+          createNewInstancesIfUndefined = false;
+        }
+        returnNotMatching = true;
+        return this._filterInstances(filter, createNewInstancesIfUndefined, returnNotMatching);
+      };
+
       ComponentManager.prototype.postMessageToInstance = function(id, message) {
         var instance;
         if (!id) {
@@ -1407,8 +1479,8 @@
       };
 
       ComponentManager.prototype._parse = function(settings) {
-        if (settings != null ? settings.$context : void 0) {
-          this.setContext(settings.$context);
+        if (settings != null ? settings.context : void 0) {
+          this.setContext(settings.context);
         } else {
           this.setContext($('body'));
         }
@@ -1459,8 +1531,12 @@
       };
 
       ComponentManager.prototype._registerInstanceDefinitions = function(instanceDefinitions) {
-        this._instanceDefinitionsCollection.setTargetPrefix(this.getTargetPrefix());
-        this._instanceDefinitionsCollection.set(instanceDefinitions, {
+        var data;
+        data = {
+          instanceDefinitions: instanceDefinitions,
+          targetPrefix: this.getTargetPrefix()
+        };
+        this._instanceDefinitionsCollection.set(data, {
           validate: true,
           parse: true,
           silent: true
@@ -1489,12 +1565,41 @@
         return this;
       };
 
-      ComponentManager.prototype._filterInstanceDefinitions = function(filterOptions) {
+      ComponentManager.prototype._filterInstances = function(filter, createNewInstancesIfUndefined, returnNotMatching) {
+        var instanceDefinitions, instances;
+        if (createNewInstancesIfUndefined == null) {
+          createNewInstancesIfUndefined = false;
+        }
+        if (returnNotMatching == null) {
+          returnNotMatching = false;
+        }
+        instanceDefinitions = this._filterInstanceDefinitions(filter, returnNotMatching);
+        instances = _.map(instanceDefinitions, (function(_this) {
+          return function(instanceDefinition) {
+            var instance;
+            instance = instanceDefinition.get('instance');
+            if (createNewInstancesIfUndefined && (instance == null)) {
+              _this._addInstanceToModel(instanceDefinition);
+              instance = instanceDefinition.get('instance');
+            }
+            return instance;
+          };
+        })(this));
+        return _.compact(instances);
+      };
+
+      ComponentManager.prototype._filterInstanceDefinitions = function(filterOptions, returnNotMatching) {
         var globalConditions, instanceDefinitions;
+        if (returnNotMatching == null) {
+          returnNotMatching = false;
+        }
         globalConditions = this._globalConditionsModel.toJSON();
         instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(filterOptions, globalConditions);
         instanceDefinitions = this._filterInstanceDefinitionsByShowCount(instanceDefinitions);
         instanceDefinitions = this._filterInstanceDefinitionsByConditions(instanceDefinitions);
+        if (returnNotMatching) {
+          instanceDefinitions = _.difference(this._instanceDefinitionsCollection.models, instanceDefinitions);
+        }
         return instanceDefinitions;
       };
 
@@ -1594,7 +1699,7 @@
         if (render == null) {
           render = true;
         }
-        $target = $("." + (instanceDefinition.get('targetName')), this._$context);
+        $target = this._getTarget(instanceDefinition);
         if (render) {
           instanceDefinition.renderInstance();
         }
@@ -1607,7 +1712,7 @@
 
       ComponentManager.prototype._addInstanceInOrder = function(instanceDefinition) {
         var $previousElement, $target, instance, order;
-        $target = $("." + (instanceDefinition.get('targetName')), this._$context);
+        $target = this._getTarget(instanceDefinition);
         order = instanceDefinition.get('order');
         instance = instanceDefinition.get('instance');
         if (order) {
@@ -1646,10 +1751,36 @@
         return $componentArea.toggleClass(this._targetPrefix + "--has-components", this._isComponentAreaPopulated($componentArea));
       };
 
+      ComponentManager.prototype._createAndAddInstances = function(instanceDefinitions) {
+        var instanceDefinition, j, len;
+        if (instanceDefinitions == null) {
+          instanceDefinitions = [];
+        }
+        if (!_.isArray(instanceDefinitions)) {
+          instanceDefinitions = [instanceDefinitions];
+        }
+        for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+          instanceDefinition = instanceDefinitions[j];
+          this._addInstanceToModel(instanceDefinition);
+          this._addInstanceToDom(instanceDefinition);
+          instanceDefinition.incrementShowCount();
+        }
+        return instanceDefinitions;
+      };
+
+      ComponentManager.prototype._getTarget = function(instanceDefinition) {
+        var $target, targetName;
+        targetName = instanceDefinition.getTargetName();
+        if (targetName === 'body') {
+          $target = $(targetName);
+        } else {
+          $target = $(targetName, this._$context);
+        }
+        return $target;
+      };
+
       ComponentManager.prototype._onActiveInstanceAdd = function(instanceDefinition) {
-        this._addInstanceToModel(instanceDefinition);
-        this._addInstanceToDom(instanceDefinition);
-        return instanceDefinition.incrementShowCount();
+        return this._createAndAddInstances([instanceDefinition]);
       };
 
       ComponentManager.prototype._onActiveInstanceChange = function(instanceDefinition) {
@@ -1666,7 +1797,7 @@
       ComponentManager.prototype._onActiveInstanceRemoved = function(instanceDefinition) {
         var $target;
         instanceDefinition.disposeInstance();
-        $target = $("." + (instanceDefinition.get('targetName')), this._$context);
+        $target = this._getTarget(instanceDefinition);
         return this._setComponentAreaPopulatedState($target);
       };
 

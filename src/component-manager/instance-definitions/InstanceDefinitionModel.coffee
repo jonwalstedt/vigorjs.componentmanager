@@ -18,7 +18,6 @@ class InstanceDefinitionModel extends Backbone.Model
     MISSING_CONDITION: (condition) ->
       return "Trying to verify condition #{condition} but it has not been registered yet"
 
-
   defaults:
     id: undefined
     componentId: undefined
@@ -263,3 +262,8 @@ class InstanceDefinitionModel extends Backbone.Model
         'urlParams': matchingUrlParams
       , silent: not @get('reInstantiateOnUrlParamChange')
 
+  getTargetName: ->
+    targetName = @get 'targetName'
+    unless targetName is 'body'
+      targetName = ".#{targetName}"
+    return targetName

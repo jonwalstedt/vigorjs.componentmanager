@@ -869,7 +869,7 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.addUrlParams 'foo/123'
       assert instanceDefinitionModel.trigger.notCalled
 
-    it 'should should be able to handle multiple urlPatterns with only one matching', ->
+    it 'should be able to handle multiple urlPatterns with only one matching', ->
       instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'foo/:bar/:id']
       instanceDefinitionModel.addUrlParams 'foo/bar/123'
       urlParams = instanceDefinitionModel.get 'urlParams'
@@ -881,7 +881,7 @@ describe 'InstanceDefinitionModel', ->
       assert.equal urlParams[0].url, 'foo/bar/123'
       assert.deepEqual urlParamsModel.toJSON(), urlParams[0]
 
-    it 'should should be able to handle multiple urlPatterns with multiple matches', ->
+    it 'should be able to handle multiple urlPatterns with multiple matches', ->
       instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'foo/:bar/:id', 'bar/:id', 'foo/*path']
       instanceDefinitionModel.addUrlParams 'foo/bar/123'
       urlParams = instanceDefinitionModel.get 'urlParams'
@@ -895,3 +895,17 @@ describe 'InstanceDefinitionModel', ->
       assert.equal urlParams[1].url, 'foo/bar/123'
       assert.deepEqual urlParamsModel.toJSON(), urlParams[0]
 
+  describe 'getTargetName', ->
+    it 'should return the target name prefixed with a dot (class selector)', ->
+      targetName = 'vigor-component--test'
+      expectedResults = '.vigor-component--test'
+      instanceDefinitionModel.set targetName: targetName
+      result = instanceDefinitionModel.getTargetName()
+      assert.equal result, expectedResults
+
+    it 'should not prefix the selector "body" with a dot', ->
+      targetName = 'body'
+      expectedResults = 'body'
+      instanceDefinitionModel.set targetName: targetName
+      result = instanceDefinitionModel.getTargetName()
+      assert.equal result, expectedResults

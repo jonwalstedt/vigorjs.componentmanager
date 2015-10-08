@@ -1,13 +1,5 @@
 class InstanceDefinitionsCollection extends BaseInstanceCollection
 
-  _targetPrefix = undefined
-
-  setTargetPrefix: (targetPrefix) ->
-    _targetPrefix = targetPrefix
-
-  getTargetPrefix: ->
-    return _targetPrefix
-
   getInstanceDefinitions: (filter, globalConditions) ->
     return @filter (instanceDefinitionModel) ->
       instanceDefinitionModel.passesFilter filter, globalConditions
@@ -16,25 +8,33 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
     parsedResponse = undefined
     instanceDefinitionsArray = []
 
-    if _.isObject(data) and not _.isArray(data)
-      for targetName, instanceDefinitions of data
+    targetPrefix = data.targetPrefix
+    incomingInstanceDefinitions = data.instanceDefinitions
+
+    if _.isObject(incomingInstanceDefinitions) and not _.isArray(incomingInstanceDefinitions)
+      for targetName, instanceDefinitions of incomingInstanceDefinitions
         if _.isArray(instanceDefinitions)
           for instanceDefinition in instanceDefinitions
-
-            instanceDefinition.targetName = "#{_targetPrefix}--#{targetName}"
+            instanceDefinition.targetName = "#{targetPrefix}--#{targetName}"
             @parseInstanceDefinition instanceDefinition
             instanceDefinitionsArray.push instanceDefinition
 
           parsedResponse = instanceDefinitionsArray
 
         else
-          parsedResponse = @parseInstanceDefinition(data)
+          trgtName = incomingInstanceDefinitions.targetName
+          if trgtName? and trgtName isnt 'body' and trgtName.indexOf(targetPrefix) < 0
+            incomingInstanceDefinitions.targetName = "#{targetPrefix}--#{trgtName}"
+          parsedResponse = @parseInstanceDefinition(incomingInstanceDefinitions)
           break
 
-    else if _.isArray(data)
-      for instanceDefinition, i in data
-        data[i] = @parseInstanceDefinition(instanceDefinition)
-      parsedResponse = data
+    else if _.isArray(incomingInstanceDefinitions)
+      for instanceDefinition, i in incomingInstanceDefinitions
+        targetName = instanceDefinition.targetName
+        if targetName? and targetName isnt 'body' and targetName.indexOf(targetPrefix) < 0
+          instanceDefinition.targetName = "#{targetPrefix}--#{targetName}"
+        incomingInstanceDefinitions[i] = @parseInstanceDefinition(instanceDefinition)
+      parsedResponse = incomingInstanceDefinitions
 
     return parsedResponse
 

@@ -15,7 +15,7 @@ var componentSettings = {
           background: "#B4EFFF",
           url: '#stats'
         },
-        urlPattern: "global"
+        urlPattern: "test2"
       },
       {
         id: "order-instance-2",
@@ -25,7 +25,7 @@ var componentSettings = {
           order: "2",
           background: "#67DEFF"
         },
-        urlPattern: "global"
+        urlPattern: "test"
       },
       {
         id: "order-instance-3",
@@ -35,7 +35,7 @@ var componentSettings = {
           order: "3",
           background: "#90BFCC"
         },
-        urlPattern: "global"
+        urlPattern: "test"
       },
       {
         id: "order-instance-4",
@@ -45,7 +45,7 @@ var componentSettings = {
           order: "4",
           background: "#5A777F"
         },
-        urlPattern: "global"
+        urlPattern: "test"
       },
       {
         id: "order-instance-5",
@@ -55,7 +55,7 @@ var componentSettings = {
           order: "5",
           background: "#346F7F"
         },
-        urlPattern: "global"
+        urlPattern: "test"
       }
     ]
   }

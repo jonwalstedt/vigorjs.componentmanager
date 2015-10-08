@@ -25,11 +25,12 @@ Completed
  ✔ Send message to iframe from instance @done (15-09-16 22:55)
  ✔ Add the possibility to pass callback when doing a refresh - method should be called when the refresh is done (pass an array of active instances) @done (15-09-16 22:55)
  ✔ Pass arguments to conditions? @done (15-09-24 10:17)
+ ✔ Refactor examples and implement harpjs @done (15-10-05 14:56)
 
  In progress
- ☐ Refactor examples and implement harpjs
 
  Next up
+ ☐ Unittest new methods in index: --addInstancesMatchingFilter--, --removeInstancesNotMatchingFilter--, --getInstancesMatchingFilter--, --getInstancesNotMatchingFilter--, --_filterInstances--, --_createAndAddInstances--, --_filterInstanceDefinitions--, --_getTarget--,  getTargetName
  ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
  ☐ Add documentation
  ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)
