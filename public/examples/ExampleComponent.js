@@ -36,7 +36,6 @@ ExampleComponent = Backbone.View.extend({
 
   _onUrlParamsChange: function () {
     message = 'This component doesnt reinstantiate when the url changes but instead gets new params passed through the urlParamsModel: ';
-    console.log('_onUrlParamsChange', this.$output);
     this.$output.html(message + '<pre>' + this._stringify(this.urlParamsModel.toJSON())) + '</pre>';
   },
 

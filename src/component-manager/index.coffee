@@ -62,40 +62,11 @@ class ComponentManager
     return @
 
   refresh: (filter, cb = undefined) ->
-    if filter
-      @_filterModel.set @_filterModel.parse(filter)
-    else
-      do @_filterModel?.clear
-      do @_updateActiveComponents
-    if cb
-      cb filter, @getActiveInstances()
-    return @
-
-  addInstancesMatchingFilter: (filter, cb = undefined) ->
-    instanceDefinitions = @_filterInstanceDefinitions filter
-    instanceDefinitions = _.difference instanceDefinitions, @_activeInstancesCollection.models
-
-    @_createAndAddInstances instanceDefinitions
-    do @_tryToReAddStraysToDom
-
-    instances = _.map instanceDefinitions, (instanceDefinition) =>
-      instanceDefinition.get 'instance'
-
-    @_activeInstancesCollection.add instanceDefinitions, silent: true
-
-    for instanceDefinition in instanceDefinitions
-      @trigger @EVENTS.ADD, instanceDefinition.toJSON(), @_activeInstancesCollection.toJSON()
+    @_filterModel.set @_filterModel.parse(filter)
+    instances = @_mapInstances @_updateActiveComponents()
 
     if cb
       cb filter, instances
-
-    return @
-
-  removeInstancesNotMatchingFilter: (filter) ->
-    returnNotMatching = true
-    instanceDefinitions = @_filterInstanceDefinitions filter, returnNotMatching
-    instanceDefinitionsToKeep = _.difference @_activeInstancesCollection.models, instanceDefinitions
-    @_activeInstancesCollection.set instanceDefinitionsToKeep
     return @
 
   serialize: ->
@@ -176,7 +147,6 @@ class ComponentManager
     @_filterModel = undefined
 
   addListeners: ->
-    @_filterModel.on 'change', @_updateActiveComponents
     @_componentDefinitionsCollection.on 'throttled_diff', @_updateActiveComponents
     @_instanceDefinitionsCollection.on 'throttled_diff', @_updateActiveComponents
     @_globalConditionsModel.on 'change', @_updateActiveComponents
@@ -331,30 +301,20 @@ class ComponentManager
   getInstanceById: (instanceId) ->
     return @_instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON()
 
+  # TODO: Rename to getComponentDefinitions
   getComponents: ->
     return @_componentDefinitionsCollection.toJSON()
 
+  # TODO: Rename to getInstanceDefinitions
   getInstances: ->
     return @_instanceDefinitionsCollection.toJSON()
 
   getActiveInstances: ->
-    instances = _.map @_activeInstancesCollection.models, (instanceDefinition) =>
-      instance = instanceDefinition.get 'instance'
-      unless instance
-        @_addInstanceToModel instanceDefinition
-        instance = instanceDefinition.get 'instance'
-      return instance
-    return instances
+    createNewInstancesIfUndefined = true
+    return @_mapInstances @_activeInstancesCollection.models, createNewInstancesIfUndefined
 
   getActiveInstanceById: (instanceId) ->
     return @_activeInstancesCollection.getInstanceDefinition(instanceId)?.get 'instance'
-
-  getInstancesMatchingFilter: (filter, createNewInstancesIfUndefined = false) ->
-    return @_filterInstances filter, createNewInstancesIfUndefined
-
-  getInstancesNotMatchingFilter: (filter, createNewInstancesIfUndefined = false) ->
-    returnNotMatching = true
-    return @_filterInstances filter, createNewInstancesIfUndefined, returnNotMatching
 
   postMessageToInstance: (id, message) ->
     unless id
@@ -445,15 +405,20 @@ class ComponentManager
         @_previousElement $el.prev(), order
 
   _updateActiveComponents: =>
-    instanceDefinitions = @_filterInstanceDefinitions @_filterModel.toJSON()
-    @_activeInstancesCollection.set instanceDefinitions
+    filter = @_filterModel.toJSON()
+    options = @_filterModel.getFilterOptions()
+    instanceDefinitions = @_filterInstanceDefinitions filter
+
+    if options.invert
+      instanceDefinitions = _.difference @_instanceDefinitionsCollection.models, instanceDefinitions
+
+    @_activeInstancesCollection.set instanceDefinitions, options
 
     # check if we have any stray instances in active components and then try to readd them
     do @_tryToReAddStraysToDom
-    return @
+    return instanceDefinitions
 
-  _filterInstances: (filter, createNewInstancesIfUndefined = false, returnNotMatching = false) ->
-    instanceDefinitions = @_filterInstanceDefinitions filter, returnNotMatching
+  _mapInstances: (instanceDefinitions, createNewInstancesIfUndefined = false) ->
     instances = _.map instanceDefinitions, (instanceDefinition) =>
       instance = instanceDefinition.get 'instance'
       if createNewInstancesIfUndefined and not instance?
@@ -462,15 +427,11 @@ class ComponentManager
       return instance
     return _.compact(instances)
 
-  _filterInstanceDefinitions: (filterOptions, returnNotMatching = false) ->
+  _filterInstanceDefinitions: (filter) ->
     globalConditions = @_globalConditionsModel.toJSON()
-    instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions filterOptions, globalConditions
+    instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
     instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByConditions instanceDefinitions
-
-    if returnNotMatching
-      instanceDefinitions = _.difference @_instanceDefinitionsCollection.models, instanceDefinitions
-
     return instanceDefinitions
 
   _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->

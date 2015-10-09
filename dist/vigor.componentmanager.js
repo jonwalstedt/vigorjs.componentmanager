@@ -121,15 +121,26 @@
         includeIfStringMatches: void 0,
         excludeIfStringMatches: void 0,
         hasToMatchString: void 0,
-        cantMatchString: void 0
+        cantMatchString: void 0,
+        options: {
+          add: true,
+          remove: true,
+          merge: true,
+          invert: false
+        }
       };
 
       FilterModel.prototype.parse = function(attrs) {
-        var newValues, url;
+        var newValues, options, url;
         if ((attrs != null ? attrs.url : void 0) === "") {
           url = "";
         } else {
-          url = (attrs != null ? attrs.url : void 0) || this.get('url') || void 0;
+          url = (attrs != null ? attrs.url : void 0) || void 0;
+        }
+        if ((attrs != null ? attrs.options : void 0) != null) {
+          options = _.extend(this.getFilterOptions(), attrs != null ? attrs.options : void 0);
+        } else {
+          options = this.getFilterOptions();
         }
         newValues = {
           url: url,
@@ -137,9 +148,38 @@
           includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
           excludeIfStringMatches: (attrs != null ? attrs.excludeIfStringMatches : void 0) || void 0,
           hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
-          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0
+          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0,
+          options: options
         };
         return newValues;
+      };
+
+      FilterModel.prototype.getFilterOptions = function() {
+        var add, filter, invert, merge, options, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, remove;
+        filter = this.toJSON();
+        add = true;
+        remove = true;
+        merge = true;
+        invert = false;
+        if ((filter != null ? (ref = filter.options) != null ? ref.add : void 0 : void 0) != null) {
+          add = filter != null ? (ref1 = filter.options) != null ? ref1.add : void 0 : void 0;
+        }
+        if ((filter != null ? (ref2 = filter.options) != null ? ref2.remove : void 0 : void 0) != null) {
+          remove = filter != null ? (ref3 = filter.options) != null ? ref3.remove : void 0 : void 0;
+        }
+        if ((filter != null ? (ref4 = filter.options) != null ? ref4.merge : void 0 : void 0) != null) {
+          merge = filter != null ? (ref5 = filter.options) != null ? ref5.merge : void 0 : void 0;
+        }
+        if ((filter != null ? (ref6 = filter.options) != null ? ref6.invert : void 0 : void 0) != null) {
+          invert = filter != null ? (ref7 = filter.options) != null ? ref7.invert : void 0 : void 0;
+        }
+        options = {
+          add: add,
+          remove: remove,
+          merge: merge,
+          invert: invert
+        };
+        return options;
       };
 
       return FilterModel;
@@ -853,7 +893,7 @@
       InstanceDefinitionModel.prototype.getTargetName = function() {
         var targetName;
         targetName = this.get('targetName');
-        if (targetName !== 'body') {
+        if (!(targetName === 'body' || targetName.charAt(0) === '.')) {
           targetName = "." + targetName;
         }
         return targetName;
@@ -1061,57 +1101,15 @@
       };
 
       ComponentManager.prototype.refresh = function(filter, cb) {
-        var ref;
+        var instances;
         if (cb == null) {
           cb = void 0;
         }
-        if (filter) {
-          this._filterModel.set(this._filterModel.parse(filter));
-        } else {
-          if ((ref = this._filterModel) != null) {
-            ref.clear();
-          }
-          this._updateActiveComponents();
-        }
-        if (cb) {
-          cb(filter, this.getActiveInstances());
-        }
-        return this;
-      };
-
-      ComponentManager.prototype.addInstancesMatchingFilter = function(filter, cb) {
-        var instanceDefinition, instanceDefinitions, instances, j, len;
-        if (cb == null) {
-          cb = void 0;
-        }
-        instanceDefinitions = this._filterInstanceDefinitions(filter);
-        instanceDefinitions = _.difference(instanceDefinitions, this._activeInstancesCollection.models);
-        this._createAndAddInstances(instanceDefinitions);
-        this._tryToReAddStraysToDom();
-        instances = _.map(instanceDefinitions, (function(_this) {
-          return function(instanceDefinition) {
-            return instanceDefinition.get('instance');
-          };
-        })(this));
-        this._activeInstancesCollection.add(instanceDefinitions, {
-          silent: true
-        });
-        for (j = 0, len = instanceDefinitions.length; j < len; j++) {
-          instanceDefinition = instanceDefinitions[j];
-          this.trigger(this.EVENTS.ADD, instanceDefinition.toJSON(), this._activeInstancesCollection.toJSON());
-        }
+        this._filterModel.set(this._filterModel.parse(filter));
+        instances = this._mapInstances(this._updateActiveComponents());
         if (cb) {
           cb(filter, instances);
         }
-        return this;
-      };
-
-      ComponentManager.prototype.removeInstancesNotMatchingFilter = function(filter) {
-        var instanceDefinitions, instanceDefinitionsToKeep, returnNotMatching;
-        returnNotMatching = true;
-        instanceDefinitions = this._filterInstanceDefinitions(filter, returnNotMatching);
-        instanceDefinitionsToKeep = _.difference(this._activeInstancesCollection.models, instanceDefinitions);
-        this._activeInstancesCollection.set(instanceDefinitionsToKeep);
         return this;
       };
 
@@ -1216,7 +1214,6 @@
 
       ComponentManager.prototype.addListeners = function() {
         var eventMethod, eventer, messageEvent;
-        this._filterModel.on('change', this._updateActiveComponents);
         this._componentDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
         this._instanceDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
         this._globalConditionsModel.on('change', this._updateActiveComponents);
@@ -1426,40 +1423,14 @@
       };
 
       ComponentManager.prototype.getActiveInstances = function() {
-        var instances;
-        instances = _.map(this._activeInstancesCollection.models, (function(_this) {
-          return function(instanceDefinition) {
-            var instance;
-            instance = instanceDefinition.get('instance');
-            if (!instance) {
-              _this._addInstanceToModel(instanceDefinition);
-              instance = instanceDefinition.get('instance');
-            }
-            return instance;
-          };
-        })(this));
-        return instances;
+        var createNewInstancesIfUndefined;
+        createNewInstancesIfUndefined = true;
+        return this._mapInstances(this._activeInstancesCollection.models, createNewInstancesIfUndefined);
       };
 
       ComponentManager.prototype.getActiveInstanceById = function(instanceId) {
         var ref;
         return (ref = this._activeInstancesCollection.getInstanceDefinition(instanceId)) != null ? ref.get('instance') : void 0;
-      };
-
-      ComponentManager.prototype.getInstancesMatchingFilter = function(filter, createNewInstancesIfUndefined) {
-        if (createNewInstancesIfUndefined == null) {
-          createNewInstancesIfUndefined = false;
-        }
-        return this._filterInstances(filter, createNewInstancesIfUndefined);
-      };
-
-      ComponentManager.prototype.getInstancesNotMatchingFilter = function(filter, createNewInstancesIfUndefined) {
-        var returnNotMatching;
-        if (createNewInstancesIfUndefined == null) {
-          createNewInstancesIfUndefined = false;
-        }
-        returnNotMatching = true;
-        return this._filterInstances(filter, createNewInstancesIfUndefined, returnNotMatching);
       };
 
       ComponentManager.prototype.postMessageToInstance = function(id, message) {
@@ -1558,22 +1529,23 @@
       };
 
       ComponentManager.prototype._updateActiveComponents = function() {
-        var instanceDefinitions;
-        instanceDefinitions = this._filterInstanceDefinitions(this._filterModel.toJSON());
-        this._activeInstancesCollection.set(instanceDefinitions);
+        var filter, instanceDefinitions, options;
+        filter = this._filterModel.toJSON();
+        options = this._filterModel.getFilterOptions();
+        instanceDefinitions = this._filterInstanceDefinitions(filter);
+        if (options.invert) {
+          instanceDefinitions = _.difference(this._instanceDefinitionsCollection.models, instanceDefinitions);
+        }
+        this._activeInstancesCollection.set(instanceDefinitions, options);
         this._tryToReAddStraysToDom();
-        return this;
+        return instanceDefinitions;
       };
 
-      ComponentManager.prototype._filterInstances = function(filter, createNewInstancesIfUndefined, returnNotMatching) {
-        var instanceDefinitions, instances;
+      ComponentManager.prototype._mapInstances = function(instanceDefinitions, createNewInstancesIfUndefined) {
+        var instances;
         if (createNewInstancesIfUndefined == null) {
           createNewInstancesIfUndefined = false;
         }
-        if (returnNotMatching == null) {
-          returnNotMatching = false;
-        }
-        instanceDefinitions = this._filterInstanceDefinitions(filter, returnNotMatching);
         instances = _.map(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
             var instance;
@@ -1588,18 +1560,12 @@
         return _.compact(instances);
       };
 
-      ComponentManager.prototype._filterInstanceDefinitions = function(filterOptions, returnNotMatching) {
+      ComponentManager.prototype._filterInstanceDefinitions = function(filter) {
         var globalConditions, instanceDefinitions;
-        if (returnNotMatching == null) {
-          returnNotMatching = false;
-        }
         globalConditions = this._globalConditionsModel.toJSON();
-        instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(filterOptions, globalConditions);
+        instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(filter, globalConditions);
         instanceDefinitions = this._filterInstanceDefinitionsByShowCount(instanceDefinitions);
         instanceDefinitions = this._filterInstanceDefinitionsByConditions(instanceDefinitions);
-        if (returnNotMatching) {
-          instanceDefinitions = _.difference(this._instanceDefinitionsCollection.models, instanceDefinitions);
-        }
         return instanceDefinitions;
       };
 

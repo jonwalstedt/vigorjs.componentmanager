@@ -264,6 +264,6 @@ class InstanceDefinitionModel extends Backbone.Model
 
   getTargetName: ->
     targetName = @get 'targetName'
-    unless targetName is 'body'
+    unless targetName is 'body' or targetName.charAt(0) is '.'
       targetName = ".#{targetName}"
     return targetName

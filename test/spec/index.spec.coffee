@@ -108,22 +108,10 @@ describe 'The componentManager', ->
         assert filterModelParse.calledWith filterOptions
         assert filterModelSet.calledWith parsedFilterOptions
 
-      it 'clear the filterModel and update activeComponents if no filterOptions was passed', ->
-        do componentManager.initialize
-        filterModelClear = sandbox.spy componentManager._filterModel, 'clear'
-        updateActiveComponents = sandbox.spy componentManager, '_updateActiveComponents'
-
-        do componentManager.refresh
-        assert filterModelClear.called
-        assert updateActiveComponents.called
-
-      it 'should return the componentManager for chainability', ->
-        do componentManager.initialize
-        cm = componentManager.refresh()
-        assert.equal cm, componentManager
-
-      it 'should call the callback and pass the filter and  activeInstances if a callback method is passed', ->
+      it 'should call the callback and pass the filter and activeInstances if a callback method is passed', ->
         cb = sandbox.spy()
+        mapInstancesSpy = sandbox.spy componentManager, '_mapInstances'
+        updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
         settings =
           components: [
             {
@@ -159,197 +147,13 @@ describe 'The componentManager', ->
         instances = componentManager.getActiveInstances()
 
         assert cb.calledWith(filter, instances)
+        assert mapInstancesSpy.calledWith [componentManager._instanceDefinitionsCollection.at(0)]
+        assert updateActiveComponentsSpy.called
         assert instances[0] instanceof MockComponent
 
-    describe 'addInstancesMatchingFilter', ->
-      beforeEach ->
-        settings =
-          components: [
-            {
-              id: 'mock-component',
-              src: 'window.MockComponent'
-            },
-            {
-              id: 'mock-component-2',
-              src: 'window.MockComponent2'
-            }
-          ]
-
-          instances: [
-            {
-              id: 'instance-1',
-              componentId: 'mock-component',
-              targetName: 'body'
-              urlPattern: 'foo/:bar'
-            },
-            {
-              id: 'instance-2',
-              componentId: 'mock-component-2',
-              targetName: 'body'
-              urlPattern: 'bar/:baz'
-            },
-            {
-              id: 'instance-3',
-              componentId: 'mock-component-2',
-              targetName: 'body'
-              urlPattern: 'baz/:qux'
-            }
-          ]
-
-        componentManager.initialize settings
-
-      it 'should add instances that matches the passed filter without removing
-      already active instances (matching active/previous filter)', ->
-        componentManager.refresh url: 'foo/1'
-        assert.equal componentManager._activeInstancesCollection.models.length, 1
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-1'
-
-        componentManager.addInstancesMatchingFilter url: 'bar/1'
-
-        assert.equal componentManager._activeInstancesCollection.models.length, 2
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-1'
-        assert.equal componentManager._activeInstancesCollection.models[1].attributes.id, 'instance-2'
-
-      it 'should call tryToReAddStraysToDom', ->
-        tryToReAddStraysToDomStub = sandbox.stub componentManager, '_tryToReAddStraysToDom'
-        componentManager.refresh url: 'foo/1'
-        assert.equal componentManager._activeInstancesCollection.models.length, 1
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-1'
-
-        componentManager.addInstancesMatchingFilter url: 'bar/1'
-        assert tryToReAddStraysToDomStub.called
-
-      it 'should call add on _activeInstancesCollection and pass matching
-      instanceDefinitions and silent set to true', ->
-        silentObj =
-          silent: true
-
-        addSpy = sandbox.spy componentManager._activeInstancesCollection, 'add'
-        componentManager.refresh url: 'foo/1'
-        componentManager.addInstancesMatchingFilter url: 'bar/1'
-
-        instanceDefinition = componentManager._activeInstancesCollection.at(1)
-
-        assert addSpy.calledWith [instanceDefinition], silentObj
-
-      it 'should trigger an ADD event for each instanceDefinition passing the
-      instance definition and _activeInstancesCollection as JSON', ->
-        componentManager.refresh url: 'foo/1'
-        triggerStub = sandbox.stub componentManager, 'trigger'
-        componentManager.addInstancesMatchingFilter url: 'bar/1'
-
-        instanceDefinition = componentManager._activeInstancesCollection.at(1)
-        assert triggerStub.calledWith componentManager.EVENTS.ADD, instanceDefinition.toJSON(), componentManager._activeInstancesCollection.toJSON()
-
-      it 'should pass the filter and the added instances to the callback function
-      if it was passed', ->
-        filter =
-          url: 'bar/1'
-
-        callbackSpy = sandbox.spy()
-
-        componentManager.refresh url: 'foo/1'
-        assert.equal componentManager._activeInstancesCollection.models.length, 1
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-1'
-
-        componentManager.addInstancesMatchingFilter filter, callbackSpy
-
-        instances = componentManager.getActiveInstances()
-        instances.shift()
-
-        assert callbackSpy.calledWith filter, instances
-
       it 'should return the componentManager for chainability', ->
-        cm = componentManager.addInstancesMatchingFilter()
-        assert.equal cm, componentManager
-
-    describe 'removeInstancesNotMatchingFilter', ->
-      beforeEach ->
-        settings =
-          components: [
-            {
-              id: 'mock-component',
-              src: 'window.MockComponent'
-            },
-            {
-              id: 'mock-component-2',
-              src: 'window.MockComponent2'
-            }
-          ]
-
-          instances: [
-            {
-              id: 'instance-1',
-              componentId: 'mock-component',
-              targetName: 'body'
-              urlPattern: 'foo/:bar'
-            },
-            {
-              id: 'instance-2',
-              componentId: 'mock-component-2',
-              targetName: 'body'
-              urlPattern: 'foo/:bar'
-            },
-            {
-              id: 'instance-3',
-              componentId: 'mock-component-2',
-              targetName: 'body'
-              urlPattern: 'bar/:baz'
-            }
-          ]
-
-        componentManager.initialize settings
-
-      it 'should remove all active instances not matching the passed filter', ->
-        componentManager.refresh url: 'foo/1'
-        assert.equal componentManager._activeInstancesCollection.models.length, 2
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-1'
-        assert.equal componentManager._activeInstancesCollection.models[1].attributes.id, 'instance-2'
-        componentManager.removeInstancesNotMatchingFilter url: 'bar/1'
-
-        assert.equal componentManager._activeInstancesCollection.models.length, 0
-
-      it 'should remove all active instances not matching the passed filter but still keep
-      activeInstances that does match the filter (if addInstancesMatchingFilter has been used)', ->
-        componentManager.refresh url: 'foo/1'
-        componentManager.addInstancesMatchingFilter url: 'bar/1'
-        assert.equal componentManager._activeInstancesCollection.models.length, 3
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-1'
-        assert.equal componentManager._activeInstancesCollection.models[1].attributes.id, 'instance-2'
-        assert.equal componentManager._activeInstancesCollection.models[2].attributes.id, 'instance-3'
-
-        componentManager.removeInstancesNotMatchingFilter url: 'bar/1'
-        assert.equal componentManager._activeInstancesCollection.models.length, 1
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-3'
-
-      it 'should call _filterInstanceDefinitions with passed filter and
-      returnNotMatching set to true', ->
-        filter =
-          url: 'bar/1'
-
-        returnNotMatching = true
-
-        filterInstanceDefinitionsStub = sandbox.stub componentManager, '_filterInstanceDefinitions'
-        componentManager.removeInstancesNotMatchingFilter filter
-        assert filterInstanceDefinitionsStub.calledWith filter, returnNotMatching
-
-      it 'should call set on _activeInstancesCollection with instances matching
-      the filter', ->
-        componentManager.refresh url: 'foo/1'
-        componentManager.addInstancesMatchingFilter url: 'bar/1'
-        assert.equal componentManager._activeInstancesCollection.models.length, 3
-        assert.equal componentManager._activeInstancesCollection.models[0].attributes.id, 'instance-1'
-        assert.equal componentManager._activeInstancesCollection.models[1].attributes.id, 'instance-2'
-        assert.equal componentManager._activeInstancesCollection.models[2].attributes.id, 'instance-3'
-
-        instanceDefinition = componentManager._activeInstancesCollection.models[2]
-        activeInstancesSetSpy = sandbox.spy componentManager._activeInstancesCollection, 'set'
-
-        componentManager.removeInstancesNotMatchingFilter url: 'bar/1'
-        assert activeInstancesSetSpy.calledWith [instanceDefinition]
-
-      it 'should return the componentManager for chainability', ->
-        cm = componentManager.removeInstancesNotMatchingFilter()
+        do componentManager.initialize
+        cm = componentManager.refresh()
         assert.equal cm, componentManager
 
     describe 'serialize', ->
@@ -619,6 +423,11 @@ describe 'The componentManager', ->
           excludeIfStringMatches: undefined
           hasToMatchString: undefined
           cantMatchString: undefined
+          options:
+            add: true
+            remove: true
+            merge: true
+            invert: false
 
         assert.deepEqual filter, expectedResults
 
@@ -701,16 +510,6 @@ describe 'The componentManager', ->
         componentManager._activeInstancesCollection = new __testOnly.ActiveInstancesCollection()
         componentManager._globalConditionsModel = new Backbone.Model()
         componentManager._filterModel = new __testOnly.FilterModel()
-
-      it 'should add a change listener on the filter model with _updateActiveComponents as callback', ->
-        filterModelOnSpy = sandbox.spy componentManager._filterModel, 'on'
-        updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
-
-        do componentManager.addListeners
-        assert filterModelOnSpy.calledWith 'change', componentManager._updateActiveComponents
-
-        componentManager._filterModel.trigger 'change'
-        assert updateActiveComponentsSpy.called
 
       it 'should add a throttled_diff listener on the _componentDefinitionsCollection with _updateActiveComponents as callback', ->
         componentDefinitionsCollectionOnSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'on'
@@ -1346,6 +1145,11 @@ describe 'The componentManager', ->
           excludeIfStringMatches: undefined
           hasToMatchString: undefined
           cantMatchString: undefined
+          options:
+            add: true
+            remove: true
+            merge: true
+            invert: false
 
         componentManager.refresh activeFilter
         result = componentManager.getActiveFilter()
@@ -1469,49 +1273,40 @@ describe 'The componentManager', ->
           assert.equal result.id, expectedResultsIds[i]
 
     describe 'getActiveInstances', ->
-      it 'should return all instances that matches the current filter', ->
-        do componentManager.initialize
+      it 'should call _mapInstances with _activeInstancesCollection.models and 
+      createNewInstancesIfUndefined set to true', ->
 
-        activeFilter =
-          url: 'foo/bar'
+        componentSettings =
+          components: [
+            {
+              id: 'dummy-component'
+              src: 'http://www.google.com'
+            }
+            {
+              id: 'dummy-component2'
+              src: 'http://www.wikipedia.com'
+            }
+          ]
 
-        components = [
-          {
-            id: 'dummy-component'
-            src: 'http://www.google.com'
-          }
-          {
-            id: 'dummy-component2'
-            src: 'http://www.wikipedia.com'
-          }
-        ]
+          instances: [
+            {
+              id: 'dummy-instance',
+              componentId: 'dummy-component',
+              targetName: 'body'
+              urlPattern: 'foo/:id'
+            }
+            {
+              id: 'dummy-instance2',
+              componentId: 'dummy-component2',
+              targetName: 'body'
+              urlPattern: 'bar/:id'
+            }
+          ]
 
-        instances = [
-          {
-            id: 'dummy-instance',
-            componentId: 'dummy-component',
-            targetName: 'body'
-            urlPattern: 'foo/:id'
-          }
-          {
-            id: 'dummy-instance2',
-            componentId: 'dummy-component2',
-            targetName: 'body'
-            urlPattern: 'bar/:id'
-          }
-        ]
-
-        componentManager.addComponents components
-                        .addInstances instances
-
-        componentManager.refresh activeFilter
-
+        mapInstancesSpy = sandbox.spy componentManager, '_mapInstances'
+        componentManager.initialize componentSettings
         results = componentManager.getActiveInstances()
-
-        assert.equal results.length, 1
-        assert.equal results[0].src, 'http://www.google.com'
-        assert.equal results[0].constructor.prototype.tagName, 'iframe'
-        assert.equal results[0].constructor.prototype.className, 'vigor-component--iframe'
+        assert mapInstancesSpy.calledWith componentManager._activeInstancesCollection.models, true
 
 
     describe 'getActiveInstanceById', ->
@@ -1574,27 +1369,6 @@ describe 'The componentManager', ->
 
         instance = componentManager.getActiveInstanceById id
         assert.equal instance, undefined
-
-    describe 'getInstancesMatchingFilter', ->
-      it 'should call _filterInstances with passed filter, createNewInstancesIfUndefined', ->
-        filterInstancesStub = sandbox.stub componentManager, '_filterInstances'
-        createNewInstancesIfUndefined = true
-        filter =
-          url: 'foo/1'
-
-        componentManager.getInstancesMatchingFilter filter, createNewInstancesIfUndefined
-        assert filterInstancesStub.calledWith filter, createNewInstancesIfUndefined
-
-    describe 'getInstancesNotMatchingFilter', ->
-      it 'should call _filterInstances with passed filter, createNewInstancesIfUndefined', ->
-        filterInstancesStub = sandbox.stub componentManager, '_filterInstances'
-        createNewInstancesIfUndefined = true
-        returnNotMatching = true
-        filter =
-          url: 'foo/1'
-
-        componentManager.getInstancesNotMatchingFilter filter, createNewInstancesIfUndefined
-        assert filterInstancesStub.calledWith filter, createNewInstancesIfUndefined, returnNotMatching
 
     describe 'postMessageToInstance', ->
       componentSettings = undefined
@@ -2013,6 +1787,28 @@ describe 'The componentManager', ->
         assert.equal $result, undefined
 
     describe '_updateActiveComponents', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--header'
+            urlPattern: 'foo/:id'
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'test-prefix--main'
+            urlPattern: 'bar/:id'
+          }
+        ]
+
       it 'should call _filterInstanceDefinitions and pass current filters as json', ->
         do componentManager.initialize
         filterInstanceDefinitionsStub = sandbox.stub componentManager, '_filterInstanceDefinitions'
@@ -2025,42 +1821,35 @@ describe 'The componentManager', ->
         do componentManager._updateActiveComponents
         assert filterInstanceDefinitionsStub.calledWith activeFilter
 
-      it 'should call set with filtered instanceDefinitions on the _activeInstancesCollection', ->
-        componentSettings =
-          components: [
-            {
-              id: 'mock-component',
-              src: 'window.MockComponent'
-            }
-          ]
-          instances: [
-            {
-              id: 'instance-1',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              urlPattern: 'foo/:id'
-            },
-            {
-              id: 'instance-2',
-              componentId: 'mock-component',
-              targetName: 'test-prefix--main'
-              urlPattern: 'bar/:id'
-            }
-          ]
+      it 'should call getFilterOptions on the filterModel to get current 
+      filterOptions', ->
+        componentManager.initialize componentSettings
+        getFilterOptionsSpy = sandbox.spy componentManager._filterModel, 'getFilterOptions'
+        do componentManager._updateActiveComponents
+        assert getFilterOptionsSpy.called
 
+      it 'should call set with filtered instanceDefinitions and options
+      (from the filterModel) on the _activeInstancesCollection', ->
         componentManager.initialize componentSettings
         activeInstancesCollectionSetStub = sandbox.stub componentManager._activeInstancesCollection, 'set'
 
-        expectedInstanceDefinition = componentManager._instanceDefinitionsCollection.get('instance-1')
-        expectedInstanceDefinitions = [expectedInstanceDefinition]
+        instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
+        expectedInstanceDefinitions = [instanceDefinition]
+
+        options =
+          add: true
+          remove: false
+          merge: false
+          invert: false
 
         filter =
           url: 'foo/bar'
+          options: options
 
         componentManager.refresh filter
 
         do componentManager._updateActiveComponents
-        assert activeInstancesCollectionSetStub.calledWith expectedInstanceDefinitions
+        assert activeInstancesCollectionSetStub.calledWith expectedInstanceDefinitions, options
 
       it 'should call _tryToReAddStraysToDom', ->
         do componentManager.initialize
@@ -2069,12 +1858,36 @@ describe 'The componentManager', ->
         do componentManager._updateActiveComponents
         assert tryToReAddStraysToDomStub.called
 
-      it 'should return the componentManager for chainability', ->
-        do componentManager.initialize
-        cm = componentManager._updateActiveComponents()
-        assert.equal cm, componentManager
+      it 'should return the added instanceDefinitions', ->
+        componentManager.initialize componentSettings
+        instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
+        expectedInstanceDefinitions = [instanceDefinition]
 
-    describe '_filterInstances', ->
+        filter =
+          url: 'foo/bar'
+
+        componentManager.refresh filter
+
+        result = do componentManager._updateActiveComponents
+        assert.deepEqual result, expectedInstanceDefinitions
+
+      it 'should return instanceDefinitions NOT matching the filter if 
+      options.invert is set to true', ->
+        componentManager.initialize componentSettings
+        instanceDefinition = componentManager._instanceDefinitionsCollection.at(1)
+        expectedInstanceDefinitions = [instanceDefinition]
+
+        filter =
+          url: 'foo/bar'
+          options:
+            invert: true
+
+        componentManager.refresh filter
+
+        result = do componentManager._updateActiveComponents
+        assert.deepEqual result, expectedInstanceDefinitions
+
+    describe '_mapInstances', ->
       beforeEach ->
         settings =
           components: [
@@ -2111,24 +1924,14 @@ describe 'The componentManager', ->
 
         componentManager.initialize settings
 
-      it 'should call _filterInstanceDefinitions and pass filter and returnNotMatching', ->
-        filterInstanceDefinitionsStub = sandbox.stub componentManager, '_filterInstanceDefinitions'
-        returnNotMatching = true
-        createNewInstancesIfUndefined = false
-        filter =
-          url: 'foo/1'
-
-        componentManager._filterInstances filter, createNewInstancesIfUndefined, returnNotMatching
-        assert filterInstanceDefinitionsStub.calledWith filter, returnNotMatching
-
-      it 'should return the instances of the filtered instanceDefinitions', ->
-        returnNotMatching = false
+      it 'should return the instances of the instanceDefinitions', ->
         createNewInstancesIfUndefined = false
         filter =
           url: 'foo/1'
 
         componentManager.refresh filter
-        instances = componentManager._filterInstances filter, createNewInstancesIfUndefined, returnNotMatching
+        instanceDefinitions = componentManager._activeInstancesCollection.models
+        instances = componentManager._mapInstances instanceDefinitions, createNewInstancesIfUndefined
 
         assert.equal instances.length, 2
         assert instances[0] instanceof MockComponent
@@ -2137,29 +1940,26 @@ describe 'The componentManager', ->
       it 'should create new instances if createNewInstancesIfUndefined is set to
       true and the instance is undefined', ->
         createNewInstancesIfUndefined = false
-        returnNotMatching = false
-        filter =
-          url: 'foo/1'
-
-        instances = componentManager._filterInstances filter, createNewInstancesIfUndefined, returnNotMatching
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        instances = componentManager._mapInstances instanceDefinitions, createNewInstancesIfUndefined
         assert.equal instances.length, 0
 
         createNewInstancesIfUndefined = true
 
-        instances = componentManager._filterInstances filter, createNewInstancesIfUndefined, returnNotMatching
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        instances = componentManager._mapInstances instanceDefinitions, createNewInstancesIfUndefined
 
-        assert.equal instances.length, 2
+        assert.equal instances.length, 3
         assert instances[0] instanceof MockComponent
         assert instances[1] instanceof MockComponent2
+        assert instances[2] instanceof MockComponent2
 
       it 'should remove any undefined values from the array returned', ->
         compactSpy = sandbox.spy _, 'compact'
         createNewInstancesIfUndefined = false
-        returnNotMatching = false
-        filter =
-          url: 'foo/1'
 
-        instances = componentManager._filterInstances filter, createNewInstancesIfUndefined, returnNotMatching
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        instances = componentManager._mapInstances instanceDefinitions, createNewInstancesIfUndefined
         # in this case this array would have been containing two undefined values 
         # unless we called _.compact
         assert.equal instances.length, 0
@@ -2223,14 +2023,6 @@ describe 'The componentManager', ->
         assert filterInstanceDefinitionsByComponentConditionsStub.called
         assert.equal filterInstanceDefinitionsByComponentConditionsStub.args[0][0].length, 1
         assert.equal filterInstanceDefinitionsByComponentConditionsStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
-
-      it 'should return the instanceDefinitions not matching the filter if "returnNotMatching" is set to true', ->
-        expectedInstanceDefinitionId = 'instance-2'
-        returnNotMatching = true
-        result = componentManager._filterInstanceDefinitions filterOptions, returnNotMatching
-
-        assert.equal result.length, 1
-        assert.equal result[0].attributes.id, expectedInstanceDefinitionId
 
       it 'should return remaining instanceDefinitions after all previous filters', ->
         expectedInstanceDefinitionId = 'instance-1'

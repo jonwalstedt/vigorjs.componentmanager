@@ -1,0 +1,18 @@
+.vigor-component {
+  width: 320px;
+  height: 220px;
+  float: left;
+  overflow: auto;
+  margin: 6px;
+  h2 {
+    word-wrap: break-word;
+  }
+}
+
+.component-area--main {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}

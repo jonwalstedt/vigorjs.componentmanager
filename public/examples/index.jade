@@ -8,6 +8,9 @@ block sidebar
         a(href="/examples/hello-world" class="sidebar__link #{ current.path[1] == 'hello-world' ? 'sidebar__link--active' : '' }") Hello World
 
       li.sidebar_list-item
+        a(href="/examples/filter-options" class="sidebar__link #{ current.path[1] == 'filter-options' ? 'sidebar__link--active' : '' }") Filter Options
+
+      li.sidebar_list-item
         a(href="/examples/filter-by-conditions" class="sidebar__link #{ current.path[1] == 'filter-by-conditions' ? 'sidebar__link--active' : '' }") Filter by conditions
 
       li.sidebar_list-item
@@ -62,6 +65,13 @@ block common-example-scripts
       excludeIfStringMatches: <%= excludeIfStringMatches %>
       hasToMatchString: <%= hasToMatchString %>
       cantMatchString: <%= cantMatchString %>
+
+      options: {
+        add: <%= options.add %>
+        remove: <%= options.remove %>
+        merge: <%= options.merge %>
+        invert: <%= options.invert %>
+      }
     }
     </pre>
 
@@ -89,7 +99,21 @@ block common-example-scripts
     },
 
     setFilterDefaults = function (filter) {
-      filter = filter || {}
+      filter = $.extend({}, filter);
+      filter = filter || {};
+      filter.options = filter.options || {};
+      if (filter.options.add === undefined)
+        filter.options.add = 'true';
+
+      if (filter.options.remove === undefined)
+        filter.options.remove = 'true';
+
+      if (filter.options.merge === undefined)
+        filter.options.merge = 'true';
+
+      if (filter.options.invert === undefined)
+        filter.options.invert = 'false';
+
       filter.url = filter.url || 'undefined';
       filter.filterString = filter.filterString || 'undefined';
       filter.includeIfStringMatches = filter.includeIfStringMatches || 'undefined';
@@ -97,11 +121,15 @@ block common-example-scripts
       filter.hasToMatchString = filter.hasToMatchString || 'undefined';
       filter.cantMatchString = filter.cantMatchString || 'undefined';
 
+      filter.options.add = filter.options.add.toString();
+      filter.options.remove = filter.options.remove.toString();
+      filter.options.merge = filter.options.merge.toString();
+      filter.options.invert = filter.options.invert.toString();
+
       for (var key in filter) {
-        if (filter[key] !== 'undefined') {
+        if (filter[key] !== 'undefined' && key !== 'options') {
           filter[key] = '<b>' + filter[key] + '</b>';
         }
       }
-
       return filter;
     }

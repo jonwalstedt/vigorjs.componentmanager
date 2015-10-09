@@ -1,0 +1,63 @@
+extends ../index.jade
+
+block includes
+  link(rel="stylesheet" href="css/styles.css")
+
+block content
+  != partial("./filter-options")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '6'})
+
+  div.app-wrapper
+    small active filter
+    div.active-filter
+
+    div.controls
+      div.options
+        p Filter on url:
+        label
+          input(type="radio" name="url" class="all" value="all" checked)
+          | all
+
+        label
+          input(type="radio" name="url" class="foo" value="foo/1")
+          | foo/1
+
+        label
+          input(type="radio" name="url" class="bar" value="bar/1")
+          | bar/1
+
+        p Options:
+        label
+          input(type="checkbox" class="add" checked)
+          | Add
+
+        label
+          input(type="checkbox" class="remove" checked)
+          | Remove
+
+        label
+          input(type="checkbox" class="merge" checked)
+          | Merge
+
+        label
+          input(type="checkbox" class="invert")
+          | Invert
+
+      button.refresh Refresh
+
+    small info
+    div.examples-info
+
+    small .component-area--main
+    div.component-area.component-area--main
+
+block scripts
+  script(src="./components.js")
+  script(src="./app/app.js")
+  script.
+    $(document).ready(function () {
+      new app.Filter({
+        el: '.app-wrapper'
+      });
+    });
+

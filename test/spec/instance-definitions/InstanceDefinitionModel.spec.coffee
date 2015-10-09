@@ -903,6 +903,14 @@ describe 'InstanceDefinitionModel', ->
       result = instanceDefinitionModel.getTargetName()
       assert.equal result, expectedResults
 
+    it 'should return the target name prefixed with a dot (class selector) even 
+      if it already has it ', ->
+      targetName = '.vigor-component--test'
+      expectedResults = '.vigor-component--test'
+      instanceDefinitionModel.set targetName: targetName
+      result = instanceDefinitionModel.getTargetName()
+      assert.equal result, expectedResults
+
     it 'should not prefix the selector "body" with a dot', ->
       targetName = 'body'
       expectedResults = 'body'
