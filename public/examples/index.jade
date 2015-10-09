@@ -20,6 +20,9 @@ block sidebar
         a(href="/examples/filter-by-url" class="sidebar__link #{ current.path[1] == 'filter-by-url' ? 'sidebar__link--active' : '' }") Filter by url
 
       li.sidebar_list-item
+        a(href="/examples/filter-by-custom-properties" class="sidebar__link #{ current.path[1] == 'filter-by-custom-properties' ? 'sidebar__link--active' : '' }") Filter by custom properties
+
+      li.sidebar_list-item
         a(href="/examples/iframe-components" class="sidebar__link #{ current.path[1] == 'iframe-components' ? 'sidebar__link--active' : '' }") Iframe Components
 
       li.sidebar_list-item
@@ -93,13 +96,12 @@ block common-example-scripts
     });
 
     showMsg = function (msg, filter) {
-      filter = setFilterDefaults(filter);
-      $('.active-filter').html(activeFilterTemplate(filter));
+      fltr = $.extend(true, {}, filter)
+      $('.active-filter').html(activeFilterTemplate(setFilterDefaults(fltr)));
       $('.examples-info').html(msg);
     },
 
     setFilterDefaults = function (filter) {
-      filter = $.extend({}, filter);
       filter = filter || {};
       filter.options = filter.options || {};
       if (filter.options.add === undefined)

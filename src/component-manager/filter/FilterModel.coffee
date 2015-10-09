@@ -15,26 +15,10 @@ class FilterModel extends Backbone.Model
       invert: false
 
   parse: (attrs) ->
-    if attrs?.url is ""
-      url = ""
-    else
-      url = attrs?.url or undefined
-
-    if attrs?.options?
-      options = _.extend @getFilterOptions(), attrs?.options
-    else
-      options = @getFilterOptions()
-
-    newValues =
-      url: url
-      filterString: attrs?.filterString or undefined
-      includeIfStringMatches: attrs?.includeIfStringMatches or undefined
-      excludeIfStringMatches: attrs?.excludeIfStringMatches or undefined
-      hasToMatchString: attrs?.hasToMatchString or undefined
-      cantMatchString: attrs?.cantMatchString or undefined
-      options: options
-
-    return newValues
+    @clear silent: true
+    props = _.extend {}, @defaults, attrs
+    props.options = _.extend @getFilterOptions(), props.options
+    return props
 
   getFilterOptions: ->
     filter = @toJSON()

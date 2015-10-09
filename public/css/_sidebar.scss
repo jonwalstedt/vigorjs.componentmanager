@@ -1,7 +1,9 @@
 .sidebar {
   background: #2a2d33;
   color: #eee;
-  padding: 10px;
+  h4 {
+    text-indent: 10px;
+  }
 }
 
 .sidebar__title {
@@ -19,7 +21,8 @@
   text-decoration: none;
   display: block;
   line-height: 40px;
-  padding: 4px 16px;
+  padding: 4px 0px;
+  text-indent: 20px;
 }
 
 .sidebar__link--active {

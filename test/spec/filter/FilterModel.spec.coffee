@@ -80,7 +80,7 @@ describe 'FilterModel', ->
       assert.equal results.hasToMatchString, undefined
       assert.equal results.cantMatchString, 'bar'
 
-  describe.only 'getFilterOptions', ->
+  describe 'getFilterOptions', ->
     it 'should return default values unless the flags has been changed', ->
       filterModel = new FilterModel()
       defaultValues =

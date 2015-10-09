@@ -131,27 +131,13 @@
       };
 
       FilterModel.prototype.parse = function(attrs) {
-        var newValues, options, url;
-        if ((attrs != null ? attrs.url : void 0) === "") {
-          url = "";
-        } else {
-          url = (attrs != null ? attrs.url : void 0) || void 0;
-        }
-        if ((attrs != null ? attrs.options : void 0) != null) {
-          options = _.extend(this.getFilterOptions(), attrs != null ? attrs.options : void 0);
-        } else {
-          options = this.getFilterOptions();
-        }
-        newValues = {
-          url: url,
-          filterString: (attrs != null ? attrs.filterString : void 0) || void 0,
-          includeIfStringMatches: (attrs != null ? attrs.includeIfStringMatches : void 0) || void 0,
-          excludeIfStringMatches: (attrs != null ? attrs.excludeIfStringMatches : void 0) || void 0,
-          hasToMatchString: (attrs != null ? attrs.hasToMatchString : void 0) || void 0,
-          cantMatchString: (attrs != null ? attrs.cantMatchString : void 0) || void 0,
-          options: options
-        };
-        return newValues;
+        var props;
+        this.clear({
+          silent: true
+        });
+        props = _.extend({}, this.defaults, attrs);
+        props.options = _.extend(this.getFilterOptions(), props.options);
+        return props;
       };
 
       FilterModel.prototype.getFilterOptions = function() {
