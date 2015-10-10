@@ -403,7 +403,7 @@ describe 'InstanceDefinitionsCollection', ->
         assert.equal filteredInstances[0].get('id'), 'instance-1'
         assert.equal filteredInstances[1].get('id'), 'instance-3'
 
-      it 'should filter and return instanceDefinitions on custom properties', ->
+      it 'should filter and return instanceDefinitions using custom properties', ->
         filter = new FilterModel myCustomProperty: 'foo'
         globalConditions = {}
         filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
@@ -411,6 +411,73 @@ describe 'InstanceDefinitionsCollection', ->
         # all components except the one with bar defined as a filterString
         assert.equal filteredInstances.length, 1
         assert.equal filteredInstances[0].get('id'), 'instance-5'
+
+      it 'should filter and return instanceDefinitions using custom properties 
+      combined with regular filterters', ->
+
+        data =
+          targetPrefix: 'component-area',
+          instanceDefinitions: [
+            {
+              'id': 'instance-1',
+              'targetName': 'component-area--target1',
+              'componentId': 'component-id-1',
+              'urlPattern': 'foo',
+              'filterString': 'foo',
+              'myCustomProperty': 'bar'
+            },
+            {
+              'id': 'instance-2',
+              'targetName': 'component-area--target2',
+              'componentId': 'component-id-2',
+              'urlPattern': 'global',
+              'filterString': 'bar',
+              'myCustomProperty': 'bar'
+            },
+            {
+              'id': 'instance-3',
+              'targetName': 'component-area--target3',
+              'componentId': 'component-id-3',
+              'urlPattern': 'foo',
+              'filterString': 'bar'
+            }
+          ]
+        instanceDefinitionsCollection = new InstanceDefinitionsCollection()
+        instanceDefinitionsCollection.set data,
+          validate: true
+          parse: true
+          silent: true
+
+        # Verifying that we only get instanceDefinitions that has the
+        # customProperty set to 'bar'
+        filter = new FilterModel myCustomProperty: 'bar'
+        globalConditions = {}
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+
+        assert.equal filteredInstances.length, 2
+        assert.equal filteredInstances[0].get('id'), 'instance-1'
+        assert.equal filteredInstances[1].get('id'), 'instance-2'
+
+        # Verify that we only get compoents that have a filterString matching 'bar'
+        filter = new FilterModel hasToMatchString: 'bar'
+        globalConditions = {}
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+
+        assert.equal filteredInstances.length, 2
+        assert.equal filteredInstances[0].get('id'), 'instance-2'
+        assert.equal filteredInstances[1].get('id'), 'instance-3'
+
+        # has to have the filterString 'bar' and the custom property
+        # myCustomProperty set to 'bar'
+        filter = new FilterModel
+          hasToMatchString: 'bar'
+          myCustomProperty: 'bar'
+
+        globalConditions = {}
+        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+
+        assert.equal filteredInstances.length, 1
+        assert.equal filteredInstances[0].get('id'), 'instance-2'
 
   describe 'addUrlParams', ->
     it 'should call addUrlParams and pass along the url to all 
