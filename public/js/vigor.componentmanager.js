@@ -920,12 +920,6 @@
         return InstanceDefinitionsCollection.__super__.constructor.apply(this, arguments);
       }
 
-      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filter, globalConditions) {
-        return this.filter(function(instanceDefinitionModel) {
-          return instanceDefinitionModel.passesFilter(filter, globalConditions);
-        });
-      };
-
       InstanceDefinitionsCollection.prototype.parse = function(data, options) {
         var i, incomingInstanceDefinitions, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, k, len, len1, parsedResponse, targetName, targetPrefix, trgtName;
         parsedResponse = void 0;
@@ -972,6 +966,22 @@
           instanceDefinition.urlPattern = ['*notFound', '*action'];
         }
         return instanceDefinition;
+      };
+
+      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filterModel, globalConditions) {
+        var blackListedKeys, customFilter, filter, instanceDefinitions;
+        filter = (filterModel != null ? filterModel.toJSON() : void 0) || {};
+        instanceDefinitions = this.models;
+        if (filterModel) {
+          blackListedKeys = _.keys(filterModel.defaults);
+          customFilter = _.omit(filter, blackListedKeys);
+          if (!_.isEmpty(customFilter)) {
+            instanceDefinitions = this.where(customFilter);
+          }
+        }
+        return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
+          return instanceDefinitionModel.passesFilter(filter, globalConditions);
+        });
       };
 
       InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, url) {
@@ -1515,10 +1525,9 @@
       };
 
       ComponentManager.prototype._updateActiveComponents = function() {
-        var filter, instanceDefinitions, options;
-        filter = this._filterModel.toJSON();
+        var instanceDefinitions, options;
         options = this._filterModel.getFilterOptions();
-        instanceDefinitions = this._filterInstanceDefinitions(filter);
+        instanceDefinitions = this._filterInstanceDefinitions();
         if (options.invert) {
           instanceDefinitions = _.difference(this._instanceDefinitionsCollection.models, instanceDefinitions);
         }
@@ -1546,10 +1555,10 @@
         return _.compact(instances);
       };
 
-      ComponentManager.prototype._filterInstanceDefinitions = function(filter) {
+      ComponentManager.prototype._filterInstanceDefinitions = function() {
         var globalConditions, instanceDefinitions;
         globalConditions = this._globalConditionsModel.toJSON();
-        instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(filter, globalConditions);
+        instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(this._filterModel, globalConditions);
         instanceDefinitions = this._filterInstanceDefinitionsByShowCount(instanceDefinitions);
         instanceDefinitions = this._filterInstanceDefinitionsByConditions(instanceDefinitions);
         return instanceDefinitions;

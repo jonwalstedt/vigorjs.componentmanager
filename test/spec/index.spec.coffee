@@ -1809,17 +1809,12 @@ describe 'The componentManager', ->
           }
         ]
 
-      it 'should call _filterInstanceDefinitions and pass current filters as json', ->
+      it 'should call _filterInstanceDefinitions', ->
         do componentManager.initialize
         filterInstanceDefinitionsStub = sandbox.stub componentManager, '_filterInstanceDefinitions'
-        filter =
-          url: 'foo/bar'
-
-        componentManager.refresh filter
-        activeFilter = componentManager.getActiveFilter()
 
         do componentManager._updateActiveComponents
-        assert filterInstanceDefinitionsStub.calledWith activeFilter
+        assert filterInstanceDefinitionsStub.called
 
       it 'should call getFilterOptions on the filterModel to get current 
       filterOptions', ->
@@ -1969,11 +1964,7 @@ describe 'The componentManager', ->
       globalConditions =
         testCondition: false
 
-      filterOptions =
-        url: 'foo/bar'
-        includeIfStringMatches: undefined
-        hasToMatchString: undefined
-        cantMatchString: undefined
+      filterModel = undefined
 
       componentSettings =
         conditions: globalConditions
@@ -2000,25 +1991,30 @@ describe 'The componentManager', ->
 
       beforeEach ->
         componentManager.initialize componentSettings
+        componentManager.refresh url: 'foo/bar'
+        filterModel = componentManager._filterModel
 
-      it 'should call _instanceDefinitionsCollection.getInstanceDefinitions with filterOptions and globalConditions', ->
+      it 'should call _instanceDefinitionsCollection.getInstanceDefinitions 
+      with the filterModel and globalConditions', ->
         getInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'getInstanceDefinitions'
-        componentManager._filterInstanceDefinitions filterOptions
-        assert getInstanceDefinitionsStub.calledWith filterOptions, globalConditions
+        componentManager._filterInstanceDefinitions filterModel
+        assert getInstanceDefinitionsStub.calledWith filterModel, globalConditions
 
-      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions that was returned by _instanceDefinitionsCollection.getInstanceDefinitions', ->
+      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions 
+      that was returned by _instanceDefinitionsCollection.getInstanceDefinitions', ->
         expectedInstanceDefinitionId = 'instance-1'
         filterInstanceDefinitionsByShowCountStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByShowCount'
-        componentManager._filterInstanceDefinitions filterOptions
+        componentManager._filterInstanceDefinitions filterModel
 
         assert filterInstanceDefinitionsByShowCountStub.called
         assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0].length, 1
         assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
 
-      it 'should call _filterInstanceDefinitionsByConditions with the filterDefinitions that was returned by _filterInstanceDefinitionsByShowCount', ->
+      it 'should call _filterInstanceDefinitionsByConditions with the filterDefinitions 
+      that was returned by _filterInstanceDefinitionsByShowCount', ->
         expectedInstanceDefinitionId = 'instance-1'
         filterInstanceDefinitionsByComponentConditionsStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByConditions'
-        componentManager._filterInstanceDefinitions filterOptions
+        componentManager._filterInstanceDefinitions filterModel
 
         assert filterInstanceDefinitionsByComponentConditionsStub.called
         assert.equal filterInstanceDefinitionsByComponentConditionsStub.args[0][0].length, 1
@@ -2026,7 +2022,7 @@ describe 'The componentManager', ->
 
       it 'should return remaining instanceDefinitions after all previous filters', ->
         expectedInstanceDefinitionId = 'instance-1'
-        result = componentManager._filterInstanceDefinitions filterOptions
+        result = componentManager._filterInstanceDefinitions filterModel
 
         assert.equal result.length, 1
         assert.equal result[0].attributes.id, expectedInstanceDefinitionId

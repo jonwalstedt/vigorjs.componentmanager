@@ -1,9 +1,5 @@
 class InstanceDefinitionsCollection extends BaseInstanceCollection
 
-  getInstanceDefinitions: (filter, globalConditions) ->
-    return @filter (instanceDefinitionModel) ->
-      instanceDefinitionModel.passesFilter filter, globalConditions
-
   parse: (data, options) ->
     parsedResponse = undefined
     instanceDefinitionsArray = []
@@ -43,6 +39,19 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
     if instanceDefinition.urlPattern is 'global'
       instanceDefinition.urlPattern = ['*notFound', '*action']
     return instanceDefinition
+
+  getInstanceDefinitions: (filterModel, globalConditions) ->
+    filter = filterModel?.toJSON() or {}
+    instanceDefinitions = @models
+    if filterModel
+      blackListedKeys = _.keys filterModel.defaults
+      customFilter = _.omit filter, blackListedKeys
+
+      unless _.isEmpty(customFilter)
+        instanceDefinitions = @where customFilter
+
+    return _.filter instanceDefinitions, (instanceDefinitionModel) ->
+      instanceDefinitionModel.passesFilter filter, globalConditions
 
   addUrlParams: (instanceDefinitions, url) ->
     for instanceDefinitionModel in instanceDefinitions

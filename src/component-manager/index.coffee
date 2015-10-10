@@ -405,9 +405,8 @@ class ComponentManager
         @_previousElement $el.prev(), order
 
   _updateActiveComponents: =>
-    filter = @_filterModel.toJSON()
     options = @_filterModel.getFilterOptions()
-    instanceDefinitions = @_filterInstanceDefinitions filter
+    instanceDefinitions = @_filterInstanceDefinitions()
 
     if options.invert
       instanceDefinitions = _.difference @_instanceDefinitionsCollection.models, instanceDefinitions
@@ -427,9 +426,9 @@ class ComponentManager
       return instance
     return _.compact(instances)
 
-  _filterInstanceDefinitions: (filter) ->
+  _filterInstanceDefinitions: ->
     globalConditions = @_globalConditionsModel.toJSON()
-    instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+    instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions @_filterModel, globalConditions
     instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByConditions instanceDefinitions
     return instanceDefinitions
