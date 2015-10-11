@@ -8,16 +8,16 @@ block sidebar
         a(href="/examples/hello-world" class="sidebar__link #{ current.path[1] == 'hello-world' ? 'sidebar__link--active' : '' }") Hello World
 
       li.sidebar_list-item
-        a(href="/examples/filter-options" class="sidebar__link #{ current.path[1] == 'filter-options' ? 'sidebar__link--active' : '' }") Filter Options
+        a(href="/examples/filter-options" class="sidebar__link #{ current.path[1] == 'filter-options' ? 'sidebar__link--active' : '' }") Filter options
 
       li.sidebar_list-item
-        a(href="/examples/filter-by-conditions" class="sidebar__link #{ current.path[1] == 'filter-by-conditions' ? 'sidebar__link--active' : '' }") Filter by conditions
+        a(href="/examples/filter-by-url" class="sidebar__link #{ current.path[1] == 'filter-by-url' ? 'sidebar__link--active' : '' }") Filter by url
 
       li.sidebar_list-item
         a(href="/examples/filter-by-string" class="sidebar__link #{ current.path[1] == 'filter-by-string' ? 'sidebar__link--active' : '' }") Filter by string
 
       li.sidebar_list-item
-        a(href="/examples/filter-by-url" class="sidebar__link #{ current.path[1] == 'filter-by-url' ? 'sidebar__link--active' : '' }") Filter by url
+        a(href="/examples/filter-by-conditions" class="sidebar__link #{ current.path[1] == 'filter-by-conditions' ? 'sidebar__link--active' : '' }") Filter by conditions
 
       li.sidebar_list-item
         a(href="/examples/filter-by-custom-properties" class="sidebar__link #{ current.path[1] == 'filter-by-custom-properties' ? 'sidebar__link--active' : '' }") Filter by custom properties
@@ -61,19 +61,10 @@ block common-example-scripts
 
   script(type="text/template" class="active-filter-template").
     <pre>
-    {
-      url: <%=url%>
-      filterString: <%= filterString %>
-      includeIfStringMatches: <%= includeIfStringMatches %>
-      excludeIfStringMatches: <%= excludeIfStringMatches %>
-      hasToMatchString: <%= hasToMatchString %>
-      cantMatchString: <%= cantMatchString %>
-
-      options: {
-        add: <%= options.add %>
-        remove: <%= options.remove %>
-        merge: <%= options.merge %>
-        invert: <%= options.invert %>
+    {<% _.each(filterObj, function(val, key, list) { %>
+      <%= key %>: <%= val %><% }); %>
+      options: {<% _.each(options, function(val, key, list) { %>
+        <%= key %>: <%= val %><% }); %>
       }
     }
     </pre>
@@ -97,7 +88,10 @@ block common-example-scripts
 
     showMsg = function (msg, filter) {
       fltr = $.extend(true, {}, filter)
-      $('.active-filter').html(activeFilterTemplate(setFilterDefaults(fltr)));
+      filterObj = setFilterDefaults(fltr)
+      options = filterObj.options
+      delete filterObj.options
+      $('.active-filter').html(activeFilterTemplate({filterObj: filterObj, options: options}));
       $('.examples-info').html(msg);
     },
 

@@ -33,14 +33,18 @@ var app = app || {};
     },
 
     _updateFilter: function () {
-      var url = $('input[type="radio"]:checked').val();
+      var url = $('input[type="radio"][name="url"]:checked').val(),
+          type= $('input[type="radio"][name="type"]:checked').val();
+
       if (url === "all")
         url = undefined
 
+      if (type === "all")
+        type = undefined
+
       this.filter = {
+        type: type,
         url: url,
-        myCustomProperty: 123,
-        cantMatchString: 'foo',
         options: {
           add: this.$addCheckbox.is(':checked'),
           remove: this.$removeCheckbox.is(':checked'),
@@ -48,6 +52,7 @@ var app = app || {};
           invert: this.$invertCheckbox.is(':checked')
         }
       }
+      console.log(this.filter);
     }
   });
 

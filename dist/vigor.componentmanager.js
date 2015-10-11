@@ -969,19 +969,26 @@
       };
 
       InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filterModel, globalConditions) {
-        var blackListedKeys, customFilter, filter, instanceDefinitions;
+        var blackListedKeys, customFilter, filter, instanceDefinitions, key, val;
         filter = (filterModel != null ? filterModel.toJSON() : void 0) || {};
         instanceDefinitions = this.models;
         if (filterModel) {
           blackListedKeys = _.keys(filterModel.defaults);
           customFilter = _.omit(filter, blackListedKeys);
+          for (key in customFilter) {
+            val = customFilter[key];
+            if (customFilter.hasOwnProperty(key) && customFilter[key] === void 0) {
+              delete customFilter[key];
+            }
+          }
           if (!_.isEmpty(customFilter)) {
             instanceDefinitions = this.where(customFilter);
           }
         }
-        return _.filter(instanceDefinitions, function(instanceDefinitionModel) {
+        instanceDefinitions = _.filter(instanceDefinitions, function(instanceDefinitionModel) {
           return instanceDefinitionModel.passesFilter(filter, globalConditions);
         });
+        return instanceDefinitions;
       };
 
       InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, url) {

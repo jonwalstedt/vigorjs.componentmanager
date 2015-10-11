@@ -47,11 +47,17 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
       blackListedKeys = _.keys filterModel.defaults
       customFilter = _.omit filter, blackListedKeys
 
+      for key, val of customFilter
+        if customFilter.hasOwnProperty(key) and customFilter[key] is undefined
+          delete customFilter[key]
+
       unless _.isEmpty(customFilter)
         instanceDefinitions = @where customFilter
 
-    return _.filter instanceDefinitions, (instanceDefinitionModel) ->
+    instanceDefinitions = _.filter instanceDefinitions, (instanceDefinitionModel) ->
       instanceDefinitionModel.passesFilter filter, globalConditions
+
+    return instanceDefinitions
 
   addUrlParams: (instanceDefinitions, url) ->
     for instanceDefinitionModel in instanceDefinitions

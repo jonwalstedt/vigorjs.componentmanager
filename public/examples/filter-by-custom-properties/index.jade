@@ -13,6 +13,23 @@ block content
 
     div.controls
       div.options
+        p Filter on the custom property "type":
+        label
+          input(type="radio" name="type" class="all" value="all" checked)
+          | all
+
+        label
+          input(type="radio" name="type" class="foo" value="grey-component")
+          | grey-component
+
+        label
+          input(type="radio" name="type" class="bar" value="green-component")
+          | green-component
+
+        label
+          input(type="radio" name="type" class="bar" value="red-component")
+          | red-component
+
         p Filter on url:
         label
           input(type="radio" name="url" class="all" value="all" checked)

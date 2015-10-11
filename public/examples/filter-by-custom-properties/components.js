@@ -10,22 +10,25 @@ var componentSettings = {
         id: "filter-instance-1",
         componentId: "filter-condition-component",
         urlPattern: "foo/:bar",
-        myCustomProperty: 123,
+        type: 'grey-component',
         args: {
           title: "id: filter-instance-1",
           urlPattern: "foo/:bar",
-          background: "#9FEDFF"
+          type: 'grey-component',
+          background: "grey"
         }
       },
 
       {
         id: "filter-instance-2",
         componentId: "filter-condition-component",
-        urlPattern: "foo/:bar",
+        urlPattern: "bar/:baz",
+        type: 'grey-component',
         args: {
           title: "id: filter-instance-2",
           urlPattern: "foo/:bar",
-          background: "#9FEDFF"
+          type: 'grey-component',
+          background: "grey"
         }
       },
 
@@ -33,10 +36,12 @@ var componentSettings = {
         id: "filter-instance-3",
         componentId: "filter-condition-component",
         urlPattern: "foo/:bar",
+        type: 'green-component',
         args: {
           title: "id: filter-instance-3",
           urlPattern: "foo/:bar",
-          background: "#9FEDFF"
+          type: 'green-component',
+          background: "green"
         }
       },
 
@@ -44,21 +49,25 @@ var componentSettings = {
         id: "filter-instance-4",
         componentId: "filter-condition-component",
         urlPattern: "bar/:baz",
+        type: 'green-component',
         args: {
           title: "id: filter-instance-4",
           urlPattern: "bar/:baz",
-          background: "#9F9EE8"
+          type: 'green-component',
+          background: "green"
         }
       },
 
       {
         id: "filter-instance-5",
         componentId: "filter-condition-component",
-        urlPattern: "bar/:baz",
+        urlPattern: "foo/:bar",
+        type: 'red-component',
         args: {
           title: "id: filter-instance-5",
           urlPattern: "bar/:baz",
-          background: "#9F9EE8"
+          type: 'red-component',
+          background: "red"
         }
       },
 
@@ -66,10 +75,12 @@ var componentSettings = {
         id: "filter-instance-6",
         componentId: "filter-condition-component",
         urlPattern: "bar/:baz",
+        type: 'red-component',
         args: {
           title: "id: filter-instance-6",
           urlPattern: "bar/:baz",
-          background: "#9F9EE8"
+          type: 'red-component',
+          background: "red"
         }
       }
     ]
