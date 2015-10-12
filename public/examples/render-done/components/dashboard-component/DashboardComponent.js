@@ -9,13 +9,12 @@ app.components.DashboardComponent = app.components.BaseComponent.extend({
   order: undefined,
 
   initialize: function (args) {
-    console.log('component initialized', args);
+    console.log('DashboardComponent initialized');
     this.order = args.order;
     this.url = args.url;
 
     this.$el.html(this.template());
     this.$header = $('.dashboard-component__header', this.$el);
-    // this.$content.css("background", args.background);
 
     app.components.BaseComponent.prototype.initialize.call(this);
   },

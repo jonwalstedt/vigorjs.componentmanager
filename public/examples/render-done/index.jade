@@ -8,29 +8,35 @@ block content
   != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '5'})
 
   //- Templates
-  script(type="text/template" class="dashboard-component-template").
-    <div class="dashboard-component__content">
-      <div class="dashboard-component__header"></div>
-    </div>
+  != partial("./templates")
+  != partial("./components/dashboard-component/templates")
+  != partial("./components/menu-component/templates")
 
   div.app-wrapper.render-done-example
-    div.preloader
+    div.overlay
       button.start-example-btn Start Application
-      div.preloader-wrapper
-        div.preloader__text 0/0 loaded
-        div.preloader__progress
-          div.preloader__fill
 
-    div.header
-      button.menu Menu
-    div.component-area.component-area--menu
-    div.component-area.component-area--main
+    aside.component-area.component-area--menu
+    main.main
+      header.header
+        button.menu-toggle Menu
+
+      section.content
+        div.content-wrapper
+          div.content__slide.component-area.component-area--depth1
+          div.content__slide.component-area.component-area--depth2
+          div.content__slide.component-area.component-area--depth3
+
 
 block scripts
   script(src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js")
   script(src="./components/BaseComponent.js")
-  script(src="./components/FilterComponent.js")
+  script(src="./components/dashboard-component/DashboardComponent.js")
+  script(src="./components/menu-component/MenuComponent.js")
   script(src="./components.js")
+  script(src="./app/Router.js")
+  script(src="./app/FilterModel.js")
+  script(src="./app/Preloader.js")
   script(src="./app/app.js")
   script.
     $(document).ready(function () {

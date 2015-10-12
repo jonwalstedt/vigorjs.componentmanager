@@ -1,15 +1,40 @@
-@import "preloader";
-@import "dashboard-component";
+@import "variables";
 
 .render-done-example {
+  @import "preloader";
+  @import "../components/dashboard-component/css/dashboard-component";
+  @import "../components/menu-component/css/menu-component";
+
   position: relative;
   min-height: 300px;
   margin-top: 20px;
   background: #18222d;
+  overflow: hidden;
+
+  &.menu-visible {
+    .main {
+      transform: translateX($sidebarWidth);
+    }
+  }
 
   .header {
     height: 50px;
     background: #33455e;
+  }
+
+  .overlay {
+    position: absolute;
+    display: none;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .overlay--visible {
+    display: block;
   }
 
   .component-area--main {
@@ -32,7 +57,7 @@
     left: 0;
     bottom: 0;
     top: 0;
-    width: 200px;
+    width: $sidebarWidth;
     z-index: 0;
   }
 
@@ -44,5 +69,44 @@
   .dashboard-component {
     float: left;
     padding: 5px;
+  }
+
+  .main {
+    position: relative;
+    background: #18222d;
+    transition: transform 0.2s ease-out;
+  }
+
+  .content {
+    overflow: hidden;
+    .component-area {
+      border: 0;
+      &.component-area--has-components {
+        border: 1px dashed #666;
+      }
+    }
+  }
+
+
+  .content-wrapper {
+    width: 300%;
+    position: relative;
+  }
+
+  .content__slide {
+    width: 100%;
+    position: relative;
+  }
+
+  .component-area--depth1 {
+    background: red;
+  }
+
+  .component-area--depth2 {
+    background: blue;
+  }
+
+  .component-area--depth3 {
+    background: green;
   }
 }

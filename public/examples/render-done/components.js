@@ -1,61 +1,53 @@
 var componentSettings = {
-  components: [{
-    id: "order-component",
-    src: "app.components.DashboardComponent"
-  }],
+  components: [
+    {
+      id: "dashboard-component",
+      src: "app.components.DashboardComponent"
+    },
+    {
+      id: "menu-component",
+      src: "app.components.MenuComponent"
+    }
+  ],
 
   targets: {
-    main: [
+    menu: [
+      {
+        id: "menu",
+        componentId: "menu-component",
+        urlPattern: 'global'
+      }
+    ],
+    depth1: [
       {
         id: "order-instance-1",
-        componentId: "order-component",
+        componentId: "dashboard-component",
         order: 1,
-        args: {
-          order: "1",
-          background: "#B4EFFF",
-          url: '#stats'
-        },
-        urlPattern: "test2"
+        urlPattern: "home"
       },
       {
         id: "order-instance-2",
-        componentId: "order-component",
+        componentId: "dashboard-component",
         order: 2,
-        args: {
-          order: "2",
-          background: "#67DEFF"
-        },
-        urlPattern: "test"
+        urlPattern: "home"
       },
       {
         id: "order-instance-3",
-        componentId: "order-component",
+        componentId: "dashboard-component",
         order: 3,
-        args: {
-          order: "3",
-          background: "#90BFCC"
-        },
-        urlPattern: "test"
+        urlPattern: "home"
       },
       {
         id: "order-instance-4",
-        componentId: "order-component",
+        componentId: "dashboard-component",
         order: 4,
-        args: {
-          order: "4",
-          background: "#5A777F"
-        },
-        urlPattern: "test"
+        urlPattern: "home"
       },
       {
         id: "order-instance-5",
-        componentId: "order-component",
+        componentId: "dashboard-component",
         order: 5,
-        args: {
-          order: "5",
-          background: "#346F7F"
-        },
-        urlPattern: "test"
+        urlPattern: "home"
       }
     ]
   }
