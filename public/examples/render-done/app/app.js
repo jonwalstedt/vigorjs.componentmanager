@@ -1,4 +1,5 @@
 var app = app || {};
+app.simulatedCache = app.simulateCache || {};
 
 (function ($) {
   'use strict';
@@ -57,15 +58,7 @@ var app = app || {};
     // Page transitions
     // --------------------------------------------
     slideIn: function ($el, route) {
-      $el.addClass('component-area--main');
-
-      // Trigger filter change that will add components to the next page
-      // whitout removing the old ones
-      _.defer(function () {
-        app.filterModel.set({url: route, options: {remove: false}});
-      });
-
-      $el.addClass('page--on-top');
+      $el.addClass('component-area--main page--on-top');
       TweenMax.fromTo($el, this.duration, {
         xPercent: -100,
       }, {
@@ -73,10 +66,7 @@ var app = app || {};
         clearProps: 'xPercent',
         onComplete: function ($el, route) {
           $el.addClass('current-page');
-          // Trigger the same filter again but with remove set to true
-          // this will not recreate existing instances but only remove
-          // the components that no longer matches the filter
-          app.filterModel.set({url: route, options: {remove: true}});
+          app.filterModel.set({url: route});
         },
         onCompleteParams: [$el, route]
       });
@@ -101,12 +91,6 @@ var app = app || {};
     scaleIn: function ($el, route) {
       $el.addClass('component-area--main');
 
-      // Trigger filter change that will add components to the next page
-      // whitout removing the old ones
-      _.defer(function () {
-        app.filterModel.set({url: route, options: {remove: false}});
-      });
-
       TweenMax.fromTo($el, this.duration, {
         opacity: 0,
         scale: .8
@@ -116,10 +100,7 @@ var app = app || {};
         clearProps: 'opacity, scale',
         onComplete: function ($el, route) {
           $el.addClass('current-page page--on-top');
-          // Trigger the same filter again but with remove set to true
-          // this will not recreate existing instances but only remove
-          // the components that no longer matches the filter
-          app.filterModel.set({url: route, options: {remove: true}});
+          app.filterModel.set({url: route});
         },
         onCompleteParams: [$el, route]
       });
@@ -181,11 +162,12 @@ var app = app || {};
       for (i = 0; i < activeInstances.length; i++) {
         activeInstances[i].onPageReady();
       }
-      TweenMax.staggerFromTo($('.vigor-component'), 4, {autoAlpha: 0}, {autoAlpha: 1, position: 'relative'}, 0.2);
+      TweenMax.staggerTo($('.main .vigor-component'), 4, {autoAlpha: 1}, 0.2);
     },
 
     onFilterChange: function () {
       console.log('onFilterChange: ', app.filterModel.toJSON());
+      console.trace();
       // Vigor.componentManager.refresh(app.filterModel.toJSON());
       var promises = [],
           filter = app.filterModel.toJSON();

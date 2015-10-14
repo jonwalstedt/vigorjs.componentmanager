@@ -1,0 +1,15 @@
+$barchartComponentMinHeight: 250px;
+
+.barchart-component {
+  position: relative;
+  padding: 10px;
+  min-height: $barchartComponentMinHeight;
+  width: 100%;
+}
+
+@media (min-width: 920px) {
+  .barchart-component {
+    width: 50%;
+  }
+}
+

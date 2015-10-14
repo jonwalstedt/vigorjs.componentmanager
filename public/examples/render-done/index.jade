@@ -9,8 +9,7 @@ block content
 
   //- Templates
   != partial("./templates")
-  != partial("./components/barchart-component/templates")
-  != partial("./components/linechart-component/templates")
+  != partial("./components/chart-components/templates")
   != partial("./components/menu-component/templates")
 
   div.app-wrapper.render-done-example
@@ -32,10 +31,12 @@ block scripts
   script(src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js")
   script(src="./components/BaseComponent.js")
-  script(src="./components/linechart-component/LineChartModel.js")
-  script(src="./components/linechart-component/LineChartComponent.js")
-  script(src="./components/barchart-component/BarChartModel.js")
-  script(src="./components/barchart-component/BarChartComponent.js")
+  script(src="./components/chart-components/ChartModelBase.js")
+  script(src="./components/chart-components/ChartComponentBase.js")
+  script(src="./components/chart-components/linechart-component/LineChartModel.js")
+  script(src="./components/chart-components/linechart-component/LineChartComponent.js")
+  script(src="./components/chart-components/barchart-component/BarChartModel.js")
+  script(src="./components/chart-components/barchart-component/BarChartComponent.js")
   script(src="./components/menu-component/MenuComponent.js")
   script(src="./components.js")
   script(src="./app/Router.js")

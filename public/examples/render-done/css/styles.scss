@@ -2,8 +2,9 @@
 
 .render-done-example {
   @import "preloader";
-  @import "../components/barchart-component/css/barchart-component";
-  @import "../components/linechart-component/css/linechart-component";
+  @import "../components/chart-components/chart-components";
+  @import "../components/chart-components/barchart-component/css/barchart-component";
+  @import "../components/chart-components/linechart-component/css/linechart-component";
   @import "../components/menu-component/css/menu-component";
 
   position: relative;
@@ -79,7 +80,6 @@
     }
     .vigor-component {
       float: left;
-      position: absolute;
       visibility: hidden;
     }
   }
