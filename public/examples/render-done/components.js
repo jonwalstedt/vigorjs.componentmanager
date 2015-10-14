@@ -1,8 +1,12 @@
 var componentSettings = {
   components: [
     {
-      id: "dashboard-component",
-      src: "app.components.DashboardComponent"
+      id: "barchart-component",
+      src: "app.components.BarChartComponent"
+    },
+    {
+      id: "linechart-component",
+      src: "app.components.LineChartComponent"
     },
     {
       id: "menu-component",
@@ -20,32 +24,32 @@ var componentSettings = {
     ],
     main: [
       {
-        id: "order-instance-1",
-        componentId: "dashboard-component",
+        id: "linechart",
+        componentId: "linechart-component",
         order: 1,
         urlPattern: "home"
       },
       {
-        id: "order-instance-2",
-        componentId: "dashboard-component",
+        id: "barchart-1",
+        componentId: "barchart-component",
         order: 2,
         urlPattern: "home"
       },
       {
-        id: "order-instance-3",
-        componentId: "dashboard-component",
+        id: "barchart-2",
+        componentId: "barchart-component",
         order: 3,
         urlPattern: "home"
       },
       {
         id: "order-instance-4",
-        componentId: "dashboard-component",
+        componentId: "barchart-component",
         order: 4,
         urlPattern: "link_one/:depth1"
       },
       {
         id: "order-instance-5",
-        componentId: "dashboard-component",
+        componentId: "barchart-component",
         order: 5,
         urlPattern: "link_one/:depth1"
       }

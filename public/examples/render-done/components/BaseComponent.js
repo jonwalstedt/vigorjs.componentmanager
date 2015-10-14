@@ -17,5 +17,9 @@ app.components.BaseComponent = Backbone.View.extend({
 
   getRenderDonePromise: function () {
     return this._renderDeferred.promise();
+  },
+
+  onPageReady: function () {
+    // im a noop
   }
 });

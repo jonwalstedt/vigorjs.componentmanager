@@ -2,21 +2,20 @@
 
 .render-done-example {
   @import "preloader";
-  @import "../components/dashboard-component/css/dashboard-component";
+  @import "../components/barchart-component/css/barchart-component";
+  @import "../components/linechart-component/css/linechart-component";
   @import "../components/menu-component/css/menu-component";
 
   position: relative;
-  min-height: 300px;
+  min-height: $appMinHeight;
   margin-top: 20px;
   overflow: hidden;
 
   .main {
     transition: transform 0.2s ease-out;
     background: #000;
-    // background: #18222d;
     z-index: 1;
     position: relative;
-    min-height: 400px;
   }
 
   &.menu-visible {
@@ -61,7 +60,7 @@
 
   .content-wrapper {
     position: relative;
-    min-height: 500px;
+    min-height: $appMinHeight;
   }
 
   .page {
@@ -78,7 +77,7 @@
       display: table;
       clear: both;
     }
-    .dashboard-component {
+    .vigor-component {
       float: left;
       position: absolute;
       visibility: hidden;

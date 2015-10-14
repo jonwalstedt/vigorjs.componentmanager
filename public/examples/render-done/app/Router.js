@@ -43,7 +43,6 @@ var app = app || {};
 
       this.trigger('route-change', routeInfo);
       this.previousRoute = route;
-
     }
 
   });

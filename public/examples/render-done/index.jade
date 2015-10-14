@@ -9,7 +9,8 @@ block content
 
   //- Templates
   != partial("./templates")
-  != partial("./components/dashboard-component/templates")
+  != partial("./components/barchart-component/templates")
+  != partial("./components/linechart-component/templates")
   != partial("./components/menu-component/templates")
 
   div.app-wrapper.render-done-example
@@ -24,16 +25,17 @@ block content
       section.content
         div.content-wrapper
           div.page.page--one.current-page.page--on-top.component-area--main
-            p 1
           div.page.page--two
-            p 2
 
 
 block scripts
   script(src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js")
   script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js")
   script(src="./components/BaseComponent.js")
-  script(src="./components/dashboard-component/DashboardComponent.js")
+  script(src="./components/linechart-component/LineChartModel.js")
+  script(src="./components/linechart-component/LineChartComponent.js")
+  script(src="./components/barchart-component/BarChartModel.js")
+  script(src="./components/barchart-component/BarChartComponent.js")
   script(src="./components/menu-component/MenuComponent.js")
   script(src="./components.js")
   script(src="./app/Router.js")

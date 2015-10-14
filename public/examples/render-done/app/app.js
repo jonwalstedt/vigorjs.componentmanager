@@ -175,8 +175,12 @@ var app = app || {};
     },
 
     onLoadingComplete: function () {
+      var i, activeInstances = Vigor.componentManager.getActiveInstances();
       this.preloader.remove();
       this.hideOverlay();
+      for (i = 0; i < activeInstances.length; i++) {
+        activeInstances[i].onPageReady();
+      }
       TweenMax.staggerFromTo($('.vigor-component'), 4, {autoAlpha: 0}, {autoAlpha: 1, position: 'relative'}, 0.2);
     },
 
