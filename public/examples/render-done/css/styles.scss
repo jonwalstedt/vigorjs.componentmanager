@@ -8,8 +8,16 @@
   position: relative;
   min-height: 300px;
   margin-top: 20px;
-  background: #18222d;
   overflow: hidden;
+
+  .main {
+    transition: transform 0.2s ease-out;
+    background: #000;
+    // background: #18222d;
+    z-index: 1;
+    position: relative;
+    min-height: 400px;
+  }
 
   &.menu-visible {
     .main {
@@ -19,7 +27,17 @@
 
   .header {
     height: 50px;
-    background: #33455e;
+    background: #151c26;
+  }
+
+  .sidebar {
+    border: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: $sidebarWidth;
+    z-index: 0;
   }
 
   .overlay {
@@ -37,76 +55,49 @@
     display: block;
   }
 
-  .component-area--main {
-    position: relative;
-    height: 100%;
-    width: 100%;
-    z-index: 1;
-    // border: none;
+  .content {
     padding: 0;
+  }
+
+  .content-wrapper {
+    position: relative;
+    min-height: 500px;
+  }
+
+  .page {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+    background: #151c26;
     &:after {
-      content: '';
+      content: "";
       display: table;
       clear: both;
     }
-  }
-
-  .component-area--menu{
-    border: none;
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    top: 0;
-    width: $sidebarWidth;
-    z-index: 0;
-  }
-
-  .vigor-component {
-    visibility: hidden;
-    position: absolute;
-  }
-
-  .dashboard-component {
-    float: left;
-    padding: 5px;
-  }
-
-  .main {
-    position: relative;
-    background: #18222d;
-    transition: transform 0.2s ease-out;
-  }
-
-  .content {
-    overflow: hidden;
-    .component-area {
-      border: 0;
-      &.component-area--has-components {
-        border: 1px dashed #666;
-      }
+    .dashboard-component {
+      float: left;
+      position: absolute;
+      visibility: hidden;
     }
   }
 
-
-  .content-wrapper {
-    width: 300%;
-    position: relative;
+  .current-page {
+    // z-index: 1;
   }
 
-  .content__slide {
-    width: 100%;
-    position: relative;
+  .page--on-top {
+    z-index: 1;
   }
 
-  .component-area--depth1 {
-    background: red;
-  }
+  // .page--one {
+  //   background: pink;
+  // }
 
-  .component-area--depth2 {
-    background: blue;
-  }
-
-  .component-area--depth3 {
-    background: green;
-  }
+  // .page--two {
+  //   background: yellow;
+  // }
 }

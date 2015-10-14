@@ -2,37 +2,48 @@ $dashboardComponentMinHeight: 250px;
 
 .dashboard-component {
   position: relative;
-  padding: 0;
+  padding: 10px;
   min-height: $dashboardComponentMinHeight;
-  // min-width: 300px;
   width: 100%;
-
+  max-width: 480px;
 }
 
 .dashboard-component__content {
   min-height: $dashboardComponentMinHeight;
-  background: #263849;
+  background: #1e2430;
 }
 
 .dashboard-component__header {
   height: 40px;
-  background: #33455e;
   text-align: center;
   line-height: 40px;
   a {
+    text-transform: uppercase;
+    font-weight: bold;
     display: block;
     color: #eee;
   }
 }
 
-@media (min-width: 620px) {
-  .dashboard-component {
-    width: 50%;
-  }
+.dashboard-component__chart {
+  width: 100%;
+  height: 260px;
 }
 
-@media (min-width: 1024px) {
-  .dashboard-component {
-    width: 33.3%;
-  }
+.dashboard-component__canvas {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
 }
+
+// @media (min-width: 620px) {
+//   .dashboard-component {
+//     width: 50%;
+//   }
+// }
+
+// @media (min-width: 1024px) {
+//   .dashboard-component {
+//     width: 33.3%;
+//   }
+// }

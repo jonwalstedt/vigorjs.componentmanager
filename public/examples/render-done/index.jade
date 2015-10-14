@@ -16,20 +16,22 @@ block content
     div.overlay
       button.start-example-btn Start Application
 
-    aside.component-area.component-area--menu
+    aside.sidebar.component-area.component-area--menu
     main.main
       header.header
         button.menu-toggle Menu
 
       section.content
         div.content-wrapper
-          div.content__slide.component-area.component-area--depth1
-          div.content__slide.component-area.component-area--depth2
-          div.content__slide.component-area.component-area--depth3
+          div.page.page--one.current-page.page--on-top.component-area--main
+            p 1
+          div.page.page--two
+            p 2
 
 
 block scripts
   script(src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js")
   script(src="./components/BaseComponent.js")
   script(src="./components/dashboard-component/DashboardComponent.js")
   script(src="./components/menu-component/MenuComponent.js")

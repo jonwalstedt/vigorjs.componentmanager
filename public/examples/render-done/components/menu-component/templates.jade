@@ -1,10 +1,18 @@
 script(type="text/template" class="menu-template").
   <ul>
     <li><a href="#home" class="menu__link">Home</a></li>
-    <li><a href="#link_one" class="menu__link">Im a menu link</a></li>
+    <li>
+      <a href="#link_one" class="menu__link">Im a menu link</a>
+      <ul>
+        <li>
+          <a href="#link_one/depth1" class="menu__link">Im a menu link</a>
+          <ul>
+            <li><a href="#link_one/depth1/depth2" class="menu__link">Im a menu link</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
     <li><a href="#link_two" class="menu__link">Im a menu link</a></li>
-    <li><a href="#link_one/depth1" class="menu__link">Im a menu link</a></li>
     <li><a href="#link_two/depth1" class="menu__link">Im a menu link</a></li>
-    <li><a href="#link_one/depth1/depth2" class="menu__link">Im a menu link</a></li>
     <li><a href="#link_two/depth1/depth2" class="menu__link">Im a menu link</a></li>
   </ul>

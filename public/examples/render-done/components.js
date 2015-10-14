@@ -18,7 +18,7 @@ var componentSettings = {
         urlPattern: 'global'
       }
     ],
-    depth1: [
+    main: [
       {
         id: "order-instance-1",
         componentId: "dashboard-component",
@@ -41,13 +41,13 @@ var componentSettings = {
         id: "order-instance-4",
         componentId: "dashboard-component",
         order: 4,
-        urlPattern: "home"
+        urlPattern: "link_one/:depth1"
       },
       {
         id: "order-instance-5",
         componentId: "dashboard-component",
         order: 5,
-        urlPattern: "home"
+        urlPattern: "link_one/:depth1"
       }
     ]
   }

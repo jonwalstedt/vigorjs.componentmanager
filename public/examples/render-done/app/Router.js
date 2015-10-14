@@ -31,14 +31,14 @@ var app = app || {};
       }
 
       currentDepth = route.split('/').length;
-      // index = Math.abs(currentDepth - previousDepth);
+      index = currentDepth - previousDepth;
 
       routeInfo = {
         currentDepth: currentDepth,
         previousDepth: previousDepth,
         route: route,
         previousRoute: this.previousRoute,
-        // index: index
+        index: index
       }
 
       this.trigger('route-change', routeInfo);
