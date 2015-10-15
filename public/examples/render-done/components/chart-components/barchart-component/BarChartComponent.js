@@ -23,6 +23,8 @@ app.components.BarChartComponent = app.components.ChartComponentBase.extend({
   },
 
   onPageReady: function () {
-    this.chart = new Chart(this.ctx).Bar(this.model.toJSON(), this.chartOptions);
+    if (!this.chart) {
+      this.chart = new Chart(this.ctx).Bar(this.model.toJSON(), this.chartOptions);
+    }
   }
 });

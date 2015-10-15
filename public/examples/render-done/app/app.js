@@ -35,6 +35,13 @@ app.simulatedCache = app.simulateCache || {};
       this.$overlay.html(this.preloader.render().$el);
     },
 
+    removePreloader: function () {
+      this.preloader.off('loading-complete');
+      this.preloader.remove();
+      this.preloader = undefined;
+      this.hideOverlay();
+    },
+
     startApplication: function () {
       Backbone.history.start({root: '/examples/render-done/'});
     },
@@ -58,7 +65,15 @@ app.simulatedCache = app.simulateCache || {};
     // Page transitions
     // --------------------------------------------
     slideIn: function ($el, route) {
-      $el.addClass('component-area--main page--on-top');
+      $el.addClass('component-area--main');
+
+      // Trigger filter change that will add components to the next page
+      // whitout removing the old ones
+      _.defer(function () {
+        app.filterModel.set({url: route, options: {remove: false}});
+      });
+
+      $el.addClass('page--on-top');
       TweenMax.fromTo($el, this.duration, {
         xPercent: -100,
       }, {
@@ -66,7 +81,10 @@ app.simulatedCache = app.simulateCache || {};
         clearProps: 'xPercent',
         onComplete: function ($el, route) {
           $el.addClass('current-page');
-          app.filterModel.set({url: route});
+          // Trigger the same filter again but with remove set to true
+          // this will not recreate existing instances but only remove
+          // the components that no longer matches the filter
+          app.filterModel.set({url: route, options: {remove: true}});
         },
         onCompleteParams: [$el, route]
       });
@@ -91,6 +109,12 @@ app.simulatedCache = app.simulateCache || {};
     scaleIn: function ($el, route) {
       $el.addClass('component-area--main');
 
+      // Trigger filter change that will add components to the next page
+      // whitout removing the old ones
+      _.defer(function () {
+        app.filterModel.set({url: route, options: {remove: false}});
+      });
+
       TweenMax.fromTo($el, this.duration, {
         opacity: 0,
         scale: .8
@@ -100,7 +124,10 @@ app.simulatedCache = app.simulateCache || {};
         clearProps: 'opacity, scale',
         onComplete: function ($el, route) {
           $el.addClass('current-page page--on-top');
-          app.filterModel.set({url: route});
+          // Trigger the same filter again but with remove set to true
+          // this will not recreate existing instances but only remove
+          // the components that no longer matches the filter
+          app.filterModel.set({url: route, options: {remove: true}});
         },
         onCompleteParams: [$el, route]
       });
@@ -129,17 +156,14 @@ app.simulatedCache = app.simulateCache || {};
 
       console.log('index: ', index);
       if (index > 0) {
-        console.log('slide out scale in');
         this.scaleIn($nextUp, routeInfo.route);
         this.slideOut($current);
 
       } else if (index < 0) {
-        console.log('scale out slide in');
         this.scaleOut($current, 0.8);
         this.slideIn($nextUp, routeInfo.route);
 
       } else {
-        console.log('scale in scale out');
         this.scaleIn($nextUp, routeInfo.route);
         this.scaleOut($current, 2);
       }
@@ -155,10 +179,11 @@ app.simulatedCache = app.simulateCache || {};
       }
     },
 
+    // TODO: currently this will trigger twice due to the double refreshes/set on
+    // the filterModel - which is needed - figure out how to get around that
     onLoadingComplete: function () {
       var i, activeInstances = Vigor.componentManager.getActiveInstances();
-      this.preloader.remove();
-      this.hideOverlay();
+      this.removePreloader();
       for (i = 0; i < activeInstances.length; i++) {
         activeInstances[i].onPageReady();
       }
@@ -166,9 +191,6 @@ app.simulatedCache = app.simulateCache || {};
     },
 
     onFilterChange: function () {
-      console.log('onFilterChange: ', app.filterModel.toJSON());
-      console.trace();
-      // Vigor.componentManager.refresh(app.filterModel.toJSON());
       var promises = [],
           filter = app.filterModel.toJSON();
 

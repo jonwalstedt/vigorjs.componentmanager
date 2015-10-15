@@ -26,6 +26,8 @@ app.components.LineChartComponent = app.components.ChartComponentBase.extend({
   },
 
   onPageReady: function () {
-    this.chart = new Chart(this.ctx).Line(this.model.toJSON(), this.chartOptions);
+    if (!this.chart) {
+      this.chart = new Chart(this.ctx).Line(this.model.toJSON(), this.chartOptions);
+    }
   }
 });
