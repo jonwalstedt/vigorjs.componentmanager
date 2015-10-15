@@ -806,7 +806,7 @@
         var j, len, match, pattern, routeRegEx, urlPattern;
         match = false;
         urlPattern = this.get('urlPattern');
-        if (urlPattern) {
+        if (urlPattern != null) {
           if (!_.isArray(urlPattern)) {
             urlPattern = [urlPattern];
           }

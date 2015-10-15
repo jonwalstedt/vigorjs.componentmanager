@@ -200,7 +200,7 @@ class InstanceDefinitionModel extends Backbone.Model
   doesUrlPatternMatch: (url) ->
     match = false
     urlPattern = @get 'urlPattern'
-    if urlPattern
+    if urlPattern?
       unless _.isArray(urlPattern)
         urlPattern = [urlPattern]
 

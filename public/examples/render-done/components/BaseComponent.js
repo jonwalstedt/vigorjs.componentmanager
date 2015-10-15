@@ -11,7 +11,7 @@ app.components.BaseComponent = Backbone.View.extend({
   },
 
   dispose: function () {
-    console.log('component disposed');
+    // console.log('component disposed');
     this.remove();
   },
 

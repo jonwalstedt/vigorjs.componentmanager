@@ -708,6 +708,15 @@ describe 'InstanceDefinitionModel', ->
       match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2/3'
       assert.equal match, false
 
+    it 'should return true if the passed url is an empty string and the urlPattern 
+    is an empty string', ->
+      instanceDefinitionModel.set 'urlPattern', ''
+      match = instanceDefinitionModel.doesUrlPatternMatch ''
+      assert.equal match, true
+
+      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
+      assert.equal match, false
+
     it 'return undefined if the urlPattern is undefined', ->
       instanceDefinitionModel.set 'urlPattern', undefined
       match = instanceDefinitionModel.doesUrlPatternMatch 'foo'

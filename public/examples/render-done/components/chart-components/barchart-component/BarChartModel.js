@@ -11,7 +11,10 @@ app.components.BarChartModel = app.components.ChartModelBase.extend({
       data: this.getRandomData(7)
     }];
 
-    this.set({datasets: datasets});
+    this.set({
+      title: 'BarChart Title',
+      datasets: datasets
+    });
     app.components.ChartModelBase.prototype.initialize.call(this);
   }
 });

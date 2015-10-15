@@ -2,6 +2,7 @@
 
 .render-done-example {
   @import "preloader";
+  @import "menu-button";
   @import "../components/chart-components/chart-components";
   @import "../components/chart-components/barchart-component/css/barchart-component";
   @import "../components/chart-components/linechart-component/css/linechart-component";
@@ -26,8 +27,8 @@
   }
 
   .header {
-    height: 50px;
-    background: #151c26;
+    height: $headerHeight;
+    background: $background;
   }
 
   .sidebar {
@@ -72,7 +73,7 @@
     left: 0;
     backface-visibility: hidden;
     transform: translate3d(0, 0, 0);
-    background: #151c26;
+    background: $background;
     &:after {
       content: "";
       display: table;
@@ -84,19 +85,12 @@
     }
   }
 
-  .current-page {
-    // z-index: 1;
-  }
-
   .page--on-top {
     z-index: 1;
   }
 
-  // .page--one {
-  //   background: pink;
-  // }
+  .component-area {
+    border: none;
+  }
 
-  // .page--two {
-  //   background: yellow;
-  // }
 }

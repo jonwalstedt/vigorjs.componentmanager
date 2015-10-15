@@ -11,6 +11,7 @@ block content
   != partial("./templates")
   != partial("./components/chart-components/templates")
   != partial("./components/menu-component/templates")
+  != partial("./components/header-component/templates")
 
   div.app-wrapper.render-done-example
     div.overlay
@@ -18,8 +19,9 @@ block content
 
     aside.sidebar.component-area.component-area--menu
     main.main
-      header.header
-        button.menu-toggle Menu
+      header.header.component-area.component-area--header
+        button.menu-toggle(data-order="1")
+          span.lines
 
       section.content
         div.content-wrapper
@@ -38,6 +40,7 @@ block scripts
   script(src="./components/chart-components/barchart-component/BarChartModel.js")
   script(src="./components/chart-components/barchart-component/BarChartComponent.js")
   script(src="./components/menu-component/MenuComponent.js")
+  script(src="./components/header-component/HeaderComponent.js")
   script(src="./components.js")
   script(src="./app/Router.js")
   script(src="./app/FilterModel.js")

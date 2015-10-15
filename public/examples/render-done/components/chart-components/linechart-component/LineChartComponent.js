@@ -3,7 +3,7 @@ app.components = app.components || {};
 
 app.components.LineChartComponent = app.components.ChartComponentBase.extend({
 
-  className: 'linechart-component',
+  className: 'chart-component linechart-component',
   componentName: 'line-chart',
   model: undefined,
 
@@ -16,18 +16,17 @@ app.components.LineChartComponent = app.components.ChartComponentBase.extend({
     scaleGridLineWidth : 1,
     scaleShowHorizontalLines: false,
     scaleShowVerticalLines: true,
+    bezierCurve: false,
     responsive: true
   },
 
   initialize: function (args) {
-    console.log('LineChartComponent initialized');
+    // console.log('LineChartComponent initialized');
     this.model = new app.components.LineChartModel();
     app.components.BaseComponent.prototype.initialize.call(this);
   },
 
   onPageReady: function () {
-    if (!this.chart) {
-      this.chart = new Chart(this.ctx).Line(this.model.toJSON(), this.chartOptions);
-    }
+    this.chart = new Chart(this.ctx).Line(this.model.toJSON(), this.chartOptions);
   }
 });

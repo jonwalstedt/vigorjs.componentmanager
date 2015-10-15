@@ -70,7 +70,7 @@ app.simulatedCache = app.simulateCache || {};
       // Trigger filter change that will add components to the next page
       // whitout removing the old ones
       _.defer(function () {
-        app.filterModel.set({url: route, options: {remove: false}});
+        app.filterModel.set({url: route, preload: true, options: {remove: false}});
       });
 
       $el.addClass('page--on-top');
@@ -84,7 +84,7 @@ app.simulatedCache = app.simulateCache || {};
           // Trigger the same filter again but with remove set to true
           // this will not recreate existing instances but only remove
           // the components that no longer matches the filter
-          app.filterModel.set({url: route, options: {remove: true}});
+          app.filterModel.set({url: route, preload: false, options: {remove: true}});
         },
         onCompleteParams: [$el, route]
       });
@@ -112,7 +112,7 @@ app.simulatedCache = app.simulateCache || {};
       // Trigger filter change that will add components to the next page
       // whitout removing the old ones
       _.defer(function () {
-        app.filterModel.set({url: route, options: {remove: false}});
+        app.filterModel.set({url: route, preload: true, options: {remove: false}});
       });
 
       TweenMax.fromTo($el, this.duration, {
@@ -127,7 +127,7 @@ app.simulatedCache = app.simulateCache || {};
           // Trigger the same filter again but with remove set to true
           // this will not recreate existing instances but only remove
           // the components that no longer matches the filter
-          app.filterModel.set({url: route, options: {remove: true}});
+          app.filterModel.set({url: route, preload: false, options: {remove: true}});
         },
         onCompleteParams: [$el, route]
       });
@@ -154,7 +154,6 @@ app.simulatedCache = app.simulateCache || {};
           $current = $('.current-page', this.$el),
           $nextUp = $('.page:not(.current-page)', this.$el);
 
-      console.log('index: ', index);
       if (index > 0) {
         this.scaleIn($nextUp, routeInfo.route);
         this.slideOut($current);
@@ -171,7 +170,10 @@ app.simulatedCache = app.simulateCache || {};
       this.closeMenu();
     },
 
-    onMenuToggleClick: function () {
+    onMenuToggleClick: function (event) {
+      var $btn = $(event.currentTarget);
+      $btn.toggleClass('close');
+
       if (this.$el.hasClass('menu-visible')) {
         this.closeMenu();
       } else {
@@ -179,8 +181,6 @@ app.simulatedCache = app.simulateCache || {};
       }
     },
 
-    // TODO: currently this will trigger twice due to the double refreshes/set on
-    // the filterModel - which is needed - figure out how to get around that
     onLoadingComplete: function () {
       var i, activeInstances = Vigor.componentManager.getActiveInstances();
       this.removePreloader();
@@ -192,16 +192,23 @@ app.simulatedCache = app.simulateCache || {};
 
     onFilterChange: function () {
       var promises = [],
-          filter = app.filterModel.toJSON();
+          preload = app.filterModel.get('preload'),
+          // we have to remove the preload property since its not to be used as
+          // a part of the filter
+          filter = _.omit(app.filterModel.toJSON(), 'preload');
 
-      Vigor.componentManager.refresh(filter, _.bind(function (filter, activeInstances) {
-        for (var i = activeInstances.length - 1; i >= 0; i--) {
-          promises.push(activeInstances[i].getRenderDonePromise());
-        };
-      }, this));
+      if (preload) {
+        Vigor.componentManager.refresh(filter, _.bind(function (filter, activeInstances) {
+          for (var i = activeInstances.length - 1; i >= 0; i--) {
+            promises.push(activeInstances[i].getRenderDonePromise());
+          };
+        }, this));
 
-      this.addPreloader();
-      this.preloader.preload(promises);
+        this.addPreloader();
+        this.preloader.preload(promises);
+      } else {
+        Vigor.componentManager.refresh(filter);
+      }
     }
 
   });
