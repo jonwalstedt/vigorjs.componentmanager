@@ -88,6 +88,7 @@ describe 'FilterModel', ->
         remove: true
         merge: true
         invert: false
+        forceFilterStringMatching: false
 
       result = filterModel.getFilterOptions()
       assert.deepEqual result, defaultValues
@@ -103,6 +104,7 @@ describe 'FilterModel', ->
         remove: true
         merge: true
         invert: false
+        forceFilterStringMatching: false
 
       filterModel.set 'options', changedValues
 

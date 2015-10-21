@@ -13,6 +13,7 @@ class FilterModel extends Backbone.Model
       remove: true
       merge: true
       invert: false
+      forceFilterStringMatching: false
 
   parse: (attrs) ->
     @clear silent: true
@@ -26,6 +27,7 @@ class FilterModel extends Backbone.Model
     remove = true
     merge = true
     invert = false
+    forceFilterStringMatching = false
 
     if filter?.options?.add?
       add = filter?.options?.add
@@ -39,11 +41,15 @@ class FilterModel extends Backbone.Model
     if filter?.options?.invert?
       invert = filter?.options?.invert
 
+    if filter?.options?.forceFilterStringMatching?
+      forceFilterStringMatching = filter?.options?.forceFilterStringMatching
+
     options =
       add: add
       remove: remove
       merge: merge
       invert: invert
+      forceFilterStringMatching: forceFilterStringMatching
 
     return options
 

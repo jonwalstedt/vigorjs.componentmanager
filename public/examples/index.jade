@@ -44,6 +44,7 @@ block content
   != partial("./examples")
 
 block common-example-scripts
+  script(src="/js/vigor.componentmanager.js")
 
   script(type="text/template" class="example-component-template").
     <h2>ExampleComponent: <%= title %></h2>
@@ -110,6 +111,9 @@ block common-example-scripts
       if (filter.options.invert === undefined)
         filter.options.invert = 'false';
 
+      if (filter.options.forceFilterStringMatching === undefined)
+        filter.options.forceFilterStringMatching = 'false';
+
       filter.url = filter.url || 'undefined';
       filter.filterString = filter.filterString || 'undefined';
       filter.includeIfStringMatches = filter.includeIfStringMatches || 'undefined';
@@ -121,6 +125,7 @@ block common-example-scripts
       filter.options.remove = filter.options.remove.toString();
       filter.options.merge = filter.options.merge.toString();
       filter.options.invert = filter.options.invert.toString();
+      filter.options.forceFilterStringMatching = filter.options.forceFilterStringMatching.toString();
 
       for (var key in filter) {
         if (filter[key] !== 'undefined' && key !== 'options') {

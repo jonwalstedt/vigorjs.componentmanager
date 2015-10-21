@@ -135,13 +135,29 @@ class InstanceDefinitionModel extends Backbone.Model
         if filterStringMatch?
           return false unless filterStringMatch
 
+    if filter?.options?.forceFilterStringMatching
+      if @get('filterString')? \
+      and (not filter?.includeIfStringMatches? \
+      and not filter?.excludeIfStringMatches? \
+      and not filter?.hasToMatchString? \
+      and not filter?.cantMatchString?)
+        return false
+
     if filter?.includeIfStringMatches
       filterStringMatch = @includeIfStringMatches filter.includeIfStringMatches
+
+      if filter?.options?.forceFilterStringMatching
+        filterStringMatch = !!filterStringMatch
+
       if filterStringMatch?
         return false unless filterStringMatch
 
     if filter?.excludeIfStringMatches
       filterStringMatch = @excludeIfStringMatches filter.excludeIfStringMatches
+
+      if filter?.options?.forceFilterStringMatching
+        filterStringMatch = !!filterStringMatch
+
       if filterStringMatch?
         return false unless filterStringMatch
 

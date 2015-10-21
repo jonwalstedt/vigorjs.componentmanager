@@ -428,6 +428,7 @@ describe 'The componentManager', ->
             remove: true
             merge: true
             invert: false
+            forceFilterStringMatching: false
 
         assert.deepEqual filter, expectedResults
 
@@ -1150,6 +1151,7 @@ describe 'The componentManager', ->
             remove: true
             merge: true
             invert: false
+            forceFilterStringMatching: false
 
         componentManager.refresh activeFilter
         result = componentManager.getActiveFilter()
@@ -1836,6 +1838,7 @@ describe 'The componentManager', ->
           remove: false
           merge: false
           invert: false
+          forceFilterStringMatching: false
 
         filter =
           url: 'foo/bar'

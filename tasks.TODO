@@ -27,14 +27,16 @@ Completed
  ✔ Pass arguments to conditions? @done (15-09-24 10:17)
  ✔ Refactor examples and implement harpjs @done (15-10-05 14:56)
  ✔ Unittest new methods in index: --addInstancesMatchingFilter--, --removeInstancesNotMatchingFilter--, --getInstancesMatchingFilter--, --getInstancesNotMatchingFilter--, --_filterInstances--, --_createAndAddInstances--, --_filterInstanceDefinitions--, --_getTarget--,  --getTargetName-- @done (15-10-09 12:11)
+ ✔ Add the ability to filter on any custom properties using native backbone collection findWhere @done (15-10-21 11:25)
+ ✔ Look over the filterString problem, should have an option to exclude instanceDefinitions with a filterstring if nothing relating to a filterstring is passed to the filter @done (15-10-22 00:07)
 
  In progress
- ☐ Add the ability to filter on any custom properties using native backbone collection findWhere
+ ☐ Add a full/advanced example that uses vigorjs
+ ☐ Possible to not create instances if the target is not available?
 
  Next up
  ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
  ☐ Add documentation
- ☐ Add a full/advanced example that uses vigorjs (use build tools to keep it clean)
  ☐ Listen for reset on collectiond
 
  To consider

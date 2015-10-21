@@ -293,6 +293,68 @@ describe 'InstanceDefinitionModel', ->
 
 
     describe 'stringMatching - using a filterString on the instanceDefinition', ->
+      describe 'forceFilterStringMatching', ->
+        it 'should return false if the instanceDefinition has a filterString but the passed
+        filter is not doing any string filtering and forceFilterStringMatching is enabled
+        (this will make instanceDefinitions active only when the filter is doing string
+        matching - even if other filters matches)', ->
+          instanceDefinitionModel.set
+            urlPattern: 'foo'
+            filterString: 'bar'
+
+          filter =
+            url: 'foo'
+            options:
+              forceFilterStringMatching: true
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+        it 'should return true if the instanceDefinition has a filterString and the passed
+        filter is doing string filtering and forceFilterStringMatching is enabled', ->
+          instanceDefinitionModel.set
+            urlPattern: 'foo'
+            filterString: 'bar'
+
+          filter =
+            url: 'foo'
+            hasToMatchString: 'bar'
+            options:
+              forceFilterStringMatching: true
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return false if the instanceDefinition has a filterString and the passed
+        filter is doing string filtering combined with other filtering and the other filtering fails
+        and forceFilterStringMatching is enabled', ->
+          instanceDefinitionModel.set
+            urlPattern: 'foo'
+            filterString: 'bar'
+
+          filter =
+            url: 'boo'
+            hasToMatchString: 'bar'
+            options:
+              forceFilterStringMatching: true
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+        it 'should return true if the instanceDefinition has a filterString but the passed
+        filter is not doing any string filtering and forceFilterStringMatching is disabled', ->
+          instanceDefinitionModel.set
+            urlPattern: 'foo'
+            filterString: 'bar'
+
+          filter =
+            url: 'foo'
+            options:
+              forceFilterStringMatching: false
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
       describe 'includeIfStringMatches', ->
         it 'should return true if includeIfStringMatches matches and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
@@ -317,6 +379,53 @@ describe 'InstanceDefinitionModel', ->
 
           passesFilter = instanceDefinitionModel.passesFilter filter
           assert.equal passesFilter, true
+
+        it 'should return false if includeIfStringMatches returns undefined and no other filters are defined and
+        forceFilterStringMatching is set to true', ->
+          instanceDefinitionModel.set 'filterString', undefined
+          filter =
+            includeIfStringMatches: 'bar'
+            options:
+              forceFilterStringMatching: true
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+      describe 'excludeIfStringMatches', ->
+        it 'should return false if excludeIfStringMatches matches and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            excludeIfStringMatches: 'foo'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
+
+        it 'should return true if excludeIfStringMatches doesnt match and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterString', 'foo'
+          filter =
+            excludeIfStringMatches: 'bar'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return true if excludeIfStringMatches returns undefined and no other filters are defined', ->
+          instanceDefinitionModel.set 'filterString', undefined
+          filter =
+            excludeIfStringMatches: 'bar'
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, true
+
+        it 'should return false if excludeIfStringMatches returns undefined and no other filters are defined and
+        forceFilterStringMatching is set to true', ->
+          instanceDefinitionModel.set 'filterString', undefined
+          filter =
+            includeIfStringMatches: 'bar'
+            options:
+              forceFilterStringMatching: true
+
+          passesFilter = instanceDefinitionModel.passesFilter filter
+          assert.equal passesFilter, false
 
       describe 'hasToMatchString', ->
         it 'should return true if hasToMatchString matches and no other filters are defnied', ->
@@ -435,7 +544,8 @@ describe 'InstanceDefinitionModel', ->
       exceeds = instanceDefinitionModel.exceedsMaximumShowCount()
       assert.equal exceeds, false
 
-    it 'should fallback on component maxShowCount if instance maxShowCount is undefined, (should return true if showCount exceeds componentMaxShowCount)', ->
+    it 'should fallback on component maxShowCount if instance maxShowCount is undefined,
+    (should return true if showCount exceeds componentMaxShowCount)', ->
       instanceDefinitionModel.set
         showCount: 4
         maxShowCount: undefined
@@ -444,7 +554,8 @@ describe 'InstanceDefinitionModel', ->
       exceeds = instanceDefinitionModel.exceedsMaximumShowCount(componentMaxShowCount)
       assert.equal exceeds, true
 
-    it 'should fallback on component maxShowCount if instance maxShowCount is undefined, (should return false if showCount is lower than componentMaxShowCount)', ->
+    it 'should fallback on component maxShowCount if instance maxShowCount is undefined,
+    (should return false if showCount is lower than componentMaxShowCount)', ->
       instanceDefinitionModel.set
         showCount: 2
         maxShowCount: undefined
@@ -756,7 +867,8 @@ describe 'InstanceDefinitionModel', ->
       areConditionsMet = instanceDefinitionModel.areConditionsMet()
       assert.equal areConditionsMet, false
 
-    it 'should use methods in globalConditions if the condition is a string (the string will be used as a key in the globalConditions object)', ->
+    it 'should use methods in globalConditions if the condition is a string
+    (the string will be used as a key in the globalConditions object)', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
       globalConditions =
         fooCheck: sinon.spy()
@@ -805,7 +917,8 @@ describe 'InstanceDefinitionModel', ->
       errorFn = -> instanceDefinitionModel.areConditionsMet()
       assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
 
-    it 'should throw an error if the condition is a string and the key is not present in the globalConditions', ->
+    it 'should throw an error if the condition is a string and the key is not 
+    present in the globalConditions', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
       globalConditions =
         barCheck: -> return true
@@ -851,7 +964,8 @@ describe 'InstanceDefinitionModel', ->
       assert.equal urlParams[0].id, 123
       assert.equal urlParams[0].url, 'foo/123'
 
-    it 'should trigger a change event when updating the urlParams if reInstantiateOnUrlParamChange is set to true', ->
+    it 'should trigger a change event when updating the urlParams if
+    reInstantiateOnUrlParamChange is set to true', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
       instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', true
       sinon.spy instanceDefinitionModel, 'trigger'
@@ -871,7 +985,8 @@ describe 'InstanceDefinitionModel', ->
       urlParams = instanceDefinitionModel.get 'urlParams'
       assert.equal urlParams, undefined
 
-    it 'should not trigger a change event when updating the urlParams if reInstantiateOnUrlParamChange is set to false', ->
+    it 'should not trigger a change event when updating the urlParams if
+    reInstantiateOnUrlParamChange is set to false', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
       instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', false
       sinon.spy instanceDefinitionModel, 'trigger'
