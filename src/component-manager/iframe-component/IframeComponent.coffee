@@ -19,6 +19,7 @@ class IframeComponent extends Backbone.View
     do @addListeners
     if attrs?.src?
       @src = attrs.src
+    super
 
   addListeners: ->
     @$el.on 'load', @onIframeLoaded
@@ -28,6 +29,7 @@ class IframeComponent extends Backbone.View
 
   render: ->
     @$el.attr 'src', @src
+    return @
 
   dispose: ->
     do @removeListeners
