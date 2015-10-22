@@ -567,9 +567,10 @@ class ComponentManager
       instanceDefinitions = [instanceDefinitions]
 
     for instanceDefinition in instanceDefinitions
-      @_addInstanceToModel instanceDefinition
-      @_addInstanceToDom instanceDefinition
-      do instanceDefinition.incrementShowCount
+      if @_isTargetAvailable(instanceDefinition)
+        @_addInstanceToModel instanceDefinition
+        @_addInstanceToDom instanceDefinition
+        do instanceDefinition.incrementShowCount
 
     return instanceDefinitions
 

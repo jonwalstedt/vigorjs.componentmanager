@@ -3163,6 +3163,7 @@ describe 'The componentManager', ->
         assert.equal $componentArea.hasClass('test-prefix--has-components'), false
 
     describe '_createAndAddInstances', ->
+      isTargetAvailableSpy = undefined
       instanceDefinitions = undefined
       addInstanceToModelStub = undefined
       addInstanceToDomStub = undefined
@@ -3190,6 +3191,7 @@ describe 'The componentManager', ->
 
         componentManager.initialize componentSettings
 
+        isTargetAvailableSpy = sandbox.spy componentManager, '_isTargetAvailable'
         addInstanceToModelStub = sandbox.stub componentManager, '_addInstanceToModel'
         addInstanceToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
         instanceDefinitions = componentManager._instanceDefinitionsCollection.models
@@ -3197,29 +3199,62 @@ describe 'The componentManager', ->
       afterEach ->
         do $('.component-area--header').remove
 
-      it 'should call _addInstanceToModel once for each instanceDefinition', ->
+      it 'should call _isTargetAvailable and pass the instanceDefinition once for
+      every instanceDefinition in the passed array', ->
+        componentManager._createAndAddInstances instanceDefinitions
+        assert isTargetAvailableSpy.calledTwice
+        assert.equal isTargetAvailableSpy.args[0][0].get('id'), instanceDefinitions[0].get('id')
+        assert.equal isTargetAvailableSpy.args[1][0].get('id'), instanceDefinitions[1].get('id')
+
+      it 'should call _addInstanceToModel once for each instanceDefinition - if target is available', ->
         $('body').append '<div class="component-area--header"></div>'
         componentManager._createAndAddInstances instanceDefinitions
         assert addInstanceToModelStub.calledTwice
+        assert isTargetAvailableSpy.calledTwice
         assert.equal addInstanceToModelStub.args[0][0].get('id'), instanceDefinitions[0].get('id')
         assert.equal addInstanceToModelStub.args[1][0].get('id'), instanceDefinitions[1].get('id')
 
-      it 'should call _addInstanceToDom once for each instanceDefinition', ->
+      it 'should not call _addInstanceToModel once for each instanceDefinition - if target is not available', ->
+        componentManager._createAndAddInstances instanceDefinitions
+        assert isTargetAvailableSpy.calledTwice
+        assert addInstanceToModelStub.notCalled
+
+      it 'should call _addInstanceToDom once for each instanceDefinition - if target is available', ->
         $('body').append '<div class="component-area--header"></div>'
         componentManager._createAndAddInstances instanceDefinitions
         assert addInstanceToDomStub.calledTwice
+        assert isTargetAvailableSpy.calledTwice
         assert.equal addInstanceToDomStub.args[0][0].get('id'), instanceDefinitions[0].get('id')
         assert.equal addInstanceToDomStub.args[1][0].get('id'), instanceDefinitions[1].get('id')
 
-      it 'should call incrementShowCount once for each instanceDefinition', ->
+      it 'should not call _addInstanceToDom once for each instanceDefinition - if target is not available', ->
+        componentManager._createAndAddInstances instanceDefinitions
+        assert isTargetAvailableSpy.calledTwice
+        assert addInstanceToDomStub.notCalled
+
+      it 'should call incrementShowCount once for each instanceDefinition - if target is available', ->
+        $('body').append '<div class="component-area--header"></div>'
         spies = []
         for instanceDefinition in instanceDefinitions
           spies.push sandbox.spy(instanceDefinition, 'incrementShowCount')
 
         componentManager._createAndAddInstances instanceDefinitions
 
+        assert isTargetAvailableSpy.calledTwice
         for spy in spies
           assert spy.called
+
+      it 'should not call incrementShowCount once for each instanceDefinition - if target is not available', ->
+        spies = []
+        for instanceDefinition in instanceDefinitions
+          spies.push sandbox.spy(instanceDefinition, 'incrementShowCount')
+
+        componentManager._createAndAddInstances instanceDefinitions
+
+        assert isTargetAvailableSpy.calledTwice
+
+        for spy in spies
+          assert spy.notCalled
 
       it 'should return the array of instanceDefinitions', ->
         returned = componentManager._createAndAddInstances instanceDefinitions
