@@ -1276,8 +1276,8 @@ describe 'The componentManager', ->
           assert.equal result.id, expectedResultsIds[i]
 
     describe 'getActiveInstances', ->
-      it 'should call _mapInstances with _activeInstancesCollection.models and 
-      createNewInstancesIfUndefined set to true', ->
+      it 'should call _mapInstances with _activeInstancesCollection.models and
+      createNewInstancesIfUndefined set to false by default', ->
 
         componentSettings =
           components: [
@@ -1309,16 +1309,15 @@ describe 'The componentManager', ->
         mapInstancesSpy = sandbox.spy componentManager, '_mapInstances'
         componentManager.initialize componentSettings
         results = componentManager.getActiveInstances()
-        assert mapInstancesSpy.calledWith componentManager._activeInstancesCollection.models, true
+        assert mapInstancesSpy.calledWith componentManager._activeInstancesCollection.models, false
 
 
     describe 'getActiveInstanceById', ->
       componentSettings = undefined
 
       beforeEach ->
-        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
+        $('body').append '<div class="component-area--header"></div>'
         settings =
-          targetPrefix: 'test-prefix',
           componentSettings:
             components: [
               {
@@ -1330,7 +1329,7 @@ describe 'The componentManager', ->
               {
                 id: 'instance-1',
                 componentId: 'mock-component',
-                targetName: 'test-prefix--header'
+                targetName: 'component-area--header'
                 urlPattern: 'foo/:bar'
                 order: 1
                 args:
@@ -1339,7 +1338,7 @@ describe 'The componentManager', ->
             ]
 
         afterEach ->
-          do $('.test-prefix--header').remove
+          do $('.component-area--header').remove
 
         componentManager.initialize settings
 
@@ -1366,10 +1365,9 @@ describe 'The componentManager', ->
         filter =
           url: 'foo/1'
 
-        # If we remove the target the instance will never be created
-        do $('.test-prefix--header').remove
         componentManager.refresh filter
 
+        do componentManager._activeInstancesCollection.at(0).disposeInstance
         instance = componentManager.getActiveInstanceById id
         assert.equal instance, undefined
 
@@ -2031,13 +2029,13 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'test-prefix--header',
+            targetName: 'component-area--header',
             urlPattern: 'foo/:id'
           },
           {
             id: 'instance-2',
             componentId: 'mock-component',
-            targetName: 'test-prefix--main',
+            targetName: 'component-area--main',
             urlPattern: 'bar/:id'
           }
         ]
@@ -2047,35 +2045,52 @@ describe 'The componentManager', ->
         componentManager.refresh url: 'foo/bar'
         filterModel = componentManager._filterModel
 
-      it 'should call _instanceDefinitionsCollection.getInstanceDefinitions 
+        $('body').append '<div class="component-area--header"></div>'
+        $('body').append '<div class="component-area--main"></div>'
+
+      afterEach ->
+        do $('.component-area--header').remove
+        do $('.component-area--main').remove
+
+      it 'should call _instanceDefinitionsCollection.getInstanceDefinitions
       with the filterModel and globalConditions', ->
         getInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'getInstanceDefinitions'
-        componentManager._filterInstanceDefinitions filterModel
+        do componentManager._filterInstanceDefinitions
         assert getInstanceDefinitionsStub.calledWith filterModel, globalConditions
 
-      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions 
+      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions
       that was returned by _instanceDefinitionsCollection.getInstanceDefinitions', ->
         expectedInstanceDefinitionId = 'instance-1'
         filterInstanceDefinitionsByShowCountStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByShowCount'
-        componentManager._filterInstanceDefinitions filterModel
+        do componentManager._filterInstanceDefinitions
 
         assert filterInstanceDefinitionsByShowCountStub.called
         assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0].length, 1
         assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
 
-      it 'should call _filterInstanceDefinitionsByConditions with the filterDefinitions 
+      it 'should call _filterInstanceDefinitionsByConditions with the filterDefinitions
       that was returned by _filterInstanceDefinitionsByShowCount', ->
         expectedInstanceDefinitionId = 'instance-1'
-        filterInstanceDefinitionsByComponentConditionsStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByConditions'
-        componentManager._filterInstanceDefinitions filterModel
+        filterInstanceDefinitionsByConditionsStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByConditions'
+        do componentManager._filterInstanceDefinitions
 
-        assert filterInstanceDefinitionsByComponentConditionsStub.called
-        assert.equal filterInstanceDefinitionsByComponentConditionsStub.args[0][0].length, 1
-        assert.equal filterInstanceDefinitionsByComponentConditionsStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
+        assert filterInstanceDefinitionsByConditionsStub.called
+        assert.equal filterInstanceDefinitionsByConditionsStub.args[0][0].length, 1
+        assert.equal filterInstanceDefinitionsByConditionsStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
+
+      it 'should call _filterInstanceDefinitionsByTargetAvailability with the filterDefinitions
+      that was returned by _filterInstanceDefinitionsByConditions', ->
+        expectedInstanceDefinitionId = 'instance-1'
+        filterInstanceDefinitionsByTargetAvailabilityStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByTargetAvailability'
+        do componentManager._filterInstanceDefinitions
+
+        assert filterInstanceDefinitionsByTargetAvailabilityStub.called
+        assert.equal filterInstanceDefinitionsByTargetAvailabilityStub.args[0][0].length, 1
+        assert.equal filterInstanceDefinitionsByTargetAvailabilityStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
 
       it 'should return remaining instanceDefinitions after all previous filters', ->
         expectedInstanceDefinitionId = 'instance-1'
-        result = componentManager._filterInstanceDefinitions filterModel
+        result = do componentManager._filterInstanceDefinitions
 
         assert.equal result.length, 1
         assert.equal result[0].attributes.id, expectedInstanceDefinitionId
@@ -2138,17 +2153,16 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'test-prefix--header',
+            targetName: 'component-area--header',
             showCount: 4
           },
           {
             id: 'instance-2',
             componentId: 'mock-component',
-            targetName: 'test-prefix--main',
+            targetName: 'component-area--main',
             showCount: 1
           }
         ]
-
 
       it 'should return instanceDefinitions that passes componentConditions if they are defined', ->
         componentManager.initialize componentSettings
@@ -2212,6 +2226,46 @@ describe 'The componentManager', ->
 
         assert areConditionsMetSpy.calledTwice
         assert.equal instanceDefinitions.length, 0
+
+    describe '_filterInstanceDefinitionsByTargetAvailability', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: 'window.MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'component-area--header'
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'component-area--main'
+          }
+        ]
+
+      beforeEach ->
+        $('body').append '<div class="component-area--header"></div>'
+
+        componentManager.initialize componentSettings
+        do componentManager.refresh
+
+      afterEach ->
+        do $('.component-area--header').remove
+
+      it 'should only return instanceDefinitions that has a target component-area
+      which is currently present in the dom', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        result = componentManager._filterInstanceDefinitionsByTargetAvailability instanceDefinitions
+        expectedResultId = 'instance-1'
+
+        assert.equal result.length, 1
+        assert.equal result[0].attributes.id, expectedResultId
+
 
     describe '_getInstanceHeight', ->
       componentSettings =
@@ -2520,7 +2574,6 @@ describe 'The componentManager', ->
 
     describe '_tryToReAddStraysToDom', ->
       settings =
-        targetPrefix: 'test-prefix'
         componentSettings:
           components: [
             {
@@ -2532,35 +2585,45 @@ describe 'The componentManager', ->
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'test-prefix--header'
+              targetName: 'component-area--header'
               urlPattern: 'foo/:bar'
             }
             {
               id: 'instance-2',
               componentId: 'mock-component',
-              targetName: 'test-prefix--footer'
+              targetName: 'component-area--footer'
               urlPattern: 'foo/:bar'
             }
           ]
 
       beforeEach ->
-        $('body').append '<div class="test-prefix--header"></div>'
+        $('body').append '<div class="component-area--header"></div>'
+        $('body').append '<div class="component-area--footer"></div>'
         componentManager.initialize settings
 
       afterEach ->
-        do $('.test-prefix--header').remove
-        do $('.test-prefix--footer').remove
+        do $('.component-area--header').remove
+        do $('.component-area--footer').remove
 
       it 'should call _activeInstancesCollection.getStrays', ->
         getStraysSpy = sandbox.spy componentManager._activeInstancesCollection, 'getStrays'
         do componentManager._tryToReAddStraysToDom
         assert getStraysSpy.called
 
-      it 'should call _addInstanceToDom and pass the stray and render = false for each stray returnd by getStrays', ->
+      it 'should call _addInstanceToDom and pass the stray and render = false for
+      each stray returnd by getStrays', ->
         filter =
           url: 'foo/bar'
 
+        render = false
+
         componentManager.refresh filter
+        stray = componentManager._activeInstancesCollection.get 'instance-2'
+
+        # making it a stray - it is active and should be present in the dom but
+        # it has been removed
+        do stray.get('instance').$el.remove
+
         addInstancesToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
         do componentManager._tryToReAddStraysToDom
 
@@ -2568,16 +2631,22 @@ describe 'The componentManager', ->
 
         assert addInstancesToDomStub.calledOnce
         assert.equal firstCallArgs[0].id, 'instance-2'
-        assert.equal firstCallArgs[1], false
+        assert.equal firstCallArgs[1], render
 
-      it 'if the instance was added to dom and there is a delegateEvents method it should be called', ->
+      it 'if the instance was added to dom and there is a delegateEvents method
+      it should be called', ->
         filter =
           url: 'foo/bar'
 
         componentManager.refresh filter
 
+        stray = componentManager._activeInstancesCollection.get 'instance-2'
+
+        # making it a stray - it is active and should be present in the dom but
+        # it has been removed
+        do stray.get('instance').$el.remove
+
         strays = componentManager._activeInstancesCollection.getStrays()
-        $('body').append '<div class="test-prefix--footer"></div>'
 
         firstStray = strays[0]
         componentManager._addInstanceToModel firstStray
@@ -2586,11 +2655,19 @@ describe 'The componentManager', ->
         do componentManager._tryToReAddStraysToDom
         assert delegateEventsSpy.called
 
-      it 'if the instance was not added to the dom it means that there was no target for this instance and therefore it should be disposed', ->
+      it 'if the instance was not added to the dom it means that there was no
+      target for this instance and therefore it should be disposed', ->
         filter =
           url: 'foo/bar'
 
         componentManager.refresh filter
+
+        stray = componentManager._activeInstancesCollection.get 'instance-2'
+
+        # making it a stray - it is active and should be present in the dom but
+        # it has been removed
+        do stray.get('instance').$el.remove
+        do $('.component-area--footer').remove
 
         strays = componentManager._activeInstancesCollection.getStrays()
         firstStray = strays[0]
@@ -3086,7 +3163,6 @@ describe 'The componentManager', ->
         assert.equal $componentArea.hasClass('test-prefix--has-components'), false
 
     describe '_createAndAddInstances', ->
-      isTargetAvailableSpy = undefined
       instanceDefinitions = undefined
       addInstanceToModelStub = undefined
       addInstanceToDomStub = undefined
@@ -3114,7 +3190,6 @@ describe 'The componentManager', ->
 
         componentManager.initialize componentSettings
 
-        isTargetAvailableSpy = sandbox.spy componentManager, '_isTargetAvailable'
         addInstanceToModelStub = sandbox.stub componentManager, '_addInstanceToModel'
         addInstanceToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
         instanceDefinitions = componentManager._instanceDefinitionsCollection.models
@@ -3122,63 +3197,29 @@ describe 'The componentManager', ->
       afterEach ->
         do $('.component-area--header').remove
 
-      it 'should call _isTargetAvailable and pass the instanceDefinition once for
-      every instanceDefinition in the passed array', ->
+      it 'should call _addInstanceToModel once for each instanceDefinition', ->
+        $('body').append '<div class="component-area--header"></div>'
         componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
-        assert.equal isTargetAvailableSpy.args[0][0].get('id'), instanceDefinitions[0].get('id')
-        assert.equal isTargetAvailableSpy.args[1][0].get('id'), instanceDefinitions[1].get('id')
-
-      it 'should call _addInstanceToModel once for each instanceDefinition - if target is available', ->
-        $('body').append '<div class="component-area--header" id="test-header"></div>'
-        componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
         assert addInstanceToModelStub.calledTwice
         assert.equal addInstanceToModelStub.args[0][0].get('id'), instanceDefinitions[0].get('id')
         assert.equal addInstanceToModelStub.args[1][0].get('id'), instanceDefinitions[1].get('id')
 
-      it 'should not call _addInstanceToModel once for each instanceDefinition - if target is not available', ->
+      it 'should call _addInstanceToDom once for each instanceDefinition', ->
+        $('body').append '<div class="component-area--header"></div>'
         componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
-        assert addInstanceToModelStub.notCalled
-
-      it 'should call _addInstanceToDom once for each instanceDefinition - if target is available', ->
-        $('body').append '<div class="component-area--header" id="test-header"></div>'
-        componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
         assert addInstanceToDomStub.calledTwice
         assert.equal addInstanceToDomStub.args[0][0].get('id'), instanceDefinitions[0].get('id')
         assert.equal addInstanceToDomStub.args[1][0].get('id'), instanceDefinitions[1].get('id')
 
-      it 'should not call _addInstanceToDom once for each instanceDefinition - if target is not available', ->
-        componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
-        assert addInstanceToDomStub.notCalled
-
-      it 'should call incrementShowCount once for each instanceDefinition - if target is available', ->
-        $('body').append '<div class="component-area--header" id="test-header"></div>'
+      it 'should call incrementShowCount once for each instanceDefinition', ->
         spies = []
         for instanceDefinition in instanceDefinitions
           spies.push sandbox.spy(instanceDefinition, 'incrementShowCount')
 
         componentManager._createAndAddInstances instanceDefinitions
-
-        assert isTargetAvailableSpy.calledTwice
 
         for spy in spies
           assert spy.called
-
-      it 'should not call incrementShowCount once for each instanceDefinition - if target is not available', ->
-        spies = []
-        for instanceDefinition in instanceDefinitions
-          spies.push sandbox.spy(instanceDefinition, 'incrementShowCount')
-
-        componentManager._createAndAddInstances instanceDefinitions
-
-        assert isTargetAvailableSpy.calledTwice
-
-        for spy in spies
-          assert spy.notCalled
 
       it 'should return the array of instanceDefinitions', ->
         returned = componentManager._createAndAddInstances instanceDefinitions

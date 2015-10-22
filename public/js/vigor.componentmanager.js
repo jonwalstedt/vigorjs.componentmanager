@@ -1444,9 +1444,10 @@
         return this._instanceDefinitionsCollection.toJSON();
       };
 
-      ComponentManager.prototype.getActiveInstances = function() {
-        var createNewInstancesIfUndefined;
-        createNewInstancesIfUndefined = true;
+      ComponentManager.prototype.getActiveInstances = function(createNewInstancesIfUndefined) {
+        if (createNewInstancesIfUndefined == null) {
+          createNewInstancesIfUndefined = false;
+        }
         return this._mapInstances(this._activeInstancesCollection.models, createNewInstancesIfUndefined);
       };
 
@@ -1559,7 +1560,7 @@
         }
         lastChange = this._activeInstancesCollection.set(instanceDefinitions, options);
         returnData = {
-          activeInstances: this.getActiveInstances(),
+          activeInstances: this._mapInstances(this._activeInstancesCollection.models),
           lastChange: this._mapInstances(lastChange)
         };
         this._tryToReAddStraysToDom();
@@ -1595,6 +1596,7 @@
         instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(this._filterModel, globalConditions);
         instanceDefinitions = this._filterInstanceDefinitionsByShowCount(instanceDefinitions);
         instanceDefinitions = this._filterInstanceDefinitionsByConditions(instanceDefinitions);
+        instanceDefinitions = this._filterInstanceDefinitionsByTargetAvailability(instanceDefinitions);
         return instanceDefinitions;
       };
 
@@ -1617,6 +1619,14 @@
             var componentDefinition;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
             return componentDefinition.areConditionsMet(globalConditions);
+          };
+        })(this));
+      };
+
+      ComponentManager.prototype._filterInstanceDefinitionsByTargetAvailability = function(instanceDefinitions) {
+        return _.filter(instanceDefinitions, (function(_this) {
+          return function(instanceDefinition) {
+            return _this._isTargetAvailable(instanceDefinition);
           };
         })(this));
       };
@@ -1698,7 +1708,7 @@
         if (render) {
           instanceDefinition.renderInstance();
         }
-        if ($target.length > 0) {
+        if (this._isTargetAvailable(instanceDefinition)) {
           this._addInstanceInOrder(instanceDefinition);
           this._setComponentAreaPopulatedState($target);
         }
@@ -1707,9 +1717,9 @@
 
       ComponentManager.prototype._addInstanceInOrder = function(instanceDefinition) {
         var $previousElement, $target, instance, order;
+        instance = instanceDefinition.get('instance');
         $target = this._getTarget(instanceDefinition);
         order = instanceDefinition.get('order');
-        instance = instanceDefinition.get('instance');
         if (order) {
           if (order === 'top') {
             instance.$el.data('order', 0);
@@ -1762,11 +1772,9 @@
         }
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
           instanceDefinition = instanceDefinitions[j];
-          if (this._isTargetAvailable(instanceDefinition)) {
-            this._addInstanceToModel(instanceDefinition);
-            this._addInstanceToDom(instanceDefinition);
-            instanceDefinition.incrementShowCount();
-          }
+          this._addInstanceToModel(instanceDefinition);
+          this._addInstanceToDom(instanceDefinition);
+          instanceDefinition.incrementShowCount();
         }
         return instanceDefinitions;
       };

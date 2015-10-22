@@ -309,8 +309,7 @@ class ComponentManager
   getInstances: ->
     return @_instanceDefinitionsCollection.toJSON()
 
-  getActiveInstances: ->
-    createNewInstancesIfUndefined = true
+  getActiveInstances: (createNewInstancesIfUndefined = false) ->
     return @_mapInstances @_activeInstancesCollection.models, createNewInstancesIfUndefined
 
   getActiveInstanceById: (instanceId) ->
@@ -413,8 +412,8 @@ class ComponentManager
     lastChange = @_activeInstancesCollection.set instanceDefinitions, options
 
     returnData =
-      activeInstances: @getActiveInstances()
-      lastChange: @_mapInstances(lastChange)
+      activeInstances: @_mapInstances @_activeInstancesCollection.models
+      lastChange: @_mapInstances lastChange
 
     # check if we have any stray instances in active components and then try to readd them
     do @_tryToReAddStraysToDom
@@ -439,6 +438,7 @@ class ComponentManager
     instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions @_filterModel, globalConditions
     instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByConditions instanceDefinitions
+    instanceDefinitions = @_filterInstanceDefinitionsByTargetAvailability instanceDefinitions
     return instanceDefinitions
 
   _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->
@@ -452,6 +452,10 @@ class ComponentManager
     _.filter instanceDefinitions, (instanceDefinition) =>
       componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
       return componentDefinition.areConditionsMet globalConditions
+
+  _filterInstanceDefinitionsByTargetAvailability: (instanceDefinitions) ->
+    _.filter instanceDefinitions, (instanceDefinition) =>
+      return @_isTargetAvailable instanceDefinition
 
   _getInstanceHeight: (instanceDefinition) ->
     componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
@@ -513,16 +517,16 @@ class ComponentManager
     if render
       do instanceDefinition.renderInstance
 
-    if $target.length > 0
+    if @_isTargetAvailable(instanceDefinition)
       @_addInstanceInOrder instanceDefinition
       @_setComponentAreaPopulatedState $target
 
     return instanceDefinition.isAttached()
 
   _addInstanceInOrder: (instanceDefinition) ->
+    instance = instanceDefinition.get 'instance'
     $target = @_getTarget instanceDefinition
     order = instanceDefinition.get 'order'
-    instance = instanceDefinition.get 'instance'
 
     if order
       if order is 'top'
@@ -563,10 +567,9 @@ class ComponentManager
       instanceDefinitions = [instanceDefinitions]
 
     for instanceDefinition in instanceDefinitions
-      if @_isTargetAvailable(instanceDefinition)
-        @_addInstanceToModel instanceDefinition
-        @_addInstanceToDom instanceDefinition
-        do instanceDefinition.incrementShowCount
+      @_addInstanceToModel instanceDefinition
+      @_addInstanceToDom instanceDefinition
+      do instanceDefinition.incrementShowCount
 
     return instanceDefinitions
 
