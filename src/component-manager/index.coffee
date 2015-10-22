@@ -63,10 +63,10 @@ class ComponentManager
 
   refresh: (filter, cb = undefined) ->
     @_filterModel.set @_filterModel.parse(filter)
-    instances = @_mapInstances @_updateActiveComponents()
+    activeInstances = @_updateActiveComponents()
 
     if cb
-      cb filter, instances
+      cb filter, activeInstances
     return @
 
   serialize: ->
@@ -407,17 +407,25 @@ class ComponentManager
   _updateActiveComponents: =>
     options = @_filterModel.getFilterOptions()
     instanceDefinitions = @_filterInstanceDefinitions()
-
     if options.invert
       instanceDefinitions = _.difference @_instanceDefinitionsCollection.models, instanceDefinitions
 
-    @_activeInstancesCollection.set instanceDefinitions, options
+    lastChange = @_activeInstancesCollection.set instanceDefinitions, options
+
+    returnData =
+      activeInstances: @getActiveInstances()
+      lastChange: @_mapInstances(lastChange)
 
     # check if we have any stray instances in active components and then try to readd them
     do @_tryToReAddStraysToDom
-    return instanceDefinitions
+    return returnData
 
   _mapInstances: (instanceDefinitions, createNewInstancesIfUndefined = false) ->
+    unless _.isArray(instanceDefinitions)
+      instanceDefinitions = [instanceDefinitions]
+
+    instanceDefinitions = _.compact instanceDefinitions
+
     instances = _.map instanceDefinitions, (instanceDefinition) =>
       instance = instanceDefinition.get 'instance'
       if createNewInstancesIfUndefined and not instance?
@@ -540,20 +548,25 @@ class ComponentManager
 
     return @
 
+  _isTargetAvailable: (instanceDefinition) ->
+    $target = @_getTarget instanceDefinition
+    return $target.length > 0
+
   _isComponentAreaPopulated: ($componentArea) ->
-    $componentArea.children().length > 0
+    return $componentArea.children().length > 0
 
   _setComponentAreaPopulatedState: ($componentArea) ->
-    $componentArea.toggleClass "#{@_targetPrefix}--has-components", @_isComponentAreaPopulated($componentArea)
+    return $componentArea.toggleClass "#{@_targetPrefix}--has-components", @_isComponentAreaPopulated($componentArea)
 
   _createAndAddInstances: (instanceDefinitions = []) ->
     unless _.isArray(instanceDefinitions)
       instanceDefinitions = [instanceDefinitions]
 
     for instanceDefinition in instanceDefinitions
-      @_addInstanceToModel instanceDefinition
-      @_addInstanceToDom instanceDefinition
-      do instanceDefinition.incrementShowCount
+      if @_isTargetAvailable(instanceDefinition)
+        @_addInstanceToModel instanceDefinition
+        @_addInstanceToDom instanceDefinition
+        do instanceDefinition.incrementShowCount
 
     return instanceDefinitions
 
@@ -569,12 +582,13 @@ class ComponentManager
   # Callbacks
   # ============================================================================
   _onActiveInstanceAdd: (instanceDefinition) =>
-    @_createAndAddInstances [instanceDefinition]
+    @_createAndAddInstances instanceDefinition
 
   _onActiveInstanceChange: (instanceDefinition) =>
     filter = @_filterModel.toJSON()
     globalConditions = @_globalConditionsModel.toJSON()
-    if instanceDefinition.passesFilter filter, globalConditions
+    if instanceDefinition.passesFilter(filter, globalConditions) \
+    and @_isTargetAvailable(instanceDefinition)
       do instanceDefinition.disposeInstance
       @_addInstanceToModel instanceDefinition
       @_addInstanceToDom instanceDefinition

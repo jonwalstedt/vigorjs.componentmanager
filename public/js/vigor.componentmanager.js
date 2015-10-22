@@ -126,7 +126,8 @@
           add: true,
           remove: true,
           merge: true,
-          invert: false
+          invert: false,
+          forceFilterStringMatching: false
         }
       };
 
@@ -141,12 +142,13 @@
       };
 
       FilterModel.prototype.getFilterOptions = function() {
-        var add, filter, invert, merge, options, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, remove;
+        var add, filter, forceFilterStringMatching, invert, merge, options, ref, ref1, ref2, ref3, ref4, ref5, ref6, ref7, ref8, ref9, remove;
         filter = this.toJSON();
         add = true;
         remove = true;
         merge = true;
         invert = false;
+        forceFilterStringMatching = false;
         if ((filter != null ? (ref = filter.options) != null ? ref.add : void 0 : void 0) != null) {
           add = filter != null ? (ref1 = filter.options) != null ? ref1.add : void 0 : void 0;
         }
@@ -159,11 +161,15 @@
         if ((filter != null ? (ref6 = filter.options) != null ? ref6.invert : void 0 : void 0) != null) {
           invert = filter != null ? (ref7 = filter.options) != null ? ref7.invert : void 0 : void 0;
         }
+        if ((filter != null ? (ref8 = filter.options) != null ? ref8.forceFilterStringMatching : void 0 : void 0) != null) {
+          forceFilterStringMatching = filter != null ? (ref9 = filter.options) != null ? ref9.forceFilterStringMatching : void 0 : void 0;
+        }
         options = {
           add: add,
           remove: remove,
           merge: merge,
-          invert: invert
+          invert: invert,
+          forceFilterStringMatching: forceFilterStringMatching
         };
         return options;
       };
@@ -198,8 +204,9 @@
       IframeComponent.prototype.initialize = function(attrs) {
         this.addListeners();
         if ((attrs != null ? attrs.src : void 0) != null) {
-          return this.src = attrs.src;
+          this.src = attrs.src;
         }
+        return IframeComponent.__super__.initialize.apply(this, arguments);
       };
 
       IframeComponent.prototype.addListeners = function() {
@@ -211,7 +218,8 @@
       };
 
       IframeComponent.prototype.render = function() {
-        return this.$el.attr('src', this.src);
+        this.$el.attr('src', this.src);
+        return this;
       };
 
       IframeComponent.prototype.dispose = function() {
@@ -674,7 +682,7 @@
       };
 
       InstanceDefinitionModel.prototype.passesFilter = function(filter, globalConditions) {
-        var areConditionsMet, filterStringMatch, urlMatch;
+        var areConditionsMet, filterStringMatch, ref, ref1, ref2, urlMatch;
         if ((filter != null ? filter.url : void 0) || (filter != null ? filter.url : void 0) === '') {
           urlMatch = this.doesUrlPatternMatch(filter.url);
           if (urlMatch != null) {
@@ -711,8 +719,16 @@
             }
           }
         }
+        if (filter != null ? (ref = filter.options) != null ? ref.forceFilterStringMatching : void 0 : void 0) {
+          if ((this.get('filterString') != null) && (((filter != null ? filter.includeIfStringMatches : void 0) == null) && ((filter != null ? filter.excludeIfStringMatches : void 0) == null) && ((filter != null ? filter.hasToMatchString : void 0) == null) && ((filter != null ? filter.cantMatchString : void 0) == null))) {
+            return false;
+          }
+        }
         if (filter != null ? filter.includeIfStringMatches : void 0) {
           filterStringMatch = this.includeIfStringMatches(filter.includeIfStringMatches);
+          if (filter != null ? (ref1 = filter.options) != null ? ref1.forceFilterStringMatching : void 0 : void 0) {
+            filterStringMatch = !!filterStringMatch;
+          }
           if (filterStringMatch != null) {
             if (!filterStringMatch) {
               return false;
@@ -721,6 +737,9 @@
         }
         if (filter != null ? filter.excludeIfStringMatches : void 0) {
           filterStringMatch = this.excludeIfStringMatches(filter.excludeIfStringMatches);
+          if (filter != null ? (ref2 = filter.options) != null ? ref2.forceFilterStringMatching : void 0 : void 0) {
+            filterStringMatch = !!filterStringMatch;
+          }
           if (filterStringMatch != null) {
             if (!filterStringMatch) {
               return false;
@@ -1104,14 +1123,14 @@
       };
 
       ComponentManager.prototype.refresh = function(filter, cb) {
-        var instances;
+        var activeInstances;
         if (cb == null) {
           cb = void 0;
         }
         this._filterModel.set(this._filterModel.parse(filter));
-        instances = this._mapInstances(this._updateActiveComponents());
+        activeInstances = this._updateActiveComponents();
         if (cb) {
-          cb(filter, instances);
+          cb(filter, activeInstances);
         }
         return this;
       };
@@ -1532,15 +1551,19 @@
       };
 
       ComponentManager.prototype._updateActiveComponents = function() {
-        var instanceDefinitions, options;
+        var instanceDefinitions, lastChange, options, returnData;
         options = this._filterModel.getFilterOptions();
         instanceDefinitions = this._filterInstanceDefinitions();
         if (options.invert) {
           instanceDefinitions = _.difference(this._instanceDefinitionsCollection.models, instanceDefinitions);
         }
-        this._activeInstancesCollection.set(instanceDefinitions, options);
+        lastChange = this._activeInstancesCollection.set(instanceDefinitions, options);
+        returnData = {
+          activeInstances: this.getActiveInstances(),
+          lastChange: this._mapInstances(lastChange)
+        };
         this._tryToReAddStraysToDom();
-        return instanceDefinitions;
+        return returnData;
       };
 
       ComponentManager.prototype._mapInstances = function(instanceDefinitions, createNewInstancesIfUndefined) {
@@ -1548,6 +1571,10 @@
         if (createNewInstancesIfUndefined == null) {
           createNewInstancesIfUndefined = false;
         }
+        if (!_.isArray(instanceDefinitions)) {
+          instanceDefinitions = [instanceDefinitions];
+        }
+        instanceDefinitions = _.compact(instanceDefinitions);
         instances = _.map(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
             var instance;
@@ -1711,6 +1738,12 @@
         return this;
       };
 
+      ComponentManager.prototype._isTargetAvailable = function(instanceDefinition) {
+        var $target;
+        $target = this._getTarget(instanceDefinition);
+        return $target.length > 0;
+      };
+
       ComponentManager.prototype._isComponentAreaPopulated = function($componentArea) {
         return $componentArea.children().length > 0;
       };
@@ -1729,9 +1762,11 @@
         }
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
           instanceDefinition = instanceDefinitions[j];
-          this._addInstanceToModel(instanceDefinition);
-          this._addInstanceToDom(instanceDefinition);
-          instanceDefinition.incrementShowCount();
+          if (this._isTargetAvailable(instanceDefinition)) {
+            this._addInstanceToModel(instanceDefinition);
+            this._addInstanceToDom(instanceDefinition);
+            instanceDefinition.incrementShowCount();
+          }
         }
         return instanceDefinitions;
       };
@@ -1748,14 +1783,14 @@
       };
 
       ComponentManager.prototype._onActiveInstanceAdd = function(instanceDefinition) {
-        return this._createAndAddInstances([instanceDefinition]);
+        return this._createAndAddInstances(instanceDefinition);
       };
 
       ComponentManager.prototype._onActiveInstanceChange = function(instanceDefinition) {
         var filter, globalConditions;
         filter = this._filterModel.toJSON();
         globalConditions = this._globalConditionsModel.toJSON();
-        if (instanceDefinition.passesFilter(filter, globalConditions)) {
+        if (instanceDefinition.passesFilter(filter, globalConditions) && this._isTargetAvailable(instanceDefinition)) {
           instanceDefinition.disposeInstance();
           this._addInstanceToModel(instanceDefinition);
           return this._addInstanceToDom(instanceDefinition);

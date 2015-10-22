@@ -3,6 +3,7 @@
 * {
   box-sizing: border-box;
 }
+
 article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
     display: block;
 }
@@ -18,16 +19,9 @@ body {
   background: #f4f4f7;
   color: #444;
 
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  height: 100%;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
+  height: 100%;
 }
 
 a {
@@ -42,41 +36,22 @@ pre {
 }
 
 .header {
-  -webkit-box-flex: 0;
-  -webkit-flex: none;
-  -ms-flex: none;
   flex: none;
 }
 
 .content-wrapper {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-flex: 1;
-  -webkit-flex: 1 0 auto;
-  -ms-flex: 1 0 auto;
   flex: 1 0 auto;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
 }
 
 @media (min-width: 768px) {
   .content-wrapper {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
     flex-direction: row;
   }
 }
 
 .content {
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
   -ms-flex: 1;
   flex: 1;
   position: relative;
@@ -84,24 +59,15 @@ pre {
 
 @media (min-width: 768px) {
   .sidebar {
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 $sidebarWidth;
-    -ms-flex: 0 0 $sidebarWidth;
     flex: 0 0 $sidebarWidth;
   }
 }
 
 .sidebar {
-  -webkit-box-ordinal-group: 0;
-  -webkit-order: -1;
-  -ms-flex-order: -1;
   order: -1;
 }
 
 .footer {
-  -webkit-box-flex: 0;
-  -webkit-flex: none;
-  -ms-flex: none;
   flex: none;
 }
 

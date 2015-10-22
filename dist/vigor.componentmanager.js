@@ -1128,7 +1128,7 @@
           cb = void 0;
         }
         this._filterModel.set(this._filterModel.parse(filter));
-        activeInstances = this._mapInstances(this._updateActiveComponents());
+        activeInstances = this._updateActiveComponents();
         if (cb) {
           cb(filter, activeInstances);
         }
@@ -1563,7 +1563,7 @@
           lastChange: this._mapInstances(lastChange)
         };
         this._tryToReAddStraysToDom();
-        return instanceDefinitions;
+        return returnData;
       };
 
       ComponentManager.prototype._mapInstances = function(instanceDefinitions, createNewInstancesIfUndefined) {
@@ -1571,6 +1571,10 @@
         if (createNewInstancesIfUndefined == null) {
           createNewInstancesIfUndefined = false;
         }
+        if (!_.isArray(instanceDefinitions)) {
+          instanceDefinitions = [instanceDefinitions];
+        }
+        instanceDefinitions = _.compact(instanceDefinitions);
         instances = _.map(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
             var instance;
@@ -1734,7 +1738,9 @@
         return this;
       };
 
-      ComponentManager.prototype._isTargetAvailable = function($target) {
+      ComponentManager.prototype._isTargetAvailable = function(instanceDefinition) {
+        var $target;
+        $target = this._getTarget(instanceDefinition);
         return $target.length > 0;
       };
 
@@ -1756,9 +1762,11 @@
         }
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
           instanceDefinition = instanceDefinitions[j];
-          this._addInstanceToModel(instanceDefinition);
-          this._addInstanceToDom(instanceDefinition);
-          instanceDefinition.incrementShowCount();
+          if (this._isTargetAvailable(instanceDefinition)) {
+            this._addInstanceToModel(instanceDefinition);
+            this._addInstanceToDom(instanceDefinition);
+            instanceDefinition.incrementShowCount();
+          }
         }
         return instanceDefinitions;
       };
@@ -1775,14 +1783,14 @@
       };
 
       ComponentManager.prototype._onActiveInstanceAdd = function(instanceDefinition) {
-        return this._createAndAddInstances([instanceDefinition]);
+        return this._createAndAddInstances(instanceDefinition);
       };
 
       ComponentManager.prototype._onActiveInstanceChange = function(instanceDefinition) {
         var filter, globalConditions;
         filter = this._filterModel.toJSON();
         globalConditions = this._globalConditionsModel.toJSON();
-        if (instanceDefinition.passesFilter(filter, globalConditions)) {
+        if (instanceDefinition.passesFilter(filter, globalConditions) && this._isTargetAvailable(instanceDefinition)) {
           instanceDefinition.disposeInstance();
           this._addInstanceToModel(instanceDefinition);
           return this._addInstanceToDom(instanceDefinition);
