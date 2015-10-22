@@ -1885,6 +1885,34 @@ describe 'The componentManager', ->
         result = do componentManager._updateActiveComponents
         assert.deepEqual result, expectedResults
 
+      it 'should return all active instances and the last changed/added instances -
+      and they might not allways be the same depending on the provided options', ->
+        componentManager.initialize componentSettings
+        instanceDefinitionOne = componentManager._instanceDefinitionsCollection.at(0)
+        instanceDefinitionTwo = componentManager._instanceDefinitionsCollection.at(1)
+
+        filter =
+          url: 'foo/bar'
+
+        componentManager.refresh filter
+
+        filter =
+          url: 'bar/foo'
+          options:
+            remove: false
+
+        componentManager.refresh filter
+
+        expectedResults =
+          activeInstances: componentManager._mapInstances([instanceDefinitionOne, instanceDefinitionTwo])
+          lastChange: componentManager._mapInstances(instanceDefinitionTwo)
+
+        result = do componentManager._updateActiveComponents
+        assert.deepEqual result, expectedResults
+        assert.equal result.activeInstances.length, 2
+        assert.equal result.lastChange.length, 1
+
+
       it 'should return an object containing active instances NOT matching the filter if
       options.invert is set to true', ->
         componentManager.initialize componentSettings
