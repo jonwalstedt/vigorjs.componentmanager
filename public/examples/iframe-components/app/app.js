@@ -10,7 +10,7 @@ var app = app || {};
       Vigor.componentManager.initialize({
         componentSettings: window.componentSettings,
         listenForMessages: true,
-        $context: this.$el
+        context: this.$el
       });
 
       Backbone.history.start({root: '/examples/iframe-component/'});

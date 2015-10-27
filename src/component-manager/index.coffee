@@ -509,7 +509,7 @@ class ComponentManager
         if instance?.delegateEvents and _.isFunction(instance?.delegateEvents)
           do instance.delegateEvents
       else
-        do stray.disposeInstance
+        @_activeInstancesCollection.remove stray
 
   _addInstanceToDom: (instanceDefinition, render = true) ->
     $target = @_getTarget instanceDefinition

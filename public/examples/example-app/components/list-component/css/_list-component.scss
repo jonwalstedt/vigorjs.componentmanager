@@ -1,0 +1,46 @@
+.list-component {
+  padding: 10px 30px;
+  .component-area {
+    &:after {
+      content: '';
+      display: table;
+      clear: both;
+    }
+  }
+}
+
+.list-component__list {
+  margin: 0;
+  padding: 0;
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+.list-component__list-item {
+  padding: 20px 0;
+  list-style: none;
+  border-bottom: 1px dashed #383434;
+}
+
+.list-component__link {
+  display: block;
+  color: #fff;
+}
+
+.list-component__title {
+  font-size: 20px;
+  line-height: 20px;
+}
+
+.list-component__desc {
+  line-height: 24px;
+  font-size: 16px;
+  color: #999;
+}
+
+.list-component__date {
+  float: right;
+}

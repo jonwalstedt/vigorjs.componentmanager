@@ -1,0 +1,62 @@
+.preloader-wrapper {
+  display: none;
+}
+
+.preloader--visible {
+  .preloader-wrapper {
+    display: block;
+  }
+  .start-example-btn {
+    display: none;
+  }
+}
+
+.preloader {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  text-align: center;
+}
+
+.preloader__text,
+.preloader__progress {
+  position: absolute;
+  width: 260px;
+  top: 50%;
+  left: 50%;
+  margin-left: -130px;
+}
+
+.preloader__text {
+  margin-top: -24px;
+  font-weight: bold;
+  color: white;
+}
+
+.start-example-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  margin-left: -70px;
+  margin-top: -10px;
+  font-size: 16px;
+}
+
+.preloader__progress {
+  height: 20px;
+  border: 2px solid white;
+  overflow: hidden;
+  padding: 2px;
+}
+
+.preloader__fill {
+  background: white;
+  position: relative;
+  width: 0%;
+  height: 12px;
+  transition: all 0.4s ease-out;
+}

@@ -1,0 +1,35 @@
+$chartComponentMinHeight: 250px;
+
+.chart-component {
+  padding: 4px;
+}
+
+.chart-component__header {
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #eee;
+}
+
+.chart-component__content {
+  min-height: $chartComponentMinHeight;
+  background: $pageComponentBackground;
+  padding: 8px;
+}
+
+.chart-component__chart {
+  width: 100%;
+  height: 260px;
+}
+
+.chart-component__canvas {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+}
+
+
+@import "./linechart-component";
+@import "./barchart-component";

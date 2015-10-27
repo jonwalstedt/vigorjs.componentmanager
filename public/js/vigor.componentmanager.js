@@ -1693,7 +1693,7 @@
               results.push(void 0);
             }
           } else {
-            results.push(stray.disposeInstance());
+            results.push(this._activeInstancesCollection.remove(stray));
           }
         }
         return results;
@@ -1772,9 +1772,11 @@
         }
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
           instanceDefinition = instanceDefinitions[j];
-          this._addInstanceToModel(instanceDefinition);
-          this._addInstanceToDom(instanceDefinition);
-          instanceDefinition.incrementShowCount();
+          if (this._isTargetAvailable(instanceDefinition)) {
+            this._addInstanceToModel(instanceDefinition);
+            this._addInstanceToDom(instanceDefinition);
+            instanceDefinition.incrementShowCount();
+          }
         }
         return instanceDefinitions;
       };

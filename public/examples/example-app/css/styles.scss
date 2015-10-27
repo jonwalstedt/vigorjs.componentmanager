@@ -1,0 +1,108 @@
+@import "variables";
+
+.example-app {
+  @import "preloader";
+  @import "menu-button";
+  @import "../components/chart-component/css/chart-component";
+  @import "../components/menu-component/css/menu-component";
+  @import "../components/header-component/css/header-component";
+  @import "../components/list-component/css/list-component";
+  @import url(http://weloveiconfonts.com/api/?family=entypo);
+
+  /* entypo */
+  [class*="entypo-"]:before {
+    font-family: 'entypo', sans-serif;
+  }
+
+  position: relative;
+  min-height: $appMinHeight;
+  margin-top: 20px;
+  overflow: hidden;
+
+  .main {
+    transition: transform 0.2s ease-out;
+    background: #000;
+    z-index: 1;
+    position: relative;
+  }
+
+  &.menu-visible {
+    .main {
+      transform: translateX($sidebarWidth);
+    }
+  }
+
+  .header {
+    display: flex;
+    height: $headerHeight;
+    background: $background;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .sidebar {
+    border: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    top: 0;
+    width: $sidebarWidth;
+    background: $sidebarBackground;
+    z-index: 0;
+  }
+
+  .overlay {
+    position: absolute;
+    display: none;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .overlay--visible {
+    display: block;
+  }
+
+  .content {
+    padding: 0;
+  }
+
+  .content-wrapper {
+    position: relative;
+    min-height: $appMinHeight;
+  }
+
+  .page {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+    background: $background;
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+    .chart-component {
+      float: left;
+    }
+    .vigor-component {
+      visibility: hidden;
+    }
+  }
+
+  .page--on-top {
+    z-index: 1;
+  }
+
+  .component-area {
+    border: none;
+  }
+
+}
