@@ -1,6 +1,33 @@
 .menu-component {
+  ul {
+    list-style: none;
+  }
 
+  .menu {
+    padding: 0;
+    margin: 0;
+  }
 }
+
+.menu__sub {
+  padding-left: 0px;
+  .menu__link {
+    padding-left: 20px;
+  }
+}
+
+.menu__item {
+  padding: 0;
+  margin: 0;
+}
+
 .menu__link {
+  display: block;
   color: white;
+  line-height: 40px;
+  text-indent: 20px;
+}
+
+.menu__link--active {
+  background-color: #4A7CD0;
 }

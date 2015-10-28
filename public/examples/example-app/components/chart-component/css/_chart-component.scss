@@ -31,5 +31,6 @@ $chartComponentMinHeight: 250px;
 }
 
 
-@import "./linechart-component";
-@import "./barchart-component";
+@import "./line-chart";
+@import "./bar-chart";
+@import "./doughnut-chart";

@@ -1,0 +1,14 @@
+.sidebar {
+  background: $sidebarBackground;
+  .component-area,
+  .vigor-component {
+    padding: 0;
+  }
+}
+
+.logo {
+  color: pink;
+  font-size: 50px;
+  text-align: center;
+  margin: 40px;
+}

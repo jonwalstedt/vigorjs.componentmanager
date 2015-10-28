@@ -21,7 +21,7 @@ app.components = app.components || {};
           submenu: [
             {
               label: 'List all',
-              href: '#projects'
+              href: '#projects/all'
             },
             {
               label: 'Add new',
@@ -35,7 +35,7 @@ app.components = app.components || {};
           submenu: [
             {
               label: 'List all',
-              href: '#users'
+              href: '#users/all'
             },
             {
               label: 'Add new',

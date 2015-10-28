@@ -1,0 +1,12 @@
+.doughnutchart-component {
+  position: relative;
+  min-height: $barchartComponentMinHeight;
+  width: 100%;
+}
+
+@media (min-width: 920px) {
+  .doughnutchart-component {
+    width: 50%;
+  }
+}
+

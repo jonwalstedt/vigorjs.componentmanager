@@ -8,14 +8,12 @@ app.components = app.components || {};
     className: 'chart-component doughnutchart-component',
     chartOptions: {
       animation: true,
-      animationSteps: 360,
-      maintainAspectRatio: false,
-      scaleShowGridLines : true,
-      scaleGridLineColor : "rgba(0,0,0,.9)",
-      scaleGridLineWidth : 1,
-      scaleShowHorizontalLines: false,
-      scaleShowVerticalLines: true,
-      bezierCurve: false,
+      animationSteps: 300,
+      segmentShowStroke : false,
+      percentageInnerCutout : 90, // This is 0 for Pie charts
+      animationEasing : "easeOutQuart",
+      animateRotate : true,
+      animateScale : false,
       responsive: true
     },
 

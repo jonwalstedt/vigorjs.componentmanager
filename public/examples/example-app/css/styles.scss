@@ -2,6 +2,7 @@
 
 .example-app {
   @import "preloader";
+  @import "sidebar";
   @import "menu-button";
   @import "../components/chart-component/css/chart-component";
   @import "../components/menu-component/css/menu-component";
@@ -47,7 +48,6 @@
     bottom: 0;
     top: 0;
     width: $sidebarWidth;
-    background: $sidebarBackground;
     z-index: 0;
   }
 

@@ -8,6 +8,13 @@ app.components = app.components || {};
     componentName: 'menu',
     template: _.template($('script.menu-template').html()),
 
+    setActiveLink: function (url) {
+      var $activeLink = this.$el.find('a[href="' + url + '"]');
+      this.$el.find('.menu__link').removeClass('menu__link--active');
+      $activeLink.addClass('menu__link--active');
+      console.log($activeLink);
+    },
+
     renderStaticContent: function () {
       var templateData = {
         menuItems: this.viewModel.menuItems.toJSON()
