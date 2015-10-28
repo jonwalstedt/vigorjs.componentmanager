@@ -133,8 +133,8 @@ class ComponentManager
     do @_filterModel?.clear
     do @_globalConditionsModel?.clear
     @_$context = undefined
-    @_componentClassName = 'vigor-component'
-    @_targetPrefix = 'component-area'
+    @_componentClassName = COMPONENT_CLASS_NAME
+    @_targetPrefix = TARGET_PREFIX
     return @
 
   dispose: ->
@@ -214,14 +214,14 @@ class ComponentManager
       throw @ERROR.CONDITION.WRONG_FORMAT
     return @
 
-  addComponents: (componentDefinitions) ->
+  addComponentDefinitions: (componentDefinitions) ->
     @_componentDefinitionsCollection.set componentDefinitions,
       parse: true
       validate: true
       remove: false
     return @
 
-  addInstances: (instanceDefinitions) ->
+  addInstanceDefinitions: (instanceDefinitions) ->
     data =
       instanceDefinitions: instanceDefinitions
       targetPrefix: @getTargetPrefix()
@@ -232,20 +232,20 @@ class ComponentManager
       remove: false
     return @
 
-  updateComponents: (componentDefinitions) ->
-    @addComponents componentDefinitions
+  updateComponentDefinitions: (componentDefinitions) ->
+    @addComponentDefinitions componentDefinitions
     return @
 
-  updateInstances: (instanceDefinitions) ->
-    @addInstances instanceDefinitions
+  updateInstanceDefinitions: (instanceDefinitions) ->
+    @addInstanceDefinitions instanceDefinitions
     return @
 
-  removeComponent: (componentDefinitionId) ->
+  removeComponentDefinition: (componentDefinitionId) ->
     @_componentDefinitionsCollection.remove componentDefinitionId
     return @
 
-  removeInstance: (instanceId) ->
-    @_instanceDefinitionsCollection.remove instanceId
+  removeInstanceDefinition: (instanceDefinitionId) ->
+    @_instanceDefinitionsCollection.remove instanceDefinitionId
     return @
 
   removeListeners: ->
@@ -295,25 +295,23 @@ class ComponentManager
   getConditions: ->
     return @_globalConditionsModel.toJSON()
 
-  getComponentById: (componentId) ->
-    return @_componentDefinitionsCollection.getComponentDefinitionById(componentId).toJSON()
+  getComponentDefinitionById: (componentDefinitionId) ->
+    return @_componentDefinitionsCollection.getComponentDefinitionById(componentDefinitionId).toJSON()
 
-  getInstanceById: (instanceId) ->
-    return @_instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON()
+  getInstanceDefinitionById: (instanceDefinitionId) ->
+    return @_instanceDefinitionsCollection.getInstanceDefinition(instanceDefinitionId).toJSON()
 
-  # TODO: Rename to getComponentDefinitions
-  getComponents: ->
+  getComponentDefinitions: ->
     return @_componentDefinitionsCollection.toJSON()
 
-  # TODO: Rename to getInstanceDefinitions
-  getInstances: ->
+  getInstanceDefinitions: ->
     return @_instanceDefinitionsCollection.toJSON()
 
   getActiveInstances: (createNewInstancesIfUndefined = false) ->
     return @_mapInstances @_activeInstancesCollection.models, createNewInstancesIfUndefined
 
-  getActiveInstanceById: (instanceId) ->
-    return @_activeInstancesCollection.getInstanceDefinition(instanceId)?.get 'instance'
+  getActiveInstanceById: (instanceDefinitionId) ->
+    return @_activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)?.get 'instance'
 
   postMessageToInstance: (id, message) ->
     unless id

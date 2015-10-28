@@ -383,21 +383,21 @@ describe 'The componentManager', ->
         do $('.clear-test').remove
 
       it 'should remove all components', ->
-        components = componentManager.getComponents()
+        components = componentManager.getComponentDefinitions()
         assert.equal components.length, 1
 
         do componentManager.clear
 
-        components = componentManager.getComponents()
+        components = componentManager.getComponentDefinitions()
         assert.equal components.length, 0
 
       it 'should remove all instances', ->
-        components = componentManager.getInstances()
+        components = componentManager.getInstanceDefinitions()
         assert.equal components.length, 2
 
         do componentManager.clear
 
-        components = componentManager.getInstances()
+        components = componentManager.getInstanceDefinitions()
         assert.equal components.length, 0
 
       it 'should remove all activeComponents', ->
@@ -409,7 +409,7 @@ describe 'The componentManager', ->
 
         do componentManager.clear
 
-        instances = componentManager.getInstances()
+        instances = componentManager.getInstanceDefinitions()
         assert.equal instances.length, 0
 
       it 'should remove all filters', ->
@@ -769,7 +769,7 @@ describe 'The componentManager', ->
         cm = componentManager.initialize().addConditions conditions
         assert.equal cm, componentManager
 
-    describe 'addComponents', ->
+    describe 'addComponentDefinitions', ->
       it 'should call set on _componentDefinitionsCollection with passed definitions and parse: true, validate: true and remove: false', ->
         component =
           id: 'dummy-component',
@@ -778,7 +778,7 @@ describe 'The componentManager', ->
         do componentManager.initialize
         componentDefinitionsCollectionSetSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'set'
 
-        componentManager.addComponents component
+        componentManager.addComponentDefinitions component
 
         assert componentDefinitionsCollectionSetSpy.calledWith component,
           parse: true
@@ -800,7 +800,7 @@ describe 'The componentManager', ->
         do componentManager.initialize
         assert.equal componentManager._componentDefinitionsCollection.toJSON().length, 0
 
-        componentManager.addComponents components
+        componentManager.addComponentDefinitions components
         assert.equal componentManager._componentDefinitionsCollection.toJSON().length, 2
 
       it 'should return the componentManager for chainability', ->
@@ -808,10 +808,10 @@ describe 'The componentManager', ->
           id: 'dummy-component',
           src: 'http://www.google.com',
 
-        cm = componentManager.initialize().addComponents component
+        cm = componentManager.initialize().addComponentDefinitions component
         assert.equal cm, componentManager
 
-    describe 'addInstances', ->
+    describe 'addInstanceDefinitions', ->
       it 'should call set on _instanceDefinitionsCollection with passed definitions and parse: true, validate: true and remove: false', ->
         instance =
           id: 'dummy-instance',
@@ -826,7 +826,7 @@ describe 'The componentManager', ->
 
         instanceDefinitionsCollectionSetSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'set'
 
-        componentManager.addInstances instance
+        componentManager.addInstanceDefinitions instance
 
         assert instanceDefinitionsCollectionSetSpy.calledWith expectedResults,
           parse: true
@@ -850,7 +850,7 @@ describe 'The componentManager', ->
         do componentManager.initialize
         assert.equal componentManager._instanceDefinitionsCollection.toJSON().length, 0
 
-        componentManager.addInstances instances
+        componentManager.addInstanceDefinitions instances
         assert.equal componentManager._instanceDefinitionsCollection.toJSON().length, 2
 
       it 'should return the componentManager for chainability', ->
@@ -859,18 +859,18 @@ describe 'The componentManager', ->
           componentId: 'dummy-component',
           targetName: 'body'
 
-        cm = componentManager.initialize().addInstances instance
+        cm = componentManager.initialize().addInstanceDefinitions instance
         assert.equal cm, componentManager
 
-    describe 'updateComponents', ->
-      it 'should call addComponents with passed componentDefinitions', ->
+    describe 'updateComponentDefinitions', ->
+      it 'should call addComponentDefinitions with passed componentDefinitions', ->
         component =
           id: 'dummy-component',
           src: 'http://www.google.com',
 
         do componentManager.initialize
-        addComponentsSpy = sandbox.spy componentManager, 'addComponents'
-        componentManager.updateComponents component
+        addComponentsSpy = sandbox.spy componentManager, 'addComponentDefinitions'
+        componentManager.updateComponentDefinitions component
         assert addComponentsSpy.calledWith component
 
       it 'should update a specific component with new data', ->
@@ -891,10 +891,10 @@ describe 'The componentManager', ->
 
         do componentManager.initialize
 
-        componentManager.addComponents components
+        componentManager.addComponentDefinitions components
         assert.equal componentManager._componentDefinitionsCollection.get('dummy-component').toJSON().src, 'http://www.google.com'
 
-        componentManager.updateComponents updatedComponent
+        componentManager.updateComponentDefinitions updatedComponent
         assert.equal componentManager._componentDefinitionsCollection.get('dummy-component').toJSON().src, 'http://www.wikipedia.com'
 
       it 'should return the componentManager for chainability', ->
@@ -902,20 +902,20 @@ describe 'The componentManager', ->
           id: 'dummy-component',
           src: 'http://www.google.com',
 
-        cm = componentManager.initialize().updateComponents component
+        cm = componentManager.initialize().updateComponentDefinitions component
         assert.equal cm, componentManager
 
 
-    describe 'updateInstances', ->
-      it 'should call addInstances with passed instanceDefinitions', ->
+    describe 'updateInstanceDefinitions', ->
+      it 'should call addInstanceDefinitions with passed instanceDefinitions', ->
         instance =
           id: 'dummy-instance',
           componentId: 'dummy-component',
           targetName: 'body'
 
         do componentManager.initialize
-        addInstancesSpy = sandbox.spy componentManager, 'addInstances'
-        componentManager.updateInstances instance
+        addInstancesSpy = sandbox.spy componentManager, 'addInstanceDefinitions'
+        componentManager.updateInstanceDefinitions instance
         assert addInstancesSpy.calledWith instance
 
       it 'should update a specific instance with new data', ->
@@ -938,10 +938,10 @@ describe 'The componentManager', ->
 
         do componentManager.initialize
 
-        componentManager.addInstances instances
+        componentManager.addInstanceDefinitions instances
         assert.equal componentManager._instanceDefinitionsCollection.get('dummy-instance').toJSON().targetName, 'body'
 
-        componentManager.updateInstances updatedInstance
+        componentManager.updateInstanceDefinitions updatedInstance
         assert.equal componentManager._instanceDefinitionsCollection.get('dummy-instance').toJSON().targetName, 'component-area--header'
 
       it 'should return the componentManager for chainability', ->
@@ -950,15 +950,15 @@ describe 'The componentManager', ->
           componentId: 'dummy-component',
           targetName: 'body'
 
-        cm = componentManager.initialize().updateInstances instance
+        cm = componentManager.initialize().updateInstanceDefinitions instance
         assert.equal cm, componentManager
 
-    describe 'removeComponent', ->
+    describe 'removeComponentDefinition', ->
       it 'should call remove on the _componentDefinitionsCollection with passed componentDefinitionId', ->
         componentId = 'dummy-component'
         do componentManager.initialize
         removeComponentsSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'remove'
-        componentManager.removeComponent componentId
+        componentManager.removeComponentDefinition componentId
         assert removeComponentsSpy.calledWith componentId
 
       it 'should remove a specific component', ->
@@ -974,24 +974,24 @@ describe 'The componentManager', ->
         ]
 
         do componentManager.initialize
-        componentManager.addComponents components
+        componentManager.addComponentDefinitions components
 
         assert.equal componentManager._componentDefinitionsCollection.length, 2
-        componentManager.removeComponent components[0].id
+        componentManager.removeComponentDefinition components[0].id
         assert.equal componentManager._componentDefinitionsCollection.length, 1
         assert.equal componentManager._componentDefinitionsCollection.toJSON()[0].id, 'dummy-component2'
 
       it 'should return the componentManager for chainability', ->
         componentId = 'dummy-component'
-        cm = componentManager.initialize().removeComponent componentId
+        cm = componentManager.initialize().removeComponentDefinition componentId
         assert.equal cm, componentManager
 
-    describe 'removeInstance', ->
+    describe 'removeInstanceDefinition', ->
       it 'should call remove on the _instanceDefinitionsCollection with passed instanceDefinitionId', ->
         instanceId = 'dummy-instance'
         do componentManager.initialize
         removeInstanceSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'remove'
-        componentManager.removeInstance instanceId
+        componentManager.removeInstanceDefinition instanceId
         assert removeInstanceSpy.calledWith instanceId
 
       it 'should remove a specific instance', ->
@@ -1009,16 +1009,16 @@ describe 'The componentManager', ->
         ]
 
         do componentManager.initialize
-        componentManager.addInstances instances
+        componentManager.addInstanceDefinitions instances
 
         assert.equal componentManager._instanceDefinitionsCollection.length, 2
-        componentManager.removeInstance instances[0].id
+        componentManager.removeInstanceDefinition instances[0].id
         assert.equal componentManager._instanceDefinitionsCollection.length, 1
         assert.equal componentManager._instanceDefinitionsCollection.toJSON()[0].id, 'dummy-instance2'
 
       it 'should return the componentManager for chainability', ->
         instanceId = 'dummy-instance'
-        cm = componentManager.initialize().removeInstance instanceId
+        cm = componentManager.initialize().removeInstanceDefinition instanceId
         assert.equal cm, componentManager
 
     describe 'removeListeners', ->
@@ -1173,7 +1173,7 @@ describe 'The componentManager', ->
 
         assert.deepEqual result, globalCondition
 
-    describe 'getComponentById', ->
+    describe 'getComponentDefinitionById', ->
       it 'should get a JSON representation of the data for a specific component', ->
         do componentManager.initialize
 
@@ -1192,12 +1192,12 @@ describe 'The componentManager', ->
 
         do componentManager.initialize
 
-        componentManager.addComponents components
-        result = componentManager.getComponentById 'dummy-component'
+        componentManager.addComponentDefinitions components
+        result = componentManager.getComponentDefinitionById 'dummy-component'
 
         assert.equal result.id, expectedResultId
 
-    describe 'getInstanceById', ->
+    describe 'getInstanceDefinitionById', ->
       it 'should get a JSON representation of the data for one specific instance', ->
         do componentManager.initialize
 
@@ -1218,12 +1218,12 @@ describe 'The componentManager', ->
 
         expectedResultId = 'dummy-instance'
 
-        componentManager.addInstances instances
-        result = componentManager.getInstanceById 'dummy-instance'
+        componentManager.addInstanceDefinitions instances
+        result = componentManager.getInstanceDefinitionById 'dummy-instance'
 
         assert.equal result.id, expectedResultId
 
-    describe 'getComponents', ->
+    describe 'getComponentDefinitions', ->
       it 'should return an array of all registered components', ->
         do componentManager.initialize
 
@@ -1240,15 +1240,15 @@ describe 'The componentManager', ->
 
         expectedResultsIds = ['dummy-component', 'dummy-component2']
 
-        componentManager.addComponents components
-        results = componentManager.getComponents()
+        componentManager.addComponentDefinitions components
+        results = componentManager.getComponentDefinitions()
 
         assert.equal results.length, 2
 
         for result, i in results
           assert.equal result.id, expectedResultsIds[i]
 
-    describe 'getInstances', ->
+    describe 'getInstanceDefinitions', ->
       it 'should return all instances (even those not currently active)', ->
         do componentManager.initialize
 
@@ -1267,8 +1267,8 @@ describe 'The componentManager', ->
 
         expectedResultsIds = ['dummy-instance', 'dummy-instance2']
 
-        componentManager.addInstances instances
-        results = componentManager.getInstances()
+        componentManager.addInstanceDefinitions instances
+        results = componentManager.getInstanceDefinitions()
 
         assert.equal results.length, 2
 

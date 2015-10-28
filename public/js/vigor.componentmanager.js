@@ -1219,8 +1219,8 @@
           ref4.clear();
         }
         this._$context = void 0;
-        this._componentClassName = 'vigor-component';
-        this._targetPrefix = 'component-area';
+        this._componentClassName = COMPONENT_CLASS_NAME;
+        this._targetPrefix = TARGET_PREFIX;
         return this;
       };
 
@@ -1315,7 +1315,7 @@
         return this;
       };
 
-      ComponentManager.prototype.addComponents = function(componentDefinitions) {
+      ComponentManager.prototype.addComponentDefinitions = function(componentDefinitions) {
         this._componentDefinitionsCollection.set(componentDefinitions, {
           parse: true,
           validate: true,
@@ -1324,7 +1324,7 @@
         return this;
       };
 
-      ComponentManager.prototype.addInstances = function(instanceDefinitions) {
+      ComponentManager.prototype.addInstanceDefinitions = function(instanceDefinitions) {
         var data;
         data = {
           instanceDefinitions: instanceDefinitions,
@@ -1338,23 +1338,23 @@
         return this;
       };
 
-      ComponentManager.prototype.updateComponents = function(componentDefinitions) {
-        this.addComponents(componentDefinitions);
+      ComponentManager.prototype.updateComponentDefinitions = function(componentDefinitions) {
+        this.addComponentDefinitions(componentDefinitions);
         return this;
       };
 
-      ComponentManager.prototype.updateInstances = function(instanceDefinitions) {
-        this.addInstances(instanceDefinitions);
+      ComponentManager.prototype.updateInstanceDefinitions = function(instanceDefinitions) {
+        this.addInstanceDefinitions(instanceDefinitions);
         return this;
       };
 
-      ComponentManager.prototype.removeComponent = function(componentDefinitionId) {
+      ComponentManager.prototype.removeComponentDefinition = function(componentDefinitionId) {
         this._componentDefinitionsCollection.remove(componentDefinitionId);
         return this;
       };
 
-      ComponentManager.prototype.removeInstance = function(instanceId) {
-        this._instanceDefinitionsCollection.remove(instanceId);
+      ComponentManager.prototype.removeInstanceDefinition = function(instanceDefinitionId) {
+        this._instanceDefinitionsCollection.remove(instanceDefinitionId);
         return this;
       };
 
@@ -1428,19 +1428,19 @@
         return this._globalConditionsModel.toJSON();
       };
 
-      ComponentManager.prototype.getComponentById = function(componentId) {
-        return this._componentDefinitionsCollection.getComponentDefinitionById(componentId).toJSON();
+      ComponentManager.prototype.getComponentDefinitionById = function(componentDefinitionId) {
+        return this._componentDefinitionsCollection.getComponentDefinitionById(componentDefinitionId).toJSON();
       };
 
-      ComponentManager.prototype.getInstanceById = function(instanceId) {
-        return this._instanceDefinitionsCollection.getInstanceDefinition(instanceId).toJSON();
+      ComponentManager.prototype.getInstanceDefinitionById = function(instanceDefinitionId) {
+        return this._instanceDefinitionsCollection.getInstanceDefinition(instanceDefinitionId).toJSON();
       };
 
-      ComponentManager.prototype.getComponents = function() {
+      ComponentManager.prototype.getComponentDefinitions = function() {
         return this._componentDefinitionsCollection.toJSON();
       };
 
-      ComponentManager.prototype.getInstances = function() {
+      ComponentManager.prototype.getInstanceDefinitions = function() {
         return this._instanceDefinitionsCollection.toJSON();
       };
 
@@ -1451,9 +1451,9 @@
         return this._mapInstances(this._activeInstancesCollection.models, createNewInstancesIfUndefined);
       };
 
-      ComponentManager.prototype.getActiveInstanceById = function(instanceId) {
+      ComponentManager.prototype.getActiveInstanceById = function(instanceDefinitionId) {
         var ref;
-        return (ref = this._activeInstancesCollection.getInstanceDefinition(instanceId)) != null ? ref.get('instance') : void 0;
+        return (ref = this._activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)) != null ? ref.get('instance') : void 0;
       };
 
       ComponentManager.prototype.postMessageToInstance = function(id, message) {
