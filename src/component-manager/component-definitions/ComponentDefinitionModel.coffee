@@ -67,7 +67,7 @@ class ComponentDefinitionModel extends Backbone.Model
 
     return componentClass
 
-  areConditionsMet: (globalConditions) ->
+  areConditionsMet: (filter, globalConditions) ->
     componentConditions = @get 'conditions'
     shouldBeIncluded = true
 
@@ -76,7 +76,7 @@ class ComponentDefinitionModel extends Backbone.Model
         componentConditions = [componentConditions]
 
       for condition in componentConditions
-        if _.isFunction(condition) and not condition()
+        if _.isFunction(condition) and not condition(filter, @get('args'))
           shouldBeIncluded = false
           break
 
@@ -87,7 +87,7 @@ class ComponentDefinitionModel extends Backbone.Model
           unless globalConditions[condition]?
             throw @ERROR.MISSING_CONDITION condition
 
-          shouldBeIncluded = !!globalConditions[condition]()
+          shouldBeIncluded = !!globalConditions[condition](filter, @get('args'))
           if not shouldBeIncluded
             break
 

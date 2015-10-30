@@ -170,6 +170,9 @@ describe 'ComponentDefinitionModel', ->
 
     it 'should run condition method on globalConditions object if condition is a string', ->
       stub = sinon.stub()
+      filter =
+        url: 'foo'
+
       globalConditions =
         truthyMethod: stub.returns(true)
 
@@ -179,13 +182,16 @@ describe 'ComponentDefinitionModel', ->
         conditions: 'truthyMethod'
 
       model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
-      model.areConditionsMet(globalConditions)
+      model.areConditionsMet(filter, globalConditions)
       assert.ok stub.called
 
     it 'should run condition methods on globalConditions object if conditions is an array of strings', ->
       stub1 = sinon.stub()
       stub2 = sinon.stub()
       stub3 = sinon.stub()
+
+      filter =
+        url: 'foo'
 
       globalConditions =
         method1: stub1.returns(true)
@@ -198,13 +204,16 @@ describe 'ComponentDefinitionModel', ->
         conditions: ['method1', 'method2', 'method3']
 
       model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
-      result = model.areConditionsMet(globalConditions)
+      result = model.areConditionsMet(filter, globalConditions)
       assert.ok stub1.called
       assert.ok stub2.called
       assert.ok stub3.called
 
     it 'should return false if condition is a string and can be used as a key on the globalConditions object and that method returns falsy', ->
       falsyValues = [false, undefined, 0, '', null, NaN]
+      filter =
+        url: 'foo'
+
       for value in falsyValues
         stub = sinon.stub()
         globalConditions =
@@ -216,11 +225,14 @@ describe 'ComponentDefinitionModel', ->
           conditions: 'truthyMethod'
 
         model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
-        result = model.areConditionsMet(globalConditions)
+        result = model.areConditionsMet(filter, globalConditions)
         assert.equal result, false
 
     it 'should return true if condition is a string and can be used as a key on the globalConditions object and that method returns truthy', ->
       truthyValues = [true, {}, [], 42, 'foo', new Date()]
+      filter =
+        url: 'foo'
+
       for value in truthyValues
         stub = sinon.stub()
         globalConditions =
@@ -232,7 +244,7 @@ describe 'ComponentDefinitionModel', ->
           conditions: 'truthyMethod'
 
         model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
-        result = model.areConditionsMet(globalConditions)
+        result = model.areConditionsMet(filter, globalConditions)
         assert.equal result, true
 
     it 'should throw an error if the condition is a string and no globalConditions object is passed to the method ', ->
@@ -251,11 +263,14 @@ describe 'ComponentDefinitionModel', ->
         src: 'app.test.DummyComponent'
         conditions: 'truthyMethod'
 
+      filter =
+        url: 'foo'
+
       globalConditions =
         falsyMethod: -> return false
 
       model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
-      errorFn = -> model.areConditionsMet(globalConditions)
+      errorFn = -> model.areConditionsMet(filter, globalConditions)
       assert.throws (-> errorFn()), /Trying to verify condition truthyMethod but it has not been registered yet/
 
   describe '_isUrl', ->

@@ -108,7 +108,8 @@ describe 'The componentManager', ->
         assert filterModelParse.calledWith filterOptions
         assert filterModelSet.calledWith parsedFilterOptions
 
-      it 'should call the callback and pass the filter and activeInstances if a callback method is passed', ->
+      it 'should call the callback and pass the filter and activeInstances if a
+      callback method is passed', ->
         cb = sandbox.spy()
         updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
         settings =
@@ -2164,7 +2165,8 @@ describe 'The componentManager', ->
           }
         ]
 
-      it 'should return instanceDefinitions that passes componentConditions if they are defined', ->
+      it 'should return instanceDefinitions that passes componentConditions if 
+      they are defined', ->
         componentManager.initialize componentSettings
         condition = ->
           currentTime = 8
@@ -2183,7 +2185,8 @@ describe 'The componentManager', ->
         assert areConditionsMetSpy.calledTwice
         assert.equal instanceDefinitions.length, 2
 
-      it 'should not return instanceDefinitions that does not pass componentConditions if they are defined', ->
+      it 'should not return instanceDefinitions that does not pass 
+      componentConditions if they are defined', ->
         componentManager.initialize componentSettings
         condition = ->
           currentTime = 2
@@ -2202,7 +2205,8 @@ describe 'The componentManager', ->
         assert areConditionsMetSpy.calledTwice
         assert.equal instanceDefinitions.length, 0
 
-      it 'should use global conditions if a string referenced is defined as condition in the condition model', ->
+      it 'should use global conditions if a string referenced is defined as
+      condition in the condition model', ->
         componentManager.initialize componentSettings
         condition =
           timeCheck: ->

@@ -461,7 +461,7 @@
         return componentClass;
       };
 
-      ComponentDefinitionModel.prototype.areConditionsMet = function(globalConditions) {
+      ComponentDefinitionModel.prototype.areConditionsMet = function(filter, globalConditions) {
         var componentConditions, condition, j, len, shouldBeIncluded;
         componentConditions = this.get('conditions');
         shouldBeIncluded = true;
@@ -471,7 +471,7 @@
           }
           for (j = 0, len = componentConditions.length; j < len; j++) {
             condition = componentConditions[j];
-            if (_.isFunction(condition) && !condition()) {
+            if (_.isFunction(condition) && !condition(filter, this.get('args'))) {
               shouldBeIncluded = false;
               break;
             } else if (_.isString(condition)) {
@@ -481,7 +481,7 @@
               if (globalConditions[condition] == null) {
                 throw this.ERROR.MISSING_CONDITION(condition);
               }
-              shouldBeIncluded = !!globalConditions[condition]();
+              shouldBeIncluded = !!globalConditions[condition](filter, this.get('args'));
               if (!shouldBeIncluded) {
                 break;
               }
@@ -1610,13 +1610,14 @@
       };
 
       ComponentManager.prototype._filterInstanceDefinitionsByConditions = function(instanceDefinitions) {
-        var globalConditions;
+        var filter, globalConditions;
+        filter = this._filterModel.toJSON();
         globalConditions = this._globalConditionsModel.toJSON();
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
             var componentDefinition;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
-            return componentDefinition.areConditionsMet(globalConditions);
+            return componentDefinition.areConditionsMet(filter, globalConditions);
           };
         })(this));
       };

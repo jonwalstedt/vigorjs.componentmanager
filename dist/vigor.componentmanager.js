@@ -411,10 +411,8 @@
       ComponentDefinitionModel.prototype.defaults = {
         id: void 0,
         src: void 0,
-        height: void 0,
         args: void 0,
         conditions: void 0,
-        instance: void 0,
         maxShowCount: void 0
       };
 
@@ -463,7 +461,7 @@
         return componentClass;
       };
 
-      ComponentDefinitionModel.prototype.areConditionsMet = function(globalConditions) {
+      ComponentDefinitionModel.prototype.areConditionsMet = function(filter, globalConditions) {
         var componentConditions, condition, j, len, shouldBeIncluded;
         componentConditions = this.get('conditions');
         shouldBeIncluded = true;
@@ -473,7 +471,7 @@
           }
           for (j = 0, len = componentConditions.length; j < len; j++) {
             condition = componentConditions[j];
-            if (_.isFunction(condition) && !condition()) {
+            if (_.isFunction(condition) && !condition(filter, this.get('args'))) {
               shouldBeIncluded = false;
               break;
             } else if (_.isString(condition)) {
@@ -483,7 +481,7 @@
               if (globalConditions[condition] == null) {
                 throw this.ERROR.MISSING_CONDITION(condition);
               }
-              shouldBeIncluded = !!globalConditions[condition]();
+              shouldBeIncluded = !!globalConditions[condition](filter, this.get('args'));
               if (!shouldBeIncluded) {
                 break;
               }
@@ -987,7 +985,7 @@
         return instanceDefinition;
       };
 
-      InstanceDefinitionsCollection.prototype.getInstanceDefinitions = function(filterModel, globalConditions) {
+      InstanceDefinitionsCollection.prototype.filterInstanceDefinitions = function(filterModel, globalConditions) {
         var blackListedKeys, customFilter, filter, instanceDefinitions, key, val;
         filter = (filterModel != null ? filterModel.toJSON() : void 0) || {};
         instanceDefinitions = this.models;
@@ -1593,7 +1591,7 @@
       ComponentManager.prototype._filterInstanceDefinitions = function() {
         var globalConditions, instanceDefinitions;
         globalConditions = this._globalConditionsModel.toJSON();
-        instanceDefinitions = this._instanceDefinitionsCollection.getInstanceDefinitions(this._filterModel, globalConditions);
+        instanceDefinitions = this._instanceDefinitionsCollection.filterInstanceDefinitions(this._filterModel, globalConditions);
         instanceDefinitions = this._filterInstanceDefinitionsByShowCount(instanceDefinitions);
         instanceDefinitions = this._filterInstanceDefinitionsByConditions(instanceDefinitions);
         instanceDefinitions = this._filterInstanceDefinitionsByTargetAvailability(instanceDefinitions);
@@ -1612,13 +1610,14 @@
       };
 
       ComponentManager.prototype._filterInstanceDefinitionsByConditions = function(instanceDefinitions) {
-        var globalConditions;
+        var filter, globalConditions;
+        filter = this._filterModel.toJSON();
         globalConditions = this._globalConditionsModel.toJSON();
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
             var componentDefinition;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
-            return componentDefinition.areConditionsMet(globalConditions);
+            return componentDefinition.areConditionsMet(filter, globalConditions);
           };
         })(this));
       };
@@ -1629,16 +1628,6 @@
             return _this._isTargetAvailable(instanceDefinition);
           };
         })(this));
-      };
-
-      ComponentManager.prototype._getInstanceHeight = function(instanceDefinition) {
-        var componentDefinition, height;
-        componentDefinition = this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
-        height = componentDefinition.get('height');
-        if (instanceDefinition.get('height')) {
-          height = instanceDefinition.get('height');
-        }
-        return height;
       };
 
       ComponentManager.prototype._getInstanceArguments = function(instanceDefinition) {
@@ -1663,13 +1652,10 @@
       };
 
       ComponentManager.prototype._addInstanceToModel = function(instanceDefinition) {
-        var componentClass, height, instance;
+        var componentClass, instance;
         componentClass = this._componentDefinitionsCollection.getComponentClassByInstanceDefinition(instanceDefinition);
         instance = new componentClass(this._getInstanceArguments(instanceDefinition));
         instance.$el.addClass(this.getComponentClassName());
-        if (height = this._getInstanceHeight(instanceDefinition)) {
-          instance.$el.css('height', height + "px");
-        }
         instanceDefinition.set({
           'instance': instance
         }, {

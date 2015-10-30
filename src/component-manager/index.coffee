@@ -446,10 +446,11 @@ class ComponentManager
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
   _filterInstanceDefinitionsByConditions: (instanceDefinitions) ->
+    filter = @_filterModel.toJSON()
     globalConditions = @_globalConditionsModel.toJSON()
     _.filter instanceDefinitions, (instanceDefinition) =>
       componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
-      return componentDefinition.areConditionsMet globalConditions
+      return componentDefinition.areConditionsMet filter, globalConditions
 
   _filterInstanceDefinitionsByTargetAvailability: (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) =>
