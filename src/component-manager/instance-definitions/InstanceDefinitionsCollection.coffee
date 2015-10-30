@@ -40,7 +40,7 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
       instanceDefinition.urlPattern = ['*notFound', '*action']
     return instanceDefinition
 
-  getInstanceDefinitions: (filterModel, globalConditions) ->
+  filterInstanceDefinitions: (filterModel, globalConditions) ->
     filter = filterModel?.toJSON() or {}
     instanceDefinitions = @models
     if filterModel

@@ -2052,14 +2052,14 @@ describe 'The componentManager', ->
         do $('.component-area--header').remove
         do $('.component-area--main').remove
 
-      it 'should call _instanceDefinitionsCollection.getInstanceDefinitions
+      it 'should call _instanceDefinitionsCollection.filterInstanceDefinitions
       with the filterModel and globalConditions', ->
-        getInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'getInstanceDefinitions'
+        filterInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'filterInstanceDefinitions'
         do componentManager._filterInstanceDefinitions
-        assert getInstanceDefinitionsStub.calledWith filterModel, globalConditions
+        assert filterInstanceDefinitionsStub.calledWith filterModel, globalConditions
 
       it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions
-      that was returned by _instanceDefinitionsCollection.getInstanceDefinitions', ->
+      that was returned by _instanceDefinitionsCollection.filterInstanceDefinitions', ->
         expectedInstanceDefinitionId = 'instance-1'
         filterInstanceDefinitionsByShowCountStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByShowCount'
         do componentManager._filterInstanceDefinitions

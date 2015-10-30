@@ -433,7 +433,7 @@ class ComponentManager
 
   _filterInstanceDefinitions: ->
     globalConditions = @_globalConditionsModel.toJSON()
-    instanceDefinitions = @_instanceDefinitionsCollection.getInstanceDefinitions @_filterModel, globalConditions
+    instanceDefinitions = @_instanceDefinitionsCollection.filterInstanceDefinitions @_filterModel, globalConditions
     instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByConditions instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByTargetAvailability instanceDefinitions

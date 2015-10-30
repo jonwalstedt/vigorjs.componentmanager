@@ -268,7 +268,7 @@ describe 'InstanceDefinitionsCollection', ->
       parsedData = instanceDefinitionsCollection.parseInstanceDefinition instanceDefinition
       assert.deepEqual parsedData, expectedResults
 
-  describe 'getInstanceDefinitions', ->
+  describe 'filterInstanceDefinitions', ->
     describe 'should return instanceDefinitions that matches passed filter', ->
 
       beforeEach ->
@@ -322,7 +322,7 @@ describe 'InstanceDefinitionsCollection', ->
         globalConditions =
           foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         # two global components and one that matches the url in the filter
         assert.equal filteredInstances.length, 3
@@ -334,7 +334,7 @@ describe 'InstanceDefinitionsCollection', ->
         globalConditions =
           foo: -> return false
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions undefined, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions undefined, globalConditions
 
         # all components except the one with a falsy condition
         assert.equal filteredInstances.length, 4
@@ -343,28 +343,28 @@ describe 'InstanceDefinitionsCollection', ->
         assert.equal filteredInstances[2].get('id'), 'instance-4'
         assert.equal filteredInstances[3].get('id'), 'instance-5'
 
-      it 'should only return instanceDefinitions that has a filterString that 
+      it 'should only return instanceDefinitions that has a filterString that
       matches the string defined in hasToMatchString', ->
         filter = new FilterModel hasToMatchString: 'foo'
 
         globalConditions =
           foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         # only the component matching the string foo
         assert.equal filteredInstances.length, 1
         assert.equal filteredInstances[0].get('id'), 'instance-1'
 
       it 'should return instanceDefinitions that has a filterString that matches
-       the string defined in includeIfStringMatches and instanceDefinitions that 
+       the string defined in includeIfStringMatches and instanceDefinitions that
        doesnt have a filterString defined', ->
         filter = new FilterModel includeIfStringMatches: 'bar'
 
         globalConditions =
           foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         # one component matching the string and the component that doesn't have any filterString defined
         assert.equal filteredInstances.length, 3
@@ -372,15 +372,15 @@ describe 'InstanceDefinitionsCollection', ->
         assert.equal filteredInstances[1].get('id'), 'instance-4'
         assert.equal filteredInstances[2].get('id'), 'instance-5'
 
-      it 'should return instanceDefinitions that has a filterString that doesnt 
-      matches the string defined in excludeIfStringMatches and 
+      it 'should return instanceDefinitions that has a filterString that doesnt
+      matches the string defined in excludeIfStringMatches and
       instanceDefinitions that doesnt have a filterString defined', ->
         filter = new FilterModel excludeIfStringMatches: 'bar'
 
         globalConditions =
           foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         # one component matching the string and the component that doesn't have any filterString defined
         assert.equal filteredInstances.length, 4
@@ -389,14 +389,14 @@ describe 'InstanceDefinitionsCollection', ->
         assert.equal filteredInstances[2].get('id'), 'instance-4'
         assert.equal filteredInstances[3].get('id'), 'instance-5'
 
-      it 'should return instanceDefinitions that has a filterString that doesnt 
+      it 'should return instanceDefinitions that has a filterString that doesnt
       matches the string defined in includeIfStringMatches', ->
         filter = new FilterModel cantMatchString: 'bar'
 
         globalConditions =
           foo: -> return true
 
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         # all components except the one with bar defined as a filterString
         assert.equal filteredInstances.length, 2
@@ -406,13 +406,13 @@ describe 'InstanceDefinitionsCollection', ->
       it 'should filter and return instanceDefinitions using custom properties', ->
         filter = new FilterModel myCustomProperty: 'foo'
         globalConditions = {}
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         # all components except the one with bar defined as a filterString
         assert.equal filteredInstances.length, 1
         assert.equal filteredInstances[0].get('id'), 'instance-5'
 
-      it 'should filter and return instanceDefinitions using custom properties 
+      it 'should filter and return instanceDefinitions using custom properties
       combined with regular filterters', ->
 
         data =
@@ -452,7 +452,7 @@ describe 'InstanceDefinitionsCollection', ->
         # customProperty set to 'bar'
         filter = new FilterModel myCustomProperty: 'bar'
         globalConditions = {}
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         assert.equal filteredInstances.length, 2
         assert.equal filteredInstances[0].get('id'), 'instance-1'
@@ -461,7 +461,7 @@ describe 'InstanceDefinitionsCollection', ->
         # Verify that we only get compoents that have a filterString matching 'bar'
         filter = new FilterModel hasToMatchString: 'bar'
         globalConditions = {}
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         assert.equal filteredInstances.length, 2
         assert.equal filteredInstances[0].get('id'), 'instance-2'
@@ -474,15 +474,15 @@ describe 'InstanceDefinitionsCollection', ->
           myCustomProperty: 'bar'
 
         globalConditions = {}
-        filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter, globalConditions
+        filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter, globalConditions
 
         assert.equal filteredInstances.length, 1
         assert.equal filteredInstances[0].get('id'), 'instance-2'
 
   describe 'addUrlParams', ->
-    it 'should call addUrlParams and pass along the url to all 
+    it 'should call addUrlParams and pass along the url to all
     instanceDefinitionModels passed to the method', ->
-      data = 
+      data =
         targetPrefix: 'foo'
         instanceDefinitions: [
           {
@@ -522,7 +522,7 @@ describe 'InstanceDefinitionsCollection', ->
 
       url = 'a-url-that-only-the-components-with-a-global-url-pattern-will-match'
       filter = new FilterModel url: url
-      filteredInstances = instanceDefinitionsCollection.getInstanceDefinitions filter
+      filteredInstances = instanceDefinitionsCollection.filterInstanceDefinitions filter
 
       for instance in filteredInstances
         sinon.spy instance, 'addUrlParams'
