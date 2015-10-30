@@ -70,7 +70,6 @@ class ComponentManager
     return @
 
   serialize: ->
-    hidden = []
     componentSettings = {}
     conditions = @_globalConditionsModel.toJSON()
     components = @_componentDefinitionsCollection.toJSON()
@@ -94,7 +93,6 @@ class ComponentManager
       componentSettings:
         conditions: conditions
         components: components
-        hidden: hidden
         instances: instances
 
     filter = (key, value) ->
@@ -359,7 +357,6 @@ class ComponentManager
     componentSettings.instances
 
     silent = true
-    hidden = componentSettings.hidden
 
     if componentSettings.conditions
       conditions = componentSettings.conditions
@@ -394,13 +391,6 @@ class ComponentManager
 
     return @
 
-  _previousElement: ($el, order = 0) ->
-    if $el.length > 0
-      if $el.data('order') < order
-        return $el
-      else
-        @_previousElement $el.prev(), order
-
   _updateActiveComponents: =>
     options = @_filterModel.getFilterOptions()
     instanceDefinitions = @_filterInstanceDefinitions()
@@ -416,20 +406,6 @@ class ComponentManager
     # check if we have any stray instances in active components and then try to readd them
     do @_tryToReAddStraysToDom
     return returnData
-
-  _mapInstances: (instanceDefinitions, createNewInstancesIfUndefined = false) ->
-    unless _.isArray(instanceDefinitions)
-      instanceDefinitions = [instanceDefinitions]
-
-    instanceDefinitions = _.compact instanceDefinitions
-
-    instances = _.map instanceDefinitions, (instanceDefinition) =>
-      instance = instanceDefinition.get 'instance'
-      if createNewInstancesIfUndefined and not instance?
-        @_addInstanceToModel instanceDefinition
-        instance = instanceDefinition.get 'instance'
-      return instance
-    return _.compact(instances)
 
   _filterInstanceDefinitions: ->
     globalConditions = @_globalConditionsModel.toJSON()
@@ -540,6 +516,27 @@ class ComponentManager
         do instance.onAddedToDom
 
     return @
+
+  _previousElement: ($el, order = 0) ->
+    if $el.length > 0
+      if $el.data('order') < order
+        return $el
+      else
+        @_previousElement $el.prev(), order
+
+  _mapInstances: (instanceDefinitions, createNewInstancesIfUndefined = false) ->
+    unless _.isArray(instanceDefinitions)
+      instanceDefinitions = [instanceDefinitions]
+
+    instanceDefinitions = _.compact instanceDefinitions
+
+    instances = _.map instanceDefinitions, (instanceDefinition) =>
+      instance = instanceDefinition.get 'instance'
+      if createNewInstancesIfUndefined and not instance?
+        @_addInstanceToModel instanceDefinition
+        instance = instanceDefinition.get 'instance'
+      return instance
+    return _.compact(instances)
 
   _isTargetAvailable: (instanceDefinition) ->
     $target = @_getTarget instanceDefinition

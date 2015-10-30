@@ -1134,8 +1134,7 @@
       };
 
       ComponentManager.prototype.serialize = function() {
-        var $context, classes, componentSettings, components, conditions, contextSelector, filter, hidden, instanceDefinition, instances, j, len, ref, settings, tagName;
-        hidden = [];
+        var $context, classes, componentSettings, components, conditions, contextSelector, filter, instanceDefinition, instances, j, len, ref, settings, tagName;
         componentSettings = {};
         conditions = this._globalConditionsModel.toJSON();
         components = this._componentDefinitionsCollection.toJSON();
@@ -1159,7 +1158,6 @@
           componentSettings: {
             conditions: conditions,
             components: components,
-            hidden: hidden,
             instances: instances
           }
         };
@@ -1493,11 +1491,10 @@
       };
 
       ComponentManager.prototype._parseComponentSettings = function(componentSettings) {
-        var componentDefinitions, conditions, hidden, instanceDefinitions, silent;
+        var componentDefinitions, conditions, instanceDefinitions, silent;
         componentDefinitions = componentSettings.components || componentSettings.widgets || componentSettings.componentDefinitions;
         instanceDefinitions = componentSettings.layoutsArray || componentSettings.targets || componentSettings.instanceDefinitions || componentSettings.instances;
         silent = true;
-        hidden = componentSettings.hidden;
         if (componentSettings.conditions) {
           conditions = componentSettings.conditions;
           if (_.isObject(conditions) && !_.isEmpty(conditions)) {
@@ -1536,19 +1533,6 @@
         return this;
       };
 
-      ComponentManager.prototype._previousElement = function($el, order) {
-        if (order == null) {
-          order = 0;
-        }
-        if ($el.length > 0) {
-          if ($el.data('order') < order) {
-            return $el;
-          } else {
-            return this._previousElement($el.prev(), order);
-          }
-        }
-      };
-
       ComponentManager.prototype._updateActiveComponents = function() {
         var instanceDefinitions, lastChange, options, returnData;
         options = this._filterModel.getFilterOptions();
@@ -1563,29 +1547,6 @@
         };
         this._tryToReAddStraysToDom();
         return returnData;
-      };
-
-      ComponentManager.prototype._mapInstances = function(instanceDefinitions, createNewInstancesIfUndefined) {
-        var instances;
-        if (createNewInstancesIfUndefined == null) {
-          createNewInstancesIfUndefined = false;
-        }
-        if (!_.isArray(instanceDefinitions)) {
-          instanceDefinitions = [instanceDefinitions];
-        }
-        instanceDefinitions = _.compact(instanceDefinitions);
-        instances = _.map(instanceDefinitions, (function(_this) {
-          return function(instanceDefinition) {
-            var instance;
-            instance = instanceDefinition.get('instance');
-            if (createNewInstancesIfUndefined && (instance == null)) {
-              _this._addInstanceToModel(instanceDefinition);
-              instance = instanceDefinition.get('instance');
-            }
-            return instance;
-          };
-        })(this));
-        return _.compact(instances);
       };
 
       ComponentManager.prototype._filterInstanceDefinitions = function() {
@@ -1732,6 +1693,42 @@
           }
         }
         return this;
+      };
+
+      ComponentManager.prototype._previousElement = function($el, order) {
+        if (order == null) {
+          order = 0;
+        }
+        if ($el.length > 0) {
+          if ($el.data('order') < order) {
+            return $el;
+          } else {
+            return this._previousElement($el.prev(), order);
+          }
+        }
+      };
+
+      ComponentManager.prototype._mapInstances = function(instanceDefinitions, createNewInstancesIfUndefined) {
+        var instances;
+        if (createNewInstancesIfUndefined == null) {
+          createNewInstancesIfUndefined = false;
+        }
+        if (!_.isArray(instanceDefinitions)) {
+          instanceDefinitions = [instanceDefinitions];
+        }
+        instanceDefinitions = _.compact(instanceDefinitions);
+        instances = _.map(instanceDefinitions, (function(_this) {
+          return function(instanceDefinition) {
+            var instance;
+            instance = instanceDefinition.get('instance');
+            if (createNewInstancesIfUndefined && (instance == null)) {
+              _this._addInstanceToModel(instanceDefinition);
+              instance = instanceDefinition.get('instance');
+            }
+            return instance;
+          };
+        })(this));
+        return _.compact(instances);
       };
 
       ComponentManager.prototype._isTargetAvailable = function(instanceDefinition) {
