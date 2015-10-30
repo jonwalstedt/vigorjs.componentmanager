@@ -2266,49 +2266,6 @@ describe 'The componentManager', ->
         assert.equal result.length, 1
         assert.equal result[0].attributes.id, expectedResultId
 
-
-    describe '_getInstanceHeight', ->
-      componentSettings =
-        components: [
-          {
-            id: 'mock-component',
-            src: 'window.MockComponent'
-          }
-        ]
-        instances: [
-          {
-            id: 'instance-1',
-            componentId: 'mock-component',
-            targetName: 'test-prefix--header'
-          }
-        ]
-
-      height = 400
-
-      beforeEach ->
-        componentManager.initialize componentSettings
-
-      it 'should return height defined on a component level if the height on an instance level is not defined', ->
-        componentManager._componentDefinitionsCollection.models[0].attributes.height = height
-        componentManager._instanceDefinitionsCollection.models[0].attributes.height = undefined
-        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
-        result = componentManager._getInstanceHeight instanceDefinition
-        assert.equal result, height
-
-      it 'should return height defined on an instance level if it is defined', ->
-        componentManager._componentDefinitionsCollection.models[0].attributes.height = undefined
-        componentManager._instanceDefinitionsCollection.models[0].attributes.height = height
-        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
-        result = componentManager._getInstanceHeight instanceDefinition
-        assert.equal result, height
-
-      it 'should return undefined if the height is niether defined on an component level or on an instance level', ->
-        componentManager._componentDefinitionsCollection.models[0].attributes.height = undefined
-        componentManager._instanceDefinitionsCollection.models[0].attributes.height = undefined
-        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
-        result = componentManager._getInstanceHeight instanceDefinition
-        assert.equal result, undefined
-
     describe '_getInstanceArguments', ->
       componentSettings =
         components: [
@@ -2512,14 +2469,6 @@ describe 'The componentManager', ->
 
         assert getComponentClassNameSpy.calledOnce
 
-      it 'should call _getInstanceHeight to get instance height if set (main use case is iframe components)', ->
-        getInstanceHeightSpy = sandbox.spy componentManager, '_getInstanceHeight'
-        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
-
-        componentManager._addInstanceToModel instanceDefinition
-
-        assert getInstanceHeightSpy.calledWith instanceDefinition
-
       it 'it should create a new instance of the class defined in the componentDefinition and update the instanceDefinition with the instance', ->
         instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
         instanceDefinitionSetSpy = sandbox.spy instanceDefinition, 'set'
@@ -2555,17 +2504,6 @@ describe 'The componentManager', ->
         instance = instanceDefinitionSetSpy.args[0][0].instance
 
         assert instance.$el.hasClass(newComponentClassName)
-
-      it 'if a height is defined it should add it to the instance.$el', ->
-        instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]
-        instanceDefinition.set 'height', 200
-        instanceDefinitionSetSpy = sandbox.spy instanceDefinition, 'set'
-
-        componentManager._addInstanceToModel instanceDefinition
-
-        instance = instanceDefinitionSetSpy.args[0][0].instance
-
-        assert.equal instance.$el.get(0).style.height, '200px'
 
       it 'it should return the passed instanceDefinition', ->
         instanceDefinition = componentManager._instanceDefinitionsCollection.models[0]

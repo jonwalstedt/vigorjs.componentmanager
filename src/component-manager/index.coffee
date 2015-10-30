@@ -455,13 +455,6 @@ class ComponentManager
     _.filter instanceDefinitions, (instanceDefinition) =>
       return @_isTargetAvailable instanceDefinition
 
-  _getInstanceHeight: (instanceDefinition) ->
-    componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
-    height = componentDefinition.get 'height'
-    if instanceDefinition.get('height')
-      height = instanceDefinition.get 'height'
-    return height
-
   _getInstanceArguments: (instanceDefinition) ->
     args =
       urlParams: instanceDefinition.get 'urlParams'
@@ -489,9 +482,6 @@ class ComponentManager
 
     instance = new componentClass @_getInstanceArguments(instanceDefinition)
     instance.$el.addClass @getComponentClassName()
-
-    if height = @_getInstanceHeight(instanceDefinition)
-      instance.$el.css 'height', "#{height}px"
 
     instanceDefinition.set
       'instance': instance
