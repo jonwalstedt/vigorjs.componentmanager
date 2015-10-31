@@ -28,11 +28,50 @@ a {
   text-decoration: none;
 }
 
+p {
+  line-height: 24px;
+}
+
 pre {
   border: 1px solid #ccc;
   padding: 10px;
   line-height: 20px;
   word-wrap: break-word;
+}
+
+.alt {
+  font-weight: normal;
+}
+
+.property-descriptions {
+  border: 1px solid #ccc;
+  padding: 10px;
+  line-height: 24px;
+  p {
+    padding: 0 0 10px 0;
+    margin: 0;
+  }
+  dt {
+    margin-top: 20px;
+    float: left;
+    clear: left;
+    width: 160px;
+  }
+
+  dd {
+    display: block;
+    margin: 20px 0 0 170px;
+  }
+
+  dt:first-child,
+  dt:first-child + dd {
+    margin-top: 0;
+  }
+  &:after {
+    content: '';
+    clear: both;
+    display: table;
+  }
 }
 
 .header {

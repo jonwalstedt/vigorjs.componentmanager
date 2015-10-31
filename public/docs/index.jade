@@ -3,45 +3,60 @@ extends ../_custom_layout.jade
 block sidebar
   - links = ['initialize', 'updateSettings', 'refresh', 'serialize', 'parse', 'clear', 'dispose', 'addListeners', 'addConditions', 'addComponents', 'addInstances', 'updateComponents', 'updateInstances', 'removeComponent', 'removeInstance', 'removeListeners', 'setContext', 'setComponentClassName', 'setTargetPrefix', 'getComponentClassName', 'getTargetPrefix', 'getActiveFilter', 'getConditions', 'getComponentById', 'getInstanceById', 'getComponents', 'getInstances', 'getActiveInstances', 'getActiveInstanceById', 'postMessageToInstance']
   aside.sidebar
-    h4.sidebar__title Settings
-    ul.sidebar_list
-      li.sidebar_list-item
-        a.sidebar__link(href="#settings") The settings object
-
-      li.sidebar_list-item
-        a.sidebar__link(href="#component-definitions") componentDefinitions
-
-      li.sidebar_list-item
-        a.sidebar__link(href="#instance-definitions") instanceDefinitions
-
-      li.sidebar_list-item
-        a.sidebar__link(href="#conditions") conditions
-
-      li.sidebar_list-item
-        a.sidebar__link(href="#other-settings") Other settings
-
-
-    h4.sidebar__title Public methods
-    ul.sidebar_list
-      each link in links
+    div.sidebar-content
+      h4.sidebar__title Settings
+      ul.sidebar_list
         li.sidebar_list-item
-          a.sidebar__link(href="#" + link)=link
+          a.sidebar__link(href="#settings") The settings object
 
-    h4.sidebar__title Events
-    ul.sidebar_list
-      li.sidebar_list-item
+        li.sidebar_list-item
+          a.sidebar__link(href="#component-definitions") componentDefinitions
+
+        li.sidebar_list-item
+          a.sidebar__link(href="#instance-definitions") instanceDefinitions
+
+        li.sidebar_list-item
+          a.sidebar__link(href="#conditions") conditions
+
+        li.sidebar_list-item
+          a.sidebar__link(href="#other-settings") Other settings
+
+
+      h4.sidebar__title Public methods
+      ul.sidebar_list
+        each link in links
+          li.sidebar_list-item
+            a.sidebar__link(href="#" + link)=link
+
+      h4.sidebar__title Events
+      ul.sidebar_list
+        li.sidebar_list-item
 
 block content
 
-  h2 Settings
-  != partial('./settings')
-  != partial('./componentDefinitions')
-  != partial('./instanceDefinitions')
-  != partial('./conditions')
-  != partial('./other-settings')
+  section.main-section
+    h2 Settings
+    section.sub-section
+      != partial('./settings')
+    section.sub-section
+      != partial('./componentDefinitions')
+    section.sub-section
+      != partial('./instanceDefinitions')
+    section.sub-section
+      != partial('./conditions')
+    section.sub-section
+      != partial('./other-settings')
 
-  h2 Public methods
-  each link in links
-    != partial(link)
+  section.main-section
+    h2 Public methods
+    each link in links
+      section.sub-section
+        != partial(link)
 
-  h2 Events
+  section.main-section
+    h2 Classes
+    section.sub-section
+      != partial('./IframeComponent')
+
+  section.main-section
+    h2 Events

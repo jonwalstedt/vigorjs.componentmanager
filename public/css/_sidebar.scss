@@ -1,4 +1,5 @@
 .sidebar {
+  position: relative;
   background: #2a2d33;
   color: #eee;
   h4 {
@@ -6,6 +7,12 @@
   }
 }
 
+.sidebar-content {
+  position: fixed;
+  height: 100%;
+  width: $sidebarWidth;
+  overflow: auto;
+}
 .sidebar__title {
 
 }

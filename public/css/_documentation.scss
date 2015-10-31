@@ -1,0 +1,10 @@
+.main-section {
+  margin: 80px 0px;
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+.sub-section {
+  margin: 40px 0px;
+}
