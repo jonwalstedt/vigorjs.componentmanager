@@ -1,15 +1,14 @@
 assert = require 'assert'
 sinon = require 'sinon'
 Vigor = require '../../../dist/vigor.componentmanager'
-mockComponents = require '../mockComponents'
+MockComponent = require '../MockComponent'
+MockComponent2 = require '../MockComponent2'
 
 __testOnly = Vigor.ComponentManager.__testOnly
 
 ComponentDefinitionsCollection = __testOnly.ComponentDefinitionsCollection
 InstanceDefinitionModel = __testOnly.InstanceDefinitionModel
 
-MockComponent = window.MockComponent = mockComponents.MockComponent
-MockComponent2 = window.MockComponent2 = mockComponents.MockComponent2
 
 describe 'ComponentDefinitionsCollection', ->
   sandbox = undefined
@@ -27,15 +26,11 @@ describe 'ComponentDefinitionsCollection', ->
     componentDefinitions = [
       {
         id: 'mock-component-1',
-        src: 'window.MockComponent1'
+        src: '../test/spec/MockComponent'
       }
       {
         id: 'mock-component-2',
-        src: 'window.MockComponent2'
-      }
-      {
-        id: 'mock-component-3',
-        src: 'window.MockComponent3'
+        src: '../test/spec/MockComponent2'
       }
     ]
 
@@ -60,7 +55,7 @@ describe 'ComponentDefinitionsCollection', ->
 
     it 'should return the requested class defined in the componentDefinition', ->
       requestedClass = componentDefinitionsCollection.getComponentClassByInstanceDefinition instanceDefinition
-      assert.equal requestedClass, window.MockComponent2
+      assert.equal requestedClass, MockComponent2
 
   describe 'getComponentDefinitionByInstanceDefinition', ->
     it 'should call getComponentDefinitionById and pass the componentId from passed instanceDefinition', ->

@@ -1,19 +1,12 @@
 assert = require 'assert'
 sinon = require 'sinon'
 Vigor = require '../../../dist/vigor.componentmanager'
+MockComponent = require '../MockComponent'
 
 __testOnly = Vigor.ComponentManager.__testOnly
 
 ComponentDefinitionModel = __testOnly.ComponentDefinitionModel
 IframeComponent = __testOnly.IframeComponent
-
-class DummyComponent
-  $el: undefined
-  el: undefined
-  render: ->
-    @$el = $('<div class="dummy-component"></div>')
-    @el = @$el.get(0)
-    return @
 
 describe 'ComponentDefinitionModel', ->
 
@@ -61,7 +54,7 @@ describe 'ComponentDefinitionModel', ->
 
       model = new ComponentDefinitionModel()
       attrs.id = 'test'
-      attrs.src = DummyComponent
+      attrs.src = MockComponent
       errorFn = -> model.validate attrs, options
       assert.doesNotThrow (-> errorFn()), /src should be a string or a constructor function/
 
@@ -74,71 +67,74 @@ describe 'ComponentDefinitionModel', ->
 
   describe 'getClass', ->
     it 'should return the IframeComponent class if src is a url', ->
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
         src: 'http://www.google.com'
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       klass = model.getClass()
 
       assert.equal klass, IframeComponent
 
-    it 'should should try to find the class on window if src is string but not a url', ->
-      window.app = {}
-      window.app.test = {}
-      window.app.test.DummyComponent = DummyComponent
-
-      dummyComponentDefinitionObj =
-        id: 'dummy'
-        src: 'app.test.DummyComponent'
-
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
-      klass = model.getClass()
-
-      assert.equal klass, DummyComponent
-
     it 'should return src constructor function if set', ->
 
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
-        src: DummyComponent
+        src: '../test/spec/MockComponent'
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       klass = model.getClass()
 
-      assert.equal klass, DummyComponent
+      assert.equal klass, MockComponent
 
-    it 'should throw an error if no class is found', ->
-      dummyComponentDefinitionObj =
-        id: 'dummy'
-        src: 'app.test.TummyComponent'
+    # The two test below cant run in a nodejs environment the componentManager will
+    # try to require the class instead of finding it on the window object.
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+    # it 'should should try to find the class on window if src is string but not a url', ->
+    #   window.app = {}
+    #   window.app.test = {}
+    #   window.app.test.MockComponent = MockComponent
 
-      errorFn = -> model.getClass()
-      assert.throws (-> errorFn()), /No constructor function found for app.test.TummyComponent/
+    #   componentDefinitionObj =
+    #     id: 'dummy'
+    #     src: 'app.test.MockComponent'
+
+    #   model = new ComponentDefinitionModel(componentDefinitionObj)
+    #   klass = model.getClass()
+
+    #   assert.equal klass, MockComponent
+
+    # it 'should throw an error if no class is found', ->
+    #   componentDefinitionObj =
+    #     id: 'dummy'
+    #     src: 'app.test.TummyComponent'
+
+    #   model = new ComponentDefinitionModel(componentDefinitionObj)
+
+    #   errorFn = -> model.getClass()
+    #   assert.throws (-> errorFn()), /No constructor function found for app.test.TummyComponent/
 
   describe 'areConditionsMet', ->
     it 'should return false if the condition is a method that returns falsy', ->
       falsyValues = [false, undefined, 0, '', null, NaN]
       for value in falsyValues
-        dummyComponentDefinitionObj =
+        componentDefinitionObj =
           id: 'dummy'
-          src: 'app.test.DummyComponent'
+          src: MockComponent
           conditions: -> return value
 
-        model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+        model = new ComponentDefinitionModel(componentDefinitionObj)
         assert.equal model.areConditionsMet(), false
 
     it 'should return true if the condition is a method that returns truthy', ->
       truthyValues = [true, {}, [], 42, 'foo', new Date()]
       for value in truthyValues
-        dummyComponentDefinitionObj =
+        componentDefinitionObj =
           id: 'dummy'
-          src: 'app.test.DummyComponent'
+          src: MockComponent
           conditions: -> return value
 
-        model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+        model = new ComponentDefinitionModel(componentDefinitionObj)
         assert.equal model.areConditionsMet(), true
 
     it 'should return false if one out of many condition returns false', ->
@@ -148,24 +144,24 @@ describe 'ComponentDefinitionModel', ->
       truthyMethod = ->
         return true
 
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
-        src: 'app.test.DummyComponent'
+        src: MockComponent
         conditions: [truthyMethod, falsyMethod, truthyMethod]
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       assert.equal model.areConditionsMet(), false
 
     it 'should return true if all of out of many condition returns true', ->
       truthyMethod = ->
         return true
 
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
-        src: 'app.test.DummyComponent'
+        src: MockComponent
         conditions: [truthyMethod, truthyMethod, truthyMethod]
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       assert.equal model.areConditionsMet(), true
 
     it 'should run condition method on globalConditions object if condition is a string', ->
@@ -176,12 +172,12 @@ describe 'ComponentDefinitionModel', ->
       globalConditions =
         truthyMethod: stub.returns(true)
 
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
-        src: 'app.test.DummyComponent'
+        src: MockComponent
         conditions: 'truthyMethod'
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       model.areConditionsMet(filter, globalConditions)
       assert.ok stub.called
 
@@ -198,12 +194,12 @@ describe 'ComponentDefinitionModel', ->
         method2: stub2.returns(true)
         method3: stub3.returns(true)
 
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
-        src: 'app.test.DummyComponent'
+        src: MockComponent
         conditions: ['method1', 'method2', 'method3']
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       result = model.areConditionsMet(filter, globalConditions)
       assert.ok stub1.called
       assert.ok stub2.called
@@ -219,12 +215,12 @@ describe 'ComponentDefinitionModel', ->
         globalConditions =
           truthyMethod: stub.returns(value)
 
-        dummyComponentDefinitionObj =
+        componentDefinitionObj =
           id: 'dummy'
-          src: 'app.test.DummyComponent'
+          src: MockComponent
           conditions: 'truthyMethod'
 
-        model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+        model = new ComponentDefinitionModel(componentDefinitionObj)
         result = model.areConditionsMet(filter, globalConditions)
         assert.equal result, false
 
@@ -238,29 +234,29 @@ describe 'ComponentDefinitionModel', ->
         globalConditions =
           truthyMethod: stub.returns(value)
 
-        dummyComponentDefinitionObj =
+        componentDefinitionObj =
           id: 'dummy'
-          src: 'app.test.DummyComponent'
+          src: MockComponent
           conditions: 'truthyMethod'
 
-        model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+        model = new ComponentDefinitionModel(componentDefinitionObj)
         result = model.areConditionsMet(filter, globalConditions)
         assert.equal result, true
 
     it 'should throw an error if the condition is a string and no globalConditions object is passed to the method ', ->
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
-        src: 'app.test.DummyComponent'
+        src: MockComponent
         conditions: 'truthyMethod'
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       errorFn = -> model.areConditionsMet()
       assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
 
     it 'should throw an error if the condition is a string and no mehod is registered with the string as a key in the globalConditions object', ->
-      dummyComponentDefinitionObj =
+      componentDefinitionObj =
         id: 'dummy'
-        src: 'app.test.DummyComponent'
+        src: MockComponent
         conditions: 'truthyMethod'
 
       filter =
@@ -269,7 +265,7 @@ describe 'ComponentDefinitionModel', ->
       globalConditions =
         falsyMethod: -> return false
 
-      model = new ComponentDefinitionModel(dummyComponentDefinitionObj)
+      model = new ComponentDefinitionModel(componentDefinitionObj)
       errorFn = -> model.areConditionsMet(filter, globalConditions)
       assert.throws (-> errorFn()), /Trying to verify condition truthyMethod but it has not been registered yet/
 

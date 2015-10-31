@@ -1,13 +1,12 @@
 assert = require 'assert'
 sinon = require 'sinon'
 Vigor = require '../../dist/vigor.componentmanager'
-mockComponents = require './mockComponents'
 
 componentManager = new Vigor.ComponentManager()
 __testOnly = Vigor.ComponentManager.__testOnly
 
-MockComponent = window.MockComponent = mockComponents.MockComponent
-MockComponent2 = window.MockComponent2 = mockComponents.MockComponent2
+MockComponent = require './MockComponent'
+MockComponent2 = require './MockComponent2'
 
 clock = undefined
 
@@ -116,11 +115,11 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             },
             {
               id: 'mock-component-2',
-              src: 'window.MockComponent2'
+              src: '../test/spec/MockComponent2'
             }
           ]
 
@@ -176,7 +175,7 @@ describe 'The componentManager', ->
             components: [
               {
                 id: 'mock-component',
-                src: 'window.MockComponent'
+                src: '../test/spec/MockComponent'
               }
             ]
 
@@ -259,7 +258,7 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             }
           ]
           instances: [
@@ -284,7 +283,7 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             }
           ]
           instances: [
@@ -357,7 +356,7 @@ describe 'The componentManager', ->
             components: [
               {
                 id: 'mock-component',
-                src: 'window.MockComponent'
+                src: '../test/spec/MockComponent'
               }
             ]
             instances: [
@@ -1320,7 +1319,7 @@ describe 'The componentManager', ->
             components: [
               {
                 id: 'mock-component',
-                src: 'window.MockComponent'
+                src: '../test/spec/MockComponent'
               }
             ]
             instances: [
@@ -1355,7 +1354,7 @@ describe 'The componentManager', ->
         componentManager.refresh filter
 
         instance = componentManager.getActiveInstanceById id
-        assert instance instanceof window.MockComponent
+        assert instance instanceof MockComponent
 
       it 'should return undefined if there is no instance in the targeted instanceDefinition', ->
         getInstanceDefinitionSpy = sandbox.spy componentManager._activeInstancesCollection, 'getInstanceDefinition'
@@ -1380,7 +1379,7 @@ describe 'The componentManager', ->
             components: [
               {
                 id: 'mock-component',
-                src: 'window.MockComponent'
+                src: '../test/spec/MockComponent'
               }
             ]
             instances: [
@@ -1735,11 +1734,11 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent'
+            src: '../test/spec/MockComponent'
           },
           {
             id: 'mock-component2',
-            src: 'window.MockComponent2'
+            src: '../test/spec/MockComponent2'
           }
         ]
         instances: [
@@ -1887,7 +1886,7 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent'
+            src: '../test/spec/MockComponent'
           }
         ]
         instances: [
@@ -1968,7 +1967,7 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent',
+              src: '../test/spec/MockComponent',
               maxShowCount: componentMaxShowCount
             }
           ]
@@ -2010,7 +2009,7 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent',
+            src: '../test/spec/MockComponent',
             conditions: []
           }
         ]
@@ -2100,7 +2099,7 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent'
+            src: '../test/spec/MockComponent'
           }
         ]
         instances: [
@@ -2139,7 +2138,7 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent'
+            src: '../test/spec/MockComponent'
           }
           {
             id: 'mock-iframe-component',
@@ -2298,7 +2297,7 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent'
+            src: '../test/spec/MockComponent'
           }
         ]
         instances: [
@@ -2347,7 +2346,7 @@ describe 'The componentManager', ->
         silentSetting = instanceDefinitionSetSpy.args[0][1]
 
         assert instanceDefinitionSetSpy.called
-        assert instance instanceof window.MockComponent
+        assert instance instanceof MockComponent
         assert.equal silentSetting.silent, true
 
       it 'should add _componentClassName to instance.$el', ->
@@ -2384,7 +2383,7 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             }
           ]
           instances: [
@@ -2489,7 +2488,7 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             }
           ]
           instances: [
@@ -2609,7 +2608,7 @@ describe 'The componentManager', ->
               components: [
                 {
                   id: 'mock-component',
-                  src: 'window.MockComponent'
+                  src: '../test/spec/MockComponent'
                 }
               ]
               instances: [
@@ -2820,7 +2819,7 @@ describe 'The componentManager', ->
             components: [
               {
                 id: 'mock-component',
-                src: 'window.MockComponent'
+                src: '../test/spec/MockComponent'
               }
             ]
             instances: [
@@ -2856,7 +2855,7 @@ describe 'The componentManager', ->
             components: [
               {
                 id: 'mock-component',
-                src: 'window.MockComponent'
+                src: '../test/spec/MockComponent'
               }
             ]
             instances: [
@@ -2943,11 +2942,11 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             },
             {
               id: 'mock-component-2',
-              src: 'window.MockComponent2'
+              src: '../test/spec/MockComponent2'
             }
           ]
 
@@ -3020,7 +3019,7 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent'
+            src: '../test/spec/MockComponent'
           }
         ]
         instances: [
@@ -3112,7 +3111,7 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             }
           ]
           instanceDefinitions: [
@@ -3208,7 +3207,7 @@ describe 'The componentManager', ->
           components: [
             {
               id: 'mock-component',
-              src: 'window.MockComponent'
+              src: '../test/spec/MockComponent'
             }
           ]
           instanceDefinitions: [
@@ -3252,7 +3251,7 @@ describe 'The componentManager', ->
         components: [
           {
             id: 'mock-component',
-            src: 'window.MockComponent'
+            src: '../test/spec/MockComponent'
           }
         ]
         instances: [
