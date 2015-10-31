@@ -1,0 +1,25 @@
+extends ../index.jade
+
+block content
+  != partial("./hello-world")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '1'})
+
+  div.app-wrapper
+    div.controls
+      ul
+        li
+          a(href="#add-components") Add componentts
+        li
+          a(href="#remove-components") Remove components
+
+    small active filter
+    div.active-filter
+
+    small info
+    div.examples-info
+
+    small .component-area--main
+    div.component-area.component-area--main
+
+block scripts
+  script(src="https:///cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js" data-main="main")
