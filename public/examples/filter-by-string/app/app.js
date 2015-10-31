@@ -20,7 +20,7 @@ var app = app || {};
     initialize: function () {
       Vigor.componentManager.initialize({
         componentSettings: window.componentSettings,
-        $context: this.$el
+        context: this.$el
       });
 
       this.restore();

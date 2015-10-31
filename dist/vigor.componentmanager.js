@@ -445,13 +445,17 @@
         if (_.isString(src) && this._isUrl(src)) {
           componentClass = Vigor.IframeComponent;
         } else if (_.isString(src)) {
-          obj = window;
-          srcObjParts = src.split('.');
-          for (j = 0, len = srcObjParts.length; j < len; j++) {
-            part = srcObjParts[j];
-            obj = obj[part];
+          if ((_.isString(src) && typeof define === "function" && define.amd) || (_.isString(src) && typeof exports === "object")) {
+            componentClass = require(src);
+          } else {
+            obj = window;
+            srcObjParts = src.split('.');
+            for (j = 0, len = srcObjParts.length; j < len; j++) {
+              part = srcObjParts[j];
+              obj = obj[part];
+            }
+            componentClass = obj;
           }
-          componentClass = obj;
         } else if (_.isFunction(src)) {
           componentClass = src;
         }

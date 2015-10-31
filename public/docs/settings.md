@@ -4,7 +4,7 @@ To get started with the componentManager you need to setup the settings object w
 There are a couple of different ways to structure the settings object and the most straight forward setup has the following structure (example below is using the default values):
 ```javascript
 settings = {
-  $context: 'body',
+  context: 'body',
   componentClassName: 'vigor-component',
   targetPrefix: 'component-area',
   listenForMessages: false,
@@ -23,7 +23,7 @@ The componentsArray should contain one or multiple [componentDefinition](#compon
 And here is an example of how it could look with some content:
 ```javascript
 settings = {
-  $context: '.my-app',
+  context: '.my-app',
   componentClassName: 'my-component',
   targetPrefix: 'my-component-area',
   componentSettings: {
@@ -74,7 +74,7 @@ If you like to group your instances under their targets that is also possible by
 
 ```javascript
 settings = {
-  $context: 'body',
+  context: 'body',
   componentClassName: 'vigor-component',
   targetPrefix: 'component-area',
   listenForMessages: false,
@@ -89,7 +89,7 @@ settings = {
 And here is an example of how this could look with some content:
 ```javascript
 settings = {
-  $context: '.my-app',
+  context: '.my-app',
   componentClassName: 'my-component',
   targetPrefix: 'my-component-area',
   componentSettings: {
@@ -115,7 +115,6 @@ settings = {
         {
           id: 'instance-1',
           componentId: 'my-component',
-          targetName: 'my-component-area--header',
           urlPattern: 'foo/:bar',
           order: 1,
           args: {
@@ -127,7 +126,6 @@ settings = {
         {
           id: 'instance-2',
           componentId: 'my-second-component',
-          targetName: 'my-component-area--main',
           urlPattern: 'bar/:baz(/:qux)'
         }
       ]
@@ -140,7 +138,7 @@ componentManager.initialize(settings);
 In this case each of the target keys would be used as a part the selector to use for all of the instanceDefinitions within that array. The other part of the selector would be the _targetPrefix so in the examples above any instanceDefiniton that would be part of the array for "target-one" would have the targetName set to **"component-area--target-one"**, for "target-two" it would be **"component-area--target-two"** and so on. 
 
 #### Skip defaults
-If you dont want to change the defaults for $context, componentClassName, targetPrefix and listenForMessages you pass in only the componentSettings part of the settings object:
+If you dont want to change the defaults for context, componentClassName, targetPrefix and listenForMessages you pass in only the componentSettings part of the settings object:
 ```javascript
 componentSettings: {
   conditions: {},

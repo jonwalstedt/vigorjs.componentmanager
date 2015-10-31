@@ -51,13 +51,20 @@ class ComponentDefinitionModel extends Backbone.Model
       componentClass = Vigor.IframeComponent
 
     else if _.isString(src)
-      obj = window
-      srcObjParts = src.split '.'
+      # AMD and CommonJS
+      if (_.isString(src) and typeof define is "function" and define.amd) \
+      or (_.isString(src) and typeof exports is "object")
+        componentClass = require src
 
-      for part in srcObjParts
-        obj = obj[part]
+      # try to find class through namespace path from the window object
+      else
+        obj = window
+        srcObjParts = src.split '.'
 
-      componentClass = obj
+        for part in srcObjParts
+          obj = obj[part]
+
+        componentClass = obj
 
     else if _.isFunction(src)
       componentClass = src

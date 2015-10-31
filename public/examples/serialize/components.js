@@ -11,62 +11,62 @@ var componentSettings = {
   },
 
   components: [{
-    id: "order-component",
-    src: "app.components.FilterComponent",
-    conditions: ["withinTimeSpan"]
+    id: 'order-component',
+    src: 'app.components.FilterComponent',
+    conditions: ['withinTimeSpan']
   }],
 
   targets: {
     main: [
       {
-        id: "order-instance-1",
-        componentId: "order-component",
+        id: 'order-instance-1',
+        componentId: 'order-component',
         order: 1,
         args: {
-          order: "1",
-          background: "aqua"
+          order: '1',
+          background: 'aqua'
         },
-        urlPattern: "global"
+        urlPattern: 'global'
       },
       {
-        id: "order-instance-2",
-        componentId: "order-component",
+        id: 'order-instance-2',
+        componentId: 'order-component',
         order: 2,
         args: {
-          order: "2",
-          background: "green"
+          order: '2',
+          background: 'green'
         },
-        urlPattern: "global"
+        urlPattern: 'global'
       },
       {
-        id: "order-instance-3",
-        componentId: "order-component",
+        id: 'order-instance-3',
+        componentId: 'order-component',
         order: 3,
         args: {
-          order: "3",
-          background: "silver"
+          order: '3',
+          background: 'silver'
         },
-        urlPattern: "global"
+        urlPattern: 'global'
       },
       {
-        id: "order-instance-4",
-        componentId: "order-component",
+        id: 'order-instance-4',
+        componentId: 'order-component',
         order: 4,
         args: {
-          order: "4",
-          background: "yellow"
+          order: '4',
+          background: 'yellow'
         },
-        urlPattern: "global"
+        urlPattern: 'global'
       },
       {
-        id: "order-instance-5",
-        componentId: "order-component",
+        id: 'order-instance-5',
+        componentId: 'order-component',
         order: 5,
         args: {
-          order: "5",
-          background: "pink"
+          order: '5',
+          background: 'pink'
         },
-        urlPattern: "global"
+        urlPattern: 'global'
       }
     ]
   }

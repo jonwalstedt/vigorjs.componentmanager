@@ -35,17 +35,17 @@ Completed
  In progress
  ☐ Do a unittest to verify that the lastChange property in the object returned by _updateActiveComponents works like it should
  ☐ Add a full/advanced example that uses vigorjs
+ ☐ Readd the ability to require components using amd or commonjs even though they will have to be loaded prior to the componentManager. It will be needed for when reading back serialized components.
 
  Next up
+ ☐ Make it possible to load modules asynchronously with requirejs
  ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
  ☐ Add documentation
- ☐ Listen for reset on collectiond
+ ☐ Listen for reset on collections
 
  To consider
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable
  ☐ Is there a usecase for the hidden array (that belongs inside the componentmanager or should it be handled from the outside)?
- ☐ Hidden components and the hidden array
- ☐ Readd hidden components
  ☐ Protected components?
 
  Potential problems
