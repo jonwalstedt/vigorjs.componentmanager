@@ -3,7 +3,7 @@ define (function (require) {
   var MainLayoutView = require('app/MainLayoutView'),
 
       // Components has to be required priror to initialization of the
-      // componentManager - no lazy loading :(
+      // componentManager - no lazy loading yet :(
       Menu = require('components/menu');
 
   new MainLayoutView({

@@ -2,11 +2,15 @@ define (function (require) {
   'use strict';
   var
     Backbone = require('backbone'),
-
+    menuTemplate = require('hbars!./templates/menu-template'),
     MenuView = Backbone.View.extend({
 
       render: function () {
-        this.$el.html('hej');
+        var templateData = {
+          title: 'My example component - a menu',
+          items: this.collection.toJSON()
+        };
+        this.$el.html(menuTemplate(templateData));
       },
 
       dispose: function () {

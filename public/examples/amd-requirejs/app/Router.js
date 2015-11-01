@@ -14,6 +14,7 @@ define (function (require) {
           url: Backbone.history.fragment
         };
         Vigor.componentManager.refresh(filter);
+        showMsg('The matching component - our menu-component (which is a amd package/module is rendered)', filter);
       }
   });
   return Router;

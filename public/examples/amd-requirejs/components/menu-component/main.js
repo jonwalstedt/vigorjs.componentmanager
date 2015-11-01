@@ -2,10 +2,28 @@ define (function (require) {
   'use strict';
   var
     MenuView = require('./MenuView'),
+    MenuItemCollection = require('./MenuItemCollection'),
 
     Menu = function (args) {
       console.log('args: ', args);
-      this._menuView = new MenuView();
+      this._menuItems = new MenuItemCollection([
+        {
+          id: 'item-1',
+          label: 'Menu Item 1',
+          href: '#1'
+        },
+        {
+          id: 'item-2',
+          label: 'Menu Item 2',
+          href: '#2'
+        },
+        {
+          id: 'item-3',
+          label: 'Menu Item 3',
+          href: '#3'
+        }
+      ]);
+      this._menuView = new MenuView({collection: this._menuItems});
       this.$el = this._menuView.$el;
     };
 
