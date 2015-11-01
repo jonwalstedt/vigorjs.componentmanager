@@ -5,7 +5,7 @@ define (function (require) {
     MenuItemCollection = require('./MenuItemCollection'),
 
     Menu = function (args) {
-      console.log('args: ', args);
+      console.log('Menu initialized, args: ', args);
       this._menuItems = new MenuItemCollection([
         {
           id: 'item-1',

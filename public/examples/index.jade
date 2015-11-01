@@ -31,12 +31,6 @@ block sidebar
       li.sidebar_list-item
         a(href="/examples/serialize" class="sidebar__link #{ current.path[1] == 'serialize' ? 'sidebar__link--active' : '' }") Serialize
 
-      li.sidebar_list-item
-        a(href="/examples/amd-requirejs" class="sidebar__link #{ current.path[1] == 'amd-requirejs' ? 'sidebar__link--active' : '' }") AMD - Requirejs
-
-      li.sidebar_list-item
-        a(href="/examples/commonjs-browserify" class="sidebar__link #{ current.path[1] == 'commonjs-browserify' ? 'sidebar__link--active' : '' }") COMMONJS - Browserify
-
     h4 Concepts
     ul.sidebar_list
       li.sidebar_list-item
@@ -44,6 +38,14 @@ block sidebar
 
       li.sidebar_list-item
         a(href="/examples/example-app" class="sidebar__link #{ current.path[1] == 'example-app' ? 'sidebar__link--active' : '' }") Example app
+
+    h4 Module loaders
+    ul.sidebar_list
+      li.sidebar_list-item
+        a(href="/examples/amd-requirejs" class="sidebar__link #{ current.path[1] == 'amd-requirejs' ? 'sidebar__link--active' : '' }") AMD - Requirejs
+
+      li.sidebar_list-item
+        a(href="/examples/commonjs-browserify" class="sidebar__link #{ current.path[1] == 'commonjs-browserify' ? 'sidebar__link--active' : '' }") COMMONJS - Browserify
 
 block content
   != partial("./examples")

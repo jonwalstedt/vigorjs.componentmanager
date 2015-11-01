@@ -1,0 +1,25 @@
+extends ../index.jade
+
+block content
+  != partial("./commonjs-browserify")
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '1'})
+
+  div.app-wrapper
+    div.controls
+      ul
+        li
+          a(href="#add-components") Add componentts
+        li
+          a(href="#remove-components") Remove components
+
+    small active filter
+    div.active-filter
+
+    small info
+    div.examples-info
+
+    small .component-area--main
+    div.component-area.component-area--main
+
+block scripts
+  script(src="bundle.js")

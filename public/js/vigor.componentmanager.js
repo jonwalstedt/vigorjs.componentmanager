@@ -1,6 +1,6 @@
 /**
  * vigorjs.componentmanager - Helps you decouple Backbone applications
- * @version v0.0.4
+ * @version v0.0.5
  * @link 
  * @license MIT
  */
@@ -1390,7 +1390,7 @@
         }
         if (_.isString(context)) {
           this._$context = $(context);
-        } else if (context instanceof $) {
+        } else if (context.jquery != null) {
           this._$context = context;
         } else {
           throw this.ERROR.CONTEXT.WRONG_FORMAT;

@@ -13,8 +13,14 @@ define (function (require) {
         var filter = {
           url: Backbone.history.fragment
         };
+
         Vigor.componentManager.refresh(filter);
-        showMsg('The matching component - our menu-component (which is a amd package/module is rendered)', filter);
+
+        if (filter.url == 'add-components'){
+          showMsg('The matching component - our menu-component (which is a amd package/module is rendered)', filter);
+        } else {
+          showMsg('The component does not matches the filter - if it was instantiated it will now be disposed', filter);
+        }
       }
   });
   return Router;

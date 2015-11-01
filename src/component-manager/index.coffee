@@ -264,7 +264,7 @@ class ComponentManager
   setContext: (context = 'body') ->
     if _.isString(context)
       @_$context = $ context
-    else if context instanceof $
+    else if context.jquery?
       @_$context = context
     else
       throw @ERROR.CONTEXT.WRONG_FORMAT
