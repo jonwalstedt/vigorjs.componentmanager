@@ -8,6 +8,10 @@ To build bundle run:
 
     node bundler.js > bundle.js
 
+To build vendor bundle run:
+
+    node bundler.js vendor > bundle.vendors.js
+
 to build and watch run:
 
     watchify main.js -o 'node bundler.js > bundle.js' -v

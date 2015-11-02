@@ -1,7 +1,7 @@
 var componentSettings = {
   components: [{
     id: 'menu-component',
-    src: 'components/menu-component/',
+    src: 'components/menu-component',
   }],
   targets: {
     main: [
