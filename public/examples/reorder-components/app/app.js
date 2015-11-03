@@ -20,32 +20,32 @@ var app = app || {};
     },
 
     _onDecrementBtnClick: function () {
-      var instanceDefinition = Vigor.componentManager.getInstanceById('order-instance-1'),
+      var instanceDefinition = Vigor.componentManager.getInstanceDefinitionById('order-instance-1'),
           order = instanceDefinition.order -= 1;
 
       if (order < 1) { order = 1; }
 
-      Vigor.componentManager.updateInstances({
+      Vigor.componentManager.updateInstanceDefinitions({
         id: 'order-instance-1',
         order: order
       });
     },
 
     _onIncrementBtnClick: function () {
-      var components = Vigor.componentManager.getInstances(),
-          instanceDefinition = Vigor.componentManager.getInstanceById('order-instance-1'),
+      var components = Vigor.componentManager.getInstanceDefinitions(),
+          instanceDefinition = Vigor.componentManager.getInstanceDefinitionById('order-instance-1'),
           order = instanceDefinition.order += 1;
 
       if (order > components.length + 1) { order = components.length + 1; }
 
-      Vigor.componentManager.updateInstances({
+      Vigor.componentManager.updateInstanceDefinitions({
         id: 'order-instance-1',
         order: order
       });
     },
 
     _onRandomizeBtnClick: function () {
-      var components = _.map(Vigor.componentManager.getInstances(), function (instanceDefinition) {
+      var components = _.map(Vigor.componentManager.getInstanceDefinitions(), function (instanceDefinition) {
         return {
           id: instanceDefinition.id,
           order: instanceDefinition.order
@@ -64,7 +64,7 @@ var app = app || {};
         components[i].order = randomOrderArray[i];
       }
 
-      Vigor.componentManager.updateInstances(components);
+      Vigor.componentManager.updateInstanceDefinitions(components);
     },
 
     shuffle: function (o) {

@@ -26,8 +26,8 @@ var app = app || {};
     },
 
     _onResetClick: function () {
-      Vigor.componentManager.updateComponents(window.componentSettings.components);
-      Vigor.componentManager.updateInstances(window.componentSettings.targets.main);
+      Vigor.componentManager.updateComponentDefinitions(window.componentSettings.components);
+      Vigor.componentManager.updateInstanceDefinitions(window.componentSettings.targets.main);
       showMsg('Components and instances has been reset');
     },
 
@@ -43,7 +43,7 @@ var app = app || {};
 
     _onApplyConditionClick: function () {
       try {
-        Vigor.componentManager.updateComponents({
+        Vigor.componentManager.updateComponentDefinitions({
           id: 'filter-condition-component',
           conditions: ['correctWidth']
         });
@@ -55,7 +55,7 @@ var app = app || {};
 
     _onApplyConditionToInstanceClick: function () {
       try {
-        Vigor.componentManager.updateInstances({
+        Vigor.componentManager.updateInstanceDefinitions({
           id: 'filter-instance-2',
           conditions: ['correctWidth']
         });

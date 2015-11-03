@@ -31,7 +31,7 @@ var app = app || {};
     },
 
     _onRandomizeBtnClick: function () {
-      var components = _.map(Vigor.componentManager.getInstances(), function (instanceDefinition) {
+      var components = _.map(Vigor.componentManager.getInstanceDefinitions(), function (instanceDefinition) {
         return {
           id: instanceDefinition.id,
           order: instanceDefinition.order
@@ -52,7 +52,7 @@ var app = app || {};
 
       console.log('components: ', components);
 
-      Vigor.componentManager.updateInstances(components);
+      Vigor.componentManager.updateInstanceDefinitions(components);
       showMsg('Instances has been randomized - try saving them to localStorage and reload');
     },
 
