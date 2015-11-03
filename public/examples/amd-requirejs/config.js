@@ -18,7 +18,6 @@ requirejs.config({
     Handlebars: {
       exports: 'Handlebars'
     }
-  }
+  },
+  deps: ['app/app']
 });
-
-requirejs(['app/app']);

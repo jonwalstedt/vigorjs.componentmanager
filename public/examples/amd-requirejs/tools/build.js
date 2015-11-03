@@ -1,5 +1,5 @@
 ({
-  baseUrl: "./",
+  baseUrl: '../',
   paths: {
     requireLib: 'lib/require',
     jquery: 'lib/jquery.min',
@@ -15,7 +15,19 @@
   packages: [
     {name: 'components/menu', location: 'components/menu-component'}
   ],
-  name: "main",
-  out: "main-built.js",
-  include: ["requireLib"]
-})
+  name: 'config-build',
+  // optimize: 'none',
+  wrapShim: true,
+  out: '../dist/main-built.js',
+  exclude: [
+    'requireLib',
+    'jquery',
+    'underscore',
+    'backbone',
+    'Handlebars',
+    'text',
+    'hbars',
+    'vigor',
+  ]
+});
+
