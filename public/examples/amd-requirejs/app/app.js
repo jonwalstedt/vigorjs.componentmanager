@@ -6,11 +6,7 @@ define (function (require) {
       Vigor = require('vigor'),
       Router = require('./Router'),
       componentSettings = require('./componentSettings'),
-      MainLayoutView = require('app/MainLayoutView'),
-
-      // Components has to be required priror to initialization of the
-      // componentManager - no lazy loading yet :(
-      Menu = require('components/menu');
+      MainLayoutView = require('app/MainLayoutView');
 
   App.prototype.initialize = function () {
 

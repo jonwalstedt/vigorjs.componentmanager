@@ -1,5 +1,5 @@
 var app = app || {};
-app.simulatedCache = app.simulateCache || {};
+// app.simulatedCache = app.simulateCache || {};
 
 (function ($) {
   'use strict';
@@ -59,7 +59,7 @@ app.simulatedCache = app.simulateCache || {};
           filter = _.omit(app.filterModel.toJSON(), 'preload');
 
       if (preload) {
-        Vigor.componentManager.refresh(filter, _.bind(function (filter, activeInstancesObj) {
+        Vigor.componentManager.refresh(filter).then(_.bind(function (activeInstancesObj) {
           var activeInstances = activeInstancesObj.activeInstances;
           for (var i = activeInstances.length - 1; i >= 0; i--) {
             promises.push(activeInstances[i].getRenderDonePromise());

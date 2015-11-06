@@ -19,6 +19,9 @@
   // optimize: 'none',
   wrapShim: true,
   out: '../dist/main-built.js',
+  include: [
+    'components/menu'
+  ],
   exclude: [
     'requireLib',
     'jquery',
