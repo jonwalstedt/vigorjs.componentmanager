@@ -10,6 +10,25 @@ IframeComponent = __testOnly.IframeComponent
 
 describe 'ComponentDefinitionModel', ->
 
+  sandbox = undefined
+
+  beforeEach ->
+    sandbox = sinon.sandbox.create()
+
+  afterEach ->
+    do sandbox.restore
+
+  describe 'initialize', ->
+    it 'should create a new deferred obejct on the property "deferred"', ->
+      stub = sandbox.stub ComponentDefinitionModel.prototype, 'initialize'
+      model = new ComponentDefinitionModel()
+      assert.equal model.deferred, undefined
+
+      do stub.restore
+      model = new ComponentDefinitionModel()
+      assert model.deferred
+      assert _.isFunction(model.deferred.then)
+
   describe 'validate', ->
     attrs = undefined
     options= undefined
@@ -66,26 +85,62 @@ describe 'ComponentDefinitionModel', ->
 
 
   describe 'getClass', ->
-    it 'should return the IframeComponent class if src is a url', ->
-      componentDefinitionObj =
-        id: 'dummy'
-        src: 'http://www.google.com'
-
-      model = new ComponentDefinitionModel(componentDefinitionObj)
-      klass = model.getClass()
-
-      assert.equal klass, IframeComponent
-
-    it 'should return src constructor function if set', ->
-
+    it 'should return a promise', ->
       componentDefinitionObj =
         id: 'dummy'
         src: '../test/spec/MockComponent'
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      klass = model.getClass()
+      componentClassPromise = model.getClass()
 
-      assert.equal klass, MockComponent
+      assert _.isFunction(componentClassPromise.then)
+
+    it 'should resolve promise with the IframeComponent as componentClass if src
+    is a url', ->
+      componentDefinitionObj =
+        id: 'dummy'
+        src: 'http://www.google.com'
+
+      model = new ComponentDefinitionModel(componentDefinitionObj)
+      componentClassPromise = model.getClass()
+
+      componentClassPromise.then (componentClassObj) ->
+        componentDefinition = componentClassObj.componentDefinition
+        componentClass = componentClassObj.componentClass
+
+        assert.equal componentClass, IframeComponent
+        assert.equal componentDefinition, model
+
+    it 'should require the constructor function if src is a string and current
+    setup is either AMD or CommonJS (and resolve promise using required class). In
+    this casse it will be CommonJS', ->
+      componentDefinitionObj =
+        id: 'dummy'
+        src: '../test/spec/MockComponent'
+
+      model = new ComponentDefinitionModel(componentDefinitionObj)
+      componentClassPromise = model.getClass()
+      componentClassPromise.then (componentClassObj) ->
+        componentDefinition = componentClassObj.componentDefinition
+        componentClass = componentClassObj.componentClass
+
+        assert.equal componentClass, MockComponent
+        assert.equal componentDefinition, model
+
+    it 'should resolve promise with constructor function if it is set directly as
+    the src attribute', ->
+      componentDefinitionObj =
+        id: 'dummy'
+        src: MockComponent
+
+      model = new ComponentDefinitionModel(componentDefinitionObj)
+      componentClassPromise = model.getClass()
+      componentClassPromise.then (componentClassObj) ->
+        componentDefinition = componentClassObj.componentDefinition
+        componentClass = componentClassObj.componentClass
+
+        assert.equal componentClass, MockComponent
+        assert.equal componentDefinition, model
 
     # The two test below cant run in a nodejs environment the componentManager will
     # try to require the class instead of finding it on the window object.
@@ -100,19 +155,20 @@ describe 'ComponentDefinitionModel', ->
     #     src: 'app.test.MockComponent'
 
     #   model = new ComponentDefinitionModel(componentDefinitionObj)
-    #   klass = model.getClass()
+    #   componentClassPromise = model.getClass()
 
-    #   assert.equal klass, MockComponent
+    #   componentClassPromise.then (componentClassObj) ->
+    #     componentDefinition = componentClassObj.componentDefinition
+    #     componentClass = componentClassObj.componentClass
 
-    # it 'should throw an error if no class is found', ->
-    #   componentDefinitionObj =
-    #     id: 'dummy'
-    #     src: 'app.test.TummyComponent'
+    #     assert.equal componentClass, MockComponent
+    #     assert.equal componentDefinition, model
 
-    #   model = new ComponentDefinitionModel(componentDefinitionObj)
-
-    #   errorFn = -> model.getClass()
-    #   assert.throws (-> errorFn()), /No constructor function found for app.test.TummyComponent/
+  describe 'getComponentClassPromise', ->
+    it 'should return the promise of deferred object on the componentDefinition', ->
+      model = new ComponentDefinitionModel()
+      result = do model.getComponentClassPromise
+      assert result is model.deferred.promise()
 
   describe 'areConditionsMet', ->
     it 'should return false if the condition is a method that returns falsy', ->

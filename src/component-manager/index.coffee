@@ -61,13 +61,9 @@ class ComponentManager
     @_parse settings
     return @
 
-  refresh: (filter, cb = undefined) ->
+  refresh: (filter) ->
     @_filterModel.set @_filterModel.parse(filter)
-    activeInstances = @_updateActiveComponents()
-
-    if cb
-      cb filter, activeInstances
-    return @
+    return @_updateActiveComponents()
 
   serialize: ->
     componentSettings = {}
@@ -392,20 +388,30 @@ class ComponentManager
     return @
 
   _updateActiveComponents: =>
+    deferred = $.Deferred()
     options = @_filterModel.getFilterOptions()
     instanceDefinitions = @_filterInstanceDefinitions()
+
     if options.invert
       instanceDefinitions = _.difference @_instanceDefinitionsCollection.models, instanceDefinitions
 
     lastChange = @_activeInstancesCollection.set instanceDefinitions, options
+    componentClassPromises = @_componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions @_activeInstancesCollection.models
 
-    returnData =
-      activeInstances: @_mapInstances @_activeInstancesCollection.models
-      lastChange: @_mapInstances lastChange
+    $.when.apply($, componentClassPromises).then =>
+      returnData =
+        filter: @_filterModel.toJSON()
+        activeInstances: @_mapInstances @_activeInstancesCollection.models
+        activeInstanceDefinitions: @_activeInstancesCollection.toJSON()
+        lastChangedInstances: @_mapInstances lastChange
+        lastChangedInstanceDefinitions: @_modelsToJSON lastChange
 
-    # check if we have any stray instances in active components and then try to readd them
-    do @_tryToReAddStraysToDom
-    return returnData
+      deferred.resolve returnData
+
+      # check if we have any stray instances in active components and then try to readd them
+      do @_tryToReAddStraysToDom
+
+    return deferred.promise()
 
   _filterInstanceDefinitions: ->
     globalConditions = @_globalConditionsModel.toJSON()
@@ -432,16 +438,14 @@ class ComponentManager
     _.filter instanceDefinitions, (instanceDefinition) =>
       return @_isTargetAvailable instanceDefinition
 
-  _getInstanceArguments: (instanceDefinition) ->
+  _getInstanceArguments: (instanceDefinition, componentDefinition) ->
     args =
       urlParams: instanceDefinition.get 'urlParams'
       urlParamsModel: instanceDefinition.get 'urlParamsModel'
 
-    componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
-    componentClass = @_componentDefinitionsCollection.getComponentClassByInstanceDefinition instanceDefinition
-
     componentArgs = componentDefinition.get 'args'
     instanceArgs = instanceDefinition.get 'args'
+    componentClassPromise = componentDefinition.getClass()
 
     if componentArgs?.iframeAttributes? and instanceArgs?.iframeAttributes?
       instanceArgs.iframeAttributes = _.extend componentArgs.iframeAttributes, instanceArgs.iframeAttributes
@@ -449,22 +453,27 @@ class ComponentManager
     _.extend args, componentArgs
     _.extend args, instanceArgs
 
-    if componentClass is Vigor.IframeComponent
-      args.src = componentDefinition.get 'src'
+    componentClassPromise.then (componentClassObj) =>
+      componentClass = componentClassObj.componentClass
+      if componentClass is Vigor.IframeComponent
+        args.src = componentDefinition.get 'src'
 
     return args
 
   _addInstanceToModel: (instanceDefinition) ->
-    componentClass = @_componentDefinitionsCollection.getComponentClassByInstanceDefinition instanceDefinition
+    componentClassPromise = @_componentDefinitionsCollection.getComponentClassPromiseByInstanceDefinition instanceDefinition
 
-    instance = new componentClass @_getInstanceArguments(instanceDefinition)
-    instance.$el.addClass @getComponentClassName()
+    componentClassPromise.then (componentClassObj) =>
+      componentClass = componentClassObj.componentClass
+      componentDefinition = componentClassObj.componentDefinition
+      instance = new componentClass @_getInstanceArguments(instanceDefinition, componentDefinition)
+      instance.$el.addClass @getComponentClassName()
 
-    instanceDefinition.set
-      'instance': instance
-    , silent: true
+      instanceDefinition.set
+        'instance': instance
+      , silent: true
 
-    return instanceDefinition
+    return componentClassPromise
 
   _tryToReAddStraysToDom: ->
     for stray in @_activeInstancesCollection.getStrays()
@@ -554,9 +563,9 @@ class ComponentManager
 
     for instanceDefinition in instanceDefinitions
       if @_isTargetAvailable(instanceDefinition)
-        @_addInstanceToModel instanceDefinition
-        @_addInstanceToDom instanceDefinition
-        do instanceDefinition.incrementShowCount
+        @_addInstanceToModel(instanceDefinition).then =>
+          @_addInstanceToDom instanceDefinition
+          do instanceDefinition.incrementShowCount
 
     return instanceDefinitions
 
@@ -567,6 +576,12 @@ class ComponentManager
     else
       $target = $ targetName, @_$context
     return $target
+
+  _modelToJSON: (model) ->
+    return model.toJSON()
+
+  _modelsToJSON: (models) ->
+    _.map models, @_modelToJSON
 
   #
   # Callbacks
@@ -580,8 +595,8 @@ class ComponentManager
     if instanceDefinition.passesFilter(filter, globalConditions) \
     and @_isTargetAvailable(instanceDefinition)
       do instanceDefinition.disposeInstance
-      @_addInstanceToModel instanceDefinition
-      @_addInstanceToDom instanceDefinition
+      @_addInstanceToModel(instanceDefinition).then =>
+        @_addInstanceToDom instanceDefinition
 
   _onActiveInstanceRemoved: (instanceDefinition) =>
     do instanceDefinition.disposeInstance

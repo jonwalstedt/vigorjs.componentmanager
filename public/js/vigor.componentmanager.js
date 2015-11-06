@@ -416,6 +416,13 @@
         maxShowCount: void 0
       };
 
+      ComponentDefinitionModel.prototype.deferred = void 0;
+
+      ComponentDefinitionModel.prototype.initialize = function() {
+        ComponentDefinitionModel.__super__.initialize.apply(this, arguments);
+        return this.deferred = $.Deferred();
+      };
+
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
         var isValidType;
         if (!attrs.id) {
@@ -440,13 +447,31 @@
       };
 
       ComponentDefinitionModel.prototype.getClass = function() {
-        var componentClass, j, len, obj, part, src, srcObjParts;
+        var j, len, obj, part, resolveClassPromise, src, srcObjParts;
         src = this.get('src');
+        resolveClassPromise = (function(_this) {
+          return function(componentClass) {
+            if (_.isFunction(componentClass)) {
+              return _this.deferred.resolve({
+                componentDefinition: _this,
+                componentClass: componentClass
+              });
+            } else {
+              throw _this.ERROR.NO_CONSTRUCTOR_FOUND(src);
+            }
+          };
+        })(this);
         if (_.isString(src) && this._isUrl(src)) {
-          componentClass = Vigor.IframeComponent;
+          resolveClassPromise(Vigor.IframeComponent);
         } else if (_.isString(src)) {
-          if ((_.isString(src) && typeof define === "function" && define.amd) || (_.isString(src) && typeof exports === "object")) {
-            componentClass = require(src);
+          if (_.isString(src) && typeof define === "function" && define.amd) {
+            require([src], (function(_this) {
+              return function(componentClass) {
+                return resolveClassPromise(componentClass);
+              };
+            })(this));
+          } else if (_.isString(src) && typeof exports === "object") {
+            resolveClassPromise(require(src));
           } else {
             obj = window;
             srcObjParts = src.split('.');
@@ -454,15 +479,18 @@
               part = srcObjParts[j];
               obj = obj[part];
             }
-            componentClass = obj;
+            resolveClassPromise(obj);
           }
         } else if (_.isFunction(src)) {
-          componentClass = src;
+          resolveClassPromise(src);
+        } else {
+          throw this.ERROR.VALIDATION.SRC_WRONG_TYPE;
         }
-        if (!_.isFunction(componentClass)) {
-          throw this.ERROR.NO_CONSTRUCTOR_FOUND(src);
-        }
-        return componentClass;
+        return this.deferred.promise();
+      };
+
+      ComponentDefinitionModel.prototype.getComponentClassPromise = function() {
+        return this.deferred.promise();
       };
 
       ComponentDefinitionModel.prototype.areConditionsMet = function(filter, globalConditions) {
@@ -517,7 +545,18 @@
         UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?'
       };
 
-      ComponentDefinitionsCollection.prototype.getComponentClassByInstanceDefinition = function(instanceDefinition) {
+      ComponentDefinitionsCollection.prototype.getComponentClassPromisesByInstanceDefinitions = function(instanceDefinitions) {
+        var componentDefinition, instanceDefinition, j, len, promises;
+        promises = [];
+        for (j = 0, len = instanceDefinitions.length; j < len; j++) {
+          instanceDefinition = instanceDefinitions[j];
+          componentDefinition = this.getComponentDefinitionByInstanceDefinition(instanceDefinition);
+          promises.push(componentDefinition.getComponentClassPromise());
+        }
+        return promises;
+      };
+
+      ComponentDefinitionsCollection.prototype.getComponentClassPromiseByInstanceDefinition = function(instanceDefinition) {
         var componentDefinition;
         componentDefinition = this.getComponentDefinitionByInstanceDefinition(instanceDefinition);
         return componentDefinition.getClass();
@@ -1124,17 +1163,9 @@
         return this;
       };
 
-      ComponentManager.prototype.refresh = function(filter, cb) {
-        var activeInstances;
-        if (cb == null) {
-          cb = void 0;
-        }
+      ComponentManager.prototype.refresh = function(filter) {
         this._filterModel.set(this._filterModel.parse(filter));
-        activeInstances = this._updateActiveComponents();
-        if (cb) {
-          cb(filter, activeInstances);
-        }
-        return this;
+        return this._updateActiveComponents();
       };
 
       ComponentManager.prototype.serialize = function() {
@@ -1538,19 +1569,30 @@
       };
 
       ComponentManager.prototype._updateActiveComponents = function() {
-        var instanceDefinitions, lastChange, options, returnData;
+        var componentClassPromises, deferred, instanceDefinitions, lastChange, options;
+        deferred = $.Deferred();
         options = this._filterModel.getFilterOptions();
         instanceDefinitions = this._filterInstanceDefinitions();
         if (options.invert) {
           instanceDefinitions = _.difference(this._instanceDefinitionsCollection.models, instanceDefinitions);
         }
         lastChange = this._activeInstancesCollection.set(instanceDefinitions, options);
-        returnData = {
-          activeInstances: this._mapInstances(this._activeInstancesCollection.models),
-          lastChange: this._mapInstances(lastChange)
-        };
-        this._tryToReAddStraysToDom();
-        return returnData;
+        componentClassPromises = this._componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions(this._activeInstancesCollection.models);
+        $.when.apply($, componentClassPromises).then((function(_this) {
+          return function() {
+            var returnData;
+            returnData = {
+              filter: _this._filterModel.toJSON(),
+              activeInstances: _this._mapInstances(_this._activeInstancesCollection.models),
+              activeInstanceDefinitions: _this._activeInstancesCollection.toJSON(),
+              lastChangedInstances: _this._mapInstances(lastChange),
+              lastChangedInstanceDefinitions: _this._modelsToJSON(lastChange)
+            };
+            deferred.resolve(returnData);
+            return _this._tryToReAddStraysToDom();
+          };
+        })(this));
+        return deferred.promise();
       };
 
       ComponentManager.prototype._filterInstanceDefinitions = function() {
@@ -1595,38 +1637,50 @@
         })(this));
       };
 
-      ComponentManager.prototype._getInstanceArguments = function(instanceDefinition) {
-        var args, componentArgs, componentClass, componentDefinition, instanceArgs;
+      ComponentManager.prototype._getInstanceArguments = function(instanceDefinition, componentDefinition) {
+        var args, componentArgs, componentClassPromise, instanceArgs;
         args = {
           urlParams: instanceDefinition.get('urlParams'),
           urlParamsModel: instanceDefinition.get('urlParamsModel')
         };
-        componentDefinition = this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
-        componentClass = this._componentDefinitionsCollection.getComponentClassByInstanceDefinition(instanceDefinition);
         componentArgs = componentDefinition.get('args');
         instanceArgs = instanceDefinition.get('args');
+        componentClassPromise = componentDefinition.getClass();
         if (((componentArgs != null ? componentArgs.iframeAttributes : void 0) != null) && ((instanceArgs != null ? instanceArgs.iframeAttributes : void 0) != null)) {
           instanceArgs.iframeAttributes = _.extend(componentArgs.iframeAttributes, instanceArgs.iframeAttributes);
         }
         _.extend(args, componentArgs);
         _.extend(args, instanceArgs);
-        if (componentClass === Vigor.IframeComponent) {
-          args.src = componentDefinition.get('src');
-        }
+        componentClassPromise.then((function(_this) {
+          return function(componentClassObj) {
+            var componentClass;
+            componentClass = componentClassObj.componentClass;
+            if (componentClass === Vigor.IframeComponent) {
+              return args.src = componentDefinition.get('src');
+            }
+          };
+        })(this));
         return args;
       };
 
       ComponentManager.prototype._addInstanceToModel = function(instanceDefinition) {
-        var componentClass, instance;
-        componentClass = this._componentDefinitionsCollection.getComponentClassByInstanceDefinition(instanceDefinition);
-        instance = new componentClass(this._getInstanceArguments(instanceDefinition));
-        instance.$el.addClass(this.getComponentClassName());
-        instanceDefinition.set({
-          'instance': instance
-        }, {
-          silent: true
-        });
-        return instanceDefinition;
+        var componentClassPromise;
+        componentClassPromise = this._componentDefinitionsCollection.getComponentClassPromiseByInstanceDefinition(instanceDefinition);
+        componentClassPromise.then((function(_this) {
+          return function(componentClassObj) {
+            var componentClass, componentDefinition, instance;
+            componentClass = componentClassObj.componentClass;
+            componentDefinition = componentClassObj.componentDefinition;
+            instance = new componentClass(_this._getInstanceArguments(instanceDefinition, componentDefinition));
+            instance.$el.addClass(_this.getComponentClassName());
+            return instanceDefinition.set({
+              'instance': instance
+            }, {
+              silent: true
+            });
+          };
+        })(this));
+        return componentClassPromise;
       };
 
       ComponentManager.prototype._tryToReAddStraysToDom = function() {
@@ -1760,9 +1814,12 @@
         for (j = 0, len = instanceDefinitions.length; j < len; j++) {
           instanceDefinition = instanceDefinitions[j];
           if (this._isTargetAvailable(instanceDefinition)) {
-            this._addInstanceToModel(instanceDefinition);
-            this._addInstanceToDom(instanceDefinition);
-            instanceDefinition.incrementShowCount();
+            this._addInstanceToModel(instanceDefinition).then((function(_this) {
+              return function() {
+                _this._addInstanceToDom(instanceDefinition);
+                return instanceDefinition.incrementShowCount();
+              };
+            })(this));
           }
         }
         return instanceDefinitions;
@@ -1779,6 +1836,14 @@
         return $target;
       };
 
+      ComponentManager.prototype._modelToJSON = function(model) {
+        return model.toJSON();
+      };
+
+      ComponentManager.prototype._modelsToJSON = function(models) {
+        return _.map(models, this._modelToJSON);
+      };
+
       ComponentManager.prototype._onActiveInstanceAdd = function(instanceDefinition) {
         return this._createAndAddInstances(instanceDefinition);
       };
@@ -1789,8 +1854,11 @@
         globalConditions = this._globalConditionsModel.toJSON();
         if (instanceDefinition.passesFilter(filter, globalConditions) && this._isTargetAvailable(instanceDefinition)) {
           instanceDefinition.disposeInstance();
-          this._addInstanceToModel(instanceDefinition);
-          return this._addInstanceToDom(instanceDefinition);
+          return this._addInstanceToModel(instanceDefinition).then((function(_this) {
+            return function() {
+              return _this._addInstanceToDom(instanceDefinition);
+            };
+          })(this));
         }
       };
 

@@ -24,6 +24,12 @@ class ComponentDefinitionModel extends Backbone.Model
     conditions: undefined
     maxShowCount: undefined
 
+  deferred: undefined
+
+  initialize: ->
+    super
+    @deferred = $.Deferred()
+
   validate: (attrs, options) ->
     unless attrs.id
       throw @ERROR.VALIDATION.ID_UNDEFINED
@@ -44,17 +50,26 @@ class ComponentDefinitionModel extends Backbone.Model
     if _.isString(attrs.src) and /^\s+$/g.test(attrs.src)
       throw @ERROR.VALIDATION.SRC_IS_EMPTY_STRING
 
-
   getClass: ->
     src = @get 'src'
+    resolveClassPromise = (componentClass) =>
+      if _.isFunction(componentClass)
+        @deferred.resolve {componentDefinition: @, componentClass: componentClass}
+      else
+        throw @ERROR.NO_CONSTRUCTOR_FOUND src
+
     if _.isString(src) and @_isUrl(src)
-      componentClass = Vigor.IframeComponent
+      resolveClassPromise Vigor.IframeComponent
 
     else if _.isString(src)
-      # AMD and CommonJS
-      if (_.isString(src) and typeof define is "function" and define.amd) \
-      or (_.isString(src) and typeof exports is "object")
-        componentClass = require src
+      # AMD require asynchronous
+      if (_.isString(src) and typeof define is "function" and define.amd)
+        require [src], (componentClass) =>
+          resolveClassPromise componentClass
+
+      # CommonJS require - synchronus
+      else if (_.isString(src) and typeof exports is "object")
+        resolveClassPromise require src
 
       # try to find class through namespace path from the window object
       else
@@ -64,15 +79,18 @@ class ComponentDefinitionModel extends Backbone.Model
         for part in srcObjParts
           obj = obj[part]
 
-        componentClass = obj
+        resolveClassPromise obj
 
+    # if the class is set directly on the src attribute
     else if _.isFunction(src)
-      componentClass = src
+      resolveClassPromise src
+    else
+      throw @ERROR.VALIDATION.SRC_WRONG_TYPE
 
-    unless _.isFunction(componentClass)
-      throw @ERROR.NO_CONSTRUCTOR_FOUND src
+    return @deferred.promise()
 
-    return componentClass
+  getComponentClassPromise: ->
+    return @deferred.promise()
 
   areConditionsMet: (filter, globalConditions) ->
     componentConditions = @get 'conditions'

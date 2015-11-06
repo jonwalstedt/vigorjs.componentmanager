@@ -5,7 +5,14 @@ class ComponentDefinitionsCollection extends BaseCollection
   ERROR:
     UNKNOWN_COMPONENT_DEFINITION: 'Unknown componentDefinition, are you referencing correct componentId?'
 
-  getComponentClassByInstanceDefinition: (instanceDefinition) ->
+  getComponentClassPromisesByInstanceDefinitions: (instanceDefinitions) ->
+    promises = []
+    for instanceDefinition in instanceDefinitions
+      componentDefinition = @getComponentDefinitionByInstanceDefinition instanceDefinition
+      promises.push componentDefinition.getComponentClassPromise()
+    return promises
+
+  getComponentClassPromiseByInstanceDefinition: (instanceDefinition) ->
     componentDefinition = @getComponentDefinitionByInstanceDefinition instanceDefinition
     return componentDefinition.getClass()
 
