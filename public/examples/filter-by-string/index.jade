@@ -14,7 +14,11 @@ block content
         button.exclude-if-string-matches excludeIfStringMatches "first"
         button.has-to-match-string hasToMatchString "first"
         button.cant-match-string cantMatchString "first"
-        button.toggle-forced-filter-string-matching toggle forceFilterStringMatching
+        //- button.toggle-forced-filter-string-matching toggle forceFilterStringMatching
+        div
+          label
+            input(type="checkbox" class="force-filter-string-matching")
+            | ForceFilterStringMatching
 
       div.active-filter
       small info

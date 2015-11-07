@@ -3,7 +3,7 @@ define (function (require) {
 
   var MainLayoutView = Backbone.View.extend({
       initialize: function () {
-      console.log('MainLayoutView initialized');
+        console.log('MainLayoutView initialized');
       }
     });
 

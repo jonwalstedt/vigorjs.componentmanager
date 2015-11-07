@@ -21,6 +21,7 @@ var app = app || {};
       this.$removeCheckbox = $('.remove', this.$el);
       this.$mergeCheckbox = $('.merge', this.$el);
       this.$invertCheckbox = $('.invert', this.$el);
+      this.$forceFilterStringMatching = $('.force-filter-string-matching', this.$el);
 
       Vigor.componentManager.refresh();
       this._updateFilter();
@@ -33,17 +34,24 @@ var app = app || {};
     },
 
     _updateFilter: function () {
-      var url = $('input[type="radio"]:checked').val();
+      var url = $('input[type="radio"][name="url"]:checked').val(),
+          filterString = $('input[type="radio"][name="filter-string"]:checked').val();
+
       if (url === "all")
         url = undefined
 
+      if (filterString === "none")
+        filterString = undefined
+
       this.filter = {
         url: url,
+        includeIfStringMatches: filterString,
         options: {
           add: this.$addCheckbox.is(':checked'),
           remove: this.$removeCheckbox.is(':checked'),
           merge: this.$mergeCheckbox.is(':checked'),
-          invert: this.$invertCheckbox.is(':checked')
+          invert: this.$invertCheckbox.is(':checked'),
+          forceFilterStringMatching: this.$forceFilterStringMatching.is(':checked')
         }
       }
     }

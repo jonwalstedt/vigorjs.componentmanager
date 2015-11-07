@@ -5,7 +5,7 @@ block includes
 
 block content
   != partial("./filter-options")
-  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '6'})
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '7'})
 
   div.app-wrapper
     small active filter
@@ -13,6 +13,7 @@ block content
 
     div.controls
       div.options
+
         p Filter on url:
         label
           input(type="radio" name="url" class="all" value="all" checked)
@@ -25,6 +26,19 @@ block content
         label
           input(type="radio" name="url" class="bar" value="bar/1")
           | bar/1
+
+        p Filter on filterString:
+        label
+          input(type="radio" name="filter-string" class="all" value="none" checked)
+          | none
+
+        label
+          input(type="radio" name="filter-string" class="foo" value="foo")
+          | foo
+
+        label
+          input(type="radio" name="filter-string" class="bar" value="bar")
+          | bar
 
         p Options:
         label
@@ -42,6 +56,10 @@ block content
         label
           input(type="checkbox" class="invert")
           | Invert
+
+        label
+          input(type="checkbox" class="force-filter-string-matching")
+          | ForceFilterStringMatching
 
       button.refresh Refresh
 

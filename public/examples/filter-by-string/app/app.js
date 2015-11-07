@@ -4,17 +4,17 @@ var app = app || {};
   'use strict';
 
   app.Filter = Backbone.View.extend({
-
+    forceFilterStringMatching: false,
     events: {
       'click .restore': 'restore',
       'click .include-if-string-matches': 'includeIfStringMatches',
       'click .exclude-if-string-matches': 'excludeIfStringMatches',
       'click .has-to-match-string': 'hasToMatchString',
       'click .cant-match-string': 'cantMatchString',
-      'click .toggle-forced-filter-string-matching': 'toggleForcedFilterStringMatching',
       'click .update-filter-string-lang-en-gb': 'updateFilterStringLangEnGB',
       'click .update-filter-string-lang-sv-se': 'updateFilterStringLangSvSE',
-      'click .update-filter-string-url': 'updateFilterStringUrl'
+      'click .update-filter-string-url': 'updateFilterStringUrl',
+      'change .controls input': 'toggleForcedFilterStringMatching'
     },
 
     initialize: function () {
@@ -22,12 +22,14 @@ var app = app || {};
         componentSettings: window.componentSettings,
         context: this.$el
       });
-
+      this.$forceFilterStringMatching = $('.force-filter-string-matching', this.$el);
       this.restore();
     },
 
     restore: function () {
       Vigor.componentManager.refresh();
+      this.forceFilterStringMatching = false;
+      this.$forceFilterStringMatching.attr('checked', false);
       showMsg('Click links above to see examples of filtering using a filterString', {});
     },
 
@@ -35,7 +37,10 @@ var app = app || {};
     includeIfStringMatches: function () {
       var
         filter = {
-          includeIfStringMatches: 'first'
+          includeIfStringMatches: 'first',
+          options: {
+            forceFilterStringMatching: this.forceFilterStringMatching
+          }
         },
         msg = 'includeIfStringMatches - will show instanceDefinitions that has a filterString that matches <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
       Vigor.componentManager.refresh(filter);
@@ -45,7 +50,10 @@ var app = app || {};
     excludeIfStringMatches: function () {
       var
         filter = {
-          excludeIfStringMatches: 'first'
+          excludeIfStringMatches: 'first',
+          options: {
+            forceFilterStringMatching: this.forceFilterStringMatching
+          }
         },
         msg = 'excludeIfStringMatches - will show instanceDefinitions that has a filterString that does <b>not</b> match <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
 
@@ -56,7 +64,10 @@ var app = app || {};
     hasToMatchString: function () {
       var
         filter = {
-          hasToMatchString: 'first'
+          hasToMatchString: 'first',
+          options: {
+            forceFilterStringMatching: this.forceFilterStringMatching
+          }
         },
         msg = 'hasToMatchString - will filter instanceDefinitions to only show instances that has a filterString that matches <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
 
@@ -67,7 +78,10 @@ var app = app || {};
     cantMatchString: function () {
       var
         filter = {
-          cantMatchString: 'first'
+          cantMatchString: 'first',
+          options: {
+            forceFilterStringMatching: this.forceFilterStringMatching
+          }
         },
         msg = 'cantMatchString - will filter instanceDefinitions to only show instances that has a filterString that does <b>not</b> match <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
       Vigor.componentManager.refresh(filter);
@@ -77,7 +91,8 @@ var app = app || {};
     toggleForcedFilterStringMatching: function () {
       var filter = Vigor.componentManager.getActiveFilter(),
           msg = 'toggleForcedFilterStringMatching has been toggled';
-      filter.options.forceFilterStringMatching = !filter.options.forceFilterStringMatching;
+      this.forceFilterStringMatching = !this.forceFilterStringMatching;
+      filter.options.forceFilterStringMatching = this.forceFilterStringMatching;
       Vigor.componentManager.refresh(filter);
       showMsg(msg, filter);
     },
@@ -101,7 +116,10 @@ var app = app || {};
     _updateFilterString: function (filterString) {
       var
         filter = {
-          filterString: filterString
+          filterString: filterString,
+          options: {
+            forceFilterStringMatching: this.forceFilterStringMatching
+          }
         },
         msg = 'filterString on the filter passed to the refresh method set to: <b>' + filterString + '</b>';
       Vigor.componentManager.refresh(filter);

@@ -1,12 +1,13 @@
 ## AMD example using requirejs
 
-TODO: fix me
-
 This is a small example of how you can let the componentManager require components using requirejs (amd).
 
-To use compiled version uncomment the script tag in index.jade and run:
+The componentManager allows you to require components on demand (asynchronously) if you are using and AMD loader like requirejs.
+
+Of course you can compile the project down to a single file and have all components batched together and loaded with the rest of the application to avoid unnecessary requests.
+
+To try out the compiled version uncomment the script tag in index.jade and run:
 
     node r.js -o build-vendors.js
     node r.js -o build.js
 
-Components has to be required priror to initialization of the componentManager - no lazy loading yet :(

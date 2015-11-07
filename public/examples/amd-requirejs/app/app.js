@@ -16,7 +16,7 @@ define (function (require) {
 
     Vigor.componentManager.initialize({
       componentSettings: componentSettings,
-      context: this.$el
+      context: this.mainLayout.$el
     });
 
     this.router = new Router();
