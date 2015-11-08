@@ -2335,7 +2335,7 @@ describe 'The componentManager', ->
 
         assert.deepEqual result, expectedResults
 
-      it 'should add src as an attribute on the args object if its an IframeComponent', ->
+      it 'should add src as an attribute on the args object addSrcToArgs is set to true', ->
         args =
           foo: 'bar'
 
@@ -2343,12 +2343,30 @@ describe 'The componentManager', ->
           foo: 'bar'
           src: 'http://www.github.com'
 
+        addSrcToArgs = true
         componentManager._componentDefinitionsCollection.models[1].attributes.args = args
 
         componentDefinition = componentManager._componentDefinitionsCollection.get 'mock-iframe-component'
         instanceDefinition = componentManager._instanceDefinitionsCollection.models[1]
 
-        result = componentManager._getInstanceArguments instanceDefinition, componentDefinition
+        result = componentManager._getInstanceArguments instanceDefinition, componentDefinition, addSrcToArgs
+
+        assert.equal result.src, expectedResults.src
+
+      it 'should not add src as an attribute on the args object addSrcToArgs is set to false', ->
+        args =
+          foo: 'bar'
+
+        expectedResults =
+          foo: 'bar'
+
+        addSrcToArgs = false
+        componentManager._componentDefinitionsCollection.models[1].attributes.args = args
+
+        componentDefinition = componentManager._componentDefinitionsCollection.get 'mock-iframe-component'
+        instanceDefinition = componentManager._instanceDefinitionsCollection.models[1]
+
+        result = componentManager._getInstanceArguments instanceDefinition, componentDefinition, addSrcToArgs
 
         assert.equal result.src, expectedResults.src
 

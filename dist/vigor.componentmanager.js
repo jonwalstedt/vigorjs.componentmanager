@@ -1637,29 +1637,25 @@
         })(this));
       };
 
-      ComponentManager.prototype._getInstanceArguments = function(instanceDefinition, componentDefinition) {
-        var args, componentArgs, componentClassPromise, instanceArgs;
+      ComponentManager.prototype._getInstanceArguments = function(instanceDefinition, componentDefinition, addSrcToArgs) {
+        var args, componentArgs, instanceArgs;
+        if (addSrcToArgs == null) {
+          addSrcToArgs = false;
+        }
         args = {
           urlParams: instanceDefinition.get('urlParams'),
           urlParamsModel: instanceDefinition.get('urlParamsModel')
         };
         componentArgs = componentDefinition.get('args');
         instanceArgs = instanceDefinition.get('args');
-        componentClassPromise = componentDefinition.getClass();
         if (((componentArgs != null ? componentArgs.iframeAttributes : void 0) != null) && ((instanceArgs != null ? instanceArgs.iframeAttributes : void 0) != null)) {
           instanceArgs.iframeAttributes = _.extend(componentArgs.iframeAttributes, instanceArgs.iframeAttributes);
         }
         _.extend(args, componentArgs);
         _.extend(args, instanceArgs);
-        componentClassPromise.then((function(_this) {
-          return function(componentClassObj) {
-            var componentClass;
-            componentClass = componentClassObj.componentClass;
-            if (componentClass === Vigor.IframeComponent) {
-              return args.src = componentDefinition.get('src');
-            }
-          };
-        })(this));
+        if (addSrcToArgs) {
+          args.src = componentDefinition.get('src');
+        }
         return args;
       };
 
@@ -1668,10 +1664,14 @@
         componentClassPromise = this._componentDefinitionsCollection.getComponentClassPromiseByInstanceDefinition(instanceDefinition);
         componentClassPromise.then((function(_this) {
           return function(componentClassObj) {
-            var componentClass, componentDefinition, instance;
+            var addSrcToArgs, componentClass, componentDefinition, instance;
             componentClass = componentClassObj.componentClass;
             componentDefinition = componentClassObj.componentDefinition;
-            instance = new componentClass(_this._getInstanceArguments(instanceDefinition, componentDefinition));
+            addSrcToArgs = false;
+            if (componentClass === Vigor.IframeComponent) {
+              addSrcToArgs = true;
+            }
+            instance = new componentClass(_this._getInstanceArguments(instanceDefinition, componentDefinition, addSrcToArgs));
             instance.$el.addClass(_this.getComponentClassName());
             return instanceDefinition.set({
               'instance': instance

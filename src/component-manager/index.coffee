@@ -438,14 +438,13 @@ class ComponentManager
     _.filter instanceDefinitions, (instanceDefinition) =>
       return @_isTargetAvailable instanceDefinition
 
-  _getInstanceArguments: (instanceDefinition, componentDefinition) ->
+  _getInstanceArguments: (instanceDefinition, componentDefinition, addSrcToArgs = false) ->
     args =
       urlParams: instanceDefinition.get 'urlParams'
       urlParamsModel: instanceDefinition.get 'urlParamsModel'
 
     componentArgs = componentDefinition.get 'args'
     instanceArgs = instanceDefinition.get 'args'
-    componentClassPromise = componentDefinition.getClass()
 
     if componentArgs?.iframeAttributes? and instanceArgs?.iframeAttributes?
       instanceArgs.iframeAttributes = _.extend componentArgs.iframeAttributes, instanceArgs.iframeAttributes
@@ -453,10 +452,8 @@ class ComponentManager
     _.extend args, componentArgs
     _.extend args, instanceArgs
 
-    componentClassPromise.then (componentClassObj) =>
-      componentClass = componentClassObj.componentClass
-      if componentClass is Vigor.IframeComponent
-        args.src = componentDefinition.get 'src'
+    if addSrcToArgs
+      args.src = componentDefinition.get 'src'
 
     return args
 
@@ -466,7 +463,12 @@ class ComponentManager
     componentClassPromise.then (componentClassObj) =>
       componentClass = componentClassObj.componentClass
       componentDefinition = componentClassObj.componentDefinition
-      instance = new componentClass @_getInstanceArguments(instanceDefinition, componentDefinition)
+      addSrcToArgs = false
+
+      if componentClass is Vigor.IframeComponent
+        addSrcToArgs = true
+
+      instance = new componentClass @_getInstanceArguments(instanceDefinition, componentDefinition, addSrcToArgs)
       instance.$el.addClass @getComponentClassName()
 
       instanceDefinition.set
