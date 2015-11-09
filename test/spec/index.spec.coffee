@@ -1929,13 +1929,7 @@ describe 'The componentManager', ->
         assert _.isFunction(result.then)
 
     describe '_filterInstanceDefinitions', ->
-      globalConditions =
-        testCondition: false
-
-      filterModel = undefined
-
       componentSettings =
-        conditions: globalConditions
         components: [
           {
             id: 'mock-component',
@@ -1959,8 +1953,8 @@ describe 'The componentManager', ->
 
       beforeEach ->
         componentManager.initialize componentSettings
-        componentManager.refresh url: 'foo/bar'
-        filterModel = componentManager._filterModel
+        componentManager.refresh
+          url: 'foo/bar'
 
         $('body').append '<div class="component-area--header"></div>'
         $('body').append '<div class="component-area--main"></div>'
@@ -1969,41 +1963,47 @@ describe 'The componentManager', ->
         do $('.component-area--header').remove
         do $('.component-area--main').remove
 
-      it 'should call _instanceDefinitionsCollection.filterInstanceDefinitions
-      with the filterModel and globalConditions', ->
-        filterInstanceDefinitionsStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'filterInstanceDefinitions'
+      it 'should call _filterInstanceDefinitionsByComponentLevelFilters with
+      _instanceDefinitionsCollection.models', ->
+        filterInstanceDefinitionsByComponentLevelFiltersStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByComponentLevelFilters'
         do componentManager._filterInstanceDefinitions
-        assert filterInstanceDefinitionsStub.calledWith filterModel, globalConditions
+        assert filterInstanceDefinitionsByComponentLevelFiltersStub.calledWith componentManager._instanceDefinitionsCollection.models
 
-      it 'should call _filterInstanceDefinitionsByShowCount with the filterDefinitions
-      that was returned by _instanceDefinitionsCollection.filterInstanceDefinitions', ->
-        expectedInstanceDefinitionId = 'instance-1'
+      it 'should call _filterInstanceDefinitionsByInstanceLevelFilters with the instanceDefinitions
+      returned from _filterInstanceDefinitionsByComponentLevelFilters', ->
+        filterInstanceDefinitionsByInstanceLevelFiltersStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByComponentLevelFilters'
+        do componentManager._filterInstanceDefinitions
+        assert filterInstanceDefinitionsByInstanceLevelFiltersStub.calledWith componentManager._instanceDefinitionsCollection.models
+
+      it 'should call _filterInstanceDefinitionsByCustomProperties with the instanceDefinitions
+      that was returned by _filterInstanceDefinitionsByInstanceLevelFilters', ->
+        expectedArgument = [
+          componentManager._instanceDefinitionsCollection.get('instance-1')
+        ]
+        filterInstanceDefinitionsByCustomPropertiesStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByCustomProperties'
+        do componentManager._filterInstanceDefinitions
+
+        assert filterInstanceDefinitionsByCustomPropertiesStub.calledWith expectedArgument
+
+      it 'should call _filterInstanceDefinitionsByShowCount with the instanceDefinitions
+      that was returned by _filterInstanceDefinitionsByCustomProperties', ->
+        expectedArgument = [
+          componentManager._instanceDefinitionsCollection.get('instance-1')
+        ]
         filterInstanceDefinitionsByShowCountStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByShowCount'
         do componentManager._filterInstanceDefinitions
 
-        assert filterInstanceDefinitionsByShowCountStub.called
-        assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0].length, 1
-        assert.equal filterInstanceDefinitionsByShowCountStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
+        assert filterInstanceDefinitionsByShowCountStub.calledWith expectedArgument
 
-      it 'should call _filterInstanceDefinitionsByConditions with the filterDefinitions
+      it 'should call _filterInstanceDefinitionsByTargetAvailability with the instanceDefinitions
       that was returned by _filterInstanceDefinitionsByShowCount', ->
-        expectedInstanceDefinitionId = 'instance-1'
-        filterInstanceDefinitionsByConditionsStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByConditions'
-        do componentManager._filterInstanceDefinitions
-
-        assert filterInstanceDefinitionsByConditionsStub.called
-        assert.equal filterInstanceDefinitionsByConditionsStub.args[0][0].length, 1
-        assert.equal filterInstanceDefinitionsByConditionsStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
-
-      it 'should call _filterInstanceDefinitionsByTargetAvailability with the filterDefinitions
-      that was returned by _filterInstanceDefinitionsByConditions', ->
-        expectedInstanceDefinitionId = 'instance-1'
+        expectedArgument = [
+          componentManager._instanceDefinitionsCollection.get('instance-1')
+        ]
         filterInstanceDefinitionsByTargetAvailabilityStub = sandbox.stub componentManager, '_filterInstanceDefinitionsByTargetAvailability'
         do componentManager._filterInstanceDefinitions
 
-        assert filterInstanceDefinitionsByTargetAvailabilityStub.called
-        assert.equal filterInstanceDefinitionsByTargetAvailabilityStub.args[0][0].length, 1
-        assert.equal filterInstanceDefinitionsByTargetAvailabilityStub.args[0][0][0].attributes.id, expectedInstanceDefinitionId
+        assert filterInstanceDefinitionsByTargetAvailabilityStub.calledWith expectedArgument
 
       it 'should return remaining instanceDefinitions after all previous filters', ->
         expectedInstanceDefinitionId = 'instance-1'
@@ -2011,6 +2011,282 @@ describe 'The componentManager', ->
 
         assert.equal result.length, 1
         assert.equal result[0].attributes.id, expectedInstanceDefinitionId
+
+    describe '_filterInstanceDefinitionsByComponentLevelFilters', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component-1',
+            src: '../test/spec/MockComponent',
+            conditions: ->
+              return false
+          },
+          {
+            id: 'mock-component-2',
+            src: '../test/spec/MockComponent',
+            conditions: ->
+              return true
+          },
+          {
+            id: 'mock-component-3',
+            src: '../test/spec/MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component-1',
+            targetName: 'component-area--header',
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component-2',
+            targetName: 'component-area--header'
+          },
+          {
+            id: 'instance-3',
+            componentId: 'mock-component-3',
+            targetName: 'component-area--header'
+          }
+        ]
+
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should return instanceDefinitions that passes component level filters
+      (the instanceDefinitions componentDefinition.passesFilter should return true)', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByComponentLevelFilters instanceDefinitions
+
+        assert.equal filteredInstanceDefinitions.length, 2
+        assert.equal filteredInstanceDefinitions[0].get('id'), 'instance-2'
+        assert.equal filteredInstanceDefinitions[1].get('id'), 'instance-3'
+
+      it 'should call componentDefinition.passesFilter once fore each instance that reference 
+      that componentDefinition and pass the filterModel and globalConditionsModel', ->
+        componentDefinitions = componentManager._componentDefinitionsCollection.models
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal componentDefinitions.length, 3
+        assert.equal instanceDefinitions.length, 3
+
+        for componentDefinition in componentDefinitions
+          sandbox.spy componentDefinition, 'passesFilter'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByComponentLevelFilters instanceDefinitions
+
+        for componentDefinition in componentDefinitions
+          assert componentDefinition.passesFilter.calledWith componentManager._filterModel, componentManager._globalConditionsModel
+
+        assert.equal componentDefinitions[0].passesFilter.returnValues[0], false
+        assert.equal componentDefinitions[1].passesFilter.returnValues[0], true
+        assert.equal componentDefinitions[2].passesFilter.returnValues[0], true
+
+    describe '_filterInstanceDefinitionsByInstanceLevelFilters', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: '../test/spec/MockComponent'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'component-area--header',
+            conditions: ->
+              return false
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'component-area--header'
+            conditions: ->
+              return true
+          },
+          {
+            id: 'instance-3',
+            componentId: 'mock-component',
+            targetName: 'component-area--header'
+          }
+        ]
+
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should return instanceDefinitions that passes instanceLevel filters
+      (the instanceDefinitions passesFilter should return true)', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByInstanceLevelFilters instanceDefinitions
+
+        assert.equal filteredInstanceDefinitions.length, 2
+        assert.equal filteredInstanceDefinitions[0].get('id'), 'instance-2'
+        assert.equal filteredInstanceDefinitions[1].get('id'), 'instance-3'
+
+      it 'should call instanceDefinition.passesFilter once fore each instanceDefinition
+      and pass the filterModel and globalConditionsModel', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        for instanceDefinition in instanceDefinitions
+          sandbox.spy instanceDefinition, 'passesFilter'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByInstanceLevelFilters instanceDefinitions
+
+        for instanceDefinition in instanceDefinitions
+          assert instanceDefinition.passesFilter.calledWith componentManager._filterModel, componentManager._globalConditionsModel
+
+        assert.equal instanceDefinitions[0].passesFilter.returnValues[0], false
+        assert.equal instanceDefinitions[1].passesFilter.returnValues[0], true
+        assert.equal instanceDefinitions[2].passesFilter.returnValues[0], true
+
+    describe '_filterInstanceDefinitionsByCustomProperties', ->
+      componentSettings =
+        components: [
+          {
+            id: 'mock-component',
+            src: '../test/spec/MockComponent',
+            type: 'my-custom-type'
+          }
+        ]
+        instances: [
+          {
+            id: 'instance-1',
+            componentId: 'mock-component',
+            targetName: 'component-area--header',
+            color: 'green'
+          },
+          {
+            id: 'instance-2',
+            componentId: 'mock-component',
+            targetName: 'component-area--header'
+          },
+          {
+            id: 'instance-3',
+            componentId: 'mock-component',
+            targetName: 'component-area--header',
+            type: 'my-custom-instance-type'
+          }
+        ]
+
+      beforeEach ->
+        componentManager.initialize componentSettings
+
+      it 'should call _componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition
+      once for every instanceDefinition', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        getComponentDefinitionByInstanceDefinitionSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'getComponentDefinitionByInstanceDefinition'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+
+        assert.equal instanceDefinitions.length, 3
+        assert getComponentDefinitionByInstanceDefinitionSpy.calledThrice
+
+
+      it 'should call _componentDefinition.getCustomProperties once for every instanceDefinition', ->
+        componentDefinitions = componentManager._componentDefinitionsCollection.models
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal componentDefinitions.length, 1
+        assert.equal instanceDefinitions.length, 3
+
+        getCustomPropertiesSpy = sandbox.spy componentDefinitions[0], 'getCustomProperties'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+
+        assert.equal instanceDefinitions.length, 3
+        assert getCustomPropertiesSpy.calledThrice
+
+      it 'should call _instanceDefinition.getCustomProperties once for every instanceDefinition', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        for instanceDefinition in instanceDefinitions
+          sandbox.spy instanceDefinition, 'getCustomProperties'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+
+        assert.equal instanceDefinitions.length, 3
+        for instanceDefinition in instanceDefinitions
+          assert instanceDefinition.getCustomProperties.calledOnce
+
+
+      it 'should call _filterModel.getCustomProperties once', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        sandbox.spy componentManager._filterModel, 'getCustomProperties'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+
+        assert.equal instanceDefinitions.length, 3
+        assert componentManager._filterModel.getCustomProperties.calledOnce
+
+      it 'should ignore custom properties on both componentDefinitions and instanceDefinitions
+      if there are no custom properties on the filterModel', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+
+        assert.equal instanceDefinitions.length, 3
+
+      it 'should return instanceDefinitions that matches custom properties
+      defined on a component level', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        componentManager._filterModel.set
+          type: 'my-custom-type'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+        assert.equal filteredInstanceDefinitions.length, 2
+        assert.equal filteredInstanceDefinitions[0].get('id'), 'instance-1'
+        assert.equal filteredInstanceDefinitions[1].get('id'), 'instance-2'
+
+        # the thired instance definition over ride the type property and will
+        # therefore not match the filter
+        # assert.equal filteredInstanceDefinitions[2].get('id'), 'instance-3'
+
+      it 'should return instanceDefinitions that matches custom properties
+      defined on a instance level', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        componentManager._filterModel.set
+          color: 'green'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+        assert.equal filteredInstanceDefinitions.length, 1
+        assert.equal filteredInstanceDefinitions[0].get('id'), 'instance-1'
+
+      it 'should return instanceDefinitions that overrides custom properties
+      on a component level', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        componentManager._filterModel.set
+          type: 'my-custom-instance-type'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+        assert.equal filteredInstanceDefinitions.length, 1
+        assert.equal filteredInstanceDefinitions[0].get('id'), 'instance-3'
+
+      it 'should return no instanceDefinitions if filtering on a property that is
+      not defined on either componentDefinitions or instanceDefinitions', ->
+        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
+        assert.equal instanceDefinitions.length, 3
+
+        componentManager._filterModel.set
+          nonExistingProperty: 'nonExistingValue'
+
+        filteredInstanceDefinitions = componentManager._filterInstanceDefinitionsByCustomProperties instanceDefinitions
+        assert.equal filteredInstanceDefinitions.length, 0
 
     describe '_filterInstanceDefinitionsByShowCount', ->
       it 'should return instanceDefinitions that does not exceed their showCount if they have a maxShowCount defined in their componentDefinition', ->
@@ -2028,13 +2304,13 @@ describe 'The componentManager', ->
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'test-prefix--header',
+              targetName: 'component-area--header',
               showCount: 4
             },
             {
               id: 'instance-2',
               componentId: 'mock-component',
-              targetName: 'test-prefix--main',
+              targetName: 'component-area--main',
               showCount: 1
             }
           ]
@@ -2057,95 +2333,6 @@ describe 'The componentManager', ->
         assert.equal instanceDefinitions.length, 1
         assert.equal instanceDefinitions[0].attributes.id, expectedInstanceDefinitionId
 
-    describe '_filterInstanceDefinitionsByConditions', ->
-      componentSettings =
-        components: [
-          {
-            id: 'mock-component',
-            src: '../test/spec/MockComponent',
-            conditions: []
-          }
-        ]
-        instances: [
-          {
-            id: 'instance-1',
-            componentId: 'mock-component',
-            targetName: 'component-area--header',
-            showCount: 4
-          },
-          {
-            id: 'instance-2',
-            componentId: 'mock-component',
-            targetName: 'component-area--main',
-            showCount: 1
-          }
-        ]
-
-      it 'should return instanceDefinitions that passes componentConditions if 
-      they are defined', ->
-        componentManager.initialize componentSettings
-        condition = ->
-          currentTime = 8
-          allowedTime = 4
-          fancySucceedingTimeCheck = currentTime > allowedTime
-          return fancySucceedingTimeCheck
-
-        componentManager._componentDefinitionsCollection.models[0].attributes.conditions.push condition
-        areConditionsMetSpy = sandbox.spy componentManager._componentDefinitionsCollection.models[0], 'areConditionsMet'
-
-        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
-        assert.equal instanceDefinitions.length, 2
-
-        instanceDefinitions = componentManager._filterInstanceDefinitionsByConditions instanceDefinitions
-
-        assert areConditionsMetSpy.calledTwice
-        assert.equal instanceDefinitions.length, 2
-
-      it 'should not return instanceDefinitions that does not pass 
-      componentConditions if they are defined', ->
-        componentManager.initialize componentSettings
-        condition = ->
-          currentTime = 2
-          allowedTime = 4
-          fancyFailingTimeCheck = currentTime > allowedTime
-          return fancyFailingTimeCheck
-
-        componentManager._componentDefinitionsCollection.models[0].attributes.conditions.push condition
-        areConditionsMetSpy = sandbox.spy componentManager._componentDefinitionsCollection.models[0], 'areConditionsMet'
-
-        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
-        assert.equal instanceDefinitions.length, 2
-
-        instanceDefinitions = componentManager._filterInstanceDefinitionsByConditions instanceDefinitions
-
-        assert areConditionsMetSpy.calledTwice
-        assert.equal instanceDefinitions.length, 0
-
-      it 'should use global conditions if a string referenced is defined as
-      condition in the condition model', ->
-        componentManager.initialize componentSettings
-        condition =
-          timeCheck: ->
-            currentTime = 2
-            allowedTime = 4
-            fancyFailingTimeCheck = currentTime > allowedTime
-            return fancyFailingTimeCheck
-
-        # Register the condition as a global condition
-        componentManager.addConditions condition
-
-        # Reference the global condition key
-        componentManager._componentDefinitionsCollection.models[0].attributes.conditions = ['timeCheck']
-
-        areConditionsMetSpy = sandbox.spy componentManager._componentDefinitionsCollection.models[0], 'areConditionsMet'
-
-        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
-        assert.equal instanceDefinitions.length, 2
-
-        instanceDefinitions = componentManager._filterInstanceDefinitionsByConditions instanceDefinitions
-
-        assert areConditionsMetSpy.calledTwice
-        assert.equal instanceDefinitions.length, 0
 
     describe '_filterInstanceDefinitionsByTargetAvailability', ->
       componentSettings =
@@ -3400,22 +3587,10 @@ describe 'The componentManager', ->
         assert createAndAddInstancesStub.calledWith instanceDefinition
 
     describe '_onActiveInstanceChange', ->
-      it 'should call toJSON on the _filterModel', ->
-        toJSONSpy = sandbox.spy componentManager._filterModel, 'toJSON'
-        componentManager._onActiveInstanceChange instanceDefinition
-
-        assert toJSONSpy.called
-
-      it 'should call toJSON on the _globalConditionsModel', ->
-        toJSONSpy = sandbox.spy componentManager._globalConditionsModel, 'toJSON'
-        componentManager._onActiveInstanceChange instanceDefinition
-
-        assert toJSONSpy.called
-
       it 'should call passesFilter on the instanceDefinition and pass active filters and global conditions', ->
         passesFilterSpy = sandbox.spy instanceDefinition, 'passesFilter'
-        filter = componentManager._filterModel.toJSON()
-        globalConditions = componentManager._globalConditionsModel.toJSON()
+        filter = componentManager._filterModel
+        globalConditions = componentManager._globalConditionsModel
         componentManager._onActiveInstanceChange instanceDefinition
 
         assert passesFilterSpy.calledWith filter, globalConditions

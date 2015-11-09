@@ -1,4 +1,4 @@
-class InstanceDefinitionModel extends Backbone.Model
+class InstanceDefinitionModel extends BaseModel
 
   ERROR:
     VALIDATION:
@@ -110,7 +110,10 @@ class InstanceDefinitionModel extends Backbone.Model
       'instance': undefined
     , silent: true
 
-  passesFilter: (filter, globalConditions) ->
+  passesFilter: (filterModel, globalConditionsModel) ->
+    filter = filterModel?.toJSON() or {}
+    globalConditions = globalConditionsModel?.toJSON() or {}
+
     if filter?.url or filter?.url is ''
       urlMatch = @doesUrlPatternMatch filter.url
       if urlMatch?
@@ -120,7 +123,7 @@ class InstanceDefinitionModel extends Backbone.Model
           return false
 
     if @get('conditions')
-      areConditionsMet = @areConditionsMet globalConditions, filter
+      areConditionsMet = @areConditionsMet filter, globalConditions
       if areConditionsMet?
         return false unless areConditionsMet
 
@@ -228,7 +231,7 @@ class InstanceDefinitionModel extends Backbone.Model
     else
       return undefined
 
-  areConditionsMet: (globalConditions, filter) ->
+  areConditionsMet: (filter, globalConditions) ->
     instanceConditions = @get 'conditions'
     shouldBeIncluded = true
 

@@ -40,25 +40,6 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
       instanceDefinition.urlPattern = ['*notFound', '*action']
     return instanceDefinition
 
-  filterInstanceDefinitions: (filterModel, globalConditions) ->
-    filter = filterModel?.toJSON() or {}
-    instanceDefinitions = @models
-    if filterModel
-      blackListedKeys = _.keys filterModel.defaults
-      customFilter = _.omit filter, blackListedKeys
-
-      for key, val of customFilter
-        if customFilter.hasOwnProperty(key) and customFilter[key] is undefined
-          delete customFilter[key]
-
-      unless _.isEmpty(customFilter)
-        instanceDefinitions = @where customFilter
-
-    instanceDefinitions = _.filter instanceDefinitions, (instanceDefinitionModel) ->
-      instanceDefinitionModel.passesFilter filter, globalConditions
-
-    return instanceDefinitions
-
   addUrlParams: (instanceDefinitions, url) ->
     for instanceDefinitionModel in instanceDefinitions
       instanceDefinitionModel.addUrlParams url

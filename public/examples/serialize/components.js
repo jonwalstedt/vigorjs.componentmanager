@@ -24,7 +24,7 @@ var componentSettings = {
         order: 1,
         args: {
           order: '1',
-          background: 'aqua'
+          background: '#D5FFE9'
         },
         urlPattern: 'global'
       },
@@ -34,7 +34,7 @@ var componentSettings = {
         order: 2,
         args: {
           order: '2',
-          background: 'green'
+          background: '#88FFC2'
         },
         urlPattern: 'global'
       },
@@ -44,7 +44,7 @@ var componentSettings = {
         order: 3,
         args: {
           order: '3',
-          background: 'silver'
+          background: '#AACCBB'
         },
         urlPattern: 'global'
       },
@@ -54,7 +54,7 @@ var componentSettings = {
         order: 4,
         args: {
           order: '4',
-          background: 'yellow'
+          background: '#6A7F75'
         },
         urlPattern: 'global'
       },
@@ -64,7 +64,7 @@ var componentSettings = {
         order: 5,
         args: {
           order: '5',
-          background: 'pink'
+          background: '#447F61'
         },
         urlPattern: 'global'
       }

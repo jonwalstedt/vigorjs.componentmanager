@@ -34,15 +34,20 @@ var app = app || {};
 
     _updateFilter: function () {
       var url = $('input[type="radio"][name="url"]:checked').val(),
-          type= $('input[type="radio"][name="type"]:checked').val();
+          type = $('input[type="radio"][name="type"]:checked').val(),
+          componentStyle = $('input[type="radio"][name="component-style"]:checked').val();
 
-      if (url === "all")
+      if (url === 'all')
         url = undefined
 
-      if (type === "all")
+      if (type === 'all')
         type = undefined
 
+      if (componentStyle === 'all')
+        componentStyle = undefined
+
       this.filter = {
+        componentStyle: componentStyle,
         type: type,
         url: url,
         options: {
@@ -52,7 +57,6 @@ var app = app || {};
           invert: this.$invertCheckbox.is(':checked')
         }
       }
-      console.log(this.filter);
     }
   });
 

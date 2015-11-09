@@ -170,6 +170,41 @@ describe 'ComponentDefinitionModel', ->
       result = do model.getComponentClassPromise
       assert result is model.deferred.promise()
 
+  describe 'passesFilter', ->
+    it 'should call areConditionsMet and pass the filterModel and the globalConditionsModel', ->
+      mockFilterModel = new Backbone.Model()
+      mockGlobalConditionsModel = new Backbone.Model()
+      model = new ComponentDefinitionModel()
+
+      areConditionsMetSpy = sandbox.spy model, 'areConditionsMet'
+
+      model.passesFilter mockFilterModel, mockGlobalConditionsModel
+      assert areConditionsMetSpy.calledWith mockFilterModel, mockGlobalConditionsModel
+
+    it 'should return true if areConditionsMet returns true', ->
+      mockFilterModel = new Backbone.Model()
+      mockGlobalConditionsModel = new Backbone.Model()
+      model = new ComponentDefinitionModel
+        conditions: ->
+          return true
+
+      areConditionsMetSpy = sandbox.spy model, 'areConditionsMet'
+
+      passesFilter = model.passesFilter mockFilterModel, mockGlobalConditionsModel
+      assert.equal passesFilter, true
+
+    it 'should return false if areConditionsMet returns false', ->
+      mockFilterModel = new Backbone.Model()
+      mockGlobalConditionsModel = new Backbone.Model()
+      model = new ComponentDefinitionModel
+        conditions: ->
+          return false
+
+      areConditionsMetSpy = sandbox.spy model, 'areConditionsMet'
+
+      passesFilter = model.passesFilter mockFilterModel, mockGlobalConditionsModel
+      assert.equal passesFilter, false
+
   describe 'areConditionsMet', ->
     it 'should return false if the condition is a method that returns falsy', ->
       falsyValues = [false, undefined, 0, '', null, NaN]
@@ -220,12 +255,13 @@ describe 'ComponentDefinitionModel', ->
       model = new ComponentDefinitionModel(componentDefinitionObj)
       assert.equal model.areConditionsMet(), true
 
-    it 'should run condition method on globalConditions object if condition is a string', ->
+    it 'should run condition method on globalConditions mode if condition is a
+    string', ->
       stub = sinon.stub()
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo'
 
-      globalConditions =
+      globalConditionsModel = new Backbone.Model
         truthyMethod: stub.returns(true)
 
       componentDefinitionObj =
@@ -234,18 +270,19 @@ describe 'ComponentDefinitionModel', ->
         conditions: 'truthyMethod'
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      model.areConditionsMet(filter, globalConditions)
+      model.areConditionsMet(filterModel, globalConditionsModel)
       assert.ok stub.called
 
-    it 'should run condition methods on globalConditions object if conditions is an array of strings', ->
+    it 'should run condition methods on globalConditions object if conditions is
+    an array of strings', ->
       stub1 = sinon.stub()
       stub2 = sinon.stub()
       stub3 = sinon.stub()
 
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo'
 
-      globalConditions =
+      globalConditionsModel = new Backbone.Model
         method1: stub1.returns(true)
         method2: stub2.returns(true)
         method3: stub3.returns(true)
@@ -256,19 +293,20 @@ describe 'ComponentDefinitionModel', ->
         conditions: ['method1', 'method2', 'method3']
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      result = model.areConditionsMet(filter, globalConditions)
+      result = model.areConditionsMet(filterModel, globalConditionsModel)
       assert.ok stub1.called
       assert.ok stub2.called
       assert.ok stub3.called
 
-    it 'should return false if condition is a string and can be used as a key on the globalConditions object and that method returns falsy', ->
+    it 'should return false if condition is a string and can be used as a key on
+    the globalConditions model and that method returns falsy', ->
       falsyValues = [false, undefined, 0, '', null, NaN]
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo'
 
       for value in falsyValues
         stub = sinon.stub()
-        globalConditions =
+        globalConditionsModel = new Backbone.Model
           truthyMethod: stub.returns(value)
 
         componentDefinitionObj =
@@ -277,17 +315,18 @@ describe 'ComponentDefinitionModel', ->
           conditions: 'truthyMethod'
 
         model = new ComponentDefinitionModel(componentDefinitionObj)
-        result = model.areConditionsMet(filter, globalConditions)
+        result = model.areConditionsMet(filterModel, globalConditionsModel)
         assert.equal result, false
 
-    it 'should return true if condition is a string and can be used as a key on the globalConditions object and that method returns truthy', ->
+    it 'should return true if condition is a string and can be used as a key on
+    the globalConditions model and that method returns truthy', ->
       truthyValues = [true, {}, [], 42, 'foo', new Date()]
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo'
 
       for value in truthyValues
         stub = sinon.stub()
-        globalConditions =
+        globalConditionsModel = new Backbone.Model
           truthyMethod: stub.returns(value)
 
         componentDefinitionObj =
@@ -296,33 +335,24 @@ describe 'ComponentDefinitionModel', ->
           conditions: 'truthyMethod'
 
         model = new ComponentDefinitionModel(componentDefinitionObj)
-        result = model.areConditionsMet(filter, globalConditions)
+        result = model.areConditionsMet(filterModel, globalConditionsModel)
         assert.equal result, true
 
-    it 'should throw an error if the condition is a string and no globalConditions object is passed to the method ', ->
+    it 'should throw an error if the condition is a string and no mehod is
+    registered with the string as a key in the globalConditions object', ->
       componentDefinitionObj =
         id: 'dummy'
         src: MockComponent
         conditions: 'truthyMethod'
 
-      model = new ComponentDefinitionModel(componentDefinitionObj)
-      errorFn = -> model.areConditionsMet()
-      assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
-
-    it 'should throw an error if the condition is a string and no mehod is registered with the string as a key in the globalConditions object', ->
-      componentDefinitionObj =
-        id: 'dummy'
-        src: MockComponent
-        conditions: 'truthyMethod'
-
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo'
 
-      globalConditions =
+      globalConditionsModel = new Backbone.Model
         falsyMethod: -> return false
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      errorFn = -> model.areConditionsMet(filter, globalConditions)
+      errorFn = -> model.areConditionsMet(filterModel, globalConditionsModel)
       assert.throws (-> errorFn()), /Trying to verify condition truthyMethod but it has not been registered yet/
 
   describe '_isUrl', ->

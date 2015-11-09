@@ -414,25 +414,38 @@ class ComponentManager
     return deferred.promise()
 
   _filterInstanceDefinitions: ->
-    globalConditions = @_globalConditionsModel.toJSON()
-    instanceDefinitions = @_instanceDefinitionsCollection.filterInstanceDefinitions @_filterModel, globalConditions
+    instanceDefinitions = @_instanceDefinitionsCollection.models
+    instanceDefinitions = @_filterInstanceDefinitionsByComponentLevelFilters instanceDefinitions
+    instanceDefinitions = @_filterInstanceDefinitionsByInstanceLevelFilters instanceDefinitions
+    instanceDefinitions = @_filterInstanceDefinitionsByCustomProperties instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByShowCount instanceDefinitions
-    instanceDefinitions = @_filterInstanceDefinitionsByConditions instanceDefinitions
     instanceDefinitions = @_filterInstanceDefinitionsByTargetAvailability instanceDefinitions
     return instanceDefinitions
+
+  _filterInstanceDefinitionsByComponentLevelFilters: (instanceDefinitions) ->
+    _.filter instanceDefinitions, (instanceDefinition) =>
+      componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
+      return componentDefinition.passesFilter @_filterModel, @_globalConditionsModel
+
+  _filterInstanceDefinitionsByInstanceLevelFilters: (instanceDefinitions) ->
+    _.filter instanceDefinitions, (instanceDefinition) =>
+      return instanceDefinition.passesFilter @_filterModel, @_globalConditionsModel
+
+  _filterInstanceDefinitionsByCustomProperties: (instanceDefinitions) ->
+    customFilterProperteis = @_filterModel.getCustomProperties()
+    _.filter instanceDefinitions, (instanceDefinition) =>
+      componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
+      customProperties = _.extend {}, componentDefinition.getCustomProperties(), instanceDefinition.getCustomProperties()
+      if not _.isEmpty(customFilterProperteis)
+        return _.isMatch customProperties, customFilterProperteis
+      else
+        return true
 
   _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) =>
       componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
       componentMaxShowCount = componentDefinition.get 'maxShowCount'
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
-
-  _filterInstanceDefinitionsByConditions: (instanceDefinitions) ->
-    filter = @_filterModel.toJSON()
-    globalConditions = @_globalConditionsModel.toJSON()
-    _.filter instanceDefinitions, (instanceDefinition) =>
-      componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
-      return componentDefinition.areConditionsMet filter, globalConditions
 
   _filterInstanceDefinitionsByTargetAvailability: (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) =>
@@ -592,9 +605,7 @@ class ComponentManager
     @_createAndAddInstances instanceDefinition
 
   _onActiveInstanceChange: (instanceDefinition) =>
-    filter = @_filterModel.toJSON()
-    globalConditions = @_globalConditionsModel.toJSON()
-    if instanceDefinition.passesFilter(filter, globalConditions) \
+    if instanceDefinition.passesFilter(@_filterModel, @_globalConditionsModel) \
     and @_isTargetAvailable(instanceDefinition)
       do instanceDefinition.disposeInstance
       @_addInstanceToModel(instanceDefinition).then =>
@@ -629,6 +640,7 @@ __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
 __testOnly.FilterModel = FilterModel
 __testOnly.IframeComponent = IframeComponent
 __testOnly.BaseCollection = BaseCollection
+__testOnly.BaseModel = BaseModel
 __testOnly.BaseInstanceCollection = BaseInstanceCollection
 
 #properties

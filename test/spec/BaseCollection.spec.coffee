@@ -6,7 +6,7 @@ BaseCollection = __testOnly.BaseCollection
 
 clock = undefined
 
-describe 'A BaseCollection', ->
+describe 'BaseCollection', ->
   collection = undefined
 
   beforeEach ->

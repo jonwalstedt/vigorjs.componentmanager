@@ -5,7 +5,7 @@ block includes
 
 block content
   != partial("./filter-by-custom-properties")
-  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '6'})
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '8'})
 
   div.app-wrapper
     small active filter
@@ -13,7 +13,16 @@ block content
 
     div.controls
       div.options
-        p Filter on the custom property "type":
+        p Filter on custom component property "componentStyle":
+        label
+          input(type="radio" name="component-style" class="" value="all")
+          | all
+
+        label
+          input(type="radio" name="component-style" class="bar" value="custom")
+          | custom
+
+        p Filter on the custom instance property "type":
         label
           input(type="radio" name="type" class="all" value="all" checked)
           | all
@@ -29,6 +38,10 @@ block content
         label
           input(type="radio" name="type" class="bar" value="red-component")
           | red-component
+
+        label
+          input(type="radio" name="type" class="" value="yellow-component")
+          | yellow-component (component level)
 
         p Filter on url:
         label

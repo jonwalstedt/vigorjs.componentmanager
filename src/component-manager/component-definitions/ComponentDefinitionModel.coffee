@@ -1,4 +1,4 @@
-class ComponentDefinitionModel extends Backbone.Model
+class ComponentDefinitionModel extends BaseModel
 
   ERROR:
     VALIDATION:
@@ -8,8 +8,6 @@ class ComponentDefinitionModel extends Backbone.Model
       SRC_UNDEFINED: 'src cant be undefined'
       SRC_WRONG_TYPE: 'src should be a string or a constructor function'
       SRC_IS_EMPTY_STRING: 'src can not be an empty string'
-
-    MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested'
 
     NO_CONSTRUCTOR_FOUND: (src) ->
       return "No constructor function found for #{src}"
@@ -92,7 +90,14 @@ class ComponentDefinitionModel extends Backbone.Model
   getComponentClassPromise: ->
     return @deferred.promise()
 
-  areConditionsMet: (filter, globalConditions) ->
+  passesFilter: (filterModel, globalConditionsModel) ->
+    unless @areConditionsMet filterModel, globalConditionsModel
+      return false
+    return true
+
+  areConditionsMet: (filterModel, globalConditionsModel) ->
+    filter = filterModel?.toJSON() or {}
+    globalConditions = globalConditionsModel?.toJSON() or {}
     componentConditions = @get 'conditions'
     shouldBeIncluded = true
 
@@ -106,9 +111,6 @@ class ComponentDefinitionModel extends Backbone.Model
           break
 
         else if _.isString(condition)
-          unless globalConditions
-            throw @ERROR.MISSING_GLOBAL_CONDITIONS
-
           unless globalConditions[condition]?
             throw @ERROR.MISSING_CONDITION condition
 

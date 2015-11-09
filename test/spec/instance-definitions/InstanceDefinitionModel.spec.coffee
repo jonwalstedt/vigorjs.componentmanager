@@ -197,14 +197,20 @@ describe 'InstanceDefinitionModel', ->
 
   describe 'passesFilter', ->
     describe 'url filter', ->
-      it 'should return true if filter.url matches urlPattern and no other filters are defined', ->
+      it 'should return true if filter.url matches urlPattern and no other filters
+      are defined', ->
         instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-        passesFilter = instanceDefinitionModel.passesFilter url: 'foo/123'
+        filterModel = new Backbone.Model
+          url: 'foo/123'
+
+        passesFilter = instanceDefinitionModel.passesFilter filterModel
         assert.equal passesFilter, true
 
       it 'should return false if filter.url doesnt match urlPattern and no other filters are defined', ->
         instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-        passesFilter = instanceDefinitionModel.passesFilter url: 'bar/123'
+        filterModel = new Backbone.Model
+          url: 'bar/123'
+        passesFilter = instanceDefinitionModel.passesFilter filterModel
         assert.equal passesFilter, false
 
     describe 'conditions', ->
@@ -226,69 +232,69 @@ describe 'InstanceDefinitionModel', ->
 
       it 'should return true if globalConditions passes and no other filters are defined', ->
         instanceDefinitionModel.set 'conditions', 'foo'
-        globalConditions =
+        globalConditionsModel = new Backbone.Model
           foo: -> return true
 
-        passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
+        passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditionsModel
         assert.equal passesFilter, true
 
       it 'should return false if globalConditions doesnt pass and no other filters are defined', ->
         instanceDefinitionModel.set 'conditions', 'foo'
-        globalConditions =
+        globalConditionsModel = new Backbone.Model
           foo: -> return false
 
-        passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditions
+        passesFilter = instanceDefinitionModel.passesFilter undefined, globalConditionsModel
         assert.equal passesFilter, false
 
     describe 'stringMatching - using a filterString on the passed filter', ->
       describe 'includeIfFilterStringMatches', ->
         it 'should return true if includeIfFilterStringMatches passes and no other filters are defined', ->
           instanceDefinitionModel.set 'includeIfFilterStringMatches', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             filterString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if includeIfFilterStringMatches doesnt pass and no other filters are defined', ->
           instanceDefinitionModel.set 'includeIfFilterStringMatches', 'bar'
-          filter =
+          filterModel = new Backbone.Model
             filterString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
         it 'should return true if includeIfFilterStringMatches isnt defined and no other filters are defined - even if a filterString is set on the passed filter', ->
           instanceDefinitionModel.set 'includeIfFilterStringMatches', undefined
-          filter =
+          filterModel = new Backbone.Model
             filterString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
       describe 'excludeIfFilterStringMatches', ->
         it 'should return true if excludeIfFilterStringMatches passes and no other filters are defined', ->
           instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'bar'
-          filter =
+          filterModel = new Backbone.Model
             filterString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if excludeIfFilterStringMatches doesnt pass and no other filters are defined', ->
           instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             filterString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
         it 'should return true if excludeIfFilterStringMatches isnt defined and no other filters are defined - even if a filterString is set on the passed filter', ->
           instanceDefinitionModel.set 'excludeIfFilterStringMatches', undefined
-          filter =
+          filterModel = new Backbone.Model
             filterString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
 
@@ -302,12 +308,12 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filter =
+          filterModel = new Backbone.Model
             url: 'foo'
             options:
               forceFilterStringMatching: true
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
         it 'should return true if the instanceDefinition has a filterString and the passed
@@ -316,13 +322,13 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filter =
+          filterModel = new Backbone.Model
             url: 'foo'
             hasToMatchString: 'bar'
             options:
               forceFilterStringMatching: true
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if the instanceDefinition has a filterString and the passed
@@ -332,13 +338,13 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filter =
+          filterModel = new Backbone.Model
             url: 'boo'
             hasToMatchString: 'bar'
             options:
               forceFilterStringMatching: true
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
         it 'should return true if the instanceDefinition has a filterString but the passed
@@ -347,123 +353,123 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filter =
+          filterModel = new Backbone.Model
             url: 'foo'
             options:
               forceFilterStringMatching: false
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
       describe 'includeIfStringMatches', ->
         it 'should return true if includeIfStringMatches matches and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             includeIfStringMatches: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if includeIfStringMatches doesnt match and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             includeIfStringMatches: 'bar'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
         it 'should return true if includeIfStringMatches returns undefined and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filter =
+          filterModel = new Backbone.Model
             includeIfStringMatches: 'bar'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if includeIfStringMatches returns undefined and no other filters are defined and
         forceFilterStringMatching is set to true', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filter =
+          filterModel = new Backbone.Model
             includeIfStringMatches: 'bar'
             options:
               forceFilterStringMatching: true
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
       describe 'excludeIfStringMatches', ->
         it 'should return false if excludeIfStringMatches matches and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             excludeIfStringMatches: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
         it 'should return true if excludeIfStringMatches doesnt match and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             excludeIfStringMatches: 'bar'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return true if excludeIfStringMatches returns undefined and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filter =
+          filterModel = new Backbone.Model
             excludeIfStringMatches: 'bar'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if excludeIfStringMatches returns undefined and no other filters are defined and
         forceFilterStringMatching is set to true', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filter =
+          filterModel = new Backbone.Model
             includeIfStringMatches: 'bar'
             options:
               forceFilterStringMatching: true
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
       describe 'hasToMatchString', ->
         it 'should return true if hasToMatchString matches and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             hasToMatchString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if hasToMatchString doesnt match and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             hasToMatchString: 'bar'
 
         it 'should return false if hasToMatchString is passed as a filter and no filterString is registered and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filter =
+          filterModel = new Backbone.Model
             hasToMatchString: 'bar'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
       describe 'cantMatchString', ->
         it 'should return true if cantMatchString passes and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             cantMatchString: 'bar'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
         it 'should return false if cantMatchString doesnt pass and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filter =
+          filterModel = new Backbone.Model
             cantMatchString: 'foo'
 
-          passesFilter = instanceDefinitionModel.passesFilter filter
+          passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
     it 'should return true if no filter is passed', ->
@@ -481,11 +487,11 @@ describe 'InstanceDefinitionModel', ->
         'filterString': 'foo'
         'conditions': -> return true
 
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo/1/2'
         hasToMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter filter
+      passesFilter = instanceDefinitionModel.passesFilter filterModel
       assert.equal passesFilter, true
 
     it 'returns false if any of the filters doesnt pass - in this case it passes the hasToMatchString filter butthe conditions does not pass', ->
@@ -494,11 +500,11 @@ describe 'InstanceDefinitionModel', ->
         'filterString': 'foo'
         'conditions': -> return false
 
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo/1/2'
         hasToMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter filter
+      passesFilter = instanceDefinitionModel.passesFilter filterModel
       assert.equal passesFilter, false
 
     it 'returns false if any of the filters doesnt pass - in this case the url pattern does not match', ->
@@ -507,11 +513,11 @@ describe 'InstanceDefinitionModel', ->
         'filterString': 'foo'
         'conditions': -> return true
 
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo/1/2'
         hasToMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter filter
+      passesFilter = instanceDefinitionModel.passesFilter filterModel
       assert.equal passesFilter, false
 
     it 'returns false if any of the filters doesnt pass - in this case the filterString cant match foo', ->
@@ -520,11 +526,11 @@ describe 'InstanceDefinitionModel', ->
         'filterString': 'foo'
         'conditions': -> return true
 
-      filter =
+      filterModel = new Backbone.Model
         url: 'foo/1/2'
         cantMatchString: 'foo'
 
-      passesFilter = instanceDefinitionModel.passesFilter filter
+      passesFilter = instanceDefinitionModel.passesFilter filterModel
       assert.equal passesFilter, false
 
   describe 'exceedsMaximumShowCount', ->
@@ -870,46 +876,51 @@ describe 'InstanceDefinitionModel', ->
     it 'should use methods in globalConditions if the condition is a string
     (the string will be used as a key in the globalConditions object)', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
       globalConditions =
         fooCheck: sinon.spy()
 
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert globalConditions.fooCheck.called
 
     it 'should return true if targeted method in globalConditions returns true', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
       globalConditions =
         fooCheck: -> return true
 
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert.equal areConditionsMet, true
 
     it 'should return false if targeted method in globalConditions returns false', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
       globalConditions =
         fooCheck: -> return false
 
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert.equal areConditionsMet, false
 
     it 'should return true if all targeted methods in globalConditions returns true', ->
       instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
+      filter = undefined
       globalConditions =
         fooCheck: -> return true
         barCheck: -> return true
         bazCheck: -> return true
 
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert.equal areConditionsMet, true
 
     it 'should return false if any of the targeted methods in globalConditions returns false', ->
       instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
+      filter = undefined
       globalConditions =
         fooCheck: -> return true
         barCheck: -> return false
         bazCheck: -> return true
 
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(globalConditions)
+      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert.equal areConditionsMet, false
 
     it 'should throw an error if the condition is a string and no global conditions was passed', ->
@@ -920,10 +931,11 @@ describe 'InstanceDefinitionModel', ->
     it 'should throw an error if the condition is a string and the key is not 
     present in the globalConditions', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
       globalConditions =
         barCheck: -> return true
 
-      errorFn = -> instanceDefinitionModel.areConditionsMet(globalConditions)
+      errorFn = -> instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert.throws (-> errorFn()), /Trying to verify condition fooCheck but it has not been registered yet/
 
   describe 'addUrlParams', ->

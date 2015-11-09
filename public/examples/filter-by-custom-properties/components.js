@@ -1,8 +1,16 @@
 var componentSettings = {
-  components: [{
-    id: 'filter-condition-component',
-    src: 'ExampleComponent' // ExampleComponent.js in the examples directory - exposed on window
-  }],
+  components: [
+    {
+      id: 'filter-condition-component',
+      src: 'ExampleComponent' // ExampleComponent.js in the examples directory - exposed on window
+    },
+    {
+      id: 'filter-condition-component2',
+      src: 'ExampleComponent', // ExampleComponent.js in the examples directory - exposed on window
+      type: 'yellow-component',
+      componentStyle: 'custom'
+    }
+  ],
 
   targets: {
     main: [
@@ -81,6 +89,30 @@ var componentSettings = {
           urlPattern: 'bar/:baz',
           type: 'red-component',
           background: 'red'
+        }
+      },
+
+      {
+        id: 'filter-instance-7',
+        componentId: 'filter-condition-component2',
+        urlPattern: 'bar/:baz',
+        type: 'red-component',
+        args: {
+          title: 'id: filter-instance-7',
+          urlPattern: 'bar/:baz',
+          type: 'red-component',
+          background: 'red'
+        }
+      },
+
+      {
+        id: 'filter-instance-8',
+        componentId: 'filter-condition-component2',
+        urlPattern: 'foo/:bar',
+        args: {
+          title: 'id: filter-instance-8',
+          urlPattern: 'bar/:baz',
+          background: 'yellow'
         }
       }
     ]

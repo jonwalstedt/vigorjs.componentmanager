@@ -1,4 +1,4 @@
-class FilterModel extends Backbone.Model
+class FilterModel extends BaseModel
 
   defaults:
     url: undefined
