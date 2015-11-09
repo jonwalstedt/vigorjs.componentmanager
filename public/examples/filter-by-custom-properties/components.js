@@ -34,7 +34,7 @@ var componentSettings = {
         type: 'grey-component',
         args: {
           title: 'id: filter-instance-2',
-          urlPattern: 'foo/:bar',
+          urlPattern: 'bar/:baz',
           type: 'grey-component',
           background: 'grey'
         }
@@ -73,7 +73,7 @@ var componentSettings = {
         type: 'red-component',
         args: {
           title: 'id: filter-instance-5',
-          urlPattern: 'bar/:baz',
+          urlPattern: 'foo/:bar',
           type: 'red-component',
           background: 'red'
         }
@@ -111,7 +111,7 @@ var componentSettings = {
         urlPattern: 'foo/:bar',
         args: {
           title: 'id: filter-instance-8',
-          urlPattern: 'bar/:baz',
+          urlPattern: 'foo/:bar',
           background: 'yellow'
         }
       }
