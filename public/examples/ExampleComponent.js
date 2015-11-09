@@ -16,7 +16,8 @@ ExampleComponent = Backbone.View.extend({
         args: this._stringify(args)
       };
 
-    console.log('ExampleComponent with id ' + title + ' instantiated');
+    console.log('ExampleComponent with id ' + title + ' has been instantiated');
+    this.title = title;
     this.templateData = this._highlightTemplateData(templateData);
     this.$el.css("background", args.background);
     this.urlParamsModel = args.urlParamsModel;
@@ -30,7 +31,7 @@ ExampleComponent = Backbone.View.extend({
   },
 
   dispose: function () {
-    console.log('ExampleComponent with id ' + this.id + ' disposed');
+    console.log('ExampleComponent with id: ' + this.title + ' has been disposed');
     this.remove();
   },
 
