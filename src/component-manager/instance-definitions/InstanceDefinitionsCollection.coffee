@@ -11,24 +11,22 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
       for targetName, instanceDefinitions of incomingInstanceDefinitions
         if _.isArray(instanceDefinitions)
           for instanceDefinition in instanceDefinitions
-            instanceDefinition.targetName = "#{targetPrefix}--#{targetName}"
+            instanceDefinition.targetName = @_formatTargetName targetName, targetPrefix
             @parseInstanceDefinition instanceDefinition
             instanceDefinitionsArray.push instanceDefinition
 
           parsedResponse = instanceDefinitionsArray
 
         else
-          trgtName = incomingInstanceDefinitions.targetName
-          if trgtName? and trgtName isnt 'body' and trgtName.indexOf(targetPrefix) < 0
-            incomingInstanceDefinitions.targetName = "#{targetPrefix}--#{trgtName}"
+          if incomingInstanceDefinitions.targetName
+            incomingInstanceDefinitions.targetName = @_formatTargetName incomingInstanceDefinitions.targetName, targetPrefix
           parsedResponse = @parseInstanceDefinition(incomingInstanceDefinitions)
           break
 
     else if _.isArray(incomingInstanceDefinitions)
       for instanceDefinition, i in incomingInstanceDefinitions
-        targetName = instanceDefinition.targetName
-        if targetName? and targetName isnt 'body' and targetName.indexOf(targetPrefix) < 0
-          instanceDefinition.targetName = "#{targetPrefix}--#{targetName}"
+        if instanceDefinition.targetName
+          instanceDefinition.targetName = @_formatTargetName instanceDefinition.targetName, targetPrefix
         incomingInstanceDefinitions[i] = @parseInstanceDefinition(instanceDefinition)
       parsedResponse = incomingInstanceDefinitions
 
@@ -44,3 +42,15 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
     for instanceDefinitionModel in instanceDefinitions
       instanceDefinitionModel.addUrlParams url
     return instanceDefinitions
+
+  _formatTargetName: (targetName, targetPrefix) ->
+    if targetName? and targetName isnt 'body'
+      if targetName.charAt(0) is '.'
+        targetName = targetName.substring 1
+
+      if targetName.indexOf(targetPrefix) < 0
+        targetName = "#{targetPrefix}--#{targetName}"
+
+      targetName = ".#{targetName}"
+
+    return targetName

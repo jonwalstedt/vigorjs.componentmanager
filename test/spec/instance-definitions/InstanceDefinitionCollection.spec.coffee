@@ -59,28 +59,28 @@ describe 'InstanceDefinitionsCollection', ->
             'id': 'instance-1',
             'componentId': 'component-id-1',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target1',
+            'targetName': '.my-prefix--target1',
             'urlParamsModel': new DummyModel()
           },
           {
             'id': 'instance-2',
             'componentId': 'component-id-2',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target1',
+            'targetName': '.my-prefix--target1',
             'urlParamsModel': new DummyModel()
           },
           {
             'id': 'instance-3',
             'componentId': 'component-id-3',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target2',
+            'targetName': '.my-prefix--target2',
             'urlParamsModel': new DummyModel()
           },
           {
             'id': 'instance-4',
             'componentId': 'component-id-4',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target2',
+            'targetName': '.my-prefix--target2',
             'urlParamsModel': new DummyModel()
           }
         ]
@@ -94,14 +94,14 @@ describe 'InstanceDefinitionsCollection', ->
           instanceDefinitions:
             'id': 'instance-1',
             'componentId': 'component-id-1',
-            'targetName': 'my-prefix--target1',
+            'targetName': '.my-prefix--target1',
             'urlPattern': 'global'
 
         expectedResults =
           'id': 'instance-1',
           'componentId': 'component-id-1',
           'urlPattern': ['*notFound', '*action'],
-          'targetName': 'my-prefix--target1',
+          'targetName': '.my-prefix--target1',
           'urlParamsModel': new DummyModel()
 
         parsedData = instanceDefinitionsCollection.parse data
@@ -143,28 +143,28 @@ describe 'InstanceDefinitionsCollection', ->
             'id': 'instance-1',
             'componentId': 'component-id-1',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target1',
+            'targetName': '.my-prefix--target1',
             'urlParamsModel': new DummyModel()
           },
           {
             'id': 'instance-2',
             'componentId': 'component-id-2',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target2',
+            'targetName': '.my-prefix--target2',
             'urlParamsModel': new DummyModel()
           },
           {
             'id': 'instance-3',
             'componentId': 'component-id-3',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target3',
+            'targetName': '.my-prefix--target3',
             'urlParamsModel': new DummyModel()
           },
           {
             'id': 'instance-4',
             'componentId': 'component-id-4',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': 'my-prefix--target4',
+            'targetName': '.my-prefix--target4',
             'urlParamsModel': new DummyModel()
           }
         ]
@@ -178,7 +178,7 @@ describe 'InstanceDefinitionsCollection', ->
         instanceDefinitions: [
           {
             'id': 'instance-1',
-            'targetName': 'my-prefix--target1',
+            'targetName': '.my-prefix--target1',
             'componentId': 'component-id-1',
             'urlPattern': 'global'
           },
@@ -195,14 +195,14 @@ describe 'InstanceDefinitionsCollection', ->
           'id': 'instance-1',
           'componentId': 'component-id-1',
           'urlPattern': ['*notFound', '*action'],
-          'targetName': 'my-prefix--target1',
+          'targetName': '.my-prefix--target1',
           'urlParamsModel': new DummyModel()
         },
         {
           'id': 'instance-2',
           'componentId': 'component-id-2',
           'urlPattern': ['*notFound', '*action'],
-          'targetName': 'my-prefix--target2',
+          'targetName': '.my-prefix--target2',
           'urlParamsModel': new DummyModel()
         }
       ]
@@ -239,12 +239,12 @@ describe 'InstanceDefinitionsCollection', ->
     it 'should add a new Backbone.Model as urlParamsModel', ->
       instanceDefinition =
         'id': 'instance-1',
-        'targetName': 'foo--target1',
+        'targetName': '.foo--target1',
         'componentId': 'component-id-1',
 
       expectedResults =
         'id': 'instance-1',
-        'targetName': 'foo--target1',
+        'targetName': '.foo--target1',
         'componentId': 'component-id-1',
         'urlParamsModel': new DummyModel()
 
@@ -254,13 +254,13 @@ describe 'InstanceDefinitionsCollection', ->
     it 'should convert the urlPattern "global" to an array with *notFound and *action', ->
       instanceDefinition =
         'id': 'instance-1',
-        'targetName': 'foo--target1',
+        'targetName': '.foo--target1',
         'componentId': 'component-id-1',
         'urlPattern': 'global'
 
       expectedResults =
         'id': 'instance-1',
-        'targetName': 'foo--target1',
+        'targetName': '.foo--target1',
         'componentId': 'component-id-1',
         'urlPattern': ['*notFound', '*action'],
         'urlParamsModel': new DummyModel()
@@ -275,13 +275,13 @@ describe 'InstanceDefinitionsCollection', ->
         instanceDefinitions: [
           {
             'id': 'instance-1',
-            'targetName': 'component-area--target1',
+            'targetName': '.component-area--target1',
             'componentId': 'component-id-1',
             'urlPattern': 'global'
           },
           {
             'id': 'instance-2',
-            'targetName': 'component-area--target2',
+            'targetName': '.component-area--target2',
             'componentId': 'component-id-2',
             'urlPattern': 'global'
           }
@@ -301,4 +301,37 @@ describe 'InstanceDefinitionsCollection', ->
       instanceDefinitionsCollection.addUrlParams instanceDefinitions, url
       for instance in instanceDefinitions
         assert instance.addUrlParams.calledWith(url)
+
+  describe '_formatTargetName', ->
+    it 'should not modify the selector if it is "body"', ->
+      targetName = 'body'
+      targetPrefix = 'my-prefix'
+      result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
+      assert.equal result, 'body'
+
+    it 'should add a dot (class indicator) and the targetPrefix to targetName if
+    it does not already have it', ->
+      targetName = 'my-target'
+      targetPrefix = 'my-prefix'
+      result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
+      assert.equal result, '.my-prefix--my-target'
+
+    it 'should add a dot (class indicator) to prefixed target names if it
+    does not already have it', ->
+      targetName = 'my-prefix--my-target'
+      targetPrefix = 'my-prefix'
+      result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
+      assert.equal result, '.my-prefix--my-target'
+
+    it 'should add the prefix to class selector that do not have it', ->
+      targetName = '.my-target'
+      targetPrefix = 'my-prefix'
+      result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
+      assert.equal result, '.my-prefix--my-target'
+
+    it 'should not add an extra prefix to class selector that do have it', ->
+      targetName = '.my-prefix--my-target'
+      targetPrefix = 'my-prefix'
+      result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
+      assert.equal result, '.my-prefix--my-target'
 
