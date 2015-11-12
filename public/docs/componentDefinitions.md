@@ -1,9 +1,9 @@
 ### <a name="component-definitions"></a> componentDefinitions
-ComponentDefinitions or componentDefinitionModels are the models that contains the definition of each component created by the componentManager. It stores a reference to the class to create the instance from and and also the conditions (if any) that should apply to create any instances of that class.
+ComponentDefinitions or componentDefinitionModels are the models that contains the definition of each component created by the componentManager. It stores a reference to the class to create instances from and also the conditions (if any) that should apply to create any instances of that class.
 
-To define your componentDefinitions you add an array of componentDefinitions to the <a href="#settings">componentSettings object</a> passed to the componentManager during initialization.
+To define your componentDefinitions you add an array of componentDefinitions to the [componentSettings object](#settings) passed to the componentManager during initialization.
 
-The only required properties for a componentDefinition is **id** and **src**. But a componentDefinition could also contain the properties **args**, **conditions** and **maxShowCount**. All properties are undefined by default. Se the description for each below:
+The only required properties for a componentDefinition is **id** and **src**. But a componentDefinition could also contain the default properties **args**, **conditions** and **maxShowCount**. All properties are undefined by default. Se the description for each below:
 
 #### ComponentDefinition Properties
 <dl class="property-descriptions">
@@ -14,7 +14,9 @@ The only required properties for a componentDefinition is **id** and **src**. Bu
 
   <dt><strong>src:</strong> String / Function (required)</dt>
   <dd>
-    <p>The src property is also required and can be either a string or a constructor function. If it is a string it should either be a url or a namespace path to the class starting from the window object (leaving out the window object it self), ex: src: **'app.components.Chart'**.</p>
+    <p>The src property is also required and can be either a string or a constructor function. If it is a string it should either be a url, a path that can be **required** by a AMD or CommonJS module loader or a namespace path to the class starting from the window object (leaving out the window object it self), ex: src: **'app.components.Chart'**.</p>
+
+    <p>If you are using a AMD ocr CommonJS module loader the string will always be required unless its a url. It will not try to find the class on the window object even if you send in a string like **'app.components.Chart'**.</p>
 
     <p>If the string is a **url** (ex. **'http://www.google.com'**) the component manager will use the [IframeComponent](#iframe-component) as a class for any instanceDefinition referencing this componentDefinition.</p>
   </dd>
@@ -48,23 +50,83 @@ The only required properties for a componentDefinition is **id** and **src**. Bu
 </dl>
 
 #### Example
+Here is an example of an componentDefinition:
 ```javascript
   {
-    id: 'my-component'
-    src: 'app.components.MyComponent'
-    args: {}
-    conditions: ['correct-width', function (..) {}]
-    maxShowCount: 2
+    id: 'my-chart', //a unique string
+    src: 'components/chart', // path to be required
+    args: {
+      type: 'bar-chart' // arguments to pass to instance
+    },
+    conditions: ['correct-width', function (..) {}], // conditions for when to allow instance to be created
+    maxShowCount: 1 // instances of this component may only be created/shown once
   }
 ```
 
-```javascript
+and this is how it would look in the settings object:
 
+```javascript
 settings = {
   componentSettings: {
-    conditions: {},
-    components: [],
-    instances: []
+    conditions: {
+      ...
+    },
+    components: [
+      {
+        id: 'my-chart'
+        src: 'components/chart'
+        args: {
+          type: 'bar-chart'
+        }
+        conditions: ['correct-width', function (..) {}]
+        maxShowCount: 1
+      }
+    ],
+    instances: [
+      ...
+    ]
   }
 }
 ```
+
+#### Custom Properties
+In adition to the default values you can add any properties you like to a componentDefinition. Note that these properties will not be passed to the instance so the instance will not have access to them
+
+These properties will then be used to filter out instances (instanceDefinitions) of that componentDefinition. The custom properties would then also have to be used when creating the filter which would be passed to the refresh method. See example below.
+
+```javascript
+componentSettings: {
+  components: [
+    {
+      id: 'my-component',
+      src: 'components/chart',
+      myCustomProperty: 'customVal'
+    },
+    {
+      id: 'my-component2',
+      src: 'components/chart',
+    }
+  ],
+  instances: [
+    {
+      id: 'instance-1',
+      componentId: 'my-component',
+    },
+    {
+      id: 'instance-2',
+      componentId: 'my-component2',
+    }
+  ]
+}
+```
+
+In the example above the custom property myCustomProperty is set with the value 'customVal' on the first componentDefinition. Instance-1 is an instance of this component and would be found if the filter passed to refresh would contain the custom property. The second instance would not be created since it is referencing the second componentDefinition that does not have the custom property.
+
+```javascript
+// This filter would create an instance of the first componentDefinition ('my-component') using the information from the instanceDefinition.
+componentManager.refresh({
+  myCustomProperty: 'customVal'
+});
+```
+
+Custom properties on the componentDefinition may be overriden by custom properties on a intanceDefinifion that belongs to that componentDefinition.

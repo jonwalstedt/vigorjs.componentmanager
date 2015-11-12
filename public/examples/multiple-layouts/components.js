@@ -108,7 +108,7 @@ var componentSettings = {
         id: 'app-list-two',
         componentId: 'app-list',
         urlPattern: 'event/:id',
-        reInstantiateOnUrlParamChange: true
+        reInstantiate: true
       }
    ]
   }

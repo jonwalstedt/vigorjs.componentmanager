@@ -49,7 +49,7 @@ settings = {
       {
         id: 'instance-1',
         componentId: 'my-component',
-        targetName: 'my-component-area--header',
+        targetName: '.my-component-area--header',
         urlPattern: 'foo/:bar',
         order: 1,
         args: {
@@ -59,7 +59,7 @@ settings = {
       {
         id: 'instance-2',
         componentId: 'my-second-component',
-        targetName: 'my-component-area--main',
+        targetName: '.my-component-area--main',
         urlPattern: 'bar/:baz(/:qux)'
       }
     ]
@@ -69,7 +69,7 @@ settings = {
 componentManager.initialize(settings);
 ```
 
-#### Alternative structure
+#### <a name="alternative-structure"></a> Alternative structure
 If you like to group your instances under their targets that is also possible by using the structure below. This strucure does not allow you to pass the target selector for each instance your self which might be good if you are using this as a way for third party users to add components to your appliction (ex ads).
 
 ```javascript
@@ -135,7 +135,7 @@ settings = {
 
 componentManager.initialize(settings);
 ```
-In this case each of the target keys would be used as a part the selector to use for all of the instanceDefinitions within that array. The other part of the selector would be the _targetPrefix so in the examples above any instanceDefiniton that would be part of the array for "target-one" would have the targetName set to **"component-area--target-one"**, for "target-two" it would be **"component-area--target-two"** and so on. 
+In this case each of the target keys would be used as a part the selector to use for all of the instanceDefinitions within that array. The other part of the selector would be the targetPrefix so in the examples above any instanceDefiniton that would be part of the array for "header" would have the targetName set to **"component-area--header"**, for "main" it would be **"component-area--main"** and so on.
 
 #### Skip defaults
 If you dont want to change the defaults for context, componentClassName, targetPrefix and listenForMessages you pass in only the componentSettings part of the settings object:

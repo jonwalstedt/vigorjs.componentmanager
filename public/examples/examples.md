@@ -1,3 +1,3 @@
 ## Examples
 
-Here are some examples of how to use the componentManager.
+In the sidebar to the left are some examples of how to use the componentManager.

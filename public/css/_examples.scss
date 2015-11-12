@@ -1,0 +1,43 @@
+
+.vigor-component {
+  padding: 10px;
+  h2 {
+    margin: 4px 0 6px;
+  }
+}
+
+.examples-info {
+  border: 1px dashed #555;
+  line-height: 20px;
+  background-color: #eee;
+  margin: 0px 0px 10px 0px;
+  padding: 20px 10px;
+  font-size: 14px;
+}
+
+.component-area {
+  position: relative;
+  padding: 10px;
+  border: 1px dashed #555;
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+.controls {
+  margin: 10px 0px;
+  button {
+    display: inline-block;
+    margin: 0 4px 4px 0;
+  }
+}
+
+.example-component {
+  width: 320px;
+  height: 220px;
+  float: left;
+  overflow: auto;
+  margin: 6px;
+}

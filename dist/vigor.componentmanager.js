@@ -863,43 +863,43 @@
         return exceedsShowCount;
       };
 
-      InstanceDefinitionModel.prototype.includeIfStringMatches = function(filterString) {
-        var filter;
-        filter = this.get('filterString');
-        if (filter) {
-          return !!filter.match(filterString);
+      InstanceDefinitionModel.prototype.includeIfStringMatches = function(regexp) {
+        var filterString;
+        filterString = this.get('filterString');
+        if (filterString) {
+          return !!filterString.match(regexp);
         }
       };
 
-      InstanceDefinitionModel.prototype.excludeIfStringMatches = function(filterString) {
-        var filter;
-        filter = this.get('filterString');
-        if (filter) {
-          return !!!filter.match(filterString);
+      InstanceDefinitionModel.prototype.excludeIfStringMatches = function(regexp) {
+        var filterString;
+        filterString = this.get('filterString');
+        if (filterString) {
+          return !!!filterString.match(regexp);
         }
       };
 
-      InstanceDefinitionModel.prototype.hasToMatchString = function(filterString) {
-        return !!this.includeIfStringMatches(filterString);
+      InstanceDefinitionModel.prototype.hasToMatchString = function(regexp) {
+        return !!this.includeIfStringMatches(regexp);
       };
 
-      InstanceDefinitionModel.prototype.cantMatchString = function(filterString) {
-        return !!this.excludeIfStringMatches(filterString);
+      InstanceDefinitionModel.prototype.cantMatchString = function(regexp) {
+        return !!this.excludeIfStringMatches(regexp);
       };
 
       InstanceDefinitionModel.prototype.includeIfFilterStringMatches = function(filterString) {
-        var filter;
-        filter = this.get('includeIfFilterStringMatches');
-        if (filter) {
-          return !!(filterString != null ? filterString.match(filter) : void 0);
+        var regexp;
+        regexp = this.get('includeIfFilterStringMatches');
+        if (regexp) {
+          return !!(filterString != null ? filterString.match(regexp) : void 0);
         }
       };
 
       InstanceDefinitionModel.prototype.excludeIfFilterStringMatches = function(filterString) {
-        var filter;
-        filter = this.get('excludeIfFilterStringMatches');
-        if (filter) {
-          return !!!(filterString != null ? filterString.match(filter) : void 0);
+        var regexp;
+        regexp = this.get('excludeIfFilterStringMatches');
+        if (regexp) {
+          return !!!(filterString != null ? filterString.match(regexp) : void 0);
         }
       };
 

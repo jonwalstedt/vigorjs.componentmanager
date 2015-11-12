@@ -27,7 +27,7 @@ var componentSettings = {
           background: 'pink'
         },
         urlPattern: 'passing-arguments/:type/:id',
-        reInstantiateOnUrlParamChange: true
+        reInstantiate: true
       },
       {
         id: 'filter-url-instance-3',

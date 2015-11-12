@@ -4,6 +4,11 @@ block sidebar
   - links = ['initialize', 'updateSettings', 'refresh', 'serialize', 'parse', 'clear', 'dispose', 'addListeners', 'addConditions', 'addComponents', 'addInstances', 'updateComponents', 'updateInstances', 'removeComponent', 'removeInstance', 'removeListeners', 'setContext', 'setComponentClassName', 'setTargetPrefix', 'getComponentClassName', 'getTargetPrefix', 'getActiveFilter', 'getConditions', 'getComponentById', 'getInstanceById', 'getComponents', 'getInstances', 'getActiveInstances', 'getActiveInstanceById', 'postMessageToInstance']
   aside.sidebar
     div.sidebar-content
+      h4.sidebar__title Introduction
+      ul.sidebar_list
+        li.sidebar_list-item
+          a.sidebar__link(href="#introduction") Introduction
+
       h4.sidebar__title Settings
       ul.sidebar_list
         li.sidebar_list-item
@@ -14,6 +19,9 @@ block sidebar
 
         li.sidebar_list-item
           a.sidebar__link(href="#instance-definitions") instanceDefinitions
+
+        li.sidebar_list-item
+          a.sidebar__link(href="#filter") filter
 
         li.sidebar_list-item
           a.sidebar__link(href="#conditions") conditions
@@ -35,6 +43,11 @@ block sidebar
 block content
 
   section.main-section
+    h2 Introduction
+    section.sub-section
+      != partial('./introduction')
+
+  section.main-section
     h2 Settings
     section.sub-section
       != partial('./settings')
@@ -42,6 +55,8 @@ block content
       != partial('./componentDefinitions')
     section.sub-section
       != partial('./instanceDefinitions')
+    section.sub-section
+      != partial('./filter')
     section.sub-section
       != partial('./conditions')
     section.sub-section

@@ -1,3 +1,4 @@
+$leftColumnWidth: 260px;
 .main-section {
   margin: 80px 0px;
   &:first-child {
@@ -6,5 +7,47 @@
 }
 
 .sub-section {
-  margin: 40px 0px;
+  h3 {
+    margin: 180px 0 30px 0;
+    border-bottom: 1px dashed #ccc;
+    padding: 20px 0px;
+  }
+}
+
+.main-section h2 + .sub-section h3 {
+  margin-top: 0;
+}
+
+.property-descriptions {
+  border: 1px solid #ccc;
+  padding: 10px;
+  line-height: 24px;
+  p {
+    padding: 0 0 10px 0;
+    margin: 0;
+  }
+  dt {
+    margin-top: 20px;
+    float: left;
+    clear: left;
+    width: $leftColumnWidth;
+    strong {
+      display: block;
+    }
+  }
+
+  dd {
+    display: block;
+    margin: 20px 0 0 $leftColumnWidth;
+  }
+
+  dt:first-child,
+  dt:first-child + dd {
+    margin-top: 0;
+  }
+  &:after {
+    content: '';
+    clear: both;
+    display: table;
+  }
 }

@@ -1,5 +1,5 @@
 ExampleComponent = Backbone.View.extend({
-
+  className: 'example-component',
   template: _.template($('.example-component-template').html()),
 
   initialize: function (args) {

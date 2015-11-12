@@ -43,37 +43,6 @@ pre {
   font-weight: normal;
 }
 
-.property-descriptions {
-  border: 1px solid #ccc;
-  padding: 10px;
-  line-height: 24px;
-  p {
-    padding: 0 0 10px 0;
-    margin: 0;
-  }
-  dt {
-    margin-top: 20px;
-    float: left;
-    clear: left;
-    width: 160px;
-  }
-
-  dd {
-    display: block;
-    margin: 20px 0 0 170px;
-  }
-
-  dt:first-child,
-  dt:first-child + dd {
-    margin-top: 0;
-  }
-  &:after {
-    content: '';
-    clear: both;
-    display: table;
-  }
-}
-
 .header {
   flex: none;
 }
@@ -112,36 +81,6 @@ pre {
 
 .app-wrapper small {
   display: block;
-}
-
-.vigor-component {
-  padding: 10px;
-  h2 {
-    margin: 4px 0 6px;
-  }
-}
-
-.examples-info {
-  border: 1px dashed #555;
-  line-height: 20px;
-  background-color: #eee;
-  margin: 0px 0px 10px 0px;
-  padding: 20px 10px;
-  font-size: 14px;
-}
-
-.component-area {
-  position: relative;
-  padding: 10px;
-  border: 1px dashed #555;
-}
-
-.controls {
-  margin: 10px 0px;
-  button {
-    display: inline-block;
-    margin: 0 4px 4px 0;
-  }
 }
 
 .components-js__code {

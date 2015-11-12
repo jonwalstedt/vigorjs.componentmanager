@@ -49,7 +49,7 @@ var componentSettings = {
         args: {
           title: 'id: 4',
           filterString: 'undefined - the filterString is set on the filter passed to the refresh method',
-          includeIfFilterStringMatches: ''state=one'',
+          includeIfFilterStringMatches: 'state=one',
           background: '#9FEDFF'
         },
         includeIfFilterStringMatches: 'state=one'
@@ -62,8 +62,8 @@ var componentSettings = {
         args: {
           title: 'id: 5',
           filterString: 'undefined - the filterString is set on the filter passed to the refresh method',
-          includeIfFilterStringMatches: ''state=one'',
-          excludeIfFilterStringMatches: ''lang=en_GB'',
+          includeIfFilterStringMatches: 'state=one',
+          excludeIfFilterStringMatches: 'lang=en_GB',
           background: '#9F9EE8'
         },
         includeIfFilterStringMatches: 'state=one',
@@ -77,7 +77,7 @@ var componentSettings = {
         args: {
           title: 'id: 6',
           filterString: 'undefined - the filterString is set on the filter passed to the refresh method',
-          includeIfFilterStringMatches: ''lang=en_GB'',
+          includeIfFilterStringMatches: 'lang=en_GB',
           background: '#F9D1FF'
         },
         includeIfFilterStringMatches: 'lang=en_GB'
