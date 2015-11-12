@@ -145,7 +145,7 @@ describe 'The componentManager', ->
               {
                 id: 'instance-1',
                 componentId: 'mock-component',
-                targetName: 'test-prefix--header'
+                targetName: '.test-prefix--header'
                 urlPattern: 'foo/:bar'
                 order: 1
                 args:
@@ -227,12 +227,12 @@ describe 'The componentManager', ->
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'test-prefix--header'
+              targetName: '.test-prefix--header'
             },
             {
               id: 'instance-2',
               componentId: 'mock-component',
-              targetName: 'test-prefix--main'
+              targetName: '.test-prefix--main'
             }
           ]
 
@@ -252,15 +252,15 @@ describe 'The componentManager', ->
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'test-prefix--header'
-              reInstantiateOnUrlParamChange: false
+              targetName: '.test-prefix--header'
+              reInstantiate: false
               showCount: 0
             },
             {
               id: 'instance-2',
               componentId: 'mock-component',
-              targetName: 'test-prefix--main'
-              reInstantiateOnUrlParamChange: false
+              targetName: '.test-prefix--main'
+              reInstantiate: false
               showCount: 0
             }
           ]
@@ -326,13 +326,13 @@ describe 'The componentManager', ->
                 id: 'instance-1',
                 urlPattern: 'foo/:id'
                 componentId: 'mock-component',
-                targetName: 'test-prefix--header'
+                targetName: '.test-prefix--header'
               },
               {
                 id: 'instance-2',
                 urlPattern: 'bar/:id'
                 componentId: 'mock-component',
-                targetName: 'test-prefix--main'
+                targetName: '.test-prefix--main'
               }
             ]
         componentManager.initialize settings
@@ -507,7 +507,7 @@ describe 'The componentManager', ->
         assert updateActiveComponentsSpy.called
 
       it 'should add change listeners on these params on the _activeInstancesCollection: componentId, filterString, 
-      conditions, args, showCount, urlPattern, urlParams, reInstantiateOnUrlParamChange with _onActiveInstanceChange as callback', ->
+      conditions, args, showCount, urlPattern, urlParams, reInstantiate with _onActiveInstanceChange as callback', ->
         activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
         onActiveInstanceChangeStub = sandbox.stub componentManager, '_onActiveInstanceChange'
 
@@ -520,7 +520,7 @@ describe 'The componentManager', ->
                   change:showCount
                   change:urlPattern
                   change:urlParams
-                  change:reInstantiateOnUrlParamChange'
+                  change:reInstantiate'
 
         assert activeInstancesCollectionOnSpy.calledWith changes, componentManager._onActiveInstanceChange
 
@@ -552,7 +552,7 @@ describe 'The componentManager', ->
         assert onActiveInstanceChangeStub.called
         do onActiveInstanceChangeStub.reset
 
-        componentManager._activeInstancesCollection.trigger 'change:reInstantiateOnUrlParamChange', new Backbone.Model()
+        componentManager._activeInstancesCollection.trigger 'change:reInstantiate', new Backbone.Model()
         assert onActiveInstanceChangeStub.called
         do onActiveInstanceChangeStub.reset
 
@@ -901,7 +901,7 @@ describe 'The componentManager', ->
         assert.equal componentManager._instanceDefinitionsCollection.get('dummy-instance').toJSON().targetName, 'body'
 
         componentManager.updateInstanceDefinitions updatedInstance
-        assert.equal componentManager._instanceDefinitionsCollection.get('dummy-instance').toJSON().targetName, 'component-area--header'
+        assert.equal componentManager._instanceDefinitionsCollection.get('dummy-instance').toJSON().targetName, '.component-area--header'
 
       it 'should return the componentManager for chainability', ->
         instance =
@@ -1288,7 +1288,7 @@ describe 'The componentManager', ->
               {
                 id: 'instance-1',
                 componentId: 'mock-component',
-                targetName: 'component-area--header'
+                targetName: '.component-area--header'
                 urlPattern: 'foo/:bar'
                 order: 1
                 args:
@@ -1348,7 +1348,7 @@ describe 'The componentManager', ->
               {
                 id: 'instance-1',
                 componentId: 'mock-component',
-                targetName: 'test-prefix--header'
+                targetName: '.test-prefix--header'
                 urlPattern: 'foo/:bar'
                 order: 1
                 args:
@@ -1707,7 +1707,7 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
             urlPattern: 'foo/:id'
           },
           {
@@ -1940,7 +1940,7 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header',
+            targetName: '.component-area--header',
             urlPattern: 'foo/:id'
           },
           {
@@ -2036,17 +2036,17 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component-1',
-            targetName: 'component-area--header',
+            targetName: '.component-area--header',
           },
           {
             id: 'instance-2',
             componentId: 'mock-component-2',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
           },
           {
             id: 'instance-3',
             componentId: 'mock-component-3',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
           }
         ]
 
@@ -2095,21 +2095,21 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header',
+            targetName: '.component-area--header',
             conditions: ->
               return false
           },
           {
             id: 'instance-2',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
             conditions: ->
               return true
           },
           {
             id: 'instance-3',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
           }
         ]
 
@@ -2157,18 +2157,18 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header',
+            targetName: '.component-area--header',
             color: 'green'
           },
           {
             id: 'instance-2',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
           },
           {
             id: 'instance-3',
             componentId: 'mock-component',
-            targetName: 'component-area--header',
+            targetName: '.component-area--header',
             type: 'my-custom-instance-type'
           }
         ]
@@ -2304,7 +2304,7 @@ describe 'The componentManager', ->
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'component-area--header',
+              targetName: '.component-area--header',
               showCount: 4
             },
             {
@@ -2346,7 +2346,7 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
           },
           {
             id: 'instance-2',
@@ -2389,13 +2389,13 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
             urlPattern: 'foo/:bar'
           }
           {
             id: 'instance-2',
             componentId: 'mock-iframe-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
             urlPattern: 'bar/:foo'
           }
         ]
@@ -2569,7 +2569,7 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'test-prefix--header'
+            targetName: '.test-prefix--header'
             urlPattern: 'foo/:bar'
           }
         ]
@@ -2655,7 +2655,7 @@ describe 'The componentManager', ->
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'component-area--header'
+              targetName: '.component-area--header'
               urlPattern: 'foo/:bar'
             }
             {
@@ -2760,7 +2760,7 @@ describe 'The componentManager', ->
             {
               id: 'instance-1',
               componentId: 'mock-component',
-              targetName: 'test-prefix--header'
+              targetName: '.test-prefix--header'
               urlPattern: 'foo/:bar'
             }
           ]
@@ -2880,7 +2880,7 @@ describe 'The componentManager', ->
                 {
                   id: 'instance-1',
                   componentId: 'mock-component',
-                  targetName: 'test-prefix--header'
+                  targetName: '.test-prefix--header'
                   urlPattern: 'foo/:bar'
                   order: 1
                   args:
@@ -2889,7 +2889,7 @@ describe 'The componentManager', ->
                 {
                   id: 'instance-2',
                   componentId: 'mock-component',
-                  targetName: 'test-prefix--header'
+                  targetName: '.test-prefix--header'
                   urlPattern: 'foo/:bar'
                   order: 2
                   args:
@@ -2898,7 +2898,7 @@ describe 'The componentManager', ->
                 {
                   id: 'instance-3',
                   componentId: 'mock-component',
-                  targetName: 'test-prefix--header'
+                  targetName: '.test-prefix--header'
                   urlPattern: 'foo/:bar'
                   order: 5
                   args:
@@ -2907,7 +2907,7 @@ describe 'The componentManager', ->
                 {
                   id: 'instance-4',
                   componentId: 'mock-component',
-                  targetName: 'test-prefix--header'
+                  targetName: '.test-prefix--header'
                   urlPattern: 'foo/:bar'
                   order: 7
                   args:
@@ -3091,7 +3091,7 @@ describe 'The componentManager', ->
               {
                 id: 'instance-1',
                 componentId: 'mock-component',
-                targetName: 'test-prefix--header'
+                targetName: '.test-prefix--header'
                 urlPattern: 'foo/:bar'
                 order: 1
                 args:
@@ -3127,7 +3127,7 @@ describe 'The componentManager', ->
               {
                 id: 'instance-1',
                 componentId: 'mock-component',
-                targetName: 'test-prefix--header'
+                targetName: '.test-prefix--header'
                 urlPattern: 'foo/:bar'
                 order: 1
                 args:
@@ -3291,7 +3291,7 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
             urlPattern: 'foo/:bar'
             order: 1
             args:
@@ -3484,7 +3484,7 @@ describe 'The componentManager', ->
             {
               id: 'dummy-instance2',
               componentId: 'dummy-component2',
-              targetName: 'component-area--test-target'
+              targetName: '.component-area--test-target'
             }
           ]
 
@@ -3498,9 +3498,10 @@ describe 'The componentManager', ->
         instanceDefinition = componentManager._instanceDefinitionsCollection.at(1)
         $target = componentManager._getTarget instanceDefinition
         assert $target instanceof $
-        assert.equal $target.attr('class'), instanceDefinitions[1].targetName
+        assert.equal ".#{$target.attr('class')}", instanceDefinitions[1].targetName
 
-      it 'should return the passed instanceDefinitions targetName as a jQuery object even if the targetName is body', ->
+      it 'should return the passed instanceDefinitions targetName as a jQuery
+      object even if the targetName is body', ->
         instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
         $target = componentManager._getTarget instanceDefinition
         assert $target instanceof $
@@ -3568,7 +3569,7 @@ describe 'The componentManager', ->
           {
             id: 'instance-1',
             componentId: 'mock-component',
-            targetName: 'component-area--header'
+            targetName: '.component-area--header'
             urlPattern: 'foo/:bar'
             order: 1
             args:

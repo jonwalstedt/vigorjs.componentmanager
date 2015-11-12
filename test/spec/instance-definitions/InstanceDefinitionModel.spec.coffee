@@ -6,14 +6,20 @@ Vigor = require '../../../dist/vigor.componentmanager'
 
 __testOnly = Vigor.ComponentManager.__testOnly
 InstanceDefinitionModel = __testOnly.InstanceDefinitionModel
+FilterModel = __testOnly.FilterModel
 router = __testOnly.router
 
 describe 'InstanceDefinitionModel', ->
 
   instanceDefinitionModel = undefined
+  sandbox = undefined
 
   beforeEach ->
     instanceDefinitionModel = new InstanceDefinitionModel()
+    sandbox = sinon.sandbox.create()
+
+  afterEach ->
+    do sandbox.restore
 
   describe 'validate', ->
     it 'should throw an error if the id is undefined', ->
@@ -106,7 +112,7 @@ describe 'InstanceDefinitionModel', ->
   describe 'renderInstance', ->
     it 'should call preRender if it exsists', ->
       instance =
-        preRender: sinon.spy()
+        preRender: sandbox.spy()
         render: ->
 
       instanceDefinitionModel.set 'instance', instance
@@ -122,7 +128,7 @@ describe 'InstanceDefinitionModel', ->
 
     it 'should call render if it exsists', ->
       instance =
-        render: sinon.spy()
+        render: sandbox.spy()
 
       instanceDefinitionModel.set 'instance', instance
       instanceDefinitionModel.renderInstance()
@@ -148,7 +154,7 @@ describe 'InstanceDefinitionModel', ->
       instance =
         id: 'test'
         render: ->
-        postRender: sinon.spy()
+        postRender: sandbox.spy()
 
       instanceDefinitionModel.set 'instance', instance
       instanceDefinitionModel.renderInstance()
@@ -165,7 +171,7 @@ describe 'InstanceDefinitionModel', ->
     it 'should call instance.dispose if there are an instance', ->
       instance =
         render: ->
-        dispose: sinon.spy()
+        dispose: sandbox.spy()
 
       instanceDefinitionModel.set 'instance', instance
       instanceDefinitionModel.dispose()
@@ -177,7 +183,7 @@ describe 'InstanceDefinitionModel', ->
         render: ->
         dispose: ->
 
-      sinon.spy instanceDefinitionModel, 'clear'
+      sandbox.spy instanceDefinitionModel, 'clear'
       instanceDefinitionModel.set 'instance', instance
       instanceDefinitionModel.dispose()
 
@@ -187,7 +193,7 @@ describe 'InstanceDefinitionModel', ->
     it 'should dispose the instance and set it to undefined on the instanceDefinitionModel', ->
       instance =
         render: ->
-        dispose: sinon.spy()
+        dispose: sandbox.spy()
 
       instanceDefinitionModel.set 'instance', instance
       instanceDefinitionModel.disposeInstance()
@@ -200,7 +206,7 @@ describe 'InstanceDefinitionModel', ->
       it 'should return true if filter.url matches urlPattern and no other filters
       are defined', ->
         instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-        filterModel = new Backbone.Model
+        filterModel = new FilterModel
           url: 'foo/123'
 
         passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -208,7 +214,7 @@ describe 'InstanceDefinitionModel', ->
 
       it 'should return false if filter.url doesnt match urlPattern and no other filters are defined', ->
         instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-        filterModel = new Backbone.Model
+        filterModel = new FilterModel
           url: 'bar/123'
         passesFilter = instanceDefinitionModel.passesFilter filterModel
         assert.equal passesFilter, false
@@ -216,7 +222,7 @@ describe 'InstanceDefinitionModel', ->
     describe 'conditions', ->
       it 'should call areConditionsMet if conditions are set', ->
         instanceDefinitionModel.set 'conditions', -> return false
-        sinon.spy instanceDefinitionModel, 'areConditionsMet'
+        sandbox.spy instanceDefinitionModel, 'areConditionsMet'
         instanceDefinitionModel.passesFilter()
         assert instanceDefinitionModel.areConditionsMet.called
 
@@ -250,7 +256,7 @@ describe 'InstanceDefinitionModel', ->
       describe 'includeIfFilterStringMatches', ->
         it 'should return true if includeIfFilterStringMatches passes and no other filters are defined', ->
           instanceDefinitionModel.set 'includeIfFilterStringMatches', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             filterString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -258,7 +264,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return false if includeIfFilterStringMatches doesnt pass and no other filters are defined', ->
           instanceDefinitionModel.set 'includeIfFilterStringMatches', 'bar'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             filterString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -266,7 +272,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return true if includeIfFilterStringMatches isnt defined and no other filters are defined - even if a filterString is set on the passed filter', ->
           instanceDefinitionModel.set 'includeIfFilterStringMatches', undefined
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             filterString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -275,7 +281,7 @@ describe 'InstanceDefinitionModel', ->
       describe 'excludeIfFilterStringMatches', ->
         it 'should return true if excludeIfFilterStringMatches passes and no other filters are defined', ->
           instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'bar'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             filterString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -283,7 +289,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return false if excludeIfFilterStringMatches doesnt pass and no other filters are defined', ->
           instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             filterString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -291,7 +297,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return true if excludeIfFilterStringMatches isnt defined and no other filters are defined - even if a filterString is set on the passed filter', ->
           instanceDefinitionModel.set 'excludeIfFilterStringMatches', undefined
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             filterString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -308,7 +314,7 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             url: 'foo'
             options:
               forceFilterStringMatching: true
@@ -322,7 +328,7 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             url: 'foo'
             hasToMatchString: 'bar'
             options:
@@ -338,7 +344,7 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             url: 'boo'
             hasToMatchString: 'bar'
             options:
@@ -353,7 +359,7 @@ describe 'InstanceDefinitionModel', ->
             urlPattern: 'foo'
             filterString: 'bar'
 
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             url: 'foo'
             options:
               forceFilterStringMatching: false
@@ -364,7 +370,7 @@ describe 'InstanceDefinitionModel', ->
       describe 'includeIfStringMatches', ->
         it 'should return true if includeIfStringMatches matches and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             includeIfStringMatches: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -372,7 +378,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return false if includeIfStringMatches doesnt match and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             includeIfStringMatches: 'bar'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -380,7 +386,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return true if includeIfStringMatches returns undefined and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             includeIfStringMatches: 'bar'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -389,7 +395,7 @@ describe 'InstanceDefinitionModel', ->
         it 'should return false if includeIfStringMatches returns undefined and no other filters are defined and
         forceFilterStringMatching is set to true', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             includeIfStringMatches: 'bar'
             options:
               forceFilterStringMatching: true
@@ -400,7 +406,7 @@ describe 'InstanceDefinitionModel', ->
       describe 'excludeIfStringMatches', ->
         it 'should return false if excludeIfStringMatches matches and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             excludeIfStringMatches: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -408,7 +414,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return true if excludeIfStringMatches doesnt match and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             excludeIfStringMatches: 'bar'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -416,7 +422,7 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return true if excludeIfStringMatches returns undefined and no other filters are defined', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             excludeIfStringMatches: 'bar'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -425,7 +431,7 @@ describe 'InstanceDefinitionModel', ->
         it 'should return false if excludeIfStringMatches returns undefined and no other filters are defined and
         forceFilterStringMatching is set to true', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             includeIfStringMatches: 'bar'
             options:
               forceFilterStringMatching: true
@@ -436,7 +442,7 @@ describe 'InstanceDefinitionModel', ->
       describe 'hasToMatchString', ->
         it 'should return true if hasToMatchString matches and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             hasToMatchString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -444,12 +450,12 @@ describe 'InstanceDefinitionModel', ->
 
         it 'should return false if hasToMatchString doesnt match and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             hasToMatchString: 'bar'
 
         it 'should return false if hasToMatchString is passed as a filter and no filterString is registered and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', undefined
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             hasToMatchString: 'bar'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
@@ -458,19 +464,93 @@ describe 'InstanceDefinitionModel', ->
       describe 'cantMatchString', ->
         it 'should return true if cantMatchString passes and no other filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             cantMatchString: 'bar'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, true
 
-        it 'should return false if cantMatchString doesnt pass and no other filters are defnied', ->
+        it 'should return false if cantMatchString doesnt pass and no other
+        filters are defnied', ->
           instanceDefinitionModel.set 'filterString', 'foo'
-          filterModel = new Backbone.Model
+          filterModel = new FilterModel
             cantMatchString: 'foo'
 
           passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
+
+    describe 'reInstantiate', ->
+      it 'should trigger "change:reInstantiate" if reInstantiate is set to true
+      and the filter has changed since last run of passesFilter (if the
+      instanceDefinition passes all filters)', ->
+        globalConditionsModel = new Backbone.Model()
+        filterModel = new FilterModel
+          url: 'foo/1'
+
+        instanceDefinitionModel.set
+          urlPattern: 'foo/:id'
+          reInstantiate: true
+
+        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+
+        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
+        filterModel.set 'url', 'foo/2'
+
+        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+        assert triggerSpy.calledOnce
+        assert triggerSpy.calledWith 'change:reInstantiate', instanceDefinitionModel
+
+      it 'should not trigger "change:reInstantiate" if filter has not changed since
+      last run of passesFilter (running the same filter twice wont reInstantiate
+      the component)', ->
+        globalConditionsModel = new Backbone.Model()
+        filterModel = new FilterModel
+          url: 'foo/1'
+
+        instanceDefinitionModel.set
+          urlPattern: 'foo/:id'
+          reInstantiate: true
+
+        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+
+        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
+
+        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+        assert triggerSpy.notCalled
+
+      it 'should not trigger "change:reInstantiate" if reInstantiate is set
+      to false', ->
+        globalConditionsModel = new Backbone.Model()
+        filterModel = new FilterModel
+          url: 'foo/1'
+
+        instanceDefinitionModel.set
+          urlPattern: 'foo/:id'
+          reInstantiate: false
+
+        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
+
+        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+        assert triggerSpy.notCalled
+
+      it 'should not be triggered if it doesnt pass the filter, even if the filter
+      has changed and reInstantiate is set to true', ->
+        globalConditionsModel = new Backbone.Model()
+        filterModel = new FilterModel
+          url: 'bar/1'
+
+        instanceDefinitionModel.set
+          urlPattern: 'foo/:id'
+          reInstantiate: true
+
+        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+
+        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
+
+        filterModel.set 'url', 'bar/2'
+
+        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+        assert triggerSpy.notCalled
 
     it 'should return true if no filter is passed', ->
       instanceDefinitionModel.set
@@ -581,7 +661,7 @@ describe 'InstanceDefinitionModel', ->
 
   describe 'hasToMatchString', ->
     it 'should call includeIfStringMatches', ->
-      sinon.spy instanceDefinitionModel, 'includeIfStringMatches'
+      sandbox.spy instanceDefinitionModel, 'includeIfStringMatches'
       instanceDefinitionModel.hasToMatchString 'lorem ipsum'
       assert instanceDefinitionModel.includeIfStringMatches.called
 
@@ -602,7 +682,7 @@ describe 'InstanceDefinitionModel', ->
 
   describe 'cantMatchString', ->
     it 'should call excludeIfStringMatches', ->
-      sinon.spy instanceDefinitionModel, 'excludeIfStringMatches'
+      sandbox.spy instanceDefinitionModel, 'excludeIfStringMatches'
       instanceDefinitionModel.cantMatchString 'lorem ipsum'
       assert instanceDefinitionModel.excludeIfStringMatches.called
 
@@ -677,7 +757,7 @@ describe 'InstanceDefinitionModel', ->
   describe 'doesUrlPatternMatch', ->
     it 'should call router.routeToRegExp with the urlPattern', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      sinon.spy router.prototype, 'routeToRegExp'
+      sandbox.spy router.prototype, 'routeToRegExp'
       instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
       assert router.prototype.routeToRegExp.calledWith 'foo/:id'
 
@@ -878,7 +958,7 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
       filter = undefined
       globalConditions =
-        fooCheck: sinon.spy()
+        fooCheck: sandbox.spy()
 
       areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert globalConditions.fooCheck.called
@@ -941,7 +1021,7 @@ describe 'InstanceDefinitionModel', ->
   describe 'addUrlParams', ->
     it 'should call router.getArguments with registered urlPattern and passedd url', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      sinon.spy router.prototype, 'getArguments'
+      sandbox.spy router.prototype, 'getArguments'
       instanceDefinitionModel.addUrlParams 'foo/123'
       assert router.prototype.getArguments.calledWith 'foo/:id', 'foo/123'
 
@@ -976,15 +1056,6 @@ describe 'InstanceDefinitionModel', ->
       assert.equal urlParams[0].id, 123
       assert.equal urlParams[0].url, 'foo/123'
 
-    it 'should trigger a change event when updating the urlParams if
-    reInstantiateOnUrlParamChange is set to true', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', true
-      sinon.spy instanceDefinitionModel, 'trigger'
-      instanceDefinitionModel.addUrlParams 'foo/123'
-      urlParams = instanceDefinitionModel.get 'urlParams'
-      assert instanceDefinitionModel.trigger.calledWith 'change:urlParams', instanceDefinitionModel, urlParams, { silent: false }
-
     it 'should not update the urlParams if the urlPattern doesnt match the url', ->
       instanceDefinitionModel.set 'urlPattern', 'foo/:id'
       instanceDefinitionModel.addUrlParams 'bar/123'
@@ -996,14 +1067,6 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.addUrlParams 'qux/123'
       urlParams = instanceDefinitionModel.get 'urlParams'
       assert.equal urlParams, undefined
-
-    it 'should not trigger a change event when updating the urlParams if
-    reInstantiateOnUrlParamChange is set to false', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      instanceDefinitionModel.set 'reInstantiateOnUrlParamChange', false
-      sinon.spy instanceDefinitionModel, 'trigger'
-      instanceDefinitionModel.addUrlParams 'foo/123'
-      assert instanceDefinitionModel.trigger.notCalled
 
     it 'should be able to handle multiple urlPatterns with only one matching', ->
       instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'foo/:bar/:id']
@@ -1039,7 +1102,7 @@ describe 'InstanceDefinitionModel', ->
       result = instanceDefinitionModel.getTargetName()
       assert.equal result, expectedResults
 
-    it 'should return the target name prefixed with a dot (class selector) even 
+    it 'should return the target name prefixed with a dot (class selector) even
       if it already has it ', ->
       targetName = '.vigor-component--test'
       expectedResults = '.vigor-component--test'

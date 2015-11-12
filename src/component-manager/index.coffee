@@ -153,7 +153,7 @@ class ComponentManager
                                   change:showCount
                                   change:urlPattern
                                   change:urlParams
-                                  change:reInstantiateOnUrlParamChange', @_onActiveInstanceChange
+                                  change:reInstantiate', @_onActiveInstanceChange
     @_activeInstancesCollection.on 'change:order', @_onActiveInstanceOrderChange
     @_activeInstancesCollection.on 'change:targetName', @_onActiveInstanceTargetNameChange
     @_activeInstancesCollection.on 'remove', @_onActiveInstanceRemoved

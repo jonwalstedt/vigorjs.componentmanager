@@ -24,19 +24,23 @@ class InstanceDefinitionModel extends BaseModel
     args: undefined
     order: undefined
     targetName: undefined
-    instance: undefined
-    showCount: 0
-    urlParams: undefined
-    urlParamsModel: undefined
-    reInstantiateOnUrlParamChange: false
+    reInstantiate: false
 
-    # filterproperties
+    # Filter properties
     filterString: undefined
     includeIfFilterStringMatches: undefined
     excludeIfFilterStringMatches: undefined
     conditions: undefined
     maxShowCount: undefined
     urlPattern: undefined
+
+    # Private
+    instance: undefined
+    showCount: 0
+    urlParams: undefined
+    urlParamsModel: undefined
+
+  _lastFilter: undefined
 
   validate: (attrs, options) ->
     unless attrs.id
@@ -174,6 +178,12 @@ class InstanceDefinitionModel extends BaseModel
       if filterStringMatch?
         return false unless filterStringMatch
 
+    # If we have a filter change and want to reinstantiate instances that is
+    # already active
+    if @_lastFilter isnt JSON.stringify(filter) and @get('reInstantiate')
+      @_lastFilter = JSON.stringify(filter)
+      @trigger 'change:reInstantiate', @
+
     return true
 
   exceedsMaximumShowCount: (componentMaxShowCount) ->
@@ -279,7 +289,7 @@ class InstanceDefinitionModel extends BaseModel
 
       @set
         'urlParams': matchingUrlParams
-      , silent: not @get('reInstantiateOnUrlParamChange')
+      , silent: true
 
   getTargetName: ->
     targetName = @get 'targetName'

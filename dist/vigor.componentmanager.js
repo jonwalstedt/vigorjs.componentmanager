@@ -645,18 +645,20 @@
         args: void 0,
         order: void 0,
         targetName: void 0,
-        instance: void 0,
-        showCount: 0,
-        urlParams: void 0,
-        urlParamsModel: void 0,
-        reInstantiateOnUrlParamChange: false,
+        reInstantiate: false,
         filterString: void 0,
         includeIfFilterStringMatches: void 0,
         excludeIfFilterStringMatches: void 0,
         conditions: void 0,
         maxShowCount: void 0,
-        urlPattern: void 0
+        urlPattern: void 0,
+        instance: void 0,
+        showCount: 0,
+        urlParams: void 0,
+        urlParamsModel: void 0
       };
+
+      InstanceDefinitionModel.prototype._lastFilter = void 0;
 
       InstanceDefinitionModel.prototype.validate = function(attrs, options) {
         if (!attrs.id) {
@@ -838,6 +840,10 @@
             }
           }
         }
+        if (this._lastFilter !== JSON.stringify(filter) && this.get('reInstantiate')) {
+          this._lastFilter = JSON.stringify(filter);
+          this.trigger('change:reInstantiate', this);
+        }
         return true;
       };
 
@@ -966,7 +972,7 @@
           return this.set({
             'urlParams': matchingUrlParams
           }, {
-            silent: !this.get('reInstantiateOnUrlParamChange')
+            silent: true
           });
         }
       };
@@ -1016,7 +1022,7 @@
       }
 
       InstanceDefinitionsCollection.prototype.parse = function(data, options) {
-        var i, incomingInstanceDefinitions, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, k, len, len1, parsedResponse, targetName, targetPrefix, trgtName;
+        var i, incomingInstanceDefinitions, instanceDefinition, instanceDefinitions, instanceDefinitionsArray, j, k, len, len1, parsedResponse, targetName, targetPrefix;
         parsedResponse = void 0;
         instanceDefinitionsArray = [];
         targetPrefix = data.targetPrefix;
@@ -1027,15 +1033,14 @@
             if (_.isArray(instanceDefinitions)) {
               for (j = 0, len = instanceDefinitions.length; j < len; j++) {
                 instanceDefinition = instanceDefinitions[j];
-                instanceDefinition.targetName = targetPrefix + "--" + targetName;
+                instanceDefinition.targetName = this._formatTargetName(targetName, targetPrefix);
                 this.parseInstanceDefinition(instanceDefinition);
                 instanceDefinitionsArray.push(instanceDefinition);
               }
               parsedResponse = instanceDefinitionsArray;
             } else {
-              trgtName = incomingInstanceDefinitions.targetName;
-              if ((trgtName != null) && trgtName !== 'body' && trgtName.indexOf(targetPrefix) < 0) {
-                incomingInstanceDefinitions.targetName = targetPrefix + "--" + trgtName;
+              if (incomingInstanceDefinitions.targetName) {
+                incomingInstanceDefinitions.targetName = this._formatTargetName(incomingInstanceDefinitions.targetName, targetPrefix);
               }
               parsedResponse = this.parseInstanceDefinition(incomingInstanceDefinitions);
               break;
@@ -1044,9 +1049,8 @@
         } else if (_.isArray(incomingInstanceDefinitions)) {
           for (i = k = 0, len1 = incomingInstanceDefinitions.length; k < len1; i = ++k) {
             instanceDefinition = incomingInstanceDefinitions[i];
-            targetName = instanceDefinition.targetName;
-            if ((targetName != null) && targetName !== 'body' && targetName.indexOf(targetPrefix) < 0) {
-              instanceDefinition.targetName = targetPrefix + "--" + targetName;
+            if (instanceDefinition.targetName) {
+              instanceDefinition.targetName = this._formatTargetName(instanceDefinition.targetName, targetPrefix);
             }
             incomingInstanceDefinitions[i] = this.parseInstanceDefinition(instanceDefinition);
           }
@@ -1070,6 +1074,19 @@
           instanceDefinitionModel.addUrlParams(url);
         }
         return instanceDefinitions;
+      };
+
+      InstanceDefinitionsCollection.prototype._formatTargetName = function(targetName, targetPrefix) {
+        if ((targetName != null) && targetName !== 'body') {
+          if (targetName.charAt(0) === '.') {
+            targetName = targetName.substring(1);
+          }
+          if (targetName.indexOf(targetPrefix) < 0) {
+            targetName = targetPrefix + "--" + targetName;
+          }
+          targetName = "." + targetName;
+        }
+        return targetName;
       };
 
       return InstanceDefinitionsCollection;
@@ -1283,7 +1300,7 @@
         this._instanceDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
         this._globalConditionsModel.on('change', this._updateActiveComponents);
         this._activeInstancesCollection.on('add', this._onActiveInstanceAdd);
-        this._activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiateOnUrlParamChange', this._onActiveInstanceChange);
+        this._activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiate', this._onActiveInstanceChange);
         this._activeInstancesCollection.on('change:order', this._onActiveInstanceOrderChange);
         this._activeInstancesCollection.on('change:targetName', this._onActiveInstanceTargetNameChange);
         this._activeInstancesCollection.on('remove', this._onActiveInstanceRemoved);
