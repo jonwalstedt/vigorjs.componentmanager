@@ -200,31 +200,31 @@ class InstanceDefinitionModel extends BaseModel
 
     return exceedsShowCount
 
-  includeIfStringMatches: (filterString) ->
-    filter = @get 'filterString'
-    if filter
-      return !!filter.match filterString
+  includeIfStringMatches: (regexp) ->
+    filterString = @get 'filterString'
+    if filterString
+      return !!filterString.match regexp
 
-  excludeIfStringMatches: (filterString) ->
-    filter = @get 'filterString'
-    if filter
-      return not !!filter.match filterString
+  excludeIfStringMatches: (regexp) ->
+    filterString = @get 'filterString'
+    if filterString
+      return not !!filterString.match regexp
 
-  hasToMatchString: (filterString) ->
-    return !!@includeIfStringMatches filterString
+  hasToMatchString: (regexp) ->
+    return !!@includeIfStringMatches regexp
 
-  cantMatchString: (filterString) ->
-    return !!@excludeIfStringMatches filterString
+  cantMatchString: (regexp) ->
+    return !!@excludeIfStringMatches regexp
 
   includeIfFilterStringMatches: (filterString) ->
-    filter = @get 'includeIfFilterStringMatches'
-    if filter
-      return !!filterString?.match filter
+    regexp = @get 'includeIfFilterStringMatches'
+    if regexp
+      return !!filterString?.match regexp
 
   excludeIfFilterStringMatches: (filterString) ->
-    filter = @get 'excludeIfFilterStringMatches'
-    if filter
-      return not !!filterString?.match filter
+    regexp = @get 'excludeIfFilterStringMatches'
+    if regexp
+      return not !!filterString?.match regexp
 
   doesUrlPatternMatch: (url) ->
     match = false
