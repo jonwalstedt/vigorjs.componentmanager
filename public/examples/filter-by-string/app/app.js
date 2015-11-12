@@ -7,10 +7,10 @@ var app = app || {};
     forceFilterStringMatching: false,
     events: {
       'click .restore': 'restore',
-      'click .include-if-string-matches': 'includeIfStringMatches',
-      'click .exclude-if-string-matches': 'excludeIfStringMatches',
-      'click .has-to-match-string': 'hasToMatchString',
-      'click .cant-match-string': 'cantMatchString',
+      'click .include-if-string-matches': 'includeIfMatch',
+      'click .exclude-if-string-matches': 'excludeIfMatch',
+      'click .has-to-match-string': 'hasToMatch',
+      'click .cant-match-string': 'cantMatch',
       'click .update-filter-string-lang-en-gb': 'updateFilterStringLangEnGB',
       'click .update-filter-string-lang-sv-se': 'updateFilterStringLangSvSE',
       'click .update-filter-string-url': 'updateFilterStringUrl',
@@ -34,56 +34,56 @@ var app = app || {};
     },
 
     // examples where the filterString is set on the instanceDefinition
-    includeIfStringMatches: function () {
+    includeIfMatch: function () {
       var
         filter = {
-          includeIfStringMatches: 'first',
+          includeIfMatch: 'first',
           options: {
             forceFilterStringMatching: this.forceFilterStringMatching
           }
         },
-        msg = 'includeIfStringMatches - will show instanceDefinitions that has a filterString that matches <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
+        msg = 'includeIfMatch - will show instanceDefinitions that has a filterString that matches <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
       Vigor.componentManager.refresh(filter);
       showMsg(msg, filter);
     },
 
-    excludeIfStringMatches: function () {
+    excludeIfMatch: function () {
       var
         filter = {
-          excludeIfStringMatches: 'first',
+          excludeIfMatch: 'first',
           options: {
             forceFilterStringMatching: this.forceFilterStringMatching
           }
         },
-        msg = 'excludeIfStringMatches - will show instanceDefinitions that has a filterString that does <b>not</b> match <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
-
-      Vigor.componentManager.refresh(filter);
-      showMsg(msg, filter);
-    },
-
-    hasToMatchString: function () {
-      var
-        filter = {
-          hasToMatchString: 'first',
-          options: {
-            forceFilterStringMatching: this.forceFilterStringMatching
-          }
-        },
-        msg = 'hasToMatchString - will filter instanceDefinitions to only show instances that has a filterString that matches <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
+        msg = 'excludeIfMatch - will show instanceDefinitions that has a filterString that does <b>not</b> match <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
 
       Vigor.componentManager.refresh(filter);
       showMsg(msg, filter);
     },
 
-    cantMatchString: function () {
+    hasToMatch: function () {
       var
         filter = {
-          cantMatchString: 'first',
+          hasToMatch: 'first',
           options: {
             forceFilterStringMatching: this.forceFilterStringMatching
           }
         },
-        msg = 'cantMatchString - will filter instanceDefinitions to only show instances that has a filterString that does <b>not</b> match <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
+        msg = 'hasToMatch - will filter instanceDefinitions to only show instances that has a filterString that matches <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
+
+      Vigor.componentManager.refresh(filter);
+      showMsg(msg, filter);
+    },
+
+    cantMatch: function () {
+      var
+        filter = {
+          cantMatch: 'first',
+          options: {
+            forceFilterStringMatching: this.forceFilterStringMatching
+          }
+        },
+        msg = 'cantMatch - will filter instanceDefinitions to only show instances that has a filterString that does <b>not</b> match <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
       Vigor.componentManager.refresh(filter);
       showMsg(msg, filter);
     },

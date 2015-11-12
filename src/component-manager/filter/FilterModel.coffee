@@ -3,10 +3,10 @@ class FilterModel extends BaseModel
   defaults:
     url: undefined
     filterString: undefined
-    includeIfStringMatches: undefined
-    excludeIfStringMatches: undefined
-    hasToMatchString: undefined
-    cantMatchString: undefined
+    includeIfMatch: undefined
+    excludeIfMatch: undefined
+    hasToMatch: undefined
+    cantMatch: undefined
 
     options:
       add: true

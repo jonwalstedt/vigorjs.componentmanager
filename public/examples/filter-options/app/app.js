@@ -45,7 +45,7 @@ var app = app || {};
 
       this.filter = {
         url: url,
-        includeIfStringMatches: filterString,
+        includeIfMatch: filterString,
         options: {
           add: this.$addCheckbox.is(':checked'),
           remove: this.$removeCheckbox.is(':checked'),

@@ -62,7 +62,7 @@ These properties are used to decide if the instance passes the filter or not
 <dl class="property-descriptions">
   <dt><strong>filterString:</strong> String</dt>
   <dd>
-    <p>The filterString property is a string that you can match against the regexp you define in your filter object (includeIfStringMatches, excludeIfStringMatches, hasToMatchString, cantMatchString)</p>
+    <p>The filterString property is a string that you can match against the regexp you define in your filter object (includeIfMatch, excludeIfMatch, hasToMatch, cantMatch)</p>
   </dd>
 
   <dt><strong>includeIfFilterStringMatches:</strong> String / Regexp</dt>

@@ -144,14 +144,14 @@ class InstanceDefinitionModel extends BaseModel
 
     if filter?.options?.forceFilterStringMatching
       if @get('filterString')? \
-      and (not filter?.includeIfStringMatches? \
-      and not filter?.excludeIfStringMatches? \
-      and not filter?.hasToMatchString? \
-      and not filter?.cantMatchString?)
+      and (not filter?.includeIfMatch? \
+      and not filter?.excludeIfMatch? \
+      and not filter?.hasToMatch? \
+      and not filter?.cantMatch?)
         return false
 
-    if filter?.includeIfStringMatches
-      filterStringMatch = @includeIfStringMatches filter.includeIfStringMatches
+    if filter?.includeIfMatch
+      filterStringMatch = @includeIfMatch filter.includeIfMatch
 
       if filter?.options?.forceFilterStringMatching
         filterStringMatch = !!filterStringMatch
@@ -159,8 +159,8 @@ class InstanceDefinitionModel extends BaseModel
       if filterStringMatch?
         return false unless filterStringMatch
 
-    if filter?.excludeIfStringMatches
-      filterStringMatch = @excludeIfStringMatches filter.excludeIfStringMatches
+    if filter?.excludeIfMatch
+      filterStringMatch = @excludeIfMatch filter.excludeIfMatch
 
       if filter?.options?.forceFilterStringMatching
         filterStringMatch = !!filterStringMatch
@@ -168,13 +168,13 @@ class InstanceDefinitionModel extends BaseModel
       if filterStringMatch?
         return false unless filterStringMatch
 
-    if filter?.hasToMatchString
-      filterStringMatch = @hasToMatchString filter.hasToMatchString
+    if filter?.hasToMatch
+      filterStringMatch = @hasToMatch filter.hasToMatch
       if filterStringMatch?
         return false unless filterStringMatch
 
-    if filter?.cantMatchString
-      filterStringMatch = @cantMatchString filter.cantMatchString
+    if filter?.cantMatch
+      filterStringMatch = @cantMatch filter.cantMatch
       if filterStringMatch?
         return false unless filterStringMatch
 
@@ -200,21 +200,21 @@ class InstanceDefinitionModel extends BaseModel
 
     return exceedsShowCount
 
-  includeIfStringMatches: (regexp) ->
+  includeIfMatch: (regexp) ->
     filterString = @get 'filterString'
     if filterString
       return !!filterString.match regexp
 
-  excludeIfStringMatches: (regexp) ->
+  excludeIfMatch: (regexp) ->
     filterString = @get 'filterString'
     if filterString
       return not !!filterString.match regexp
 
-  hasToMatchString: (regexp) ->
-    return !!@includeIfStringMatches regexp
+  hasToMatch: (regexp) ->
+    return !!@includeIfMatch regexp
 
-  cantMatchString: (regexp) ->
-    return !!@excludeIfStringMatches regexp
+  cantMatch: (regexp) ->
+    return !!@excludeIfMatch regexp
 
   includeIfFilterStringMatches: (filterString) ->
     regexp = @get 'includeIfFilterStringMatches'

@@ -9,76 +9,77 @@ describe 'FilterModel', ->
     filterModel = new FilterModel()
 
     assert.equal filterModel.attributes.url, undefined
-    assert.equal filterModel.attributes.includeIfStringMatches, undefined
-    assert.equal filterModel.attributes.hasToMatchString, undefined
-    assert.equal filterModel.attributes.cantMatchString, undefined
+    assert.equal filterModel.attributes.includeIfMatch, undefined
+    assert.equal filterModel.attributes.excludeIfMatch, undefined
+    assert.equal filterModel.attributes.hasToMatch, undefined
+    assert.equal filterModel.attributes.cantMatch, undefined
     assert.equal filterModel.attributes.conditions, undefined
 
   describe 'parse', ->
     it 'should not keep already set url value if no new one is passed', ->
       filterOptions =
         url: 'foo/bar'
-        hasToMatchString: 'foo'
+        hasToMatch: 'foo'
 
       filterModel = new FilterModel()
 
       filterModel.set filterModel.parse(filterOptions)
       assert.equal filterModel.attributes.url, filterOptions.url
 
-      filterModel.set filterModel.parse({hasToMatchString: 'bar'})
+      filterModel.set filterModel.parse({hasToMatch: 'bar'})
       assert.equal filterModel.attributes.url, undefined
 
-    it 'should not keep already set "includeIfStringMatches" if no new one is passed', ->
+    it 'should not keep already set "includeIfMatch" if no new one is passed', ->
       filterOptions =
         url: 'foo'
-        includeIfStringMatches: 'foo bar'
+        includeIfMatch: 'foo bar'
 
       filterModel = new FilterModel()
 
       filterModel.set filterModel.parse(filterOptions)
-      assert.equal filterModel.attributes.includeIfStringMatches, filterOptions.includeIfStringMatches
+      assert.equal filterModel.attributes.includeIfMatch, filterOptions.includeIfMatch
 
       filterModel.set filterModel.parse({url: 'bar'})
-      assert.equal filterModel.attributes.includeIfStringMatches, undefined
+      assert.equal filterModel.attributes.includeIfMatch, undefined
 
-    it 'should not keep already set "hasToMatchString" if no new one is passed', ->
+    it 'should not keep already set "hasToMatch" if no new one is passed', ->
       filterOptions =
         url: 'foo'
-        hasToMatchString: 'foo'
+        hasToMatch: 'foo'
 
       filterModel = new FilterModel()
 
       filterModel.set filterModel.parse(filterOptions)
-      assert.equal filterModel.attributes.hasToMatchString, filterOptions.hasToMatchString
+      assert.equal filterModel.attributes.hasToMatch, filterOptions.hasToMatch
 
       filterModel.set filterModel.parse({url: 'bar'})
-      assert.equal filterModel.attributes.hasToMatchString, undefined
+      assert.equal filterModel.attributes.hasToMatch, undefined
 
-    it 'should not keep already set "cantMatchString" if no new one is passed', ->
+    it 'should not keep already set "cantMatch" if no new one is passed', ->
       filterOptions =
         url: 'foo'
-        cantMatchString: 'foo'
+        cantMatch: 'foo'
 
       filterModel = new FilterModel()
 
       filterModel.set filterModel.parse(filterOptions)
-      assert.equal filterModel.attributes.cantMatchString, filterOptions.cantMatchString
+      assert.equal filterModel.attributes.cantMatch, filterOptions.cantMatch
 
       filterModel.set filterModel.parse({url: 'bar'})
-      assert.equal filterModel.attributes.cantMatchString, undefined
+      assert.equal filterModel.attributes.cantMatch, undefined
 
     it 'should return parsed values', ->
       filterOptions =
         url: 'foo'
-        cantMatchString: 'bar'
+        cantMatch: 'bar'
 
       filterModel = new FilterModel()
 
       results = filterModel.parse(filterOptions)
       assert.equal results.url, 'foo'
-      assert.equal results.includeIfStringMatches, undefined
-      assert.equal results.hasToMatchString, undefined
-      assert.equal results.cantMatchString, 'bar'
+      assert.equal results.includeIfMatch, undefined
+      assert.equal results.hasToMatch, undefined
+      assert.equal results.cantMatch, 'bar'
 
   describe 'getFilterOptions', ->
     it 'should return default values unless the flags has been changed', ->

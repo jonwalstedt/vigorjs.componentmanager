@@ -379,10 +379,10 @@ describe 'The componentManager', ->
         expectedResults =
           url: 'foo/1'
           filterString: undefined
-          includeIfStringMatches: undefined
-          excludeIfStringMatches: undefined
-          hasToMatchString: undefined
-          cantMatchString: undefined
+          includeIfMatch: undefined
+          excludeIfMatch: undefined
+          hasToMatch: undefined
+          cantMatch: undefined
           options:
             add: true
             remove: true
@@ -1097,15 +1097,15 @@ describe 'The componentManager', ->
 
         activeFilter =
           url: 'foo/bar'
-          includeIfStringMatches: 'baz'
+          includeIfMatch: 'baz'
 
         expectedResults =
           url: 'foo/bar'
           filterString: undefined
-          includeIfStringMatches: 'baz'
-          excludeIfStringMatches: undefined
-          hasToMatchString: undefined
-          cantMatchString: undefined
+          includeIfMatch: 'baz'
+          excludeIfMatch: undefined
+          hasToMatch: undefined
+          cantMatch: undefined
           options:
             add: true
             remove: true

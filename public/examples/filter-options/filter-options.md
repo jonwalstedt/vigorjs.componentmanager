@@ -22,6 +22,6 @@ Merge will update existing active instanceDefinitions if set to true, if set to 
 
 Invert will invert the filter and return all components that doesn't match the filter.
 
-ForceFilterStringMatching is used in combination with the filters includeIfStringMatches, excludeIfStringMatches, hasToMatchString or cantMatchtring to allow or disallow components that does not have a filterString set (enabled it will make instanceDefinitions active only when the filter is doing string matching - even if other filters matches). See the [Filter by string](/examples/filter-by-string) example.
+ForceFilterStringMatching is used in combination with the filters includeIfMatch, excludeIfMatch, hasToMatch or cantMatchtring to allow or disallow components that does not have a filterString set (enabled it will make instanceDefinitions active only when the filter is doing string matching - even if other filters matches). See the [Filter by string](/examples/filter-by-string) example.
 
 Play around with the example below to get a better understanding of the different options.

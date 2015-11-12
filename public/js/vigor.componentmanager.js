@@ -288,10 +288,10 @@
       FilterModel.prototype.defaults = {
         url: void 0,
         filterString: void 0,
-        includeIfStringMatches: void 0,
-        excludeIfStringMatches: void 0,
-        hasToMatchString: void 0,
-        cantMatchString: void 0,
+        includeIfMatch: void 0,
+        excludeIfMatch: void 0,
+        hasToMatch: void 0,
+        cantMatch: void 0,
         options: {
           add: true,
           remove: true,
@@ -798,12 +798,12 @@
           }
         }
         if (filter != null ? (ref = filter.options) != null ? ref.forceFilterStringMatching : void 0 : void 0) {
-          if ((this.get('filterString') != null) && (((filter != null ? filter.includeIfStringMatches : void 0) == null) && ((filter != null ? filter.excludeIfStringMatches : void 0) == null) && ((filter != null ? filter.hasToMatchString : void 0) == null) && ((filter != null ? filter.cantMatchString : void 0) == null))) {
+          if ((this.get('filterString') != null) && (((filter != null ? filter.includeIfMatch : void 0) == null) && ((filter != null ? filter.excludeIfMatch : void 0) == null) && ((filter != null ? filter.hasToMatch : void 0) == null) && ((filter != null ? filter.cantMatch : void 0) == null))) {
             return false;
           }
         }
-        if (filter != null ? filter.includeIfStringMatches : void 0) {
-          filterStringMatch = this.includeIfStringMatches(filter.includeIfStringMatches);
+        if (filter != null ? filter.includeIfMatch : void 0) {
+          filterStringMatch = this.includeIfMatch(filter.includeIfMatch);
           if (filter != null ? (ref1 = filter.options) != null ? ref1.forceFilterStringMatching : void 0 : void 0) {
             filterStringMatch = !!filterStringMatch;
           }
@@ -813,8 +813,8 @@
             }
           }
         }
-        if (filter != null ? filter.excludeIfStringMatches : void 0) {
-          filterStringMatch = this.excludeIfStringMatches(filter.excludeIfStringMatches);
+        if (filter != null ? filter.excludeIfMatch : void 0) {
+          filterStringMatch = this.excludeIfMatch(filter.excludeIfMatch);
           if (filter != null ? (ref2 = filter.options) != null ? ref2.forceFilterStringMatching : void 0 : void 0) {
             filterStringMatch = !!filterStringMatch;
           }
@@ -824,16 +824,16 @@
             }
           }
         }
-        if (filter != null ? filter.hasToMatchString : void 0) {
-          filterStringMatch = this.hasToMatchString(filter.hasToMatchString);
+        if (filter != null ? filter.hasToMatch : void 0) {
+          filterStringMatch = this.hasToMatch(filter.hasToMatch);
           if (filterStringMatch != null) {
             if (!filterStringMatch) {
               return false;
             }
           }
         }
-        if (filter != null ? filter.cantMatchString : void 0) {
-          filterStringMatch = this.cantMatchString(filter.cantMatchString);
+        if (filter != null ? filter.cantMatch : void 0) {
+          filterStringMatch = this.cantMatch(filter.cantMatch);
           if (filterStringMatch != null) {
             if (!filterStringMatch) {
               return false;
@@ -863,7 +863,7 @@
         return exceedsShowCount;
       };
 
-      InstanceDefinitionModel.prototype.includeIfStringMatches = function(regexp) {
+      InstanceDefinitionModel.prototype.includeIfMatch = function(regexp) {
         var filterString;
         filterString = this.get('filterString');
         if (filterString) {
@@ -871,7 +871,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.excludeIfStringMatches = function(regexp) {
+      InstanceDefinitionModel.prototype.excludeIfMatch = function(regexp) {
         var filterString;
         filterString = this.get('filterString');
         if (filterString) {
@@ -879,12 +879,12 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.hasToMatchString = function(regexp) {
-        return !!this.includeIfStringMatches(regexp);
+      InstanceDefinitionModel.prototype.hasToMatch = function(regexp) {
+        return !!this.includeIfMatch(regexp);
       };
 
-      InstanceDefinitionModel.prototype.cantMatchString = function(regexp) {
-        return !!this.excludeIfStringMatches(regexp);
+      InstanceDefinitionModel.prototype.cantMatch = function(regexp) {
+        return !!this.excludeIfMatch(regexp);
       };
 
       InstanceDefinitionModel.prototype.includeIfFilterStringMatches = function(filterString) {
