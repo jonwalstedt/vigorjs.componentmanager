@@ -90,9 +90,7 @@ settings = {
 ```
 
 #### Custom Properties
-In adition to the default values you can add any properties you like to a componentDefinition. Note that these properties will not be passed to the instance so the instance will not have access to them
-
-These properties will then be used to filter out instances (instanceDefinitions) of that componentDefinition. The custom properties would then also have to be used when creating the filter which would be passed to the refresh method. See example below.
+In adition to the default values you can add any properties you like to a componentDefinition. These properties will then be used to filter out instances (instanceDefinitions) of that componentDefinition. The custom properties would then also have to be used when creating the filter which would be passed to the refresh method. See example below.
 
 ```javascript
 componentSettings: {
@@ -101,26 +99,19 @@ componentSettings: {
       id: 'my-component',
       src: 'components/chart',
       myCustomProperty: 'customVal'
-    },
-    {
-      id: 'my-component2',
-      src: 'components/chart',
     }
   ],
   instances: [
     {
-      id: 'instance-1',
+      id: 'my-instance',
       componentId: 'my-component',
-    },
-    {
-      id: 'instance-2',
-      componentId: 'my-component2',
+      targetName: 'body'
     }
   ]
 }
 ```
 
-In the example above the custom property myCustomProperty is set with the value 'customVal' on the first componentDefinition. Instance-1 is an instance of this component and would be found if the filter passed to refresh would contain the custom property. The second instance would not be created since it is referencing the second componentDefinition that does not have the custom property.
+In the example above the custom property myCustomProperty is set with the value 'customVal'
 
 ```javascript
 // This filter would create an instance of the first componentDefinition ('my-component') using the information from the instanceDefinition.
@@ -129,4 +120,4 @@ componentManager.refresh({
 });
 ```
 
-Custom properties on the componentDefinition may be overriden by custom properties on a intanceDefinifion that belongs to that componentDefinition.
+Custom properties on the componentDefinition may be overriden by custom properties on a intanceDefinition that belongs to that componentDefinition.

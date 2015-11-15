@@ -9,22 +9,31 @@ block sidebar
         li.sidebar_list-item
           a.sidebar__link(href="#introduction") Introduction
 
+        li.sidebar_list-item
+          a.sidebar__link(href="#dependencies") Dependencies
+
+        li.sidebar_list-item
+          a.sidebar__link(href="#components") Components
+
+        li.sidebar_list-item
+          a.sidebar__link(href="#getting-started") Getting started
+
       h4.sidebar__title Settings
       ul.sidebar_list
         li.sidebar_list-item
           a.sidebar__link(href="#settings") The settings object
 
         li.sidebar_list-item
-          a.sidebar__link(href="#component-definitions") componentDefinitions
+          a.sidebar__link(href="#component-definitions") ComponentDefinitions
 
         li.sidebar_list-item
-          a.sidebar__link(href="#instance-definitions") instanceDefinitions
+          a.sidebar__link(href="#instance-definitions") InstanceDefinitions
 
         li.sidebar_list-item
-          a.sidebar__link(href="#filter") filter
+          a.sidebar__link(href="#filter") Filter
 
         li.sidebar_list-item
-          a.sidebar__link(href="#conditions") conditions
+          a.sidebar__link(href="#conditions") Conditions
 
         li.sidebar_list-item
           a.sidebar__link(href="#other-settings") Other settings
@@ -46,6 +55,15 @@ block content
     h2 Introduction
     section.sub-section
       != partial('./introduction')
+
+    section.sub-section
+      != partial('./dependencies')
+
+    section.sub-section
+      != partial('./components')
+
+    section.sub-section
+      != partial('./getting-started')
 
   section.main-section
     h2 Settings

@@ -3,7 +3,7 @@ InstanceDefinitions or instanceDefinitionModels defines an instance of a compone
 
 The only required properties for a instanceDefinition is **id** and **componentId**, but there are many more default properties which can be used to pass arguments, specify instance order and behaviour and of course properties to help out with filtering. See each property and their descriptions below:
 
-#### ComponentDefinition Properties
+#### InstanceDefinition Properties
 
 ##### Public properties
 These properties are used to decide what component to create the instance from, where to add it and what arguments to pass to it. See the descriptions for details.
@@ -57,37 +57,59 @@ These properties are used to decide what component to create the instance from, 
 </dl>
 
 ##### Filter related properties on the instanceDefinition
-These properties are used to decide if the instance passes the filter or not
+These properties are used to decide if the instance passes the filter or not.
 
 <dl class="property-descriptions">
   <dt><strong>filterString:</strong> String</dt>
   <dd>
-    <p>The filterString property is a string that you can match against the regexp you define in your filter object (includeIfMatch, excludeIfMatch, hasToMatch, cantMatch)</p>
+    <p>The filterString property is a string that you can match against the regexp you define in your filter object (by adding your regexp to one of these filter properties: includeIfMatch, excludeIfMatch, hasToMatch, cantMatch).</p>
   </dd>
 
   <dt><strong>includeIfFilterStringMatches:</strong> String / Regexp</dt>
   <dd>
-    <p></p>
+    <p>The includeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches the filterString the instance will be created. If includeIfFilterStringMatches is defined and does not match the filterString the instanceDefinition will not pass the filter.</p>
   </dd>
 
   <dt><strong>excludeIfFilterStringMatches:</strong> String / Regexp</dt>
   <dd>
-    <p></p>
+    <p>The excludeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches filterString in the filter object the instance will be excluded.</p>
   </dd>
 
   <dt><strong>conditions:</strong> Array / Function / String</dt>
   <dd>
-    <p></p>
+    <p>A condition for a componentDefinition or instanceDefinition should be a function returning true or false. One or multiple conditions can be used to help determine if an instance of the component should be created or not.</p>
+
+    <p>Instead of a function you may also use a string that will be used as a key for a condition registered in the conditions property of the [componentSettings](#settings) object (or conditions added using the addConditions method).</p>
+
+    <p>You can mix both of these methods and pass an array containing functions or strings or both. All conditions will have to return true to have the instance created.</p>
+
+    <p>If the componentDefinition that the instanceDefinition references have conditions of its own both the conditions of the instanceDefinition and the componentDefinition will have to return true for the instance to be created.</p>
   </dd>
 
   <dt><strong>maxShowCount:</strong> Number</dt>
   <dd>
-    <p></p>
+    <p>The property maxShowCount should be a number if defined. The instanceDefinitions maxShowCount overrides the componentDefinitions maxShowCount property.</p>
+
+    <p>If used it will limit the number of times a instance of that component may be created. For an example you could set it to 1 if you want to display a component only one time - even if other filters pass.</p>
   </dd>
 
   <dt><strong>urlPattern:</strong> String / Array</dt>
   <dd>
-    <p></p>
+    <p>The urlPattern property should be a string in the form of a Backbone url pattern / route or an array containing multiple url patterns.</p>
+
+    <p>This pattern will be used when filtering with the url property on the filter object that is passed to the refresh method. If your instanceDefinitions urlPattern matches the url (and all other filters pass) your instance will be created.</p>
+
+    <p>By passing multiple urlPatterns you can have the same instance active across multpile urls without reinstantiation. For an example: if you set the urlPattern to ['home', 'products/:id'] your instance would be created once when matching 'home' and then still keep the same instance active when navigating to any page that matches the 'products/:id' pattern (products/1, products/2 etc.)</p>
+
+    <p>You can also set the urlPattern to **'global'** to have it match any url. This is useful if you want an instance of your component to always stay on page, like a header or a main menu.</p>
+
+    <p>See the [Filter by url](/examples/filter-by-url) example.</p>
   </dd>
 </dl>
 
+#### Custom Properties
+In adition to the default values you can add any properties you like to a instanceDefinition. These properties will then be used to filter out the instanceDefinitions. The custom properties would then also have to be used when creating the filter which would be passed to the refresh method. See example below.
+
+Custom properties on a instanceDefinition overrides custom properties on it's componentDefinition.
+
+See the section 'Custom properties' on [componentDefinitions](#component-definitions) for mor information and examples.

@@ -15,9 +15,13 @@ var app = app || {};
     },
 
     _refreshComponents: function () {
-      var filter = {
-        url: Backbone.history.fragment
-      };
+      var filter = {},
+          url = Backbone.history.fragment;
+
+      if (url !== "") {
+        filter.url = url;
+      }
+
       Vigor.componentManager.refresh(filter, function (activeInstances) {
         console.log('activeInstances: ',  activeInstances);
       });

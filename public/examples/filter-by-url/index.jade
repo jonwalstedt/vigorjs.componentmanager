@@ -2,9 +2,51 @@ extends ../index.jade
 
 block content
   != partial("./filter-by-url")
-  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '6'})
+  != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '7'})
 
   div.app-wrapper
+    p Try filtering the components using the links below
+
+    ul.filter-by-url__example-list
+      li.filter-by-url__list-item
+        a(href="#" class="filter-by-url__link") Reset
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Passing arguments ex: passing-arguments/:type/:id
+        a(href="#passing-arguments/news/political" class="filter-by-url__link") #passing-arguments/news/political
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Passing arguments ex: passing-arguments/:type/:id
+        a(href="#passing-arguments/news/domestic" class="filter-by-url__link") #passing-arguments/news/domestic
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Splats  ex: splat/*path
+        a(href="#splat/a/lot/of/sub/sections/in/the/url" class="filter-by-url__link") #splat/a/lot/of/sub/sections/in/the/url
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Optional Arguments 1 ex: optional/:section(/:subsection)
+        a(href="#optional/arguments" class="filter-by-url__link") #optional/arguments
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Optional Arguments 2 ex: optional/:section(/:subsection)
+        a(href="#optional/arguments/can-be-optional" class="filter-by-url__link") #optional/arguments/can-be-optional
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Optional Arguments 3 ex: optional/:section(/:subsection)(/:id)
+        a(href="#optional/arguments/can-be-optional/my-id" class="filter-by-url__link") #optional/arguments/can-be-optional/my-id
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Global ex: all urls
+        a(href="#a-random-url" class="filter-by-url__link") #a-random-url
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Multiple urlPatterns 1
+        a(href="#multiple-url-patterns/1" class="filter-by-url__link") #multiple-url-patterns/1
+
+      li.filter-by-url__list-item
+        h4.filter-by-url__header Multiple urlPatterns 2
+        a(href="#multiple-url-patterns/2" class="filter-by-url__link") #multiple-url-patterns/2
+
     small .component-area--main
     div.component-area.component-area--main
 
