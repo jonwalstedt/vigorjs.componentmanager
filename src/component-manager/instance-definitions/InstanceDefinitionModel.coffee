@@ -9,6 +9,7 @@ class InstanceDefinitionModel extends BaseModel
       COMPONENT_ID_NOT_A_STRING: 'componentId should be a string'
       COMPONENT_ID_IS_EMPTY_STRING: 'componentId can not be an empty string'
       TARGET_NAME_UNDEFINED: 'targetName cant be undefined'
+      TARGET_WRONG_FORMAT: 'target should be a string or a jquery object'
 
     MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested'
 
@@ -63,6 +64,10 @@ class InstanceDefinitionModel extends BaseModel
 
     unless attrs.targetName
       throw @ERROR.VALIDATION.TARGET_NAME_UNDEFINED
+
+    unless _.isString(attrs.targetName)
+      unless attrs.targetName.jquery?
+        throw @ERROR.VALIDATION.TARGET_WRONG_FORMAT
 
   isAttached: ->
     instance = @get 'instance'
@@ -293,6 +298,7 @@ class InstanceDefinitionModel extends BaseModel
 
   getTargetName: ->
     targetName = @get 'targetName'
-    unless targetName is 'body' or targetName.charAt(0) is '.'
-      targetName = ".#{targetName}"
+    if _.isString(targetName)
+      unless targetName is 'body' or targetName.charAt(0) is '.'
+        targetName = ".#{targetName}"
     return targetName

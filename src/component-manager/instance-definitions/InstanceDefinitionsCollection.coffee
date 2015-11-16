@@ -44,13 +44,13 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
     return instanceDefinitions
 
   _formatTargetName: (targetName, targetPrefix) ->
-    if targetName? and targetName isnt 'body'
-      if targetName.charAt(0) is '.'
-        targetName = targetName.substring 1
+    if _.isString(targetName)
+      if targetName isnt 'body'
+        if targetName.charAt(0) is '.'
+          targetName = targetName.substring 1
 
-      if targetName.indexOf(targetPrefix) < 0
-        targetName = "#{targetPrefix}--#{targetName}"
+        if targetName.indexOf(targetPrefix) < 0
+          targetName = "#{targetPrefix}--#{targetName}"
 
-      targetName = ".#{targetName}"
-
+        targetName = ".#{targetName}"
     return targetName

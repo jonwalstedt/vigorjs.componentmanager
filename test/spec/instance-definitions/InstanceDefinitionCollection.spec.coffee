@@ -335,3 +335,11 @@ describe 'InstanceDefinitionsCollection', ->
       result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
       assert.equal result, '.my-prefix--my-target'
 
+    it 'should just return the targetName if it is a jquery object', ->
+      $('body').append '<div class="dummy"></div>'
+      targetName = $ '.dummy'
+      targetPrefix = 'my-prefix'
+      result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
+      assert.equal result, targetName
+      do targetName.remove
+

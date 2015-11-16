@@ -585,11 +585,18 @@ class ComponentManager
     return instanceDefinitions
 
   _getTarget: (instanceDefinition) ->
+    $target = undefined
     targetName = instanceDefinition.getTargetName()
-    if targetName is 'body'
-      $target = $ targetName
+    if _.isString(targetName)
+      if targetName is 'body'
+        $target = $ targetName
+      else
+        $target = $ targetName, @_$context
     else
-      $target = $ targetName, @_$context
+      if targetName.jquery?
+        $target = targetName
+      else
+        throw instanceDefinition.ERROR.VALIDATION.TARGET_WRONG_FORMAT
     return $target
 
   _modelToJSON: (model) ->

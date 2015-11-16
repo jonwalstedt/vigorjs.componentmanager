@@ -628,7 +628,8 @@
           COMPONENT_ID_UNDEFINED: 'componentId cant be undefined',
           COMPONENT_ID_NOT_A_STRING: 'componentId should be a string',
           COMPONENT_ID_IS_EMPTY_STRING: 'componentId can not be an empty string',
-          TARGET_NAME_UNDEFINED: 'targetName cant be undefined'
+          TARGET_NAME_UNDEFINED: 'targetName cant be undefined',
+          TARGET_WRONG_FORMAT: 'target should be a string or a jquery object'
         },
         MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested',
         MISSING_RENDER_METHOD: function(id) {
@@ -681,6 +682,11 @@
         }
         if (!attrs.targetName) {
           throw this.ERROR.VALIDATION.TARGET_NAME_UNDEFINED;
+        }
+        if (!_.isString(attrs.targetName)) {
+          if (attrs.targetName.jquery == null) {
+            throw this.ERROR.VALIDATION.TARGET_WRONG_FORMAT;
+          }
         }
       };
 
@@ -980,8 +986,10 @@
       InstanceDefinitionModel.prototype.getTargetName = function() {
         var targetName;
         targetName = this.get('targetName');
-        if (!(targetName === 'body' || targetName.charAt(0) === '.')) {
-          targetName = "." + targetName;
+        if (_.isString(targetName)) {
+          if (!(targetName === 'body' || targetName.charAt(0) === '.')) {
+            targetName = "." + targetName;
+          }
         }
         return targetName;
       };
@@ -1077,14 +1085,16 @@
       };
 
       InstanceDefinitionsCollection.prototype._formatTargetName = function(targetName, targetPrefix) {
-        if ((targetName != null) && targetName !== 'body') {
-          if (targetName.charAt(0) === '.') {
-            targetName = targetName.substring(1);
+        if (_.isString(targetName)) {
+          if (targetName !== 'body') {
+            if (targetName.charAt(0) === '.') {
+              targetName = targetName.substring(1);
+            }
+            if (targetName.indexOf(targetPrefix) < 0) {
+              targetName = targetPrefix + "--" + targetName;
+            }
+            targetName = "." + targetName;
           }
-          if (targetName.indexOf(targetPrefix) < 0) {
-            targetName = targetPrefix + "--" + targetName;
-          }
-          targetName = "." + targetName;
         }
         return targetName;
       };
@@ -1879,11 +1889,20 @@
 
       ComponentManager.prototype._getTarget = function(instanceDefinition) {
         var $target, targetName;
+        $target = void 0;
         targetName = instanceDefinition.getTargetName();
-        if (targetName === 'body') {
-          $target = $(targetName);
+        if (_.isString(targetName)) {
+          if (targetName === 'body') {
+            $target = $(targetName);
+          } else {
+            $target = $(targetName, this._$context);
+          }
         } else {
-          $target = $(targetName, this._$context);
+          if (targetName.jquery != null) {
+            $target = targetName;
+          } else {
+            throw instanceDefinition.ERROR.VALIDATION.TARGET_WRONG_FORMAT;
+          }
         }
         return $target;
       };

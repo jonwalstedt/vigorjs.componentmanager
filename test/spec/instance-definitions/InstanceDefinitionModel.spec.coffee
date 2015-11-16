@@ -80,6 +80,15 @@ describe 'InstanceDefinitionModel', ->
       errorFn = -> instanceDefinitionModel.validate attrs
       assert.throws (-> errorFn()), /targetName cant be undefined/
 
+    it 'should throw an error if the targetName is not a string and not a jQuery object', ->
+      attrs =
+        id: 'my-instance-id'
+        order: 10
+        componentId: 'my-component-id'
+        targetName: {}
+
+      errorFn = -> instanceDefinitionModel.validate attrs
+      assert.throws (-> errorFn()), /target should be a string or a jquery object/
 
   describe 'isAttached', ->
     it 'should return false if element is not present in the DOM', ->

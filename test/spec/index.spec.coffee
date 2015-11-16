@@ -3478,13 +3478,18 @@ describe 'The componentManager', ->
           instanceDefinitions: [
             {
               id: 'dummy-instance',
-              componentId: 'dummy-component',
+              componentId: 'mock-component',
               targetName: 'body'
             }
             {
               id: 'dummy-instance2',
-              componentId: 'dummy-component2',
+              componentId: 'mock-component',
               targetName: '.component-area--test-target'
+            }
+            {
+              id: 'dummy-instance3',
+              componentId: 'mock-component',
+              targetName: $('.component-area--test-target')
             }
           ]
 
@@ -3494,18 +3499,33 @@ describe 'The componentManager', ->
       afterEach ->
         $('component-area--test-target').remove()
 
-      it 'should return the passed instanceDefinitions targetName as a jQuery object', ->
-        instanceDefinition = componentManager._instanceDefinitionsCollection.at(1)
-        $target = componentManager._getTarget instanceDefinition
-        assert $target instanceof $
-        assert.equal ".#{$target.attr('class')}", instanceDefinitions[1].targetName
+      describe 'if targetName is a string', ->
+        it 'should return the passed instanceDefinitions targetName as a jQuery
+        object even if the targetName is body', ->
+          instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
+          $target = componentManager._getTarget instanceDefinition
+          assert $target instanceof $
+          assert.equal $target.selector, instanceDefinitions[0].targetName
 
-      it 'should return the passed instanceDefinitions targetName as a jQuery
-      object even if the targetName is body', ->
-        instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
-        $target = componentManager._getTarget instanceDefinition
-        assert $target instanceof $
-        assert.equal $target.selector, instanceDefinitions[0].targetName
+        it 'should return the passed instanceDefinitions targetName as a jQuery object', ->
+          instanceDefinition = componentManager._instanceDefinitionsCollection.at(1)
+          $target = componentManager._getTarget instanceDefinition
+          assert $target instanceof $
+          assert.equal ".#{$target.attr('class')}", instanceDefinitions[1].targetName
+
+      describe 'if targetName is a jQuery object', ->
+        it 'should just return targetName if it is a jQuery object', ->
+          instanceDefinition = componentManager._instanceDefinitionsCollection.at(2)
+          $target = componentManager._getTarget instanceDefinition
+          assert $target instanceof $
+          assert.deepEqual $target, instanceDefinitions[2].targetName
+
+      describe 'if it is not a string and not a jQuery object', ->
+       it 'should throw an instanceDefinition.ERROR.TARGET.WRONG_FORMAT error', ->
+        instanceDefinition = componentManager._instanceDefinitionsCollection.at(2)
+        instanceDefinition.set 'targetName', {}
+        errorFn = -> componentManager._getTarget instanceDefinition
+        assert.throws (-> errorFn()), /target should be a string or a jquery object/
 
     describe '_modelToJSON', ->
       model = new Backbone.Model id: '123'
