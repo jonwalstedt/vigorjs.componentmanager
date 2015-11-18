@@ -1,9 +1,12 @@
-var app = app || {};
-
-(function ($) {
+define(function (require) {
   'use strict';
 
-  app.Preloader = Backbone.View.extend({
+  var Preloader,
+      $ = require('jquery'),
+      _ = require('underscore'),
+      Backbone = require('backbone');
+
+  Preloader = Backbone.View.extend({
 
     template: _.template($('script.preloader-template').html()),
     className: 'preloader preloader--visible',
@@ -43,4 +46,5 @@ var app = app || {};
 
   });
 
-})(jQuery);
+  return Preloader;
+});

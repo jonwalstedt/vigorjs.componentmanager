@@ -1,10 +1,13 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
 
-  app.components.Menu = app.components.ComponentBase.extend({
+  var Menu,
+      ComponentBase = require('components/ComponentBase'),
+      MenuView = require('./MenuView'),
+      MenuViewModel = require('./MenuViewModel');
+
+  Menu = ComponentBase.extend({
     $el: undefined,
     _menuViewModel: undefined,
     _menuView: undefined,
@@ -14,8 +17,8 @@ app.components = app.components || {};
       console.log('Menu initialized', options);
 
       this._urlParamsModel = options.urlParamsModel;
-      this._menuViewModel = new app.components.MenuViewModel();
-      this._menuView = new app.components.MenuView({
+      this._menuViewModel = new MenuViewModel();
+      this._menuView = new MenuView({
         viewModel: this._menuViewModel
       });
 
@@ -24,7 +27,7 @@ app.components = app.components || {};
       $.when(this._menuView.getRenderDonePromise()).then(_.bind(this._resolvePromise, this));
       console.log(this.listenTo);
       this.listenTo(this._urlParamsModel, 'change:url', _.bind(this._onUrlParamsChange, this));
-      app.components.ComponentBase.prototype.constructor.apply(this, arguments);
+      ComponentBase.prototype.constructor.apply(this, arguments);
     },
 
     render: function () {
@@ -54,4 +57,7 @@ app.components = app.components || {};
       this._setActiveLink();
     }
   });
-})(jQuery);
+
+  return Menu;
+
+});

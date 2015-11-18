@@ -1,9 +1,14 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
-  app.components.ListView = app.components.ComponentViewBase.extend({
+
+  var ListView,
+      $ = require('jquery'),
+      _ = require('underscore'),
+      Vigor = require('vigor'),
+      ComponentViewBase = require('components/ComponentViewBase');
+
+  ListView = ComponentViewBase.extend({
 
     className: 'list-component',
     tagName: 'ul',
@@ -11,7 +16,7 @@ app.components = app.components || {};
     template: _.template($('script.list-template').html()),
 
     initialize: function (options) {
-      app.components.ComponentViewBase.prototype.initialize.apply(this, arguments);
+      ComponentViewBase.prototype.initialize.apply(this, arguments);
       this.listenTo(this.viewModel.listItems, 'reset', this.renderDynamicContent);
     },
 
@@ -41,7 +46,7 @@ app.components = app.components || {};
     },
 
     dispose: function () {
-      app.components.ComponentViewBase.prototype.dispose.call(this, arguments);
+      ComponentViewBase.prototype.dispose.call(this, arguments);
     },
 
     _onListItemsAdd: function (addedItem, collection, options) {
@@ -63,4 +68,7 @@ app.components = app.components || {};
       // }
     }
   });
-})(jQuery);
+
+  return ListView;
+
+});

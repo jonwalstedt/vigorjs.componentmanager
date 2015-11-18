@@ -1,26 +1,35 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-app.components.HeaderView = app.components.ComponentViewBase.extend({
+  'use strict';
 
-  className: 'header-component',
-  componentName: 'header',
-  template: _.template($('script.header-template').html()),
+  var HeaderView,
+      $ = require('jquery'),
+      ComponentViewBase = require('components/ComponentViewBase');
 
-  renderStaticContent: function () {
-    this.$el.html(this.template());
-    this._renderDeferred.resolve();
-    return this;
-  },
+  HeaderView = ComponentViewBase.extend({
 
-  renderDynamicContent: function () {},
+    className: 'header-component',
+    componentName: 'header',
+    template: _.template($('script.header-template').html()),
 
-  addSubscriptions: function () {},
+    renderStaticContent: function () {
+      this.$el.html(this.template());
+      this._renderDeferred.resolve();
+      return this;
+    },
 
-  removeSubscriptions: function () {},
+    renderDynamicContent: function () {},
 
-  dispose: function () {
-    app.components.ComponentViewBase.prototype.dispose.apply(this, arguments);
-  }
+    addSubscriptions: function () {},
+
+    removeSubscriptions: function () {},
+
+    dispose: function () {
+      ComponentViewBase.prototype.dispose.apply(this, arguments);
+    }
+
+  });
+
+  return HeaderView;
 
 });

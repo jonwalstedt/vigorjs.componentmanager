@@ -1,17 +1,18 @@
-var app = app || {};
-app.services = app.services || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
 
-  var ProjectsService = Vigor.APIService.extend({
+  var ProjectsService,
+      APIService = require('vigor').APIService;
+
+  ProjectsService = APIService.extend({
 
     // NAME: 'ProjectsService',
     PROJECTS_RECEIVED: 'projects-received',
 
     parse: function (response) {
       var models = response.projects;
-      Vigor.APIService.prototype.parse.call(this, response);
+      APIService.prototype.parse.call(this, response);
       this.propagateResponse(this.PROJECTS_RECEIVED, models);
     },
 
@@ -20,6 +21,5 @@ app.services = app.services || {};
     }
   });
 
-  app.services.ProjectsService = new ProjectsService();
-
-})(jQuery);
+  return new ProjectsService();
+});

@@ -1,9 +1,12 @@
-var app = app || {};
-
-(function ($) {
+define(function (require) {
   'use strict';
 
-  var FilterModel = Backbone.Model.extend({
+  var FilterModel,
+      _ = require('underscore'),
+      Backbone = require('backbone');
+
+  FilterModel = Backbone.Model.extend({
+
     defaults: {
       preload: true
     },
@@ -43,6 +46,5 @@ var app = app || {};
 
   });
 
-  app.filterModel = new FilterModel();
-
-})(jQuery);
+  return new FilterModel();
+});

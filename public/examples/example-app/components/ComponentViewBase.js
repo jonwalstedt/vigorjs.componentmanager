@@ -1,14 +1,17 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
-  app.components.ComponentViewBase = Vigor.ComponentView.extend({
+
+  var ComponentViewBase,
+      $ = require('jquery'),
+      ComponentView = require('vigor').ComponentView;
+
+  ComponentViewBase = ComponentView.extend({
 
     _renderDeferred: undefined,
 
     initialize: function (options) {
-      Vigor.ComponentView.prototype.initialize.apply(this, arguments);
+      ComponentView.prototype.initialize.apply(this, arguments);
       this._renderDeferred = $.Deferred();
     },
 
@@ -30,11 +33,14 @@ app.components = app.components || {};
     },
 
     dispose: function () {
-      Vigor.ComponentView.prototype.dispose.apply(this, arguments);
+      ComponentView.prototype.dispose.apply(this, arguments);
     },
 
     getRenderDonePromise: function () {
       return this._renderDeferred.promise();
     }
   });
-})(jQuery);
+
+  return ComponentViewBase;
+
+});

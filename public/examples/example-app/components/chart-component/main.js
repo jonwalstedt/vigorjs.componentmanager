@@ -1,10 +1,18 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
 
-  app.components.Chart = app.components.ComponentBase.extend({
+  var Chart,
+      $ = require('jquery'),
+      ComponentBase = require('components/ComponentBase'),
+      LineChartView = require('./line-chart/LineChartView'),
+      LineChartViewModel = require('./line-chart/LineChartViewModel'),
+      BarChartView = require('./bar-chart/BarChartView'),
+      BarChartViewModel = require('./bar-chart/BarChartViewModel'),
+      DoughnutChartView = require('./doughnut-chart/DoughnutChartView'),
+      DoughnutChartViewModel = require('./doughnut-chart/DoughnutChartViewModel');
+
+  Chart = ComponentBase.extend({
     LINE_CHART: 'line-chart',
     BAR_CHART: 'bar-chart',
     DOUGHNUT_CHART: 'doughnut-chart',
@@ -32,7 +40,7 @@ app.components = app.components || {};
 
       this.$el = this._chartView.$el;
       $.when(this._chartView.getRenderDonePromise()).then(_.bind(this._resolvePromise, this));
-      app.components.ComponentBase.prototype.constructor.apply(this, arguments);
+      ComponentBase.prototype.constructor.apply(this, arguments);
     },
 
     render: function () {
@@ -51,7 +59,7 @@ app.components = app.components || {};
     },
 
     onPageReady: function () {
-      console.log('onPageReady ');
+      console.log('onPageReady');
       this._chartView.createChart();
     },
 
@@ -59,16 +67,16 @@ app.components = app.components || {};
       var chartView;
       switch (type) {
         case this.LINE_CHART:
-          chartView = app.components.LineChartView;
+          chartView = LineChartView;
           break;
         case this.BAR_CHART:
-          chartView = app.components.BarChartView;
+          chartView = BarChartView;
           break;
         case this.DOUGHNUT_CHART:
-          chartView = app.components.DoughnutChartView;
+          chartView = DoughnutChartView;
           break;
         default:
-          chartView = app.components.LineChartView;
+          chartView = LineChartView;
       }
       return chartView;
     },
@@ -77,16 +85,16 @@ app.components = app.components || {};
       var chartViewModel;
       switch (type) {
         case this.LINE_CHART:
-          chartViewModel = app.components.LineChartViewModel;
+          chartViewModel = LineChartViewModel;
           break;
         case this.BAR_CHART:
-          chartViewModel = app.components.BarChartViewModel;
+          chartViewModel = BarChartViewModel;
           break;
         case this.DOUGHNUT_CHART:
-          chartViewModel = app.components.DoughnutChartViewModel;
+          chartViewModel = DoughnutChartViewModel;
           break;
         default:
-          chartViewModel = app.components.LineChartViewModel;
+          chartViewModel = LineChartViewModel;
       }
       return chartViewModel;
     },
@@ -96,4 +104,7 @@ app.components = app.components || {};
     }
 
   });
-})(jQuery);
+
+  return Chart;
+
+});

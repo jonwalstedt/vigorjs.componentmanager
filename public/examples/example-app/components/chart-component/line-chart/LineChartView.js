@@ -1,11 +1,16 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
-  app.components.LineChartView = app.components.ChartViewBase.extend({
+
+  var LineChartView,
+      Backbone = require('backbone'),
+      Chart = require('Chart'),
+      ChartViewBase = require('../ChartViewBase');
+
+  LineChartView = ChartViewBase.extend({
 
     className: 'chart-component linechart-component',
+
     chartOptions: {
       animation: true,
       animationSteps: 360,
@@ -19,30 +24,37 @@ app.components = app.components || {};
       responsive: true
     },
 
+    constructor: function () {
+      Backbone.View.prototype.constructor.apply(this, arguments);
+    },
+
     createChart: function () {
       var chartData = this.viewModel.getChartData();
       this.chart = new Chart(this.ctx).Line(chartData, this.chartOptions);
     },
 
-    renderStaticContent: function () {
-      app.components.ChartViewBase.prototype.renderStaticContent.apply(this, arguments);
-    },
+    // renderStaticContent: function () {
+    //   app.components.ChartViewBase.prototype.renderStaticContent.apply(this, arguments);
+    // },
 
-    renderDynamicContent: function () {
-      app.components.ChartViewBase.prototype.renderDynamicContent.apply(this, arguments);
-    },
+    // renderDynamicContent: function () {
+    //   app.components.ChartViewBase.prototype.renderDynamicContent.apply(this, arguments);
+    // },
 
-    addSubscriptions: function () {
-      app.components.ChartViewBase.prototype.addSubscriptions.apply(this, arguments);
-    },
+    // addSubscriptions: function () {
+    //   app.components.ChartViewBase.prototype.addSubscriptions.apply(this, arguments);
+    // },
 
-    removeSubscriptions: function () {
-      app.components.ChartViewBase.prototype.removeSubscriptions.apply(this, arguments);
-    },
+    // removeSubscriptions: function () {
+    //   app.components.ChartViewBase.prototype.removeSubscriptions.apply(this, arguments);
+    // },
 
-    dispose: function () {
-      app.components.ChartViewBase.prototype.dispose.apply(this, arguments);
-    }
+    // dispose: function () {
+    //   app.components.ChartViewBase.prototype.dispose.apply(this, arguments);
+    // }
 
   });
-})(jQuery);
+
+  return LineChartView;
+
+});

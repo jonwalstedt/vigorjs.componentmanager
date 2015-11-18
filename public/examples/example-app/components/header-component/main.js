@@ -1,19 +1,22 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
 
-  app.components.Header = app.components.ComponentBase.extend({
+  var Header,
+      ComponentBase = require('components/ComponentBase'),
+      HeaderView = require('./HeaderView');
+
+  Header = ComponentBase.extend({
+
     $el: undefined,
     _headerView: undefined,
 
     constructor: function (options) {
       console.log('Header initialized');
-      this._headerView = new app.components.HeaderView();
+      this._headerView = new HeaderView();
       this.$el = this._headerView.$el;
       $.when(this._headerView.getRenderDonePromise()).then(_.bind(this._resolvePromise, this));
-      app.components.ComponentBase.prototype.constructor.call(this, arguments);
+      ComponentBase.prototype.constructor.call(this, arguments);
     },
 
     render: function () {
@@ -30,6 +33,8 @@ app.components = app.components || {};
     _resolvePromise: function () {
       this._renderDeferred.resolve();
     }
-
   });
-})(jQuery);
+
+  return Header;
+
+});

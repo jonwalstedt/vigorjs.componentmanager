@@ -1,12 +1,16 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function () {
   'use strict';
-  app.components.DoughnutChartViewModel = app.components.ChartViewModelBase.extend({
+
+  var DoughnutChartViewModel,
+      ChartViewModelBase = require('../ChartViewModelBase'),
+      Backbone = require('backbone');
+
+  DoughnutChartViewModel = ChartViewModelBase.extend({
 
     constructor: function (options) {
-      app.components.ChartViewModelBase.prototype.constructor.apply(this, arguments);
+      ChartViewModelBase.prototype.constructor.apply(this, arguments);
+
       this._datasetCollection = new Backbone.Collection([
         {
           label: 'Some random data',
@@ -17,6 +21,7 @@ app.components = app.components || {};
         }
       ]);
     },
+
     getChartData: function () {
       var data = [
         {
@@ -42,4 +47,7 @@ app.components = app.components || {};
     }
 
   });
-})();
+
+  return DoughnutChartViewModel;
+
+});

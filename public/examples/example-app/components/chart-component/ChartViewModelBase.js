@@ -1,9 +1,12 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function () {
   'use strict';
-  app.components.ChartViewModelBase = Vigor.ComponentViewModel.extend({
+
+  var ChartViewModelBase,
+      Backbone = require('backbone'),
+      ComponentViewModel = require('vigor').ComponentViewModel;
+
+    ChartViewModelBase = ComponentViewModel.extend({
 
     title: undefined,
     _labels: undefined,
@@ -32,7 +35,7 @@ app.components = app.components || {};
       this._title = 'EXAMPLE, FIX ME';
 
       this.subscriptionKey = options.subscriptionKey;
-      Vigor.ComponentViewModel.prototype.constructor.apply(this, arguments);
+      ComponentViewModel.prototype.constructor.apply(this, arguments);
     },
 
     getTitle: function () {
@@ -66,6 +69,8 @@ app.components = app.components || {};
     _onChartDataChanged: function () {
       console.log('_onChartDataChanged');
     }
-
   });
-})();
+
+  return ChartViewModelBase;
+
+});

@@ -1,9 +1,14 @@
-var app = app || {};
-
-(function ($) {
+define(function (require) {
   'use strict';
 
-  app.PageView = Backbone.View.extend({
+  var PageView,
+      $ = require('jquery'),
+      _ = require('underscore'),
+      Backbone = require('backbone'),
+      TweenMax = require('TweenMax'),
+      filterModel = require('app/FilterModel');
+
+  PageView = Backbone.View.extend({
 
     animationDuration: 0.5,
     animationDelay: 0.3,
@@ -34,7 +39,7 @@ var app = app || {};
       // Trigger filter change that will add components to the next page
       // whitout removing the old ones
       _.defer(function () {
-        app.filterModel.resetAndSet({
+        filterModel.resetAndSet({
           url: route,
           preload: true,
           options: {
@@ -54,7 +59,7 @@ var app = app || {};
           // Trigger the same filter again but with remove set to true
           // this will not recreate existing instances but only remove
           // the components that no longer matches the filter
-          app.filterModel.resetAndSet({
+          filterModel.resetAndSet({
             url: route,
             preload: false,
             options: {
@@ -90,7 +95,7 @@ var app = app || {};
       // Trigger filter change that will add components to the next page
       // whitout removing the old ones
       _.defer(function () {
-        app.filterModel.resetAndSet({
+        filterModel.resetAndSet({
           url: route,
           preload: true,
           options: {
@@ -112,7 +117,7 @@ var app = app || {};
           // Trigger the same filter again but with remove set to true
           // this will not recreate existing instances but only remove
           // the components that no longer matches the filter
-          app.filterModel.resetAndSet({
+          filterModel.resetAndSet({
               url: route,
               preload: false,
               options: {
@@ -141,4 +146,5 @@ var app = app || {};
     }
 
   });
-})(jQuery);
+  return PageView;
+});

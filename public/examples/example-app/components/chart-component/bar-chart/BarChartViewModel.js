@@ -1,12 +1,15 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function () {
   'use strict';
-  app.components.BarChartViewModel = app.components.ChartViewModelBase.extend({
+
+  var BarChartViewModel,
+      ChartViewModelBase = require('../ChartViewModelBase'),
+      Backbone = require('backbone');
+
+  BarChartViewModel = ChartViewModelBase.extend({
 
     constructor: function (options) {
-      app.components.ChartViewModelBase.prototype.constructor.apply(this, arguments);
+      ChartViewModelBase.prototype.constructor.apply(this, arguments);
       this._datasetCollection = new Backbone.Collection([
         {
           label: 'Some random data',
@@ -16,6 +19,8 @@ app.components = app.components || {};
         }
       ]);
     }
-
   });
-})();
+
+  return BarChartViewModel;
+
+});

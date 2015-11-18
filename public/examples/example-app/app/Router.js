@@ -1,9 +1,10 @@
-var app = app || {};
-
-(function ($) {
+define(function (require) {
   'use strict';
 
-  app.Router = Backbone.Router.extend({
+  var Router,
+      Backbone = require('backbone');
+
+  Router = Backbone.Router.extend({
 
     previousRoute: undefined,
 
@@ -55,4 +56,6 @@ var app = app || {};
 
   });
 
-})(jQuery);
+  return Router;
+
+});

@@ -1,9 +1,13 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
-  app.components.ChartViewBase = app.components.ComponentViewBase.extend({
+
+  var ChartViewBase,
+      $ = require('jquery'),
+      _ = require('underscore'),
+      ComponentViewBase = require('components/ComponentViewBase');
+
+  ChartViewBase = ComponentViewBase.extend({
 
     className: 'chart-component',
     model: undefined,
@@ -12,7 +16,7 @@ app.components = app.components || {};
     chartOptions: undefined,
 
     initialize: function (options) {
-      app.components.ComponentViewBase.prototype.initialize.apply(this, arguments);
+      ComponentViewBase.prototype.initialize.apply(this, arguments);
     },
 
     renderStaticContent: function () {
@@ -42,10 +46,13 @@ app.components = app.components || {};
     },
 
     dispose: function () {
-      app.components.ComponentViewBase.prototype.dispose.apply(this, null);
+      ComponentViewBase.prototype.dispose.apply(this, null);
     },
 
     // Im a noop
     createChart: function () {}
   });
-})(jQuery);
+
+  return ChartViewBase;
+
+});

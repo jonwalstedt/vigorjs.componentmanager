@@ -1,8 +1,13 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
-  app.components.MenuView = app.components.ComponentViewBase.extend({
+  'use strict';
+
+  var MenuView,
+      $ = require('jquery'),
+      _ = require('underscore'),
+      ComponentViewBase = require('components/ComponentViewBase');
+
+  MenuView = ComponentViewBase.extend({
 
     className: 'menu-component',
     componentName: 'menu',
@@ -31,8 +36,11 @@ app.components = app.components || {};
     removeSubscriptions: function () {},
 
     dispose: function () {
-      app.components.ComponentViewBase.prototype.dispose.apply(this, arguments);
+      ComponentViewBase.prototype.dispose.apply(this, arguments);
     }
 
   });
-})(jQuery);
+
+  return MenuView;
+
+});

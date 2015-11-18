@@ -1,13 +1,14 @@
-var app = app || {};
-app.producers = app.producers || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
 
-  var SubscriptionKeys = Vigor.SubscriptionKeys,
-      ProjectsRepository = app.repositories.ProjectsRepository;
+  var ProjectsProducer,
+      Producer = require('vigor').Producer,
+      SubscriptionKeys = require('SubscriptionKeys'),
+      ProjectsRepository = require('repositories/ProjectsRepository');
 
-  app.producers.ProjectsProducer = Vigor.Producer.extend({
+
+  ProjectsProducer = Producer.extend({
 
     PRODUCTION_KEY: SubscriptionKeys.PROJECTS,
     repositories: [ProjectsRepository],
@@ -15,7 +16,7 @@ app.producers = app.producers || {};
     repoFetchSubscription: undefined,
 
     subscribeToRepositories: function () {
-      Vigor.Producer.prototype.subscribeToRepositories.call(this);
+      Producer.prototype.subscribeToRepositories.call(this);
 
       this.repoFetchSubscription = {
         pollingInterval: 10000
@@ -25,7 +26,7 @@ app.producers = app.producers || {};
     },
 
     unsubscribeFromRepositories: function () {
-      Vigor.Producer.prototype.unsubscribeFromRepositories.call(this);
+      Producer.prototype.unsubscribeFromRepositories.call(this);
       ProjectsRepository.removeSubscription(ProjectsRepository.ALL, this.repoFetchSubscription);
     },
 
@@ -45,4 +46,6 @@ app.producers = app.producers || {};
 
   });
 
-})(jQuery);
+  return ProjectsProducer;
+
+});

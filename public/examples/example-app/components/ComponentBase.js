@@ -1,9 +1,11 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
-  app.components.ComponentBase = Vigor.ComponentBase.extend({
+
+  var ComponentBase,
+      Vigor = require('vigor');
+
+  ComponentBase = Vigor.ComponentBase.extend({
 
     _renderDeferred: undefined,
     componentName: 'base-component',
@@ -30,8 +32,10 @@ app.components = app.components || {};
       return this._renderDeferred.promise();
     },
 
-    onPageReady: function () {
-      // im a noop
-    }
+    // im a noop
+    onPageReady: function () {}
+  });
+
+  return ComponentBase;
+
 });
-})(jQuery);

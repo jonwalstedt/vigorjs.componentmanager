@@ -1,35 +1,43 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-app.components.BannerComponent = Vigor.IframeComponent.extend({
+  'use strict';
 
-  _renderDeferred: undefined,
-  componentName: 'banner-component',
+  var BannerComponent,
+      IframeComponent = require('vigor').IframeComponent
 
-  initialize: function (args) {
-    console.log('BannerComponent initialized');
-    this._renderDeferred = $.Deferred();
-    Vigor.IframeComponent.prototype.initialize.apply(this, arguments);
-  },
+  BannerComponent = IframeComponent.extend({
 
-  onIframeLoaded: function (event) {},
+    _renderDeferred: undefined,
+    componentName: 'banner-component',
 
-  dispose: function () {
-    console.log('Banner disposed');
-    Vigor.IframeComponent.prototype.dispose.apply(this, arguments);
-  },
+    initialize: function (args) {
+      console.log('BannerComponent initialized');
+      this._renderDeferred = $.Deferred();
+      IframeComponent.prototype.initialize.apply(this, arguments);
+    },
 
-  getRenderDonePromise: function () {
-    return this._renderDeferred.promise();
-  },
+    dispose: function () {
+      console.log('Banner disposed');
+      IframeComponent.prototype.dispose.apply(this, arguments);
+    },
 
-  receiveMessage: function (message) {
-    if (message == 'loading-complete') {
-      this._renderDeferred.resolve();
-    }
-  },
+    getRenderDonePromise: function () {
+      return this._renderDeferred.promise();
+    },
 
-  onPageReady: function () {
+    receiveMessage: function (message) {
+      if (message == 'loading-complete') {
+        this._renderDeferred.resolve();
+      }
+    },
+
     // im a noop
-  }
+    onIframeLoaded: function (event) {},
+
+    // im a noop
+    onPageReady: function () {}
+  });
+
+  return BannerComponent;
+
 });

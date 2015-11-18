@@ -1,15 +1,17 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
-  var SubscriptionKeys = Vigor.SubscriptionKeys;
-  app.components.ListViewModel = Vigor.ComponentViewModel.extend({
+
+  var ListViewModel,
+      Backbone = require('backbone'),
+      ComponentViewModel = require('vigor').ComponentViewModel;
+
+  ListViewModel = ComponentViewModel.extend({
 
     listItems: undefined,
 
     constructor: function (options) {
-      Vigor.ComponentViewModel.prototype.constructor.apply(this, arguments);
+      ComponentViewModel.prototype.constructor.apply(this, arguments);
       this.subscriptionKey = options.subscriptionKey;
       this.listItems = new Backbone.Collection();
     },
@@ -27,4 +29,7 @@ app.components = app.components || {};
     }
 
   });
-})(jQuery);
+
+  return ListViewModel;
+
+});

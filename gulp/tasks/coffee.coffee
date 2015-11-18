@@ -34,6 +34,7 @@ buildLib = ->
     .pipe header(banner, pkg: pkg)
     .pipe gulp.dest(config.dest)
     .pipe gulp.dest(config.publicDest)
+    .pipe gulp.dest(config.exampleAppDest)
 
 buildTestLib = ->
   gulp.src(config.bootstrap)

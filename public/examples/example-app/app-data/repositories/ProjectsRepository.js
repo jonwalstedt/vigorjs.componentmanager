@@ -1,12 +1,12 @@
-var app = app || {};
-app.repositories = app.repositories || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
 
-  var
-  ProjectsService = app.services.ProjectsService,
-  ProjectsRepository = Vigor.ServiceRepository.extend({
+  var ProjectsRepository,
+      ServiceRepository = require('vigor').ServiceRepository,
+      ProjectsService = require('services/ProjectsService');
+
+  ProjectsRepository = ServiceRepository.extend({
 
     ALL: 'all',
     BY_ID: 'id',
@@ -17,7 +17,7 @@ app.repositories = app.repositories || {};
 
     initialize: function () {
       ProjectsService.on(ProjectsService.PROJECTS_RECEIVED, _.bind(this._onProjectsReceived, this));
-      Vigor.ServiceRepository.prototype.initialize.call(this, arguments);
+      ServiceRepository.prototype.initialize.call(this, arguments);
     },
 
     _onProjectsReceived: function (models) {
@@ -25,6 +25,6 @@ app.repositories = app.repositories || {};
     }
   });
 
-  app.repositories.ProjectsRepository = new ProjectsRepository();
+  return new ProjectsRepository();
 
-})(jQuery);
+});

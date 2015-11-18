@@ -1,15 +1,17 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
-  var SubscriptionKeys = Vigor.SubscriptionKeys;
-  app.components.MenuViewModel = Vigor.ComponentViewModel.extend({
+
+  var MenuViewModel,
+      Backbone = require('backbone'),
+      ComponentViewModel = require('vigor').ComponentViewModel;
+
+  MenuViewModel = ComponentViewModel.extend({
 
     menuItems: undefined,
 
     constructor: function (options) {
-      Vigor.ComponentViewModel.prototype.constructor.apply(this, arguments);
+      ComponentViewModel.prototype.constructor.apply(this, arguments);
       this.menuItems = new Backbone.Collection([
         {
           label: 'Dashboard',
@@ -55,4 +57,7 @@ app.components = app.components || {};
     }
 
   });
-})(jQuery);
+
+  return MenuViewModel;
+
+});

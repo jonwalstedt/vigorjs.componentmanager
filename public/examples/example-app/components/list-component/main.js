@@ -1,21 +1,25 @@
-var app = app || {};
-app.components = app.components || {};
+define(function (require) {
 
-(function ($) {
   'use strict';
 
-  app.components.List = app.components.ComponentBase.extend({
+  var List,
+      ComponentBase = require('components/ComponentBase'),
+      ListView = require('./ListView'),
+      ListViewModel = require('./ListViewModel');
+
+  List = ComponentBase.extend({
+
     $el: undefined,
     _listViewModel: undefined,
     _listView: undefined,
 
     constructor: function (options) {
       console.log('List initialized');
-      this._listViewModel = new app.components.ListViewModel({subscriptionKey: options.subscriptionKey});
-      this._listView = new app.components.ListView({viewModel: this._listViewModel});
+      this._listViewModel = new ListViewModel({subscriptionKey: options.subscriptionKey});
+      this._listView = new ListView({viewModel: this._listViewModel});
       this.$el = this._listView.$el;
       $.when(this._listView.getRenderDonePromise()).then(_.bind(this._resolvePromise, this));
-      app.components.ComponentBase.prototype.constructor.apply(this, arguments);
+      ComponentBase.prototype.constructor.apply(this, arguments);
     },
 
     render: function () {
@@ -36,6 +40,8 @@ app.components = app.components || {};
     _resolvePromise: function () {
       this._renderDeferred.resolve();
     }
-
   });
-})(jQuery);
+
+  return List;
+
+});

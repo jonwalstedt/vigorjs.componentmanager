@@ -1,11 +1,21 @@
-Vigor.SubscriptionKeys.extend({
-  PROJECT: {
-    key: 'project',
-    contract: {}
-  },
+define(function (require) {
+  'use strict';
 
-  PROJECTS: {
-    key: 'projects',
-    contract: []
-  }
+  Vigor = require('vigor');
+
+  Vigor.SubscriptionKeys.extend({
+    PROJECT: {
+      key: 'project',
+      contract: {}
+    },
+
+    PROJECTS: {
+      key: 'projects',
+      contract: []
+    }
+  });
+
+  return Vigor.SubscriptionKeys;
+
 });
+
