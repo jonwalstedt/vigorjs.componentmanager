@@ -13,6 +13,7 @@ requirejs.config({
     componentManager: './lib/vigor.componentmanager',
     app: './app',
     components: './components',
+    templates: './templates',
     services: './app-data/services',
     repositories: './app-data/repositories',
     producers: './app-data/producers',

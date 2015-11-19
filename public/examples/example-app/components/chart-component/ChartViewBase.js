@@ -4,14 +4,13 @@ define(function (require) {
 
   var ChartViewBase,
       $ = require('jquery'),
-      _ = require('underscore'),
-      ComponentViewBase = require('components/ComponentViewBase');
+      ComponentViewBase = require('components/ComponentViewBase'),
+      chartTemplate = require('hbars!./templates/chart-template');
 
   ChartViewBase = ComponentViewBase.extend({
 
     className: 'chart-component',
     model: undefined,
-    template: _.template($('script.chart-component-template').html()),
 
     chartOptions: undefined,
 
@@ -25,7 +24,7 @@ define(function (require) {
           },
           $canvas;
 
-      this.$el.html(this.template(templateData));
+      this.$el.html(chartTemplate(templateData));
       $canvas = $('.chart-component__canvas', this.$el);
       this.ctx = $canvas.get(0).getContext('2d');
 

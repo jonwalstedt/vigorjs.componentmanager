@@ -4,16 +4,16 @@ define(function (require) {
 
   var HeaderView,
       $ = require('jquery'),
-      ComponentViewBase = require('components/ComponentViewBase');
+      ComponentViewBase = require('components/ComponentViewBase'),
+      headerTemplate = require('hbars!./templates/header-template');
 
   HeaderView = ComponentViewBase.extend({
 
     className: 'header-component',
     componentName: 'header',
-    template: _.template($('script.header-template').html()),
 
     renderStaticContent: function () {
-      this.$el.html(this.template());
+      this.$el.html(headerTemplate());
       this._renderDeferred.resolve();
       return this;
     },

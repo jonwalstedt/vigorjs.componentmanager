@@ -5,13 +5,13 @@ define(function (require) {
   var MenuView,
       $ = require('jquery'),
       _ = require('underscore'),
-      ComponentViewBase = require('components/ComponentViewBase');
+      ComponentViewBase = require('components/ComponentViewBase'),
+      menuTemplate = require('hbars!./templates/menu-template');
 
   MenuView = ComponentViewBase.extend({
 
     className: 'menu-component',
     componentName: 'menu',
-    template: _.template($('script.menu-template').html()),
 
     setActiveLink: function (url) {
       var $activeLink = this.$el.find('a[href="' + url + '"]');
@@ -24,7 +24,7 @@ define(function (require) {
       var templateData = {
         menuItems: this.viewModel.menuItems.toJSON()
       }
-      this.$el.html(this.template(templateData));
+      this.$el.html(menuTemplate(templateData));
       this._renderDeferred.resolve();
       return this;
     },

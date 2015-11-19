@@ -6,14 +6,14 @@ define(function (require) {
       $ = require('jquery'),
       _ = require('underscore'),
       Vigor = require('vigor'),
-      ComponentViewBase = require('components/ComponentViewBase');
+      ComponentViewBase = require('components/ComponentViewBase'),
+      listTemplate = require('hbars!./templates/list-template');
 
   ListView = ComponentViewBase.extend({
 
     className: 'list-component',
     tagName: 'ul',
     componentName: 'list',
-    template: _.template($('script.list-template').html()),
 
     initialize: function (options) {
       ComponentViewBase.prototype.initialize.apply(this, arguments);
@@ -31,7 +31,7 @@ define(function (require) {
       var templateData = {
         listItems: this.viewModel.listItems.toJSON()
       };
-      this.$el.html(this.template(templateData));
+      this.$el.html(listTemplate(templateData));
       this._renderDeferred.resolve();
       Vigor.EventBus.send(Vigor.EventKeys.COMPONENT_AREAS_ADDED);
       return this;

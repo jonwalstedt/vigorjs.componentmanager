@@ -7,13 +7,6 @@ block content
   != partial("./example-app")
   != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '5'})
 
-  //- Templates
-  != partial("./templates")
-  != partial("./components/chart-component/templates")
-  != partial("./components/menu-component/templates")
-  != partial("./components/header-component/templates")
-  != partial("./components/list-component/templates")
-
   div.app-wrapper.example-app
     div.overlay
       button.start-example-btn Start Application
@@ -37,67 +30,3 @@ block content
 
 block scripts
   script(src="https:///cdnjs.cloudflare.com/ajax/libs/require.js/2.1.20/require.min.js" data-main="main")
-
-  //- Libs
-  //- script(src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js")
-  //- script(src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js")
-  //- script(src="lib/vigor.js")
-  //- script(src="/js/vigor.componentmanager.js")
-
-  //- Components
-  //- script(src="./components/ComponentBase.js")
-  //- script(src="./components/ComponentViewBase.js")
-
-  //- script(src="./components/chart-component/ChartViewBase.js")
-  //- script(src="./components/chart-component/ChartViewModelBase.js")
-  //- script(src="./components/chart-component/line-chart/LineChartViewModel.js")
-  //- script(src="./components/chart-component/line-chart/LineChartView.js")
-  //- script(src="./components/chart-component/bar-chart/BarChartViewModel.js")
-  //- script(src="./components/chart-component/bar-chart/BarChartView.js")
-  //- script(src="./components/chart-component/doughnut-chart/DoughnutChartViewModel.js")
-  //- script(src="./components/chart-component/doughnut-chart/DoughnutChartView.js")
-  //- script(src="./components/chart-component/index.js")
-
-  //- script(src="./components/banner-component/BannerComponent.js")
-
-  //- script(src="./components/header-component/HeaderView.js")
-  //- script(src="./components/header-component/index.js")
-
-  //- script(src="./components/menu-component/MenuViewModel.js")
-  //- script(src="./components/menu-component/MenuView.js")
-  //- script(src="./components/menu-component/index.js")
-
-  //- script(src="./components/list-component/ListViewModel.js")
-  //- script(src="./components/list-component/ListView.js")
-  //- script(src="./components/list-component/index.js")
-
-
-  //- Application Data layer (this example is using vigorjs)
-  //- script(src="./app-data/EventKeys.js")
-  //- script(src="./app-data/SubscriptionKeys.js")
-  //- script(src="./app-data/services/ProjectsService.js")
-  //- script(src="./app-data/repositories/ProjectsRepository.js")
-  //- script(src="./app-data/producers/ProjectProducer.js")
-  //- script(src="./app-data/producers/ProjectsProducer.js")
-
-  //- Application
-  //- script(src="./components.js")
-  //- script(src="./app/Router.js")
-  //- script(src="./app/FilterModel.js")
-  //- script(src="./app/Preloader.js")
-  //- script(src="./app/PageView.js")
-  //- script(src="./app/app.js")
-
-  //- script.
-  //-   $(document).ready(function () {
-
-  //-     // Setup prodcers
-  //-     Vigor.ProducerManager.registerProducers([
-  //-       app.producers.ProjectsProducer
-  //-     ]);
-
-  //-     new app.Project({
-  //-       el: '.app-wrapper'
-  //-     });
-  //-   });
-

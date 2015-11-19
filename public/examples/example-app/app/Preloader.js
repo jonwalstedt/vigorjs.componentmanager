@@ -4,11 +4,11 @@ define(function (require) {
   var Preloader,
       $ = require('jquery'),
       _ = require('underscore'),
-      Backbone = require('backbone');
+      Backbone = require('backbone'),
+      preloaderTemplate = require('hbars!templates/preloader-template');
 
   Preloader = Backbone.View.extend({
 
-    template: _.template($('script.preloader-template').html()),
     className: 'preloader preloader--visible',
     promises: [],
     promisesCompleteCount: 0,
@@ -16,7 +16,7 @@ define(function (require) {
     $fill: undefined,
 
     render: function () {
-      this.$el.html(this.template());
+      this.$el.html(preloaderTemplate());
       this.$fill = $('.preloader__fill', this.$el);
       this.$preloaderTxt = $('.preloader__text', this.$el);
       return this;
