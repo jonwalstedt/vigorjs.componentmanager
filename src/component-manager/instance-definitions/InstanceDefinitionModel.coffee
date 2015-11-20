@@ -185,8 +185,9 @@ class InstanceDefinitionModel extends BaseModel
 
     # If we have a filter change and want to reinstantiate instances that is
     # already active
-    if @_lastFilter isnt JSON.stringify(filter) and @get('reInstantiate')
-      @_lastFilter = JSON.stringify(filter)
+    strippedFilter = _.omit filter, 'options'
+    if @_lastFilter isnt JSON.stringify(strippedFilter) and @get('reInstantiate')
+      @_lastFilter = JSON.stringify(strippedFilter)
       @trigger 'change:reInstantiate', @
 
     return true
