@@ -15,15 +15,10 @@ block sidebar
           a.sidebar__link(href="#dependencies") Dependencies
 
         li.sidebar_list-item
-          a.sidebar__link(href="#components") Components
-
-        li.sidebar_list-item
           a.sidebar__link(href="#getting-started") Getting started
 
-      h4.sidebar__title Settings
-      ul.sidebar_list
         li.sidebar_list-item
-          a.sidebar__link(href="#settings") The settings object
+          a.sidebar__link(href="#components") Components
 
         li.sidebar_list-item
           a.sidebar__link(href="#component-definitions") ComponentDefinitions
@@ -33,6 +28,11 @@ block sidebar
 
         li.sidebar_list-item
           a.sidebar__link(href="#filter") Filter
+
+      h4.sidebar__title Settings
+      ul.sidebar_list
+        li.sidebar_list-item
+          a.sidebar__link(href="#settings") The settings object
 
         li.sidebar_list-item
           a.sidebar__link(href="#conditions") Conditions
@@ -62,23 +62,28 @@ block content
       != partial('./dependencies')
 
     section.sub-section
+      != partial('./getting-started')
+
+    section.sub-section
       != partial('./components')
 
     section.sub-section
-      != partial('./getting-started')
+      != partial('./componentDefinitions')
+
+    section.sub-section
+      != partial('./instanceDefinitions')
+
+    section.sub-section
+      != partial('./filter')
 
   section.main-section
     h2 Settings
     section.sub-section
       != partial('./settings')
-    section.sub-section
-      != partial('./componentDefinitions')
-    section.sub-section
-      != partial('./instanceDefinitions')
-    section.sub-section
-      != partial('./filter')
+
     section.sub-section
       != partial('./conditions')
+
     section.sub-section
       != partial('./other-settings')
 
