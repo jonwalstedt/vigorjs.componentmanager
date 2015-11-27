@@ -115,7 +115,7 @@ var ExampleComponent = Backbone.View.extend({
   },
 
   initialize: function () {
-    this.listenTo(this.model, 'change', _.bind(this.render, this)),
+    this.listenTo(this.model, 'change', _.bind(this.render, this));
   },
 
   preRender: function () {
