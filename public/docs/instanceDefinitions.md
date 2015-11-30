@@ -1,5 +1,5 @@
 ### <a name="instance-definitions"></a> instanceDefinitions
-InstanceDefinitions or instanceDefinitionModels defines an instance of a componentDefinition. That means that one componentDefinition may have multiple instanceDefinitions. The connection between them is done with an id reference from each instanceDefinition to its componentDefinition's id. So each instanceDefintion have to have the property **componentId** with the id of the componentDefinition (which holds the class to create the instance from).
+InstanceDefinitions or instanceDefinitionModels defines an instance of a componentDefinition. That means that one componentDefinition may have multiple instanceDefinitions. The connection between them is done with an id reference from each instanceDefinition to its componentDefinition's id. So each instanceDefinition have to have the property **componentId** with the id of the componentDefinition (which holds the class to create the instance from).
 
 The only required properties for a instanceDefinition is **id** and **componentId**, but there are many more default properties which can be used to pass arguments, specify instance order and behaviour and of course properties to help out with filtering. See each property and their descriptions below:
 

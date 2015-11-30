@@ -64,7 +64,7 @@ The filter object can contain the following properties:
 
         <p>This filter property also allows the filterString on instanceDefinitions to be undefined. If they are undefined they will still pass this filter.</p>
 
-        <p>This is intended to use in combination with other filters, ex: if a instanceDefinition has a urlPattern that passes but a filterString that says that it is in a specific language (filterString: 'lang=en_GB') and you want to exclude that instance because the user is using another language. That could then be achieved by setting excludeIfMatch to 'lang=en_GB'.</p>
+        <p>This is intended to use in combination with other filters, ex: if a instanceDefinition has a urlPattern that passes but a filterString that says that it is in a specific language (say filterString: 'lang=en_GB') and you want to exclude that instance because the user is using another language. That could then be achieved by setting excludeIfMatch to 'lang=en_GB'.</p>
 
         <p>See the [Filter by string](/examples/filter-by-string) examples.</p>
       </td>
@@ -75,8 +75,9 @@ The filter object can contain the following properties:
         **hasToMatch** String / Regexp (optional)
       </td>
       <td class="docs-table__column docs-table__column-2">
+         <p>This filter property works in the same way as **includeIfMatch**, you set it to a string or regular expression that should match the filterString on one or more instanceDefinitions.</p>
 
-        <p>This filter property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter.</p>
+         <p>The difference between hasToMatch and includeIfMatch is that this property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter.</p>
 
         <p>See the [Filter by string](/examples/filter-by-string) examples.</p>
       </td>
@@ -87,8 +88,9 @@ The filter object can contain the following properties:
         **cantMatch** String / Regexp (optional)
       </td>
       <td class="docs-table__column docs-table__column-2">
+        <p>This filter property works in the same way as **excludeIfMatch**, you set it to a string or regular expression that should match the filterString on one or more instanceDefinitions, if it matches the instancDefiniton will be excluded.</p>
 
-        <p>This filter property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter.</p>
+        <p>This difference between cantMatch and excludeIfMatch is that this filter property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter (and in this case not be excluded).</p>
 
         <p>See the [Filter by string](/examples/filter-by-string) examples.</p>
       </td>
@@ -97,8 +99,31 @@ The filter object can contain the following properties:
     <tr>
       <td class="docs-table__column docs-table__column-1">
         **options** Object (optional)
+
       </td>
       <td class="docs-table__column docs-table__column-2">
+        <p>The options object can contain five different properties: **add**, **remove**, **merge**, **invert** and **forceFilterStringMAtching**.</p>
+
+        <pre><code class="language-javascript hljs">//defaults:
+options: {
+  add: true,
+  remove: true,
+  merge: true,
+  invert: false,
+  forceFilterStringMatching: false
+}</code></pre>
+
+        <p>The **add** property determines if the instance belonging to instanceDefinitions that matches the filter should be added to the DOM or not.</p>
+
+        <p>The **remove** property determines if the instance belonging to instanceDefinitions that does not match the filter should be removed from the DOM or not.</p>
+
+        <p>The **merge** property determines if the instance belonging to instanceDefinitions that does match the filter should be *** TODO FIX ME *** or remove the property??? </p>
+
+        <p>As an example: By setting add to false and remove to true and then call refresh with your filter the componentManager will remove instances that does not match the filter but it will not add instances that does match the filter.</p>
+
+        <p>And of course the opposite would happen if you set add to true and remove to false.</p>
+
+        <p>See the [Filter options](/examples/filter-options) for more examples.</p>
       </td>
     </tr>
   </tbody>

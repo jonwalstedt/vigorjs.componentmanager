@@ -31,14 +31,17 @@ Completed
  ✔ Look over the filterString problem, should have an option to exclude instanceDefinitions with a filterstring if nothing relating to a filterstring is passed to the filter @done (15-10-22 00:07)
  ✔ Possible to not create instances if the target is not available? @done (15-10-22 15:02)
  ✔ Fix/handle new return values from _updateActiveComponents in the refresh method + unittest @done (15-10-22 15:02)
+ ✔ Readd the ability to require components using amd or commonjs @done (15-11-16 16:18)
+ ✔ Make it possible to load modules asynchronously with requirejs @done (15-11-16 16:18)
+ ✔ Unit test the ability to have jquery objects as targetName @done (15-11-30 00:40)
 
  In progress
+ ☐ remove _createAndAddInstances and move logic to _onActiveInstanceAdd (it's the only mehtod using it)
+ ☐ rename targetName to target?
  ☐ Do a unittest to verify that the lastChange property in the object returned by _updateActiveComponents works like it should
  ☐ Add a full/advanced example that uses vigorjs
- ☐ Readd the ability to require components using amd or commonjs even though they will have to be loaded prior to the componentManager. It will be needed for when reading back serialized components.
 
  Next up
- ☐ Make it possible to load modules asynchronously with requirejs
  ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
  ☐ Add documentation
  ☐ Listen for reset on collections
