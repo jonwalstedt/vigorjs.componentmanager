@@ -764,15 +764,13 @@
       };
 
       InstanceDefinitionModel.prototype.passesFilter = function(filterModel, globalConditionsModel) {
-        var areConditionsMet, filter, filterStringMatch, globalConditions, ref, ref1, ref2, urlMatch;
+        var areConditionsMet, filter, filterStringMatch, globalConditions, ref, ref1, ref2, strippedFilter, urlMatch;
         filter = (filterModel != null ? filterModel.toJSON() : void 0) || {};
         globalConditions = (globalConditionsModel != null ? globalConditionsModel.toJSON() : void 0) || {};
         if ((filter != null ? filter.url : void 0) || (filter != null ? filter.url : void 0) === '') {
           urlMatch = this.doesUrlPatternMatch(filter.url);
           if (urlMatch != null) {
-            if (urlMatch === true) {
-              this.addUrlParams(filter.url);
-            } else {
+            if (!urlMatch) {
               return false;
             }
           }
@@ -846,8 +844,9 @@
             }
           }
         }
-        if (this._lastFilter !== JSON.stringify(filter) && this.get('reInstantiate')) {
-          this._lastFilter = JSON.stringify(filter);
+        strippedFilter = _.omit(filter, 'options');
+        if (this._lastFilter !== JSON.stringify(strippedFilter) && this.get('reInstantiate')) {
+          this._lastFilter = JSON.stringify(strippedFilter);
           this.trigger('change:reInstantiate', this);
         }
         return true;
@@ -910,7 +909,7 @@
       };
 
       InstanceDefinitionModel.prototype.doesUrlPatternMatch = function(url) {
-        var j, len, match, pattern, routeRegEx, urlPattern;
+        var j, len, match, pattern, routeRegExp, urlPattern;
         match = false;
         urlPattern = this.get('urlPattern');
         if (urlPattern != null) {
@@ -919,8 +918,8 @@
           }
           for (j = 0, len = urlPattern.length; j < len; j++) {
             pattern = urlPattern[j];
-            routeRegEx = router.routeToRegExp(pattern);
-            match = routeRegEx.test(url);
+            routeRegExp = router.routeToRegExp(pattern);
+            match = routeRegExp.test(url);
             if (match) {
               return match;
             }
@@ -1073,15 +1072,6 @@
           instanceDefinition.urlPattern = ['*notFound', '*action'];
         }
         return instanceDefinition;
-      };
-
-      InstanceDefinitionsCollection.prototype.addUrlParams = function(instanceDefinitions, url) {
-        var instanceDefinitionModel, j, len;
-        for (j = 0, len = instanceDefinitions.length; j < len; j++) {
-          instanceDefinitionModel = instanceDefinitions[j];
-          instanceDefinitionModel.addUrlParams(url);
-        }
-        return instanceDefinitions;
       };
 
       InstanceDefinitionsCollection.prototype._formatTargetName = function(targetName, targetPrefix) {
@@ -1310,7 +1300,7 @@
         this._instanceDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
         this._globalConditionsModel.on('change', this._updateActiveComponents);
         this._activeInstancesCollection.on('add', this._onActiveInstanceAdd);
-        this._activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:showCount change:urlPattern change:urlParams change:reInstantiate', this._onActiveInstanceChange);
+        this._activeInstancesCollection.on('change:componentId change:filterString change:conditions change:args change:maxShowCount change:urlPattern change:reInstantiate', this._onActiveInstanceChange);
         this._activeInstancesCollection.on('change:order', this._onActiveInstanceOrderChange);
         this._activeInstancesCollection.on('change:targetName', this._onActiveInstanceTargetNameChange);
         this._activeInstancesCollection.on('remove', this._onActiveInstanceRemoved);
@@ -1608,12 +1598,19 @@
       };
 
       ComponentManager.prototype._updateActiveComponents = function() {
-        var componentClassPromises, deferred, instanceDefinitions, lastChange, options;
+        var componentClassPromises, deferred, i, instanceDefinition, instanceDefinitions, j, lastChange, len, options;
         deferred = $.Deferred();
         options = this._filterModel.getFilterOptions();
         instanceDefinitions = this._filterInstanceDefinitions();
         if (options.invert) {
           instanceDefinitions = _.difference(this._instanceDefinitionsCollection.models, instanceDefinitions);
+        }
+        for (i = j = 0, len = instanceDefinitions.length; j < len; i = ++j) {
+          instanceDefinition = instanceDefinitions[i];
+          if (this._filterModel.get('url')) {
+            instanceDefinition.addUrlParams(this._filterModel.get('url'));
+          }
+          instanceDefinitions[i] = _.omit(instanceDefinition.toJSON(), ['instance']);
         }
         lastChange = this._activeInstancesCollection.set(instanceDefinitions, options);
         componentClassPromises = this._componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions(this._activeInstancesCollection.models);

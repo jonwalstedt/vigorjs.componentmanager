@@ -16,7 +16,7 @@ var app = app || {};
         componentSettings: window.componentSettings,
         context: this.$el
       });
-      Vigor.componentManager.refresh();
+      Vigor.componentManager.refresh({options: {merge: true}});
     },
 
     _onDecrementBtnClick: function () {

@@ -8,10 +8,9 @@ define(function (require) {
   BannerComponent = IframeComponent.extend({
 
     _renderDeferred: undefined,
-    componentName: 'banner-component',
 
     initialize: function (args) {
-      console.log('BannerComponent initialized');
+      // console.log('BannerComponent initialized');
       this._renderDeferred = $.Deferred();
       IframeComponent.prototype.initialize.apply(this, arguments);
     },

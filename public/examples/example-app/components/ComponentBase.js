@@ -15,7 +15,6 @@ define(function (require) {
     },
 
     initialize: function (options) {
-      // Backbone.View.prototype.initialize.call(this);
       this._renderDeferred = $.Deferred();
     },
 

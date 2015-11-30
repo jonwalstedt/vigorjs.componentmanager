@@ -2,6 +2,8 @@ define(function (require) {
   'use strict';
 
   var Router,
+      EventBus = require('vigor').EventBus,
+      EventKeys = require('EventKeys'),
       Backbone = require('backbone');
 
   Router = Backbone.Router.extend({
@@ -18,7 +20,7 @@ define(function (require) {
     },
 
     triggerCustomRouteInfo: function (route) {
-      var route = Backbone.history.fragment,
+      var route = this.getRoute(),
           currentDepth,
           previousDepth,
           index,
@@ -50,9 +52,13 @@ define(function (require) {
         index: index
       }
 
-      this.trigger('route-change', routeInfo);
+      EventBus.send(EventKeys.ROUTE_CHANGE, routeInfo);
       this.previousRoute = route;
-    }
+    },
+
+    getRoute: function () {
+      return Backbone.history.fragment;
+    },
 
   });
 

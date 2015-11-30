@@ -3,7 +3,8 @@ define(function (require) {
   Vigor = require('vigor');
 
   Vigor.EventKeys.extend({
-    COMPONENT_AREAS_ADDED: 'component-areas-added'
+    COMPONENT_AREAS_ADDED: 'component-areas-added',
+    ROUTE_CHANGE: 'route-change'
   });
 
   return Vigor.EventKeys;

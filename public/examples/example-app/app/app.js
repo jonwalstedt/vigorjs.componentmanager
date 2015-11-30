@@ -15,7 +15,6 @@ define(function (require) {
       Router = require('./Router'),
       Preloader = require('./Preloader'),
       PageView = require('./PageView'),
-      filterModel = require('./FilterModel'),
 
       componentSettings = require('./componentSettings');
 
@@ -33,9 +32,11 @@ define(function (require) {
       $contentWrapper: undefined,
 
       initialize: function () {
-        this.$overlay = $('.overlay', this.$el);
-        this.$contentWrapper = $('.content-wrapper', this.$el);
-        this.$menuToggle = $('.menu-toggle', this.$el);
+        this.router = new Router();
+        this.preloader = new Preloader();
+        this.pageView = new PageView({
+          el: $('.content', this.$el).get(0)
+        });
 
         componentManager.initialize({
           componentSettings: componentSettings,
@@ -43,17 +44,16 @@ define(function (require) {
           context: this.$el
         });
 
-        this.showOverlay();
-        this.router = new Router();
-        this.preloader = new Preloader();
-        this.pageView = new PageView({
-          el: $('.content', this.$el).get(0)
-        });
+        this.$overlay = $('.overlay', this.$el);
+        this.$contentWrapper = $('.content-wrapper', this.$el);
+        this.$menuToggle = $('.menu-toggle', this.$el);
 
+        this.showOverlay();
+
+        this.pageView.on('transition-complete', _.bind(this.onTransitionComplete, this));
         this.preloader.on('loading-complete', _.bind(this.onLoadingComplete, this));
-        filterModel.on('change', _.bind(this.onFilterChange, this));
-        this.router.on('route-change', _.bind(this.onRouteChange, this));
-        EventBus.subscribe(EventKeys.COMPONENT_AREAS_ADDED, _.bind(this.onComponentAreasAdded, this));
+        EventBus.subscribe(EventKeys.ROUTE_CHANGE, _.bind(this.onRouteChange, this));
+        // EventBus.subscribe(EventKeys.COMPONENT_AREAS_ADDED, _.bind(this.onComponentAreasAdded, this));
       },
 
       startApplication: function () {
@@ -61,18 +61,10 @@ define(function (require) {
         Backbone.history.start({root: '/examples/example-app/'});
       },
 
-      removePreloader: function () {
-        this.preloader.off('loading-complete');
-        this.preloader.remove();
-        this.preloader = undefined;
-        this.hideOverlay();
-      },
-
-      filterComponents: function () {
-        var preload = filterModel.get('preload'),
-            // we have to remove the preload property since its not to be used as
-            // a part of the filter
-            filter = _.omit(filterModel.toJSON(), 'preload');
+      filterComponents: function (filter, preload) {
+        if (typeof preload === 'undefined') {
+          preload = false;
+        }
 
         if (preload) {
           componentManager.refresh(filter).then(_.bind(function (activeInstancesObj) {
@@ -104,6 +96,28 @@ define(function (require) {
         this.$overlay.removeClass('overlay--visible');
       },
 
+      addMatchingComponents: function (route) {
+        // Trigger filter change that will add components
+        // whitout removing the old ones
+        this.filterComponents({
+          url: route,
+          options: {
+            remove: false
+          }
+        }, true);
+      },
+
+      removeNonMatchingComponents: function (route) {
+        // This will only remove the components that no longer matches
+        // the filter
+        this.filterComponents({
+          url: route,
+          options: {
+            add: false,
+            remove: true
+          }
+        }, false);
+      },
 
       // Callbacks
       // --------------------------------------------
@@ -111,8 +125,18 @@ define(function (require) {
         var index = routeInfo.index,
             route = routeInfo.route;
 
+        // We need to wait to be sure that the class-names have been swapped
+        // before adding new components
+        _.defer(_.bind(function () {
+          this.addMatchingComponents(route);
+        }, this));
+
         this.pageView.transitionPages(index, route);
         this.closeMenu();
+      },
+
+      onTransitionComplete: function($el, route) {
+        this.removeNonMatchingComponents(route);
       },
 
       onMenuToggleClick: function (event) {
@@ -126,34 +150,26 @@ define(function (require) {
       },
 
       onLoadingComplete: function () {
-        var i, activeInstances = componentManager.getActiveInstances();
+        var $components = $('.main .vigor-component', this.$el);
+        _.invoke(componentManager.getActiveInstances(), 'onPageReady');
         this.hideOverlay();
-        for (i = 0; i < activeInstances.length; i++) {
-          activeInstances[i].onPageReady();
-        }
-        TweenMax.staggerTo($('.main .vigor-component', this.$el), 4,
-          {
-            autoAlpha: 1
-          }, 0.2);
-      },
-
-      onFilterChange: function () {
-        this.filterComponents();
+        TweenMax.staggerTo($components, 4, { autoAlpha: 1 }, 0.2 );
       },
 
       // new component-areas where added dynamically so we do another refresh to add
       // components that might go into those component-areas. We set remove to false to
       // not remove existing componetns in this case
-      onComponentAreasAdded: function () {
-        console.log('onComponentAreasAdded');
-        filterModel.resetAndSet({
-          preload: true,
-          options: {
-            add: true,
-            remove: false
-          }
-        });
-      }
+      // onComponentAreasAdded: function () {
+
+      //  this.filterComponents({
+      //     route: this.router.getRoute(),
+      //     options: {
+      //       add: true,
+      //       remove: false
+      //     }
+      //   },
+      //   true);
+      // }
 
     });
 

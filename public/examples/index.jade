@@ -68,13 +68,12 @@ block common-example-scripts
     <div class="component-output"></div>
 
   script(type="text/template" class="active-filter-template").
-    <pre>
-    {<% _.each(filterObj, function(val, key, list) { %>
+    <pre><code class="language-javascript">{<% _.each(filterObj, function(val, key, list) { %>
       <%= key %>: <%= val %><% }); %>
       options: {<% _.each(options, function(val, key, list) { %>
         <%= key %>: <%= val %><% }); %>
       }
-    }
+    }</code>
     </pre>
 
   script(type="text/javascript" src="/examples/ExampleComponent.js")
@@ -95,12 +94,18 @@ block common-example-scripts
     });
 
     showMsg = function (msg, filter) {
+      var $activeFilter = $('.active-filter'),
+          $examplesInfo = $('.examples-info');
       fltr = $.extend(true, {}, filter)
       filterObj = setFilterDefaults(fltr)
       options = filterObj.options
       delete filterObj.options
-      $('.active-filter').html(activeFilterTemplate({filterObj: filterObj, options: options}));
-      $('.examples-info').html(msg);
+
+      $activeFilter.html(activeFilterTemplate({filterObj: filterObj, options: options}));
+
+      $examplesInfo.html(msg);
+
+      hljs.highlightBlock($activeFilter.get(0));
     },
 
     setFilterDefaults = function (filter) {
@@ -137,6 +142,9 @@ block common-example-scripts
       for (var key in filter) {
         if (filter[key] !== 'undefined' && key !== 'options') {
           filter[key] = '<b>' + filter[key] + '</b>';
+        }
+        if (filter[key] !== 'undefined' && key !== 'options' && key !== 'true' && key !== 'false') {
+          filter[key] = '<b>"' + filter[key] + '"</b>';
         }
       }
       return filter;

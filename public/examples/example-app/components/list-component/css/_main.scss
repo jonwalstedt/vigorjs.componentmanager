@@ -1,28 +1,31 @@
 .list-component {
   padding: 10px 30px;
   .component-area {
-    &:after {
-      content: '';
-      display: table;
-      clear: both;
-    }
+    @include clearfix;
   }
 }
 
 .list-component__list {
   margin: 0;
   padding: 0;
-  &:after {
-    content: '';
-    display: table;
-    clear: both;
-  }
+  @include clearfix;
 }
 
 .list-component__list-item {
   padding: 20px 0;
   list-style: none;
   border-bottom: 1px dashed #383434;
+  @include clearfix;
+}
+
+.list-component__thumb-wrapper {
+  float: left;
+  width: 80px;
+  height: 80px;
+}
+
+.list-component__conent {
+  margin-left: 100px;
 }
 
 .list-component__link {
@@ -31,8 +34,10 @@
 }
 
 .list-component__title {
-  font-size: 20px;
+  font-size: 16px;
+  font-weight: 800;
   line-height: 20px;
+  margin: 0 0 10px 0;
 }
 
 .list-component__desc {

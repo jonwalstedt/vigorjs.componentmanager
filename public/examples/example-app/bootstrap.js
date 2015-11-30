@@ -4,15 +4,14 @@ define(function (require) {
 
   var Vigor = require('vigor'),
       ProducerManager = Vigor.ProducerManager,
-      ProjectsProducer = require('producers/ProjectsProducer'),
+      ArticlesProducer = require('producers/ArticlesProducer'),
+      FilterProducer = require('producers/FilterProducer'),
       ExampleProject = require('app/app');
-
-  // require('./app-data/EventKeys');
-  // require('./app-data/SubscriptionKeys');
 
   // Setup prodcers
   ProducerManager.registerProducers([
-    ProjectsProducer
+    ArticlesProducer,
+    FilterProducer
   ]);
 
   new ExampleProject({

@@ -13,7 +13,6 @@ define(function (require) {
 
     className: 'list-component',
     tagName: 'ul',
-    componentName: 'list',
 
     initialize: function (options) {
       ComponentViewBase.prototype.initialize.apply(this, arguments);
@@ -32,8 +31,13 @@ define(function (require) {
         listItems: this.viewModel.listItems.toJSON()
       };
       this.$el.html(listTemplate(templateData));
+
+      // tmp ugly fix
       this._renderDeferred.resolve();
-      Vigor.EventBus.send(Vigor.EventKeys.COMPONENT_AREAS_ADDED);
+      if (this.viewModel.listItems.length === 0) {
+        this.$el.html('no posts to show');
+      }
+      // Vigor.EventBus.send(Vigor.EventKeys.COMPONENT_AREAS_ADDED);
       return this;
     },
 

@@ -20,6 +20,7 @@ app.components.FilterComponent = Backbone.View.extend({
 
   dispose: function () {
     console.log('component disposed');
+    console.trace();
     this.remove();
   }
 

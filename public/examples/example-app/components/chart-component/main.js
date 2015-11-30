@@ -21,9 +21,8 @@ define(function (require) {
     _chartViewModel: undefined,
     _chartView: undefined,
 
-    // TODO: make this into a generic chart component
     constructor: function (options) {
-      console.log('Chart initialized');
+      // console.log('Chart initialized');
       var ChartView, ChartViewModel;
       this.type = options.type || this.LINE_CHART;
 

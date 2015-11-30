@@ -23,10 +23,10 @@ var componentSettings = {
         order: 2,
         args: {
           title: 'id: 2',
-          filterString: 'lorem/ipsum/<b>first</b>',
+          filterString: 'lorem/ipsum/first',
           background: '#B7E8D4'
         },
-        filterString: 'first'
+        filterString: 'lorem/ipsum/first'
       },
 
       {

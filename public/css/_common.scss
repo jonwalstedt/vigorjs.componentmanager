@@ -15,7 +15,7 @@ html, body {
 }
 
 body {
-  font: 14px/1 'Open Sans', sans-serif;
+  font: 14px/24px 'Open Sans', sans-serif;
   background: #f4f4f7;
   color: #444;
 
@@ -26,10 +26,10 @@ body {
 
 a {
   text-decoration: none;
-}
-
-p {
-  line-height: 24px;
+  color: #005BFF;
+  &:visited {
+    color: #9032C0;
+  }
 }
 
 pre {

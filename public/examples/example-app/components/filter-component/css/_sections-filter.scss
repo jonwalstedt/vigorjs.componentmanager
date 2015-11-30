@@ -1,0 +1,13 @@
+.sections-filter {
+  @include clearfix;
+}
+
+.sections-filter__list-item {
+  width: 33.3%;
+  padding: 4px;
+  float: left;
+}
+
+.sections-filter__list-item--selected {
+  background: rgba(100, 100, 100, 0.5);
+}

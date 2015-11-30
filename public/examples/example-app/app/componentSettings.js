@@ -5,6 +5,11 @@ define(function (require) {
 
   componentSettings = {
     components: [
+
+      {
+        id: 'filter-component',
+        src: 'components/filter'
+      },
       {
         id: 'barchart-component',
         src: 'components/chart',
@@ -41,31 +46,31 @@ define(function (require) {
       {
         id: 'banner-component',
         src: 'components/banner'
-      }
+      },
 
     ],
 
     targets: {
       "list-pos3": [
-       {
-          id: 'banner-1',
-          componentId: 'banner-component',
-          src: "components/ExtendedIframeComponent",
-          args: {
-            iframeAttributes:{
-              src: 'http://localhost:3000/examples/example-app/example-banners/banner-one/index.html?id=banner-1',
-              width: '100%',
-              height: 180
-            }
-          }
-        }
+       // {
+       //    id: 'banner-1',
+       //    componentId: 'banner-component',
+       //    src: "components/ExtendedIframeComponent",
+       //    args: {
+       //      iframeAttributes:{
+       //        src: 'http://localhost:3000/examples/example-app/example-banners/banner-one/index.html?id=banner-1',
+       //        width: '100%',
+       //        height: 180
+       //      }
+       //    }
+       //  }
       ],
       header: [
-        {
-          id: 'header',
-          componentId: 'header-component',
-          urlPattern: 'global'
-        }
+        // {
+        //   id: 'header',
+        //   componentId: 'header-component',
+        //   urlPattern: 'global'
+        // }
       ],
       menu: [
         {
@@ -74,34 +79,46 @@ define(function (require) {
           urlPattern: 'global'
         }
       ],
+      'below-header': [
+        {
+          id: 'filter',
+          componentId: 'filter-component',
+          urlPattern: 'global'
+        }
+      ],
       main: [
+        // {
+        //   id: 'linechart',
+        //   componentId: 'linechart-component',
+        //   urlPattern: ''
+        // },
+        // {
+        //   id: 'barchart',
+        //   componentId: 'barchart-component',
+        //   urlPattern: ''
+        // },
+        // {
+        //   id: 'doughnutchart',
+        //   componentId: 'doughnutchart-component',
+        //   urlPattern: ''
+        // },
         {
-          id: 'linechart',
-          componentId: 'linechart-component',
-          order: 1,
-          urlPattern: ''
-        },
-        {
-          id: 'barchart',
-          componentId: 'barchart-component',
-          order: 2,
-          urlPattern: ''
-        },
-        {
-          id: 'doughnutchart',
-          componentId: 'doughnutchart-component',
-          order: 3,
-          urlPattern: ''
-        },
-        {
-          id: 'projects-list',
+          id: 'article-list',
           componentId: 'list-component',
-          order: 1,
           args: {
-            subscriptionKey: SubscriptionKeys.PROJECTS
+            subscriptionKey: SubscriptionKeys.ARTICLES
           },
-          urlPattern: 'projects'
+          urlPattern: 'filter',
+          reInstantiate: true
         },
+        // {
+        //   id: 'projects-list',
+        //   componentId: 'list-component',
+        //   args: {
+        //     subscriptionKey: SubscriptionKeys.ARTICLES
+        //   },
+        //   urlPattern: 'projects'
+        // },
         // {
         //   id: 'order-instance-4',
         //   componentId: 'barchart-component',

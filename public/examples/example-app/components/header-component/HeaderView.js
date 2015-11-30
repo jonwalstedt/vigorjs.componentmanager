@@ -10,7 +10,6 @@ define(function (require) {
   HeaderView = ComponentViewBase.extend({
 
     className: 'header-component',
-    componentName: 'header',
 
     renderStaticContent: function () {
       this.$el.html(headerTemplate());

@@ -21,12 +21,16 @@
 }
 
 .sidebar__link {
-  color: inherit;
+  color: white;
   text-decoration: none;
   display: block;
   line-height: 40px;
   padding: 4px 0px;
   text-indent: 20px;
+
+  &:visited {
+    color: #aaa;
+  }
 }
 
 .sidebar__link--active {

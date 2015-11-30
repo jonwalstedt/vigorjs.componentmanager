@@ -25,6 +25,8 @@ var app = app || {};
       Vigor.componentManager.refresh(filter, function (activeInstances) {
         console.log('activeInstances: ',  activeInstances);
       });
+
+      showMsg('', filter);
     }
 
   });

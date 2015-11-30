@@ -12,7 +12,7 @@ define(function (require) {
     _headerView: undefined,
 
     constructor: function (options) {
-      console.log('Header initialized');
+      // console.log('Header initialized');
       this._headerView = new HeaderView();
       this.$el = this._headerView.$el;
       $.when(this._headerView.getRenderDonePromise()).then(_.bind(this._resolvePromise, this));

@@ -14,8 +14,7 @@ define(function (require) {
     _urlParamsModel: undefined,
 
     constructor: function (options) {
-      console.log('Menu initialized', options);
-
+      // console.log('Menu initialized');
       this._urlParamsModel = options.urlParamsModel;
       this._menuViewModel = new MenuViewModel();
       this._menuView = new MenuView({
@@ -25,7 +24,6 @@ define(function (require) {
       this.$el = this._menuView.$el;
 
       $.when(this._menuView.getRenderDonePromise()).then(_.bind(this._resolvePromise, this));
-      console.log(this.listenTo);
       this.listenTo(this._urlParamsModel, 'change:url', _.bind(this._onUrlParamsChange, this));
       ComponentBase.prototype.constructor.apply(this, arguments);
     },

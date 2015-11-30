@@ -1,13 +1,15 @@
+@import "mixins";
 @import "variables";
 
 .example-app {
   @import "preloader";
   @import "sidebar";
   @import "menu-button";
-  @import "../components/chart-component/css/chart-component";
-  @import "../components/menu-component/css/menu-component";
-  @import "../components/header-component/css/header-component";
-  @import "../components/list-component/css/list-component";
+  @import "../components/chart-component/css/main";
+  @import "../components/menu-component/css/main";
+  @import "../components/header-component/css/main";
+  @import "../components/list-component/css/main";
+  @import "../components/filter-component/css/main";
   @import url(http://weloveiconfonts.com/api/?family=entypo);
 
   /* entypo */
@@ -84,11 +86,8 @@
     backface-visibility: hidden;
     transform: translate3d(0, 0, 0);
     background: $background;
-    &:after {
-      content: "";
-      display: table;
-      clear: both;
-    }
+    overflow-y: auto;
+    @include clearfix;
     .chart-component {
       float: left;
     }

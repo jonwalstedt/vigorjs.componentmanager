@@ -5,8 +5,7 @@ define(function (require) {
       $ = require('jquery'),
       _ = require('underscore'),
       Backbone = require('backbone'),
-      TweenMax = require('TweenMax'),
-      filterModel = require('app/FilterModel');
+      TweenMax = require('TweenMax');
 
   PageView = Backbone.View.extend({
 
@@ -36,18 +35,6 @@ define(function (require) {
     slideIn: function ($el, route) {
       $el.addClass('component-area--main page--on-top');
 
-      // Trigger filter change that will add components to the next page
-      // whitout removing the old ones
-      _.defer(function () {
-        filterModel.resetAndSet({
-          url: route,
-          preload: true,
-          options: {
-            remove: false
-          }
-        });
-      });
-
       TweenMax.fromTo($el, this.animationDuration, {
         xPercent: -100
       }, {
@@ -56,19 +43,10 @@ define(function (require) {
         clearProps: 'xPercent',
         onComplete: function ($el, route) {
           $el.addClass('current-page');
-          // Trigger the same filter again but with remove set to true
-          // this will not recreate existing instances but only remove
-          // the components that no longer matches the filter
-          filterModel.resetAndSet({
-            url: route,
-            preload: false,
-            options: {
-              add: false,
-              remove: true
-            }
-          });
+          this.trigger('transition-complete', $el, route);
         },
-        onCompleteParams: [$el, route]
+        onCompleteParams: [$el, route],
+        onCompleteScope: this
       });
     },
 
@@ -92,18 +70,6 @@ define(function (require) {
     scaleIn: function ($el, route) {
       $el.addClass('component-area--main');
 
-      // Trigger filter change that will add components to the next page
-      // whitout removing the old ones
-      _.defer(function () {
-        filterModel.resetAndSet({
-          url: route,
-          preload: true,
-          options: {
-            remove: false
-          }
-        });
-      });
-
       TweenMax.fromTo($el, this.animationDuration, {
         opacity: 0,
         scale: .8
@@ -114,19 +80,10 @@ define(function (require) {
         clearProps: 'opacity, scale',
         onComplete: function ($el, route) {
           $el.addClass('current-page page--on-top');
-          // Trigger the same filter again but with remove set to true
-          // this will not recreate existing instances but only remove
-          // the components that no longer matches the filter
-          filterModel.resetAndSet({
-              url: route,
-              preload: false,
-              options: {
-                add: false,
-                remove: true
-              }
-            });
+          this.trigger('transition-complete', $el, route);
         },
-        onCompleteParams: [$el, route]
+        onCompleteParams: [$el, route],
+        onCompleteScope: this
       });
     },
 
