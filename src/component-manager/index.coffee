@@ -150,7 +150,7 @@ class ComponentManager
                                   change:filterString
                                   change:conditions
                                   change:args
-                                  change:showCount
+                                  change:maxShowCount
                                   change:urlPattern
                                   change:urlParams
                                   change:reInstantiate', @_onActiveInstanceChange

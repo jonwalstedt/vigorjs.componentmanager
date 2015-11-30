@@ -507,7 +507,7 @@ describe 'The componentManager', ->
         assert updateActiveComponentsSpy.called
 
       it 'should add change listeners on these params on the _activeInstancesCollection: componentId, filterString, 
-      conditions, args, showCount, urlPattern, urlParams, reInstantiate with _onActiveInstanceChange as callback', ->
+      conditions, args, maxShowCount, urlPattern, urlParams, reInstantiate with _onActiveInstanceChange as callback', ->
         activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
         onActiveInstanceChangeStub = sandbox.stub componentManager, '_onActiveInstanceChange'
 
@@ -517,7 +517,7 @@ describe 'The componentManager', ->
                   change:filterString
                   change:conditions
                   change:args
-                  change:showCount
+                  change:maxShowCount
                   change:urlPattern
                   change:urlParams
                   change:reInstantiate'
@@ -540,7 +540,7 @@ describe 'The componentManager', ->
         assert onActiveInstanceChangeStub.called
         do onActiveInstanceChangeStub.reset
 
-        componentManager._activeInstancesCollection.trigger 'change:showCount', new Backbone.Model()
+        componentManager._activeInstancesCollection.trigger 'change:maxShowCount', new Backbone.Model()
         assert onActiveInstanceChangeStub.called
         do onActiveInstanceChangeStub.reset
 
