@@ -18,6 +18,7 @@ class ComponentDefinitionModel extends BaseModel
   defaults:
     id: undefined
     src: undefined
+    componentClass: undefined
     args: undefined
     conditions: undefined
     maxShowCount: undefined
@@ -52,6 +53,7 @@ class ComponentDefinitionModel extends BaseModel
     src = @get 'src'
     resolveClassPromise = (componentClass) =>
       if _.isFunction(componentClass)
+        @set 'componentClass', componentClass, { silent: true }
         @deferred.resolve {componentDefinition: @, componentClass: componentClass}
       else
         throw @ERROR.NO_CONSTRUCTOR_FOUND src

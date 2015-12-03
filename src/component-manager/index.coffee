@@ -68,10 +68,10 @@ class ComponentManager
   serialize: ->
     componentSettings = {}
     conditions = @_globalConditionsModel.toJSON()
-    components = @_componentDefinitionsCollection.toJSON()
-    instances = @_instanceDefinitionsCollection.toJSON()
+    componentDefinitions = @_componentDefinitionsCollection.toJSON()
+    instanceDefinitions = @_instanceDefinitionsCollection.toJSON()
 
-    for instanceDefinition in instances
+    for instanceDefinition in instanceDefinitions
       instanceDefinition.instance = undefined
 
     $context = @getContext()
@@ -88,8 +88,8 @@ class ComponentManager
       targetPrefix: @getTargetPrefix()
       componentSettings:
         conditions: conditions
-        components: components
-        instances: instances
+        components: componentDefinitions
+        instances: instanceDefinitions
 
     filter = (key, value) ->
       if typeof value is 'function'
@@ -146,17 +146,6 @@ class ComponentManager
     @_globalConditionsModel.on 'change', @_updateActiveComponents
 
     @_activeInstancesCollection.on 'add', @_onActiveInstanceAdd
-    @_activeInstancesCollection.on 'change:componentId
-                                  change:filterString
-                                  change:conditions
-                                  change:args
-                                  change:maxShowCount
-                                  change:urlPattern
-                                  change:urlParams
-                                  change:reInstantiate', @_onActiveInstanceChange
-    @_activeInstancesCollection.on 'change:order', @_onActiveInstanceOrderChange
-    @_activeInstancesCollection.on 'change:targetName', @_onActiveInstanceTargetNameChange
-    @_activeInstancesCollection.on 'remove', @_onActiveInstanceRemoved
 
     # Propagate events
     # Component definitions
@@ -301,8 +290,8 @@ class ComponentManager
   getInstanceDefinitions: ->
     return @_instanceDefinitionsCollection.toJSON()
 
-  getActiveInstances: (createNewInstancesIfUndefined = false) ->
-    return @_mapInstances @_activeInstancesCollection.models, createNewInstancesIfUndefined
+  getActiveInstances: ->
+    return @_mapInstances @_activeInstancesCollection.models
 
   getActiveInstanceById: (instanceDefinitionId) ->
     return @_activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)?.get 'instance'
@@ -319,6 +308,7 @@ class ComponentManager
       instance.receiveMessage message
     else
       throw @ERROR.MESSAGE.MISSING_RECEIVE_MESSAGE_METHOD
+
   #
   # Privat methods
   # ============================================================================
@@ -389,16 +379,16 @@ class ComponentManager
 
   _updateActiveComponents: =>
     deferred = $.Deferred()
-    options = @_filterModel.getFilterOptions()
+    options = @_filterModel.get 'options'
     instanceDefinitions = @_filterInstanceDefinitions()
 
     if options.invert
       instanceDefinitions = _.difference @_instanceDefinitionsCollection.models, instanceDefinitions
 
-    lastChange = @_activeInstancesCollection.set instanceDefinitions, options
-    componentClassPromises = @_componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions @_activeInstancesCollection.models
+    componentClassPromises = @_componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions instanceDefinitions
 
     $.when.apply($, componentClassPromises).then =>
+      lastChange = @_createActiveInstanceDefinitions instanceDefinitions
       returnData =
         filter: @_filterModel.toJSON()
         activeInstances: @_mapInstances @_activeInstancesCollection.models
@@ -408,10 +398,40 @@ class ComponentManager
 
       deferred.resolve returnData
 
-      # check if we have any stray instances in active components and then try to readd them
-      do @_tryToReAddStraysToDom
-
     return deferred.promise()
+
+  _createActiveInstanceDefinitions: (instanceDefinitions) ->
+    url = @_filterModel.get 'url'
+    options = @_filterModel.get 'options'
+    urlParams = undefined
+    excludeOptions = true
+
+    activeInstanceDefinitionObjs = _.map instanceDefinitions, (instanceDefinition) =>
+      componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
+      componentClass = componentDefinition.get 'componentClass'
+      urlPattern = instanceDefinition.get 'urlPattern'
+
+      if url
+        urlParams = router.getArguments urlPattern, url
+
+      activeInstanceObj = {
+        id: instanceDefinition.id
+        componentClass: componentClass
+        target: instanceDefinition.getTarget @getContext()
+        targetPrefix: @getTargetPrefix()
+        componentClassName: @getComponentClassName()
+        instanceArguments: @_getInstanceArguments instanceDefinition, componentDefinition
+        order: instanceDefinition.get 'order'
+        reInstantiate: instanceDefinition.get 'reInstantiate'
+        urlParams: urlParams
+        serializedFilter: @_filterModel.serialize excludeOptions
+      }
+
+      return activeInstanceObj
+
+    lastChange = @_activeInstancesCollection.set activeInstanceDefinitionObjs, options
+    _.invoke lastChange, 'tryToReAddStraysToDom'
+    return lastChange
 
   _filterInstanceDefinitions: ->
     instanceDefinitions = @_instanceDefinitionsCollection.models
@@ -449,12 +469,11 @@ class ComponentManager
 
   _filterInstanceDefinitionsByTargetAvailability: (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) =>
-      return @_isTargetAvailable instanceDefinition
+      return instanceDefinition.isTargetAvailable()
 
-  _getInstanceArguments: (instanceDefinition, componentDefinition, addSrcToArgs = false) ->
-    args =
-      urlParams: instanceDefinition.get 'urlParams'
-      urlParamsModel: instanceDefinition.get 'urlParamsModel'
+  _getInstanceArguments: (instanceDefinition, componentDefinition) ->
+    componentClass = componentDefinition.get 'componentClass'
+    args = {}
 
     componentArgs = componentDefinition.get 'args'
     instanceArgs = instanceDefinition.get 'args'
@@ -462,142 +481,23 @@ class ComponentManager
     if componentArgs?.iframeAttributes? and instanceArgs?.iframeAttributes?
       instanceArgs.iframeAttributes = _.extend componentArgs.iframeAttributes, instanceArgs.iframeAttributes
 
-    _.extend args, componentArgs
-    _.extend args, instanceArgs
+    _.extend args, componentArgs, instanceArgs
 
-    if addSrcToArgs
+    if componentClass is Vigor.IframeComponent
       args.src = componentDefinition.get 'src'
 
     return args
 
-  _addInstanceToModel: (instanceDefinition) ->
-    componentClassPromise = @_componentDefinitionsCollection.getComponentClassPromiseByInstanceDefinition instanceDefinition
-
-    componentClassPromise.then (componentClassObj) =>
-      componentClass = componentClassObj.componentClass
-      componentDefinition = componentClassObj.componentDefinition
-      addSrcToArgs = false
-
-      if componentClass is Vigor.IframeComponent
-        addSrcToArgs = true
-
-      instance = new componentClass @_getInstanceArguments(instanceDefinition, componentDefinition, addSrcToArgs)
-      instance.$el.addClass @getComponentClassName()
-
-      instanceDefinition.set
-        'instance': instance
-      , silent: true
-
-    return componentClassPromise
-
-  _tryToReAddStraysToDom: ->
-    for stray in @_activeInstancesCollection.getStrays()
-      render = false
-      if @_addInstanceToDom(stray, render)
-        instance = stray.get 'instance'
-        if instance?.delegateEvents and _.isFunction(instance?.delegateEvents)
-          do instance.delegateEvents
-      else
-        @_activeInstancesCollection.remove stray
-
-  _addInstanceToDom: (instanceDefinition, render = true) ->
-    $target = @_getTarget instanceDefinition
-
-    if render
-      do instanceDefinition.renderInstance
-
-    if @_isTargetAvailable(instanceDefinition)
-      @_addInstanceInOrder instanceDefinition
-      @_setComponentAreaPopulatedState $target
-
-    return instanceDefinition.isAttached()
-
-  _addInstanceInOrder: (instanceDefinition) ->
-    instance = instanceDefinition.get 'instance'
-    $target = @_getTarget instanceDefinition
-    order = instanceDefinition.get 'order'
-
-    if order
-      if order is 'top'
-        instance.$el.data 'order', 0
-        $target.prepend instance.$el
-      else if order is 'bottom'
-        instance.$el.data 'order', 999
-        $target.append instance.$el
-      else
-        $previousElement = @_previousElement $target.children().last(), order
-        instance.$el.data 'order', order
-        instance.$el.attr 'data-order', order
-        unless $previousElement
-          $target.prepend instance.$el
-        else
-          instance.$el.insertAfter $previousElement
-    else
-      $target.append instance.$el
-
-    if instanceDefinition.isAttached()
-      if instance.onAddedToDom? and _.isFunction(instance.onAddedToDom)
-        do instance.onAddedToDom
-
-    return @
-
-  _previousElement: ($el, order = 0) ->
-    if $el.length > 0
-      if $el.data('order') < order
-        return $el
-      else
-        @_previousElement $el.prev(), order
-
-  _mapInstances: (instanceDefinitions, createNewInstancesIfUndefined = false) ->
+  _mapInstances: (instanceDefinitions) ->
     unless _.isArray(instanceDefinitions)
       instanceDefinitions = [instanceDefinitions]
 
     instanceDefinitions = _.compact instanceDefinitions
 
     instances = _.map instanceDefinitions, (instanceDefinition) =>
-      instance = instanceDefinition.get 'instance'
-      if createNewInstancesIfUndefined and not instance?
-        @_addInstanceToModel instanceDefinition
-        instance = instanceDefinition.get 'instance'
-      return instance
+      return instanceDefinition.get 'instance'
+
     return _.compact(instances)
-
-  _isTargetAvailable: (instanceDefinition) ->
-    $target = @_getTarget instanceDefinition
-    return $target.length > 0
-
-  _isComponentAreaPopulated: ($componentArea) ->
-    return $componentArea.children().length > 0
-
-  _setComponentAreaPopulatedState: ($componentArea) ->
-    return $componentArea.toggleClass "#{@_targetPrefix}--has-components", @_isComponentAreaPopulated($componentArea)
-
-  _createAndAddInstances: (instanceDefinitions = []) ->
-    unless _.isArray(instanceDefinitions)
-      instanceDefinitions = [instanceDefinitions]
-
-    for instanceDefinition in instanceDefinitions
-      if @_isTargetAvailable(instanceDefinition)
-        @_addInstanceToModel(instanceDefinition).then =>
-          @_addInstanceToDom instanceDefinition
-          do instanceDefinition.incrementShowCount
-
-    return instanceDefinitions
-
-  _getTarget: (instanceDefinition) ->
-    $target = undefined
-    targetName = instanceDefinition.getTargetName()
-    if _.isString(targetName)
-      if targetName is 'body'
-        $target = $ targetName
-      else
-        $target = $ targetName, @_$context
-    else
-      if targetName.jquery?
-        $target = targetName
-      else
-        throw instanceDefinition.ERROR.VALIDATION.TARGET_WRONG_FORMAT
-    return $target
 
   _modelToJSON: (model) ->
     return model.toJSON()
@@ -608,26 +508,9 @@ class ComponentManager
   #
   # Callbacks
   # ============================================================================
-  _onActiveInstanceAdd: (instanceDefinition) =>
-    @_createAndAddInstances instanceDefinition
-
-  _onActiveInstanceChange: (instanceDefinition) =>
-    if instanceDefinition.passesFilter(@_filterModel, @_globalConditionsModel) \
-    and @_isTargetAvailable(instanceDefinition)
-      do instanceDefinition.disposeInstance
-      @_addInstanceToModel(instanceDefinition).then =>
-        @_addInstanceToDom instanceDefinition
-
-  _onActiveInstanceRemoved: (instanceDefinition) =>
-    do instanceDefinition.disposeInstance
-    $target = @_getTarget instanceDefinition
-    @_setComponentAreaPopulatedState $target
-
-  _onActiveInstanceOrderChange: (instanceDefinition) =>
-    @_addInstanceToDom instanceDefinition
-
-  _onActiveInstanceTargetNameChange: (instanceDefinition) =>
-    @_addInstanceToDom instanceDefinition
+  _onActiveInstanceAdd: (activeInstanceDefinition) =>
+    instanceDefinition = @_instanceDefinitionsCollection.get activeInstanceDefinition.id
+    do instanceDefinition.incrementShowCount
 
   _onMessageReceived: (event) =>
     id = event.data.id
@@ -644,6 +527,7 @@ __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection
 __testOnly.ComponentDefinitionModel = ComponentDefinitionModel
 __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection
 __testOnly.InstanceDefinitionModel = InstanceDefinitionModel
+__testOnly.ActiveInstanceDefinitionModel = ActiveInstanceDefinitionModel
 __testOnly.FilterModel = FilterModel
 __testOnly.IframeComponent = IframeComponent
 __testOnly.BaseCollection = BaseCollection

@@ -9,12 +9,16 @@ class ComponentDefinitionsCollection extends BaseCollection
     promises = []
     for instanceDefinition in instanceDefinitions
       componentDefinition = @getComponentDefinitionByInstanceDefinition instanceDefinition
-      promises.push componentDefinition.getComponentClassPromise()
+      promises.push componentDefinition.getClass()
     return promises
 
   getComponentClassPromiseByInstanceDefinition: (instanceDefinition) ->
     componentDefinition = @getComponentDefinitionByInstanceDefinition instanceDefinition
     return componentDefinition.getClass()
+
+  getComponentClassByInstanceDefinition: (instanceDefinition) ->
+    componentDefinition = @getComponentDefinitionByInstanceDefinition instanceDefinition
+    return componentDefinition.get 'componentClass'
 
   getComponentDefinitionByInstanceDefinition: (instanceDefinition) ->
     componentId = instanceDefinition.get 'componentId'

@@ -13,9 +13,6 @@ class InstanceDefinitionModel extends BaseModel
 
     MISSING_GLOBAL_CONDITIONS: 'No global conditions was passed, condition could not be tested'
 
-    MISSING_RENDER_METHOD: (id) ->
-      return "The instance for #{id} does not have a render method"
-
     MISSING_CONDITION: (condition) ->
       return "Trying to verify condition #{condition} but it has not been registered yet"
 
@@ -36,12 +33,7 @@ class InstanceDefinitionModel extends BaseModel
     urlPattern: undefined
 
     # Private
-    instance: undefined
     showCount: 0
-    urlParams: undefined
-    urlParamsModel: undefined
-
-  _lastFilter: undefined
 
   validate: (attrs, options) ->
     unless attrs.id
@@ -69,55 +61,12 @@ class InstanceDefinitionModel extends BaseModel
       unless attrs.targetName.jquery?
         throw @ERROR.VALIDATION.TARGET_WRONG_FORMAT
 
-  isAttached: ->
-    instance = @get 'instance'
-    attached = false
-    return attached unless instance
-
-    if not instance.el and instance.$el
-      el = instance.$el.get(0)
-    else
-      el = instance.el
-
-    if instance
-      attached = $.contains document.body, el
-    return attached
-
   incrementShowCount: (silent = true) ->
     showCount = @get 'showCount'
     showCount++
     @set
       'showCount': showCount
     , silent: silent
-
-  renderInstance: ->
-    instance = @get 'instance'
-    unless instance then return
-    unless instance.render
-      throw @ERROR.MISSING_RENDER_METHOD @get('id')
-
-    if instance.preRender? and _.isFunction(instance.preRender)
-      do instance.preRender
-
-    do instance.render
-
-    if instance.postRender? and _.isFunction(instance.postRender)
-      do instance.postRender
-
-  dispose: ->
-    instance = @get 'instance'
-    if instance
-      do instance.dispose
-      do @clear
-
-  disposeInstance: ->
-    instance = @get 'instance'
-    if instance?.dispose?
-      do instance.dispose
-    instance = undefined
-    @set
-      'instance': undefined
-    , silent: true
 
   passesFilter: (filterModel, globalConditionsModel) ->
     filter = filterModel?.toJSON() or {}
@@ -126,10 +75,7 @@ class InstanceDefinitionModel extends BaseModel
     if filter?.url or filter?.url is ''
       urlMatch = @doesUrlPatternMatch filter.url
       if urlMatch?
-        if urlMatch is true
-          @addUrlParams filter.url
-        else
-          return false
+        return false unless urlMatch
 
     if @get('conditions')
       areConditionsMet = @areConditionsMet filter, globalConditions
@@ -182,13 +128,6 @@ class InstanceDefinitionModel extends BaseModel
       filterStringMatch = @cantMatch filter.cantMatch
       if filterStringMatch?
         return false unless filterStringMatch
-
-    # If we have a filter change and want to reinstantiate instances that is
-    # already active
-    strippedFilter = _.omit filter, 'options'
-    if @_lastFilter isnt JSON.stringify(strippedFilter) and @get('reInstantiate')
-      @_lastFilter = JSON.stringify(strippedFilter)
-      @trigger 'change:reInstantiate', @
 
     return true
 
@@ -273,31 +212,28 @@ class InstanceDefinitionModel extends BaseModel
 
     return shouldBeIncluded
 
-  addUrlParams: (url) ->
-    # a properly setup instanceDefinition should never have multiple urlPatterns that matches
-    # one and the same url, ex: the url foo/bar/baz would match both patterns
-    # ["foo/:section/:id", "foo/*splat"] the correct way would be to select one of them
-    # (probably the first) and then use the url property of the params if more parts of the
-    # url are needed.
-    # To keep it simple we only update the urlParamsModel with the first matchingUrlParams
-    # the entire array of matchingUrlParams is passed as an argument to the instance though.
-    matchingUrlParams = router.getArguments @get('urlPattern'), url
-    urlParamsModel = @get 'urlParamsModel'
+  getTarget: ($context = $('body')) ->
+    $target = undefined
+    targetName = @_getTargetName()
+    if _.isString(targetName)
+      if targetName is 'body'
+        $target = $ targetName
+      else
+        $target = $ targetName, $context
+    else
+      if targetName.jquery?
+        $target = targetName
+      else
+        throw @ERROR.VALIDATION.TARGET_WRONG_FORMAT
+    return $target
 
-    unless urlParamsModel
-      urlParamsModel = new Backbone.Model()
-      @set
-        'urlParamsModel': urlParamsModel
-      , silent: true
+  isTargetAvailable: ->
+    return @getTarget().length > 0
 
-    if matchingUrlParams.length > 0
-      urlParamsModel.set matchingUrlParams[0]
+  dispose: ->
+    do @clear
 
-      @set
-        'urlParams': matchingUrlParams
-      , silent: true
-
-  getTargetName: ->
+  _getTargetName: ->
     targetName = @get 'targetName'
     if _.isString(targetName)
       unless targetName is 'body' or targetName.charAt(0) is '.'

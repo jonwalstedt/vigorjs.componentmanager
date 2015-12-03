@@ -32,6 +32,7 @@
   #= include ./component-manager/iframe-component/IframeComponent.coffee
   #= include ./component-manager/component-definitions/ComponentDefinitionModel.coffee
   #= include ./component-manager/component-definitions/ComponentDefinitionsCollection.coffee
+  #= include ./component-manager/instance-definitions/ActiveInstanceDefinitionModel.coffee
   #= include ./component-manager/instance-definitions/InstanceDefinitionModel.coffee
   #= include ./component-manager/instance-definitions/BaseInstanceCollection.coffee
   #= include ./component-manager/instance-definitions/InstanceDefinitionsCollection.coffee

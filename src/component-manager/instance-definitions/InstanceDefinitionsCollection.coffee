@@ -1,5 +1,7 @@
 class InstanceDefinitionsCollection extends BaseInstanceCollection
 
+  model: InstanceDefinitionModel
+
   parse: (data, options) ->
     parsedResponse = undefined
     instanceDefinitionsArray = []
@@ -37,11 +39,6 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
     if instanceDefinition.urlPattern is 'global'
       instanceDefinition.urlPattern = ['*notFound', '*action']
     return instanceDefinition
-
-  addUrlParams: (instanceDefinitions, url) ->
-    for instanceDefinitionModel in instanceDefinitions
-      instanceDefinitionModel.addUrlParams url
-    return instanceDefinitions
 
   _formatTargetName: (targetName, targetPrefix) ->
     if _.isString(targetName)
