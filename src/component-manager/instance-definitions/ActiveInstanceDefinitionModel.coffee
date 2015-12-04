@@ -29,16 +29,35 @@ class ActiveInstanceDefinitionModel extends BaseModel
     @on 'change:serializedFilter', @_onSerializedFilterChange
     do @_updateUrlParamsModel
 
-  createInstance: ->
+  tryToReAddStraysToDom: ->
+    if not @_isAttached()
+      isAttached = do @_addInstanceInOrder
+      if isAttached
+        instance = @get 'instance'
+        if instance?.delegateEvents and _.isFunction(instance?.delegateEvents)
+          do instance.delegateEvents
+      else
+        do @_disposeInstance
+
+      do @_updateTargetPopulatedState
+
+  dispose: ->
+    do @_disposeInstance
+    do @_updateTargetPopulatedState
+    do @off
+    do @clear
+
+  _createInstance: ->
     componentClass = @get 'componentClass'
+    componentClassName = @get 'componentClassName'
     instance = new componentClass @_getInstanceArguments()
-    instance.$el.addClass @get('componentClassName')
+    instance.$el.addClass componentClassName
     @set 'instance', instance
 
-  renderInstance: ->
+  _renderInstance: ->
     instance = @get 'instance'
     unless instance then return
-    unless instance.render
+    unless instance.render? and _.isFunction(instance.render)
       throw @ERROR.MISSING_RENDER_METHOD @get('id')
 
     if instance.preRender? and _.isFunction(instance.preRender)
@@ -49,7 +68,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
     if instance.postRender? and _.isFunction(instance.postRender)
       do instance.postRender
 
-  addInstanceInOrder: ->
+  _addInstanceInOrder: ->
     instance = @get 'instance'
     $target = @get 'target'
     order = @get 'order'
@@ -73,7 +92,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
     else
       $target.append instance.$el
 
-    isAttached = @isAttached()
+    isAttached = @_isAttached()
 
     if isAttached
       if instance.onAddedToDom? and _.isFunction(instance.onAddedToDom)
@@ -81,7 +100,25 @@ class ActiveInstanceDefinitionModel extends BaseModel
 
     return isAttached
 
-  isAttached: ->
+  _disposeInstance: ->
+    instance = @get 'instance'
+    if instance?.dispose?
+      do instance.dispose
+    instance = undefined
+    @set
+      'instance': undefined
+    , silent: true
+
+  _isTargetPopulated: ->
+    $target = @get 'target'
+    return $target?.children().length > 0
+
+  _updateTargetPopulatedState: ->
+    $target = @get 'target'
+    targetPrefix = @get 'targetPrefix'
+    return $target?.toggleClass "#{targetPrefix}--has-components", @_isTargetPopulated()
+
+  _isAttached: ->
     instance = @get 'instance'
     attached = false
     return attached unless instance
@@ -94,42 +131,6 @@ class ActiveInstanceDefinitionModel extends BaseModel
     if instance
       attached = $.contains document.body, el
     return attached
-
-  isTargetPopulated: ->
-    $target = @get 'target'
-    return $target.children().length > 0
-
-  updateTargetPopulatedState: ->
-    $target = @get 'target'
-    targetPrefix = @get 'targetPrefix'
-    return $target.toggleClass "#{targetPrefix}--has-components", @isTargetPopulated()
-
-  tryToReAddStraysToDom: ->
-    if not @isAttached()
-      isAttached = do @addInstanceInOrder
-      if isAttached
-        instance = @get 'instance'
-        if instance?.delegateEvents and _.isFunction(instance?.delegateEvents)
-          do instance.delegateEvents
-      else
-        do @disposeInstance
-
-      do @updateTargetPopulatedState
-
-  dispose: ->
-    do @disposeInstance
-    do @updateTargetPopulatedState
-    do @off
-    do @clear
-
-  disposeInstance: ->
-    instance = @get 'instance'
-    if instance?.dispose?
-      do instance.dispose
-    instance = undefined
-    @set
-      'instance': undefined
-    , silent: true
 
   _getInstanceArguments: ->
     args = @get('instanceArguments') or {}
@@ -160,26 +161,26 @@ class ActiveInstanceDefinitionModel extends BaseModel
       urlParamsModel.set urlParams[0]
 
   _onInstanceChange: ->
-    do @renderInstance
-    do @addInstanceInOrder
-    do @updateTargetPopulatedState
+    do @_renderInstance
+    do @_addInstanceInOrder
+    do @_updateTargetPopulatedState
 
   _onUrlParamsChange: ->
     do @_updateUrlParamsModel
 
   _onOrderChange: ->
-    do @addInstanceInOrder
+    do @_addInstanceInOrder
 
   _onTargetChange: ->
-    do @addInstanceInOrder
+    do @_addInstanceInOrder
 
   _onSerializedFilterChange: ->
     if @get('reInstantiate')
-      do @disposeInstance
-      do @createInstance
+      do @_disposeInstance
+      do @_createInstance
 
   _onAdd: ->
-    do @createInstance
+    do @_createInstance
 
   _onRemove: ->
     do @dispose

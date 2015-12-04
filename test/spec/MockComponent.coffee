@@ -13,8 +13,15 @@ class MockComponent
     eventsDelegated = true
     return eventsDelegated
 
+  preRender: ->
+
   render: ->
     return @
+
+  postRender: ->
+
+  dispose: ->
+    do @$el.remove
 
   onAddedToDom: ->
     return @
