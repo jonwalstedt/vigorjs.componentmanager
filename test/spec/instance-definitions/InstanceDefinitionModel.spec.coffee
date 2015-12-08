@@ -15,11 +15,15 @@ describe 'InstanceDefinitionModel', ->
   sandbox = undefined
 
   beforeEach ->
-    instanceDefinitionModel = new InstanceDefinitionModel()
     sandbox = sinon.sandbox.create()
+    instanceDefinitionModel = new InstanceDefinitionModel()
 
   afterEach ->
     do sandbox.restore
+    do instanceDefinitionModel.dispose
+    instanceDefinitionModel = undefined
+
+
 
   describe 'validate', ->
     it 'should throw an error if the id is undefined', ->
@@ -90,26 +94,6 @@ describe 'InstanceDefinitionModel', ->
       errorFn = -> instanceDefinitionModel.validate attrs
       assert.throws (-> errorFn()), /target should be a string or a jquery object/
 
-  describe 'isAttached', ->
-    it 'should return false if element is not present in the DOM', ->
-      $instanceEl = $('<div/>')
-      instance =
-        $el: $instanceEl
-
-      instanceDefinitionModel.set 'instance', instance
-      isAttached = instanceDefinitionModel.isAttached()
-      assert.equal isAttached, false
-
-    it 'should return true if element is present in the DOM', ->
-      $instanceEl = $('<div/>').addClass('test')
-      instance =
-        $el: $instanceEl
-
-      $('body').append instance.$el
-
-      instanceDefinitionModel.set 'instance', instance
-      isAttached = instanceDefinitionModel.isAttached()
-      assert.equal isAttached, true
 
 
   describe 'incrementShowCount', ->
@@ -118,97 +102,7 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.incrementShowCount()
       assert.equal instanceDefinitionModel.get('showCount'), 1
 
-  describe 'renderInstance', ->
-    it 'should call preRender if it exsists', ->
-      instance =
-        preRender: sandbox.spy()
-        render: ->
 
-      instanceDefinitionModel.set 'instance', instance
-      instanceDefinitionModel.renderInstance()
-      assert instance.preRender.called
-
-    it 'should not throw an error if preRender doesnt exsists', ->
-      instance =
-        render: ->
-
-      instanceDefinitionModel.set 'instance', instance
-      assert.doesNotThrow -> instanceDefinitionModel.renderInstance()
-
-    it 'should call render if it exsists', ->
-      instance =
-        render: sandbox.spy()
-
-      instanceDefinitionModel.set 'instance', instance
-      instanceDefinitionModel.renderInstance()
-      assert instance.render.called
-
-    it 'should throw an missing render method error if there are no render method on the instance', ->
-      instance =
-        id: 'test'
-        preRender: ->
-        get: (key) ->
-          if key is 'id'
-            return 'test'
-
-      instanceDefinitionModel.set
-        'id': 'test'
-        'instance': instance
-
-      errorFn = -> instanceDefinitionModel.renderInstance()
-
-      assert.throws (-> errorFn()), /The instance for test does not have a render method/
-
-    it 'should call postRender if it exsists', ->
-      instance =
-        id: 'test'
-        render: ->
-        postRender: sandbox.spy()
-
-      instanceDefinitionModel.set 'instance', instance
-      instanceDefinitionModel.renderInstance()
-      assert instance.postRender.called
-
-    it 'should not throw an error if postRender doesnt exsists', ->
-      instance =
-        render: ->
-
-      instanceDefinitionModel.set 'instance', instance
-      assert.doesNotThrow -> instanceDefinitionModel.renderInstance()
-
-  describe 'dispose', ->
-    it 'should call instance.dispose if there are an instance', ->
-      instance =
-        render: ->
-        dispose: sandbox.spy()
-
-      instanceDefinitionModel.set 'instance', instance
-      instanceDefinitionModel.dispose()
-
-      assert instance.dispose.called
-
-    it 'should call clear', ->
-      instance =
-        render: ->
-        dispose: ->
-
-      sandbox.spy instanceDefinitionModel, 'clear'
-      instanceDefinitionModel.set 'instance', instance
-      instanceDefinitionModel.dispose()
-
-      assert instanceDefinitionModel.clear.called
-
-  describe 'disposeInstance', ->
-    it 'should dispose the instance and set it to undefined on the instanceDefinitionModel', ->
-      instance =
-        render: ->
-        dispose: sandbox.spy()
-
-      instanceDefinitionModel.set 'instance', instance
-      instanceDefinitionModel.disposeInstance()
-      assert instance.dispose.called
-      instance = instanceDefinitionModel.get 'instance'
-      assert.equal instance, undefined
 
   describe 'passesFilter', ->
     describe 'url filter', ->
@@ -488,139 +382,70 @@ describe 'InstanceDefinitionModel', ->
           passesFilter = instanceDefinitionModel.passesFilter filterModel
           assert.equal passesFilter, false
 
-    describe 'reInstantiate', ->
-      it 'should trigger "change:reInstantiate" if reInstantiate is set to true
-      and the filter has changed since last run of passesFilter (if the
-      instanceDefinition passes all filters)', ->
-        globalConditionsModel = new Backbone.Model()
-        filterModel = new FilterModel
-          url: 'foo/1'
-
+    describe 'should return', ->
+      it 'true if no filter is passed', ->
         instanceDefinitionModel.set
-          urlPattern: 'foo/:id'
-          reInstantiate: true
+          'urlPattern': 'foo/:bar/:baz'
+          'filterString': 'foo'
+          'conditions': -> return true
 
-        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+        passesFilter = instanceDefinitionModel.passesFilter()
+        assert.equal passesFilter, true
 
-        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
-        filterModel.set 'url', 'foo/2'
-
-        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
-        assert triggerSpy.calledOnce
-        assert triggerSpy.calledWith 'change:reInstantiate', instanceDefinitionModel
-
-      it 'should not trigger "change:reInstantiate" if filter has not changed since
-      last run of passesFilter (running the same filter twice wont reInstantiate
-      the component)', ->
-        globalConditionsModel = new Backbone.Model()
-        filterModel = new FilterModel
-          url: 'foo/1'
-
+      it 'true if all filter passes', ->
         instanceDefinitionModel.set
-          urlPattern: 'foo/:id'
-          reInstantiate: true
+          'urlPattern': 'foo/:bar/:baz'
+          'filterString': 'foo'
+          'conditions': -> return true
 
-        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+        filterModel = new Backbone.Model
+          url: 'foo/1/2'
+          hasToMatch: 'foo'
 
-        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
+        passesFilter = instanceDefinitionModel.passesFilter filterModel
+        assert.equal passesFilter, true
 
-        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
-        assert triggerSpy.notCalled
-
-      it 'should not trigger "change:reInstantiate" if reInstantiate is set
-      to false', ->
-        globalConditionsModel = new Backbone.Model()
-        filterModel = new FilterModel
-          url: 'foo/1'
-
+      it 'false if any of the filters doesnt pass - in this case it passes the hasToMatch filter butthe conditions does not pass', ->
         instanceDefinitionModel.set
-          urlPattern: 'foo/:id'
-          reInstantiate: false
+          'urlPattern': 'foo/:bar/:baz'
+          'filterString': 'foo'
+          'conditions': -> return false
 
-        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
+        filterModel = new Backbone.Model
+          url: 'foo/1/2'
+          hasToMatch: 'foo'
 
-        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
-        assert triggerSpy.notCalled
+        passesFilter = instanceDefinitionModel.passesFilter filterModel
+        assert.equal passesFilter, false
 
-      it 'should not be triggered if it doesnt pass the filter, even if the filter
-      has changed and reInstantiate is set to true', ->
-        globalConditionsModel = new Backbone.Model()
-        filterModel = new FilterModel
-          url: 'bar/1'
-
+      it 'false if any of the filters doesnt pass - in this case the url pattern does not match', ->
         instanceDefinitionModel.set
-          urlPattern: 'foo/:id'
-          reInstantiate: true
+          'urlPattern': 'bar/:baz/:qux'
+          'filterString': 'foo'
+          'conditions': -> return true
 
-        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
+        filterModel = new Backbone.Model
+          url: 'foo/1/2'
+          hasToMatch: 'foo'
 
-        triggerSpy = sandbox.spy instanceDefinitionModel, 'trigger'
+        passesFilter = instanceDefinitionModel.passesFilter filterModel
+        assert.equal passesFilter, false
 
-        filterModel.set 'url', 'bar/2'
+      it 'false if any of the filters doesnt pass - in this case the filterString cant match foo', ->
+        instanceDefinitionModel.set
+          'urlPattern': 'foo/:baz/:qux'
+          'filterString': 'foo'
+          'conditions': -> return true
 
-        instanceDefinitionModel.passesFilter filterModel, globalConditionsModel
-        assert triggerSpy.notCalled
+        filterModel = new Backbone.Model
+          url: 'foo/1/2'
+          cantMatch: 'foo'
 
-    it 'should return true if no filter is passed', ->
-      instanceDefinitionModel.set
-        'urlPattern': 'foo/:bar/:baz'
-        'filterString': 'foo'
-        'conditions': -> return true
+        passesFilter = instanceDefinitionModel.passesFilter filterModel
+        assert.equal passesFilter, false
 
-      passesFilter = instanceDefinitionModel.passesFilter()
-      assert.equal passesFilter, true
 
-    it 'returns true if all filter passes', ->
-      instanceDefinitionModel.set
-        'urlPattern': 'foo/:bar/:baz'
-        'filterString': 'foo'
-        'conditions': -> return true
 
-      filterModel = new Backbone.Model
-        url: 'foo/1/2'
-        hasToMatch: 'foo'
-
-      passesFilter = instanceDefinitionModel.passesFilter filterModel
-      assert.equal passesFilter, true
-
-    it 'returns false if any of the filters doesnt pass - in this case it passes the hasToMatch filter butthe conditions does not pass', ->
-      instanceDefinitionModel.set
-        'urlPattern': 'foo/:bar/:baz'
-        'filterString': 'foo'
-        'conditions': -> return false
-
-      filterModel = new Backbone.Model
-        url: 'foo/1/2'
-        hasToMatch: 'foo'
-
-      passesFilter = instanceDefinitionModel.passesFilter filterModel
-      assert.equal passesFilter, false
-
-    it 'returns false if any of the filters doesnt pass - in this case the url pattern does not match', ->
-      instanceDefinitionModel.set
-        'urlPattern': 'bar/:baz/:qux'
-        'filterString': 'foo'
-        'conditions': -> return true
-
-      filterModel = new Backbone.Model
-        url: 'foo/1/2'
-        hasToMatch: 'foo'
-
-      passesFilter = instanceDefinitionModel.passesFilter filterModel
-      assert.equal passesFilter, false
-
-    it 'returns false if any of the filters doesnt pass - in this case the filterString cant match foo', ->
-      instanceDefinitionModel.set
-        'urlPattern': 'foo/:baz/:qux'
-        'filterString': 'foo'
-        'conditions': -> return true
-
-      filterModel = new Backbone.Model
-        url: 'foo/1/2'
-        cantMatch: 'foo'
-
-      passesFilter = instanceDefinitionModel.passesFilter filterModel
-      assert.equal passesFilter, false
 
   describe 'exceedsMaximumShowCount', ->
     it 'should return true if instance showCount exeeds instance maxShowCount', ->
@@ -668,6 +493,9 @@ describe 'InstanceDefinitionModel', ->
       exceeds = instanceDefinitionModel.exceedsMaximumShowCount(componentMaxShowCount)
       assert.equal exceeds, false
 
+
+
+
   describe 'hasToMatch', ->
     it 'should call includeIfMatch', ->
       sandbox.spy instanceDefinitionModel, 'includeIfMatch'
@@ -688,6 +516,9 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.set 'filterString', 'foo bar'
       matches = instanceDefinitionModel.hasToMatch 'lorem ipsum'
       assert.equal matches, false
+
+
+
 
   describe 'cantMatch', ->
     it 'should call excludeIfMatch', ->
@@ -710,6 +541,9 @@ describe 'InstanceDefinitionModel', ->
       matches = instanceDefinitionModel.cantMatch 'lorem ipsum'
       assert.equal matches, true
 
+
+
+
   describe 'includeIfMatch', ->
     it 'should return true if string matches', ->
       instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
@@ -731,6 +565,9 @@ describe 'InstanceDefinitionModel', ->
       matches = instanceDefinitionModel.includeIfMatch /[a-z]+/g
       assert.equal matches, true
 
+
+
+
   describe 'includeIfFilterStringMatches', ->
     it 'should return true if includeIfFilterStringMatches is defined and matches filterString', ->
       instanceDefinitionModel.set 'includeIfFilterStringMatches', 'lorem ipsum'
@@ -747,6 +584,9 @@ describe 'InstanceDefinitionModel', ->
       matches = instanceDefinitionModel.includeIfFilterStringMatches 'lorem ipsum'
       assert.equal matches, undefined
 
+
+
+
   describe 'excludeIfFilterStringMatches', ->
     it 'should return false if excludeIfFilterStringMatches is defined and matches filterString', ->
       instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'lorem ipsum'
@@ -762,6 +602,9 @@ describe 'InstanceDefinitionModel', ->
       instanceDefinitionModel.set 'excludeIfFilterStringMatches', undefined
       matches = instanceDefinitionModel.excludeIfFilterStringMatches 'lorem ipsum'
       assert.equal matches, undefined
+
+
+
 
   describe 'doesUrlPatternMatch', ->
     it 'should call router.routeToRegExp with the urlPattern', ->
@@ -928,6 +771,9 @@ describe 'InstanceDefinitionModel', ->
       match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
       assert.equal match, undefined
 
+
+
+
   describe 'areConditionsMet', ->
     it 'should return true if instanceConditions is undefined', ->
       instanceDefinitionModel.set 'conditions', undefined
@@ -1017,7 +863,7 @@ describe 'InstanceDefinitionModel', ->
       errorFn = -> instanceDefinitionModel.areConditionsMet()
       assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
 
-    it 'should throw an error if the condition is a string and the key is not 
+    it 'should throw an error if the condition is a string and the key is not
     present in the globalConditions', ->
       instanceDefinitionModel.set 'conditions', 'fooCheck'
       filter = undefined
@@ -1027,88 +873,132 @@ describe 'InstanceDefinitionModel', ->
       errorFn = -> instanceDefinitionModel.areConditionsMet(filter, globalConditions)
       assert.throws (-> errorFn()), /Trying to verify condition fooCheck but it has not been registered yet/
 
-  describe 'addUrlParams', ->
-    it 'should call router.getArguments with registered urlPattern and passedd url', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      sandbox.spy router.prototype, 'getArguments'
-      instanceDefinitionModel.addUrlParams 'foo/123'
-      assert router.prototype.getArguments.calledWith 'foo/:id', 'foo/123'
 
-    it 'should create a new urlParamsModel if it does not exist already', ->
-      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
-      assert.equal urlParamsModel, undefined
 
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      instanceDefinitionModel.addUrlParams 'foo/123'
+  describe 'dispose', ->
+    it 'should call clear', ->
+      sandbox.spy instanceDefinitionModel, 'clear'
+      instanceDefinitionModel.dispose()
+      assert instanceDefinitionModel.clear.called
 
-      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
-      assert urlParamsModel instanceof Backbone.Model
 
-    it 'should update the urlParamsModel with the extracted url params and the url itself', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      instanceDefinitionModel.addUrlParams 'foo/123'
-      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
-      assert.equal urlParamsModel.get('id'), 123
-      assert.equal urlParamsModel.get('url'), 'foo/123'
 
-      instanceDefinitionModel.set 'urlPattern', 'foo/:type(/:id)'
-      instanceDefinitionModel.addUrlParams 'foo/article/123'
-      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
-      assert.equal urlParamsModel.get('type'), 'article'
-      assert.equal urlParamsModel.get('id'), 123
-      assert.equal urlParamsModel.get('url'), 'foo/article/123'
+  describe 'isTargetAvailable', ->
+    it 'should call getTarget', ->
+      instanceDefinitionModel.set 'targetName', 'my-non-existing-dom-element-class-name'
+      sandbox.spy instanceDefinitionModel, 'getTarget'
+      do instanceDefinitionModel.isTargetAvailable
+      assert instanceDefinitionModel.getTarget.called
 
-    it 'should update the urlParams property with the extracted url params and the url itself', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      instanceDefinitionModel.addUrlParams 'foo/123'
-      urlParams = instanceDefinitionModel.get 'urlParams'
-      assert.equal urlParams[0].id, 123
-      assert.equal urlParams[0].url, 'foo/123'
+    it 'should return true if the target is present in the DOM', ->
+      $('body').append '<div class="my-existing-dom-element-class-name"></div>'
+      instanceDefinitionModel.set 'targetName', 'my-existing-dom-element-class-name'
+      sandbox.spy instanceDefinitionModel, 'getTarget'
+      isAvailable = do instanceDefinitionModel.isTargetAvailable
+      assert.equal isAvailable, true
+      do $('.my-existing-dom-element-class-name').remove
 
-    it 'should not update the urlParams if the urlPattern doesnt match the url', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      instanceDefinitionModel.addUrlParams 'bar/123'
-      urlParams = instanceDefinitionModel.get 'urlParams'
-      assert.equal urlParams, undefined
+    it 'should return false if the target is not present in the DOM', ->
+      instanceDefinitionModel.set 'targetName', 'my-non-existing-dom-element-class-name'
+      sandbox.spy instanceDefinitionModel, 'getTarget'
+      isAvailable = do instanceDefinitionModel.isTargetAvailable
+      assert.equal isAvailable, false
 
-    it 'should not update the urlParams if none out of many urlPatterns doesnt match the url', ->
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id', 'baz/:id']
-      instanceDefinitionModel.addUrlParams 'qux/123'
-      urlParams = instanceDefinitionModel.get 'urlParams'
-      assert.equal urlParams, undefined
 
-    it 'should be able to handle multiple urlPatterns with only one matching', ->
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'foo/:bar/:id']
-      instanceDefinitionModel.addUrlParams 'foo/bar/123'
-      urlParams = instanceDefinitionModel.get 'urlParams'
-      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
 
-      assert.equal urlParams.length, 1
-      assert.equal urlParams[0].bar, 'bar'
-      assert.equal urlParams[0].id, 123
-      assert.equal urlParams[0].url, 'foo/bar/123'
-      assert.deepEqual urlParamsModel.toJSON(), urlParams[0]
+  describe 'getTarget', ->
+    beforeEach ->
+      $('body').append '<div class="component-area--test-target"></div>'
 
-    it 'should be able to handle multiple urlPatterns with multiple matches', ->
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'foo/:bar/:id', 'bar/:id', 'foo/*path']
-      instanceDefinitionModel.addUrlParams 'foo/bar/123'
-      urlParams = instanceDefinitionModel.get 'urlParams'
-      urlParamsModel = instanceDefinitionModel.get 'urlParamsModel'
+    afterEach ->
+      do $('.component-area--test-target').remove
 
-      assert.equal urlParams.length, 2
-      assert.equal urlParams[0].bar, 'bar'
-      assert.equal urlParams[0].id, 123
-      assert.equal urlParams[0].url, 'foo/bar/123'
-      assert.equal urlParams[1].path, 'bar/123'
-      assert.equal urlParams[1].url, 'foo/bar/123'
-      assert.deepEqual urlParamsModel.toJSON(), urlParams[0]
+    it 'should call _refreshTarget if targetName isnt present in the _$target.selector', ->
+      instanceDefinitionModel.set 'targetName', 'component-area--test-target'
+      instanceDefinitionModel._$target = $ 'body'
+      refreshTargetSpy = sandbox.spy instanceDefinitionModel, '_refreshTarget'
 
-  describe 'getTargetName', ->
+      do instanceDefinitionModel.getTarget
+      assert refreshTargetSpy.called
+
+    it 'should not call _refreshTarget if targetName is present in the _$target.selector', ->
+      instanceDefinitionModel.set 'targetName', 'component-area--test-target'
+      instanceDefinitionModel._$target = $ '.component-area--test-target'
+      refreshTargetSpy = sandbox.spy instanceDefinitionModel, '_refreshTarget'
+
+      do instanceDefinitionModel.getTarget
+      assert refreshTargetSpy.notCalled
+
+    it 'should return _$target', ->
+      $target = $ '.component-area--test-target'
+      instanceDefinitionModel.set 'targetName', 'component-area--test-target'
+      instanceDefinitionModel._$target = $target
+
+      result = do instanceDefinitionModel.getTarget
+      assert.equal result, $target
+
+
+
+  describe '_refreshTarget', ->
+    beforeEach ->
+      $('body').append '<div class="header"></div>'
+      $('.header').append '<div class="component-area--test-target" id="test-target"></div>'
+
+    afterEach ->
+      do $('.component-area--test-target').remove
+
+    it 'should store the target on the instanceDefinition to cache it for future
+    calls', ->
+      $expectedResult = $ '.component-area--test-target'
+      instanceDefinitionModel.set 'targetName', $expectedResult
+      assert.equal instanceDefinitionModel._$target, undefined
+      do instanceDefinitionModel._refreshTarget
+      assert.equal instanceDefinitionModel._$target, $expectedResult
+
+    it 'should return the stored target', ->
+      $expectedResult = $ '.component-area--test-target'
+      instanceDefinitionModel.set 'targetName', $expectedResult
+      assert.equal instanceDefinitionModel._$target, undefined
+      $result = do instanceDefinitionModel._refreshTarget
+      assert.equal $result, $expectedResult
+
+    describe 'if targetName is a string', ->
+      it 'should try to find the target as a jQuery object but ignore the context
+      if the targetName is "body"', ->
+        instanceDefinitionModel.set 'targetName', 'body'
+        $target = do instanceDefinitionModel.getTarget
+        assert $target instanceof $
+        assert.equal $target.selector, 'body'
+
+      it 'should try to find the target as a jQuery object within the context if
+      the targetName is not "body"', ->
+        instanceDefinitionModel.set 'targetName', 'component-area--test-target', silent: true
+        $target = instanceDefinitionModel.getTarget $('.header')
+        assert $target instanceof $
+        assert.equal $target.selector, '.header .component-area--test-target'
+
+    describe 'if targetName is not a string', ->
+      it 'should set the target to targetName if targetName already is a jQuery object', ->
+        $expectedResult = $ '.component-area--test-target'
+        instanceDefinitionModel.set 'targetName', $expectedResult
+        $target = do instanceDefinitionModel.getTarget
+        assert $target instanceof $
+        assert.equal $target, $expectedResult
+
+      it 'should throw an TARGET.WRONG_FORMAT error if its targetName is not a
+      jQuery object and not a string', ->
+        instanceDefinitionModel.set 'targetName', {}, silent: true
+        errorFn = -> do instanceDefinitionModel.getTarget
+        assert.throws (-> errorFn()), /target should be a string or a jquery object/
+
+
+
+  describe '_getTargetName', ->
     it 'should return the target name prefixed with a dot (class selector)', ->
       targetName = 'vigor-component--test'
       expectedResults = '.vigor-component--test'
       instanceDefinitionModel.set targetName: targetName
-      result = instanceDefinitionModel.getTargetName()
+      result = instanceDefinitionModel._getTargetName()
       assert.equal result, expectedResults
 
     it 'should return the target name prefixed with a dot (class selector) even
@@ -1116,12 +1006,12 @@ describe 'InstanceDefinitionModel', ->
       targetName = '.vigor-component--test'
       expectedResults = '.vigor-component--test'
       instanceDefinitionModel.set targetName: targetName
-      result = instanceDefinitionModel.getTargetName()
+      result = instanceDefinitionModel._getTargetName()
       assert.equal result, expectedResults
 
     it 'should not prefix the selector "body" with a dot', ->
       targetName = 'body'
       expectedResults = 'body'
       instanceDefinitionModel.set targetName: targetName
-      result = instanceDefinitionModel.getTargetName()
+      result = instanceDefinitionModel._getTargetName()
       assert.equal result, expectedResults

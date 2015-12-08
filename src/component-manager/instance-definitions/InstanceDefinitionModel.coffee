@@ -35,6 +35,8 @@ class InstanceDefinitionModel extends BaseModel
     # Private
     showCount: 0
 
+  _$target: undefined
+
   validate: (attrs, options) ->
     unless attrs.id
       throw @ERROR.VALIDATION.ID_UNDEFINED
@@ -58,15 +60,13 @@ class InstanceDefinitionModel extends BaseModel
       throw @ERROR.VALIDATION.TARGET_NAME_UNDEFINED
 
     unless _.isString(attrs.targetName)
-      unless attrs.targetName.jquery?
+      unless attrs.targetName?.jquery?
         throw @ERROR.VALIDATION.TARGET_WRONG_FORMAT
 
   incrementShowCount: (silent = true) ->
     showCount = @get 'showCount'
     showCount++
-    @set
-      'showCount': showCount
-    , silent: silent
+    @set 'showCount', showCount, silent: silent
 
   passesFilter: (filterModel, globalConditionsModel) ->
     filter = filterModel?.toJSON() or {}
@@ -212,26 +212,32 @@ class InstanceDefinitionModel extends BaseModel
 
     return shouldBeIncluded
 
+  dispose: ->
+    @clear silent: true
+
+  isTargetAvailable: ->
+    return @getTarget()?.length > 0
+
   getTarget: ($context = $('body')) ->
-    $target = undefined
-    targetName = @_getTargetName()
+    unless @_$target?.selector?.indexOf(@_getTargetName()) > -1
+      @_refreshTarget $context
+    return @_$target
+
+  _refreshTarget: ($context = $('body')) ->
+    targetName = do @_getTargetName
     if _.isString(targetName)
       if targetName is 'body'
         $target = $ targetName
       else
         $target = $ targetName, $context
     else
-      if targetName.jquery?
+      if targetName?.jquery?
         $target = targetName
       else
         throw @ERROR.VALIDATION.TARGET_WRONG_FORMAT
-    return $target
 
-  isTargetAvailable: ->
-    return @getTarget().length > 0
-
-  dispose: ->
-    do @clear
+    @_$target = $target
+    return @_$target
 
   _getTargetName: ->
     targetName = @get 'targetName'
@@ -239,3 +245,4 @@ class InstanceDefinitionModel extends BaseModel
       unless targetName is 'body' or targetName.charAt(0) is '.'
         targetName = ".#{targetName}"
     return targetName
+

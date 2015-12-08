@@ -12,22 +12,19 @@ MockComponent = require '../MockComponent'
 
 describe 'ActiveInstanceDefinitionModel', ->
   sandbox = undefined
+  activeInstanceDefinitionModel = undefined
 
   beforeEach ->
+    activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel()
     sandbox = sinon.sandbox.create()
 
   afterEach ->
     do sandbox.restore
-
-  describe 'initialize', ->
+    do activeInstanceDefinitionModel.dispose
     activeInstanceDefinitionModel = undefined
 
-    beforeEach ->
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel()
 
-    afterEach ->
-      do activeInstanceDefinitionModel.dispose
-
+  describe 'initialize', ->
     it 'should add a listener on "add" with _onAdd as callback', ->
       onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
       do activeInstanceDefinitionModel.initialize
@@ -63,22 +60,26 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel.initialize
       assert onSpy.calledWith 'change:serializedFilter', activeInstanceDefinitionModel._onSerializedFilterChange
 
-    it 'should add call _updateUrlParamsModel', ->
-      updateUrlParamsModelSpy = sandbox.spy activeInstanceDefinitionModel, '_updateUrlParamsModel'
+    it 'should add call _updateUrlParamsCollection', ->
+      updateUrlParamsModelSpy = sandbox.spy activeInstanceDefinitionModel, '_updateUrlParamsCollection'
       do activeInstanceDefinitionModel.initialize
       assert updateUrlParamsModelSpy.called
 
+
+
+
   describe 'tryToReAddStraysToDom', ->
-    activeInstanceDefinitionModel = undefined
+
     beforeEach ->
       $('body').append '<div class="component-area--header"></div>'
       $('body').append '<div class="component-area--footer"></div>'
 
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
         instance: new MockComponent {id: "instance-1"}
         target: $('.component-area--header')
+      , silent: true
 
     afterEach ->
       do $('.component-area--header').remove
@@ -126,15 +127,10 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel.tryToReAddStraysToDom
       assert updateTargetPopulatedStateSpy.called
 
+
+
+
   describe 'dispose', ->
-    activeInstanceDefinitionModel = undefined
-
-    beforeEach ->
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel()
-
-    afterEach ->
-      do activeInstanceDefinitionModel.dispose
-
     it 'should call _disposeInstance', ->
       disposeInstanceSpy = sandbox.spy activeInstanceDefinitionModel, '_disposeInstance'
       do activeInstanceDefinitionModel.dispose
@@ -155,18 +151,18 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel.dispose
       assert clearSpy.called
 
+
+
   describe '_createInstance', ->
-    activeInstanceDefinitionModel = undefined
+
     beforeEach ->
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
         componentClassName: 'vigor-component'
         instance: undefined
         target: $('.component-area--header')
-
-    afterEach ->
-      do activeInstanceDefinitionModel.dispose
+      , silent: true
 
     it 'should create a new instance of the stored componentClass', ->
       assert.equal activeInstanceDefinitionModel.get('instance'), undefined
@@ -209,17 +205,18 @@ describe 'ActiveInstanceDefinitionModel', ->
       assert instance instanceof MockComponent
       assert setSpy.calledWith 'instance', instance
 
+
+
+
   describe '_renderInstance', ->
-    activeInstanceDefinitionModel = undefined
+
     beforeEach ->
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
         instance: new MockComponent {id: "instance-1"}
         target: $('.component-area--header')
-
-    afterEach ->
-      do activeInstanceDefinitionModel.dispose
+      , silent: true
 
     it 'should throw a MISSING_RENDER_METHOD error if the instance does not have
     a render method', ->
@@ -245,20 +242,24 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel._renderInstance
       assert postRenderSpy.called
 
+
+
+
   describe '_addInstanceInOrder', ->
     $componentArea = undefined
-    activeInstanceDefinitionModel = undefined
     activeInstanceDefinitionsArr = []
+
     beforeEach ->
       $('body').append '<div class="component-area--header"></div>'
       $componentArea = $ '.component-area--header'
 
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
         instance: new MockComponent {id: "instance-0"}
         target: $('.component-area--header')
         order: 1
+      , silent: true
 
       for i in [1 .. 5]
         activeInstanceDefinitionsArr.push new ActiveInstanceDefinitionModel
@@ -270,8 +271,6 @@ describe 'ActiveInstanceDefinitionModel', ->
 
     afterEach ->
       do $('.component-area--header').remove
-      do activeInstanceDefinitionModel.dispose
-      activeInstanceDefinitionModel = undefined
       _.invoke activeInstanceDefinitionsArr, 'dispose'
       activeInstanceDefinitionsArr = []
 
@@ -448,12 +447,15 @@ describe 'ActiveInstanceDefinitionModel', ->
       isAttached = do activeInstanceDefinitionModel._addInstanceInOrder
       assert.equal isAttached, false
 
+
+
   describe '_disposeInstance', ->
     activeInstanceDefinitionModel = undefined
     beforeEach ->
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         instance: new MockComponent {id: "instance-0"}
+      , silent: true
 
     afterEach ->
       do activeInstanceDefinitionModel.dispose
@@ -469,18 +471,22 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel._disposeInstance
       assert setSpy.calledWith { 'instance': undefined }, { silent: true }
 
+
+
+
   describe '_isTargetPopulated', ->
     activeInstanceDefinitionModel = undefined
 
     beforeEach ->
       $('body').append '<div class="component-area--header" id="test-header"></div>'
 
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
         instance: new MockComponent {id: "instance-0"}
         target: $('.component-area--header')
         order: 1
+      , silent: true
 
     afterEach ->
       do $('.component-area--header').remove
@@ -495,22 +501,24 @@ describe 'ActiveInstanceDefinitionModel', ->
       isPopulated = activeInstanceDefinitionModel._isTargetPopulated()
       assert.equal isPopulated, false
 
+
+
+
   describe '_updateTargetPopulatedState', ->
-    activeInstanceDefinitionModel = undefined
 
     beforeEach ->
       $('body').append '<div class="component-area--header" id="test-header"></div>'
 
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
         targetPrefix: 'component-area'
         instance: new MockComponent {id: "instance-0"}
         target: $('.component-area--header')
+      , silent: true
 
     afterEach ->
-      do activeInstanceDefinitionModel.dispose
-      do $('.test-prefix--header').remove
+      do $('.component-area--header').remove
 
     it 'should add a --has-components variation class to the component area
       ex: component-area--has-components if it holds components', ->
@@ -526,7 +534,7 @@ describe 'ActiveInstanceDefinitionModel', ->
       assert $target.hasClass('component-area--has-components')
 
 
-    it.only 'should remove the --has-components variation class to the component area
+    it 'should remove the --has-components variation class to the component area
     does not hold any components', ->
 
       $target = activeInstanceDefinitionModel.get 'target'
@@ -543,23 +551,74 @@ describe 'ActiveInstanceDefinitionModel', ->
 
       assert.equal $target.hasClass('component-area--has-components'), false
 
+
+
+
   describe '_isAttached', ->
-    it '', ->
-      assert.equal true, false
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should return false if element is not present in the DOM', ->
+      instance =
+        $el: $ '<div/>'
+
+      activeInstanceDefinitionModel.set 'instance', instance, silent: true
+      isAttached = activeInstanceDefinitionModel._isAttached()
+      assert.equal isAttached, false
+
+    it 'should return true if element is present in the DOM', ->
+      instance =
+        $el: $ '<div/>'
+
+      $('body').append instance.$el
+
+      activeInstanceDefinitionModel.set 'instance', instance, silent: true
+      isAttached = activeInstanceDefinitionModel._isAttached()
+      assert.equal isAttached, true
+
+
+
 
   describe '_getInstanceArguments', ->
-    it '', ->
-      assert.equal true, false
-
-  describe '_previousElement', ->
-    activeInstanceDefinitionModel = undefined
 
     beforeEach ->
-      activeInstanceDefinitionModel = new ActiveInstanceDefinitionModel
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+        urlParams: foo: 'bar'
+        instanceArguments: baz: 'qux'
+
+    it 'should append urlParams to the returned (padded) instanceArguments', ->
+      instanceArguments = activeInstanceDefinitionModel.get 'instanceArguments'
+      assert.deepEqual instanceArguments, baz: 'qux'
+      assert.equal instanceArguments.urlParams, undefined
+
+      instanceArguments = do activeInstanceDefinitionModel._getInstanceArguments
+      assert.equal instanceArguments.urlParams, activeInstanceDefinitionModel.get('urlParams')
+
+    it 'should append urlParamsCollection to the returned (padded) instanceArguments', ->
+      instanceArguments = activeInstanceDefinitionModel.get 'instanceArguments'
+      assert.deepEqual instanceArguments, baz: 'qux'
+      assert.equal instanceArguments.urlParamsCollection, undefined
+
+      instanceArguments = do activeInstanceDefinitionModel._getInstanceArguments
+      assert.equal instanceArguments.urlParamsCollection, activeInstanceDefinitionModel.get('urlParamsCollection')
+
+
+
+
+  describe '_previousElement', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
         instance: new MockComponent {id: "instance-1"}
         target: $('body')
+      , silent: true
 
       $('body').append '<div id="dummy1" class="dummy-elements" data-order="1"></div>'
       $('body').append '<div id="dummy2" class="dummy-elements" data-order="2"></div>'
@@ -571,7 +630,6 @@ describe 'ActiveInstanceDefinitionModel', ->
     afterEach ->
       do $('.dummy-elements').remove
       do $('.some-other-element').remove
-      do activeInstanceDefinitionModel.dispose
 
     it 'should return previous element based on the data-order attribute', ->
       $startEl = $ '.dummy-elements[data-order="4"]'
@@ -616,12 +674,154 @@ describe 'ActiveInstanceDefinitionModel', ->
       assert.equal $result, undefined
 
 
-  describe '_updateUrlParamsModel', ->
+  describe '_updateUrlParamsCollection', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+        urlParams: [
+          {
+            foo: 'bar',
+            id: 1
+          },
+          {
+            splat: 'foo/1'
+          }
+        ]
+      , silent: true
+
+    it 'should update the urlParamsCollection with the urlParams', ->
+      urlParamsCollection = activeInstanceDefinitionModel.get 'urlParamsCollection'
+      setSpy = sandbox.spy urlParamsCollection, 'set'
+
+      do activeInstanceDefinitionModel._updateUrlParamsCollection
+
+      assert setSpy.calledWith activeInstanceDefinitionModel.get('urlParams')
+
+
+
   describe '_onInstanceChange', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call _renderInstance, _addInstanceInOrder and _updateTargetPopulatedState', ->
+      renderInstanceStub = sandbox.stub activeInstanceDefinitionModel, '_renderInstance'
+      addInstanceInOrderStub = sandbox.stub activeInstanceDefinitionModel, '_addInstanceInOrder'
+      updateTargetPopulatedStateStub = sandbox.stub activeInstanceDefinitionModel, '_updateTargetPopulatedState'
+
+      do activeInstanceDefinitionModel._onInstanceChange
+
+      assert renderInstanceStub.called
+      assert addInstanceInOrderStub.called
+      assert updateTargetPopulatedStateStub.called
+
+
+
   describe '_onUrlParamsChange', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call _updateUrlParamsCollection', ->
+      updateUrlParamsCollectionStub = sandbox.stub activeInstanceDefinitionModel, '_updateUrlParamsCollection'
+      do activeInstanceDefinitionModel._onUrlParamsChange
+      assert updateUrlParamsCollectionStub.called
+
+
+
   describe '_onOrderChange', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call _addInstanceInOrder', ->
+      addInstanceInOrderStub = sandbox.stub activeInstanceDefinitionModel, '_addInstanceInOrder'
+      do activeInstanceDefinitionModel._onOrderChange
+      assert addInstanceInOrderStub.called
+
+
+
   describe '_onTargetChange', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call _addInstanceInOrder', ->
+      addInstanceInOrderStub = sandbox.stub activeInstanceDefinitionModel, '_addInstanceInOrder'
+      do activeInstanceDefinitionModel._onTargetChange
+      assert addInstanceInOrderStub.called
+
+
+
+
   describe '_onSerializedFilterChange', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call _disposeInstance and _createInstance if reInstantiate is set to true', ->
+      disposeInstanceStub = sandbox.stub activeInstanceDefinitionModel, '_disposeInstance'
+      createInstanceStub = sandbox.stub activeInstanceDefinitionModel, '_createInstance'
+      activeInstanceDefinitionModel.set 'reInstantiate', true
+
+      do activeInstanceDefinitionModel._onSerializedFilterChange
+
+      assert disposeInstanceStub.called
+      assert createInstanceStub.called
+
+    it 'should not call _disposeInstance and _createInstance if reInstantiate is set to false', ->
+      disposeInstanceStub = sandbox.stub activeInstanceDefinitionModel, '_disposeInstance'
+      createInstanceStub = sandbox.stub activeInstanceDefinitionModel, '_createInstance'
+      activeInstanceDefinitionModel.set 'reInstantiate', false
+
+      do activeInstanceDefinitionModel._onSerializedFilterChange
+
+      assert disposeInstanceStub.notCalled
+      assert createInstanceStub.notCalled
+
+
+
   describe '_onAdd', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call _createInstance', ->
+      createInstanceStub = sandbox.stub activeInstanceDefinitionModel, '_createInstance'
+      do activeInstanceDefinitionModel._onAdd
+      assert createInstanceStub.called
+
+
+
   describe '_onRemove', ->
 
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call dispose', ->
+      disposeStub = sandbox.stub activeInstanceDefinitionModel, 'dispose'
+      do activeInstanceDefinitionModel._onRemove
+      assert disposeStub.called

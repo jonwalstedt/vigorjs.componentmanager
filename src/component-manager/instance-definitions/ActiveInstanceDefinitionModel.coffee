@@ -15,11 +15,12 @@ class ActiveInstanceDefinitionModel extends BaseModel
     reInstantiate: false
     instance: undefined
     urlParams: undefined
-    urlParamsModel: new Backbone.Model()
+    urlParamsCollection: undefined
     serializedFilter: undefined
 
   initialize: ->
     super
+    @set 'urlParamsCollection', new UrlParamsCollection(), silent: true
     @on 'add', @_onAdd
     @on 'remove', @_onRemove
     @on 'change:instance', @_onInstanceChange
@@ -27,7 +28,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
     @on 'change:order', @_onOrderChange
     @on 'change:target', @_onTargetChange
     @on 'change:serializedFilter', @_onSerializedFilterChange
-    do @_updateUrlParamsModel
+    do @_updateUrlParamsCollection
 
   tryToReAddStraysToDom: ->
     if not @_isAttached()
@@ -105,9 +106,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
     if instance?.dispose?
       do instance.dispose
     instance = undefined
-    @set
-      'instance': undefined
-    , silent: true
+    @set 'instance', undefined, silent: true
 
   _isTargetPopulated: ->
     $target = @get 'target'
@@ -135,7 +134,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
   _getInstanceArguments: ->
     args = @get('instanceArguments') or {}
     args.urlParams = @get 'urlParams'
-    args.urlParamsModel = @get 'urlParamsModel'
+    args.urlParamsCollection = @get 'urlParamsCollection'
     return args
 
   _previousElement: ($el, order = 0) ->
@@ -145,20 +144,10 @@ class ActiveInstanceDefinitionModel extends BaseModel
       else
         @_previousElement $el.prev(), order
 
-  _updateUrlParamsModel: ->
+  _updateUrlParamsCollection: ->
     urlParams = @get 'urlParams'
-    urlParamsModel = @get 'urlParamsModel'
-
-    # a properly setup instanceDefinition should never have multiple urlPatterns that matches
-    # one and the same url, ex: the url foo/bar/baz would match both patterns
-    # ["foo/:section/:id", "foo/*splat"] the correct way would be to select one of them
-    # (probably the first) and then use the url property of the params if more parts of the
-    # url are needed.
-    # To keep it simple we only update the urlParamsModel with the first matchingUrlParams
-    # the entire array of matchingUrlParams is passed as an argument to the instance though.
-
-    if urlParams?.length > 0
-      urlParamsModel.set urlParams[0]
+    urlParamsCollection = @get 'urlParamsCollection'
+    urlParamsCollection.set urlParams
 
   _onInstanceChange: ->
     do @_renderInstance
@@ -166,7 +155,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
     do @_updateTargetPopulatedState
 
   _onUrlParamsChange: ->
-    do @_updateUrlParamsModel
+    do @_updateUrlParamsCollection
 
   _onOrderChange: ->
     do @_addInstanceInOrder

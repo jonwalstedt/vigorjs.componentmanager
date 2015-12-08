@@ -37,6 +37,7 @@ describe 'Router', ->
       args = router.prototype.getArguments urlPatterns, url
       expectedResults = [
         {
+          _id: 'foo/:id'
           id: '123'
           url: 'foo/123'
         }
@@ -48,11 +49,13 @@ describe 'Router', ->
       url = 'foo/bar/123'
       expectedResults = [
         {
+          _id: 'foo/:bar/:id'
           id: '123'
           bar: 'bar'
           url: 'foo/bar/123'
         }
         {
+          _id: 'foo/*splat'
           splat: 'bar/123'
           url: 'foo/bar/123'
         }
@@ -65,6 +68,7 @@ describe 'Router', ->
       url = 'foo/123'
       expectedResults = [
         {
+          _id: 'foo/:id'
           id: '123'
           url: 'foo/123'
         }

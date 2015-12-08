@@ -12,6 +12,7 @@ class Router extends Backbone.Router
 
       if match
         paramsObject = @_getArgumentsFromUrl urlPattern, url
+        paramsObject._id = urlPattern
         paramsObject.url = url
         args.push paramsObject
 

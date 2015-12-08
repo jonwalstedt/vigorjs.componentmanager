@@ -5,6 +5,11 @@ Vigor = require '../../dist/vigor.componentmanager'
 componentManager = new Vigor.ComponentManager()
 __testOnly = Vigor.ComponentManager.__testOnly
 
+ComponentDefinitionsCollection = __testOnly.ComponentDefinitionsCollection
+InstanceDefinitionsCollection = __testOnly.InstanceDefinitionsCollection
+ActiveInstancesCollection = __testOnly.ActiveInstancesCollection
+FilterModel = __testOnly.FilterModel
+
 MockComponent = require './MockComponent'
 MockComponent2 = require './MockComponent2'
 
@@ -22,6 +27,8 @@ describe 'The componentManager', ->
     do sandbox.restore
     do clock.restore
 
+
+
   describe 'ComponentManagers prototype extends', ->
     it 'underscore events', ->
       assert Vigor.ComponentManager.prototype.on
@@ -34,7 +41,9 @@ describe 'The componentManager', ->
       assert Vigor.ComponentManager.prototype.trigger
       assert Vigor.ComponentManager.prototype.stopListening
 
-  describe 'public methods', ->
+
+
+  describe.only 'public methods', ->
     describe 'initialize', ->
       it 'instantiate necessary collections and models', ->
         assert.equal componentManager._componentDefinitionsCollection, undefined
@@ -78,6 +87,8 @@ describe 'The componentManager', ->
         cm = componentManager.initialize()
         assert.equal cm, componentManager
 
+
+
     describe 'updateSettings', ->
       it 'should call _parse with passed settings', ->
         settings =
@@ -91,6 +102,8 @@ describe 'The componentManager', ->
         cm = componentManager.updateSettings()
         assert.equal cm, componentManager
 
+
+
     describe 'refresh', ->
       it 'should set and parse the filterOptions if passed', ->
         filterOptions =
@@ -99,7 +112,7 @@ describe 'The componentManager', ->
         do componentManager.initialize
         parsedFilterOptions = componentManager._filterModel.parse filterOptions
 
-        filterModelSet = sandbox.stub componentManager._filterModel, 'set'
+        filterModelSet = sandbox.spy componentManager._filterModel, 'set'
         filterModelParse = sandbox.spy componentManager._filterModel, 'parse'
 
         componentManager.refresh filterOptions
@@ -118,6 +131,8 @@ describe 'The componentManager', ->
         assert updateActiveComponentsSpy.called
         assert _.isFunction(result.then)
         assert.deepEqual result, expectedResult
+
+
 
     describe 'serialize', ->
       settings = undefined
@@ -153,42 +168,38 @@ describe 'The componentManager', ->
               }
             ]
 
+        componentManager.initialize settings
+
       afterEach ->
         do $('.test-prefix--header').remove
 
       it 'should call toJSON on the globalConditionsModel', ->
-        componentManager.initialize settings
         toJSONSpy = sandbox.spy componentManager._globalConditionsModel, 'toJSON'
         do componentManager.serialize
         assert toJSONSpy.called
 
       it 'should call toJSON on the _componentDefinitionsCollection', ->
-        componentManager.initialize settings
         toJSONSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'toJSON'
         do componentManager.serialize
         assert toJSONSpy.called
 
       it 'should call toJSON on the _instanceDefinitionsCollection', ->
-        componentManager.initialize settings
         toJSONSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'toJSON'
         do componentManager.serialize
         assert toJSONSpy.called
 
       it 'should call getComponentClassName', ->
-        componentManager.initialize settings
         getComponentClassNameSpy = sandbox.spy componentManager, 'getComponentClassName'
         do componentManager.serialize
         assert getComponentClassNameSpy.called
 
       it 'should call getTargetPrefix', ->
-        componentManager.initialize settings
         getTargetPrefixSpy = sandbox.spy componentManager, 'getTargetPrefix'
         do componentManager.serialize
         assert getTargetPrefixSpy.called
 
       it 'should stringify current state of the componentManager so that it can
       be parsed back at a later time', ->
-        componentManager.initialize settings
         serialized = do componentManager.serialize
         parsed = componentManager.parse serialized
 
@@ -209,6 +220,8 @@ describe 'The componentManager', ->
         assert.equal firstParsedInstance.urlPattern, firstSettingsInstance.urlPattern
         assert.equal firstParsedInstance.order, firstSettingsInstance.order
         assert.deepEqual firstParsedInstance.args, firstSettingsInstance.args
+
+
 
     describe 'parse', ->
       settings =
@@ -303,6 +316,8 @@ describe 'The componentManager', ->
         serializedResults = componentManager.initialize(settings).serialize()
         componentManager.parse serializedResults, updateSettings
         assert updateSettingsStub.called
+
+
 
     describe 'clear', ->
       beforeEach ->
@@ -438,6 +453,8 @@ describe 'The componentManager', ->
         cm = componentManager.clear()
         assert.equal cm, componentManager
 
+
+
     describe 'dispose', ->
       it 'should call clear', ->
         sandbox.spy componentManager, 'clear'
@@ -464,13 +481,15 @@ describe 'The componentManager', ->
         assert.equal componentManager._globalConditionsModel, undefined
         assert.equal componentManager._filterModel, undefined
 
+
+
     describe 'addListeners', ->
       beforeEach ->
-        componentManager._componentDefinitionsCollection = new __testOnly.ComponentDefinitionsCollection()
-        componentManager._instanceDefinitionsCollection = new __testOnly.InstanceDefinitionsCollection()
-        componentManager._activeInstancesCollection = new __testOnly.ActiveInstancesCollection()
+        componentManager._componentDefinitionsCollection = new ComponentDefinitionsCollection()
+        componentManager._instanceDefinitionsCollection = new InstanceDefinitionsCollection()
+        componentManager._activeInstancesCollection = new ActiveInstancesCollection()
         componentManager._globalConditionsModel = new Backbone.Model()
-        componentManager._filterModel = new __testOnly.FilterModel()
+        componentManager._filterModel = new FilterModel()
 
       it 'should add a throttled_diff listener on the _componentDefinitionsCollection with _updateActiveComponents as callback', ->
         componentDefinitionsCollectionOnSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'on'
@@ -505,91 +524,6 @@ describe 'The componentManager', ->
 
         componentManager._globalConditionsModel.trigger 'change'
         assert updateActiveComponentsSpy.called
-
-      it 'should add change listeners on these params on the _activeInstancesCollection: componentId, filterString, 
-      conditions, args, maxShowCount, urlPattern, urlParams, reInstantiate with _onActiveInstanceChange as callback', ->
-        activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
-        onActiveInstanceChangeStub = sandbox.stub componentManager, '_onActiveInstanceChange'
-
-        do componentManager.addListeners
-
-        changes = 'change:componentId
-                  change:filterString
-                  change:conditions
-                  change:args
-                  change:maxShowCount
-                  change:urlPattern
-                  change:urlParams
-                  change:reInstantiate'
-
-        assert activeInstancesCollectionOnSpy.calledWith changes, componentManager._onActiveInstanceChange
-
-        componentManager._activeInstancesCollection.trigger 'change:componentId', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-        componentManager._activeInstancesCollection.trigger 'change:filterString', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-        componentManager._activeInstancesCollection.trigger 'change:conditions', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-        componentManager._activeInstancesCollection.trigger 'change:args', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-        componentManager._activeInstancesCollection.trigger 'change:maxShowCount', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-        componentManager._activeInstancesCollection.trigger 'change:urlPattern', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-        componentManager._activeInstancesCollection.trigger 'change:urlParams', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-        componentManager._activeInstancesCollection.trigger 'change:reInstantiate', new Backbone.Model()
-        assert onActiveInstanceChangeStub.called
-        do onActiveInstanceChangeStub.reset
-
-      it 'should add a change:order listener on the _activeInstancesCollection with _onActiveInstanceOrderChange as callback', ->
-        activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
-        onActiveInstanceOrderStub = sandbox.stub componentManager, '_onActiveInstanceOrderChange'
-
-        do componentManager.addListeners
-        assert activeInstancesCollectionOnSpy.calledWith 'change:order', componentManager._onActiveInstanceOrderChange
-
-        componentManager._activeInstancesCollection.trigger 'change:order', new Backbone.Model()
-        assert onActiveInstanceOrderStub.called
-
-      it 'should add a change:targetName listener on the _activeInstancesCollection with
-      _onActiveInstanceTargetNameChange as callback', ->
-        activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
-        onActiveInstanceTargetNameChangeStub = sandbox.stub componentManager, '_onActiveInstanceTargetNameChange'
-
-        do componentManager.addListeners
-        assert activeInstancesCollectionOnSpy.calledWith 'change:targetName', componentManager._onActiveInstanceTargetNameChange
-
-        componentManager._activeInstancesCollection.trigger 'change:targetName', new Backbone.Model()
-        assert onActiveInstanceTargetNameChangeStub.called
-
-      it 'should add a change:remove listener on the _activeInstancesCollection with
-      _onActiveInstanceRemoved as callback', ->
-        activeInstancesCollectionOnSpy = sandbox.spy componentManager._activeInstancesCollection, 'on'
-        sandbox.stub componentManager, '_onActiveInstanceAdd', ->
-        onActiveInstanceRemovedStub = sandbox.stub componentManager, '_onActiveInstanceRemoved'
-
-
-        do componentManager.addListeners
-        assert activeInstancesCollectionOnSpy.calledWith 'remove', componentManager._onActiveInstanceRemoved
-
-        componentManager._activeInstancesCollection.add { id: 'dummy' }
-        componentManager._activeInstancesCollection.remove 'dummy'
-        assert onActiveInstanceRemovedStub.called
 
       it 'should proxy add events from the _componentDefinitionsCollection (EVENTS.COMPONENT_ADD)', ->
         componentAddSpy = sandbox.spy()
@@ -643,7 +577,6 @@ describe 'The componentManager', ->
 
       it 'should proxy change events from the _activeInstancesCollection (EVENTS.CHANGE)', ->
         changeSpy = sandbox.spy()
-        sandbox.stub componentManager, '_onActiveInstanceChange'
         do componentManager.addListeners
         componentManager.on componentManager.EVENTS.CHANGE, changeSpy
         componentManager._activeInstancesCollection.trigger 'change', new Backbone.Model()
@@ -651,7 +584,6 @@ describe 'The componentManager', ->
 
       it 'should proxy remove events from the _activeInstancesCollection (EVENTS.REMOVE)', ->
         removeSpy = sandbox.spy()
-        sandbox.stub componentManager, '_onActiveInstanceRemoved'
         do componentManager.addListeners
         componentManager.on componentManager.EVENTS.REMOVE, removeSpy
         componentManager._activeInstancesCollection.trigger 'remove', new Backbone.Model(), componentManager._activeInstancesCollection
@@ -660,6 +592,8 @@ describe 'The componentManager', ->
       it 'should return the componentManager for chainability', ->
         cm = componentManager.addListeners()
         assert.equal cm, componentManager
+
+
 
     describe 'addConditions', ->
       it 'should register new conditions', ->
@@ -728,6 +662,8 @@ describe 'The componentManager', ->
         cm = componentManager.initialize().addConditions conditions
         assert.equal cm, componentManager
 
+
+
     describe 'addComponentDefinitions', ->
       it 'should call set on _componentDefinitionsCollection with passed definitions and parse: true, validate: true and remove: false', ->
         component =
@@ -769,6 +705,8 @@ describe 'The componentManager', ->
 
         cm = componentManager.initialize().addComponentDefinitions component
         assert.equal cm, componentManager
+
+
 
     describe 'addInstanceDefinitions', ->
       it 'should call set on _instanceDefinitionsCollection with passed definitions and parse: true, validate: true and remove: false', ->
@@ -821,6 +759,8 @@ describe 'The componentManager', ->
         cm = componentManager.initialize().addInstanceDefinitions instance
         assert.equal cm, componentManager
 
+
+
     describe 'updateComponentDefinitions', ->
       it 'should call addComponentDefinitions with passed componentDefinitions', ->
         component =
@@ -863,6 +803,7 @@ describe 'The componentManager', ->
 
         cm = componentManager.initialize().updateComponentDefinitions component
         assert.equal cm, componentManager
+
 
 
     describe 'updateInstanceDefinitions', ->
@@ -912,6 +853,8 @@ describe 'The componentManager', ->
         cm = componentManager.initialize().updateInstanceDefinitions instance
         assert.equal cm, componentManager
 
+
+
     describe 'removeComponentDefinition', ->
       it 'should call remove on the _componentDefinitionsCollection with passed componentDefinitionId', ->
         componentId = 'dummy-component'
@@ -944,6 +887,8 @@ describe 'The componentManager', ->
         componentId = 'dummy-component'
         cm = componentManager.initialize().removeComponentDefinition componentId
         assert.equal cm, componentManager
+
+
 
     describe 'removeInstanceDefinition', ->
       it 'should call remove on the _instanceDefinitionsCollection with passed instanceDefinitionId', ->
@@ -980,6 +925,8 @@ describe 'The componentManager', ->
         cm = componentManager.initialize().removeInstanceDefinition instanceId
         assert.equal cm, componentManager
 
+
+
     describe 'removeListeners', ->
       it 'should call off on used collections and models', ->
         do componentManager.initialize
@@ -1001,6 +948,8 @@ describe 'The componentManager', ->
       it 'should return the componentManager for chainability', ->
         cm = componentManager.removeListeners()
         assert.equal cm, componentManager
+
+
 
     describe 'setContext', ->
       it 'should save the passed context', ->
@@ -1034,6 +983,8 @@ describe 'The componentManager', ->
         cm = componentManager.setContext('.test')
         assert.equal cm, componentManager
 
+
+
     describe 'setComponentClassName', ->
       it 'should save the componentClassName', ->
         componentClassName = 'dummy-class-name'
@@ -1051,6 +1002,8 @@ describe 'The componentManager', ->
       it 'should return the componentManager for chainability', ->
         cm = componentManager.setComponentClassName()
         assert.equal cm, componentManager
+
+
 
     describe 'setTargetPrefix', ->
       it 'should store the target prefix', ->
@@ -1070,12 +1023,16 @@ describe 'The componentManager', ->
         cm = componentManager.setTargetPrefix()
         assert.equal cm, componentManager
 
+
+
     describe 'getContext', ->
       it 'should return the context', ->
         $context = $('<div/>')
         componentManager.setContext $context
         result = componentManager.getContext()
         assert.equal result, $context
+
+
 
     describe 'getComponentClassName', ->
       it 'should return the componentClassName', ->
@@ -1084,12 +1041,16 @@ describe 'The componentManager', ->
         result = componentManager.getComponentClassName()
         assert.equal result, componentClassName
 
+
+
     describe 'getTargetPrefix', ->
       it 'should return a specified prefix or the default prefix', ->
         targetPrefix = 'dummy-prefix'
         componentManager.setTargetPrefix targetPrefix
         result = componentManager.getTargetPrefix()
         assert.equal result, targetPrefix
+
+
 
     describe 'getActiveFilter', ->
       it 'should return currently applied filters', ->
@@ -1118,6 +1079,8 @@ describe 'The componentManager', ->
 
         assert.deepEqual result, expectedResults
 
+
+
     describe 'getConditions', ->
       it 'return current conditions', ->
         do componentManager.initialize
@@ -1131,6 +1094,8 @@ describe 'The componentManager', ->
         result = componentManager.getConditions()
 
         assert.deepEqual result, globalCondition
+
+
 
     describe 'getComponentDefinitionById', ->
       it 'should get a JSON representation of the data for a specific component', ->
@@ -1155,6 +1120,8 @@ describe 'The componentManager', ->
         result = componentManager.getComponentDefinitionById 'dummy-component'
 
         assert.equal result.id, expectedResultId
+
+
 
     describe 'getInstanceDefinitionById', ->
       it 'should get a JSON representation of the data for one specific instance', ->
@@ -1182,6 +1149,8 @@ describe 'The componentManager', ->
 
         assert.equal result.id, expectedResultId
 
+
+
     describe 'getComponentDefinitions', ->
       it 'should return an array of all registered components', ->
         do componentManager.initialize
@@ -1206,6 +1175,8 @@ describe 'The componentManager', ->
 
         for result, i in results
           assert.equal result.id, expectedResultsIds[i]
+
+
 
     describe 'getInstanceDefinitions', ->
       it 'should return all instances (even those not currently active)', ->
@@ -1234,9 +1205,10 @@ describe 'The componentManager', ->
         for result, i in results
           assert.equal result.id, expectedResultsIds[i]
 
+
+
     describe 'getActiveInstances', ->
-      it 'should call _mapInstances with _activeInstancesCollection.models and
-      createNewInstancesIfUndefined set to false by default', ->
+      it 'should call _mapInstances with _activeInstancesCollection.models', ->
 
         componentSettings =
           components: [
@@ -1268,7 +1240,8 @@ describe 'The componentManager', ->
         mapInstancesSpy = sandbox.spy componentManager, '_mapInstances'
         componentManager.initialize componentSettings
         results = componentManager.getActiveInstances()
-        assert mapInstancesSpy.calledWith componentManager._activeInstancesCollection.models, false
+        assert mapInstancesSpy.calledWith componentManager._activeInstancesCollection.models
+
 
 
     describe 'getActiveInstanceById', ->
@@ -1308,7 +1281,6 @@ describe 'The componentManager', ->
         assert getInstanceDefinitionStub.calledWith(id)
 
       it 'should return the instance from the instanceDefinitionModel if it exists', ->
-        getInstanceDefinitionSpy = sandbox.spy componentManager._activeInstancesCollection, 'getInstanceDefinition'
         id = 'instance-1'
         filter =
           url: 'foo/1'
@@ -1319,16 +1291,17 @@ describe 'The componentManager', ->
         assert instance instanceof MockComponent
 
       it 'should return undefined if there is no instance in the targeted instanceDefinition', ->
-        getInstanceDefinitionSpy = sandbox.spy componentManager._activeInstancesCollection, 'getInstanceDefinition'
         id = 'instance-1'
         filter =
           url: 'foo/1'
 
         componentManager.refresh filter
 
-        do componentManager._activeInstancesCollection.at(0).disposeInstance
+        do componentManager._activeInstancesCollection.get(id)._disposeInstance
         instance = componentManager.getActiveInstanceById id
         assert.equal instance, undefined
+
+
 
     describe 'postMessageToInstance', ->
       componentSettings = undefined
@@ -1637,7 +1610,7 @@ describe 'The componentManager', ->
         ]
 
       beforeEach ->
-        componentManager._componentDefinitionsCollection = new __testOnly.ComponentDefinitionsCollection()
+        componentManager._componentDefinitionsCollection = new ComponentDefinitionsCollection()
         componentDefinitionsCollectionSetStub = sandbox.stub componentManager._componentDefinitionsCollection, 'set'
 
       it 'should call _componentDefinitionsCollection.set with passed componentDefinitions, validate: true, parse: true and silent: true', ->
@@ -1670,7 +1643,7 @@ describe 'The componentManager', ->
       ]
 
       beforeEach ->
-        componentManager._instanceDefinitionsCollection = new __testOnly.InstanceDefinitionsCollection()
+        componentManager._instanceDefinitionsCollection = new InstanceDefinitionsCollection()
         instanceDefinitionsCollectionSetStub = sandbox.stub componentManager._instanceDefinitionsCollection, 'set'
 
       it 'should call _instanceDefinitionsCollection.set with passed instanceDefinitions,
@@ -2373,6 +2346,8 @@ describe 'The componentManager', ->
         assert.equal result.length, 1
         assert.equal result[0].attributes.id, expectedResultId
 
+
+
     describe '_getInstanceArguments', ->
       componentSettings =
         components: [
@@ -2636,236 +2611,6 @@ describe 'The componentManager', ->
         assert.equal instances.length, 0
         assert compactSpy.called
 
-    describe '_isTargetAvailable', ->
-      componentSettings =
-        components: [
-          {
-            id: 'mock-component',
-            src: '../test/spec/MockComponent'
-          }
-        ]
-        instances: [
-          {
-            id: 'instance-1',
-            componentId: 'mock-component',
-            targetName: '.component-area--header'
-            urlPattern: 'foo/:bar'
-            order: 1
-            args:
-              id: 'instance-1'
-          }
-        ]
-
-      beforeEach ->
-        componentManager.initialize componentSettings
-
-      afterEach ->
-        do $('.component-area--header').remove
-
-      it 'should return true if the passed instanceDefinitions target is
-      available/present in the dom', ->
-        $('body').append '<div class="component-area--header" id="test-header"></div>'
-        instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
-        isAvailable = componentManager._isTargetAvailable instanceDefinition
-        assert.equal isAvailable, true
-
-      it 'should return false if the passed instanceDefinitions target is not
-      available/present in the dom', ->
-        instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
-        isAvailable = componentManager._isTargetAvailable instanceDefinition
-        assert.equal isAvailable, false
-
-
-    describe '_setComponentAreaPopulatedState', ->
-      beforeEach ->
-        $('body').append '<div class="test-prefix--header" id="test-header"></div>'
-
-      afterEach ->
-        do $('.test-prefix--header').remove
-
-      it 'should add a --has-components variation class to the component area
-        ex: component-area--has-components if it holds components', ->
-
-        componentManager.setTargetPrefix 'test-prefix'
-        $componentArea = $ '#test-header'
-        $componentArea.append '<div class="vigor-component"></div>'
-
-        componentManager._setComponentAreaPopulatedState $componentArea
-
-        assert $componentArea.hasClass('test-prefix--has-components')
-
-
-      it 'should remove the --has-components variation class to the component area
-      does not hold any components', ->
-
-        componentManager.setTargetPrefix 'test-prefix'
-        $componentArea = $ '#test-header'
-
-        componentManager._setComponentAreaPopulatedState $componentArea
-
-        assert.equal $componentArea.hasClass('test-prefix--has-components'), false
-
-    describe '_createAndAddInstances', ->
-      isTargetAvailableSpy = undefined
-      instanceDefinitions = undefined
-      addInstanceToModelSpy = undefined
-      addInstanceToDomStub = undefined
-
-      beforeEach ->
-        componentSettings =
-          components: [
-            {
-              id: 'mock-component',
-              src: '../test/spec/MockComponent'
-            }
-          ]
-          instanceDefinitions: [
-            {
-              id: 'dummy-instance',
-              componentId: 'mock-component',
-              targetName: '.component-area--header'
-            }
-            {
-              id: 'dummy-instance2',
-              componentId: 'mock-component',
-              targetName: '.component-area--header'
-            }
-          ]
-
-        componentManager.initialize componentSettings
-
-        isTargetAvailableSpy = sandbox.spy componentManager, '_isTargetAvailable'
-        addInstanceToModelSpy = sandbox.spy componentManager, '_addInstanceToModel'
-        addInstanceToDomStub = sandbox.stub componentManager, '_addInstanceToDom'
-        instanceDefinitions = componentManager._instanceDefinitionsCollection.models
-
-      afterEach ->
-        do $('.component-area--header').remove
-
-      it 'should call _isTargetAvailable and pass the instanceDefinition once for
-      every instanceDefinition in the passed array', ->
-        componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
-        assert.equal isTargetAvailableSpy.args[0][0].get('id'), instanceDefinitions[0].get('id')
-        assert.equal isTargetAvailableSpy.args[1][0].get('id'), instanceDefinitions[1].get('id')
-
-      it 'should call _addInstanceToModel once for each instanceDefinition - if target is available', ->
-        $('body').append '<div class="component-area--header"></div>'
-        componentManager._createAndAddInstances instanceDefinitions
-        assert addInstanceToModelSpy.calledTwice
-        assert isTargetAvailableSpy.calledTwice
-        assert.equal addInstanceToModelSpy.args[0][0].get('id'), instanceDefinitions[0].get('id')
-        assert.equal addInstanceToModelSpy.args[1][0].get('id'), instanceDefinitions[1].get('id')
-
-      it 'should not call _addInstanceToModel once for each instanceDefinition - if target is not available', ->
-        componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
-        assert addInstanceToModelSpy.notCalled
-
-      it 'should call _addInstanceToDom once for each instanceDefinition - if target is available', ->
-        $('body').append '<div class="component-area--header"></div>'
-        componentManager._createAndAddInstances instanceDefinitions
-        assert addInstanceToDomStub.calledTwice
-        assert isTargetAvailableSpy.calledTwice
-        assert.equal addInstanceToDomStub.args[0][0].get('id'), instanceDefinitions[0].get('id')
-        assert.equal addInstanceToDomStub.args[1][0].get('id'), instanceDefinitions[1].get('id')
-
-      it 'should not call _addInstanceToDom once for each instanceDefinition - if target is not available', ->
-        componentManager._createAndAddInstances instanceDefinitions
-        assert isTargetAvailableSpy.calledTwice
-        assert addInstanceToDomStub.notCalled
-
-      it 'should call incrementShowCount once for each instanceDefinition - if target is available', ->
-        $('body').append '<div class="component-area--header"></div>'
-        spies = []
-        for instanceDefinition in instanceDefinitions
-          spies.push sandbox.spy(instanceDefinition, 'incrementShowCount')
-
-        componentManager._createAndAddInstances instanceDefinitions
-
-        assert isTargetAvailableSpy.calledTwice
-        for spy in spies
-          assert spy.called
-
-      it 'should not call incrementShowCount once for each instanceDefinition - if target is not available', ->
-        spies = []
-        for instanceDefinition in instanceDefinitions
-          spies.push sandbox.spy(instanceDefinition, 'incrementShowCount')
-
-        componentManager._createAndAddInstances instanceDefinitions
-
-        assert isTargetAvailableSpy.calledTwice
-
-        for spy in spies
-          assert spy.notCalled
-
-      it 'should return the array of instanceDefinitions', ->
-        returned = componentManager._createAndAddInstances instanceDefinitions
-        assert.equal returned, instanceDefinitions
-
-    describe '_getTarget', ->
-      instanceDefinitions = undefined
-
-      beforeEach ->
-        $('body').append '<div class="component-area--test-target" id="test-header"></div>'
-        componentSettings =
-          components: [
-            {
-              id: 'mock-component',
-              src: '../test/spec/MockComponent'
-            }
-          ]
-          instanceDefinitions: [
-            {
-              id: 'dummy-instance',
-              componentId: 'mock-component',
-              targetName: 'body'
-            }
-            {
-              id: 'dummy-instance2',
-              componentId: 'mock-component',
-              targetName: '.component-area--test-target'
-            }
-            {
-              id: 'dummy-instance3',
-              componentId: 'mock-component',
-              targetName: $('.component-area--test-target')
-            }
-          ]
-
-        instanceDefinitions = componentSettings.instanceDefinitions
-        componentManager.initialize componentSettings
-
-      afterEach ->
-        $('component-area--test-target').remove()
-
-      describe 'if targetName is a string', ->
-        it 'should return the passed instanceDefinitions targetName as a jQuery
-        object even if the targetName is body', ->
-          instanceDefinition = componentManager._instanceDefinitionsCollection.at(0)
-          $target = componentManager._getTarget instanceDefinition
-          assert $target instanceof $
-          assert.equal $target.selector, instanceDefinitions[0].targetName
-
-        it 'should return the passed instanceDefinitions targetName as a jQuery object', ->
-          instanceDefinition = componentManager._instanceDefinitionsCollection.at(1)
-          $target = componentManager._getTarget instanceDefinition
-          assert $target instanceof $
-          assert.equal ".#{$target.attr('class')}", instanceDefinitions[1].targetName
-
-      describe 'if targetName is a jQuery object', ->
-        it 'should just return targetName if it is a jQuery object', ->
-          instanceDefinition = componentManager._instanceDefinitionsCollection.at(2)
-          $target = componentManager._getTarget instanceDefinition
-          assert $target instanceof $
-          assert.deepEqual $target, instanceDefinitions[2].targetName
-
-      describe 'if it is not a string and not a jQuery object', ->
-       it 'should throw an instanceDefinition.ERROR.TARGET.WRONG_FORMAT error', ->
-        instanceDefinition = componentManager._instanceDefinitionsCollection.at(2)
-        instanceDefinition.set 'targetName', {}
-        errorFn = -> componentManager._getTarget instanceDefinition
-        assert.throws (-> errorFn()), /target should be a string or a jquery object/
 
     describe '_modelToJSON', ->
       model = new Backbone.Model id: '123'

@@ -42,9 +42,10 @@ Completed
  ☐ Add a full/advanced example that uses vigorjs
 
  Next up
+ ☐ Make the example component more prensentable and easier to understand
  ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
  ☐ Add documentation
- ☐ Listen for reset on collections
+ ☐ Listen for reset on collections?
 
  To consider
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable

@@ -124,16 +124,16 @@ class ComponentManager
     do @_componentDefinitionsCollection?.reset
     do @_instanceDefinitionsCollection?.reset
     do @_activeInstancesCollection?.reset
-    do @_filterModel?.clear
-    do @_globalConditionsModel?.clear
+    @_filterModel?.clear silent: true
+    @_globalConditionsModel?.clear silent: true
     @_$context = undefined
     @_componentClassName = COMPONENT_CLASS_NAME
     @_targetPrefix = TARGET_PREFIX
     return @
 
   dispose: ->
-    do @clear
     do @removeListeners
+    do @clear
     @_componentDefinitionsCollection = undefined
     @_instanceDefinitionsCollection = undefined
     @_globalConditionsModel = undefined
@@ -144,7 +144,6 @@ class ComponentManager
     @_componentDefinitionsCollection.on 'throttled_diff', @_updateActiveComponents
     @_instanceDefinitionsCollection.on 'throttled_diff', @_updateActiveComponents
     @_globalConditionsModel.on 'change', @_updateActiveComponents
-
     @_activeInstancesCollection.on 'add', @_onActiveInstanceAdd
 
     # Propagate events
@@ -409,10 +408,10 @@ class ComponentManager
     activeInstanceDefinitionObjs = _.map instanceDefinitions, (instanceDefinition) =>
       componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
       componentClass = componentDefinition.get 'componentClass'
-      urlPattern = instanceDefinition.get 'urlPattern'
+      urlPatterns = instanceDefinition.get 'urlPattern'
 
       if url
-        urlParams = router.getArguments urlPattern, url
+        urlParams = router.getArguments urlPatterns, url
 
       activeInstanceObj = {
         id: instanceDefinition.id
