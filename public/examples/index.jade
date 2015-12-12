@@ -55,6 +55,7 @@ block common-example-scripts
 
   script(type="text/template" class="example-component-template").
     <h2>ExampleComponent: <%= title %></h2>
+    <button class="toggle-fullsize">Toggle fullsize</button>
     <pre>
     tilte: <%= title %>
     urlPattern: <%= urlPattern %>
@@ -62,7 +63,7 @@ block common-example-scripts
     includeIfFilterStringMatches: <%= includeIfFilterStringMatches %>
     excludeIfFilterStringMatches: <%= excludeIfFilterStringMatches %>
     conditions: <%= conditions %>
-    urlParamsModel: <%= urlParamsModel %>
+    urlParamsCollection: <%= urlParamsCollection %>
     args: <%= args %>
     </pre>
     <div class="component-output"></div>

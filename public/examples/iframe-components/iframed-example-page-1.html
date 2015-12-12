@@ -20,10 +20,10 @@
       }
 
       // An example of the child parent communication
-      function postMsg(id, data) {
+      function postMsg(id, message) {
         var data = {
           id: id,
-          data: data
+          message: message
         },
         targetOrigin = 'http://localhost:3000';
         parent.postMessage(data, targetOrigin);
@@ -36,28 +36,28 @@
 
       $(document).ready(function () {
         $('.send-msg-button-1').on('click', function () {
-          var data = {
+          var message = {
             width: 300,
             height: 200
           }
-          postMsg(id1, data);
+          postMsg(id1, message);
         });
 
         $('.send-msg-button-2').on('click', function () {
-          var data = {
+          var message = {
             width: 300,
             height: 200
           }
-          postMsg(id2, data);
+          postMsg(id2, message);
         });
 
         $('.send-msg-button-3').on('click', function () {
-          var data = {
+          var message = {
             width: 600,
             height: 400
           }
-          postMsg(id1, data);
-          postMsg(id2, data);
+          postMsg(id1, message);
+          postMsg(id2, message);
         });
       });
 

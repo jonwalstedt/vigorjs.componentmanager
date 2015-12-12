@@ -19,11 +19,7 @@
   position: relative;
   padding: 10px;
   border: 1px dashed #555;
-  &:after {
-    content: '';
-    display: table;
-    clear: both;
-  }
+  @extend %clearfix;
 }
 
 .controls {
@@ -35,11 +31,18 @@
 }
 
 .example-component {
+  position: relative;
+  box-sizing: content-box;
   width: 320px;
   height: 220px;
   float: left;
   overflow: auto;
   margin: 6px;
+}
+
+.example-component.example-component--fullsize {
+  width: calc(100% - 30px);
+  height: auto;
 }
 
 .filter-by-url__header {

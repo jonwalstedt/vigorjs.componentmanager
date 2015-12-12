@@ -1,6 +1,9 @@
 ExampleComponent = Backbone.View.extend({
   className: 'example-component',
   template: _.template($('.example-component-template').html()),
+  events: {
+    'click .toggle-fullsize': '_toggleFullsize'
+  },
 
   initialize: function (args) {
     var
@@ -12,7 +15,7 @@ ExampleComponent = Backbone.View.extend({
         includeIfFilterStringMatches: args.includeIfFilterStringMatches || 'undefined',
         excludeIfFilterStringMatches: args.excludeIfFilterStringMatches || 'undefined',
         conditions: args.conditions || 'undefined',
-        urlParamsModel: this._stringify(args.urlParamsModel.toJSON()),
+        urlParamsCollection: this._stringify(args.urlParamsCollection.toJSON()),
         args: this._stringify(args)
       };
 
@@ -20,8 +23,8 @@ ExampleComponent = Backbone.View.extend({
     this.title = title;
     this.templateData = this._highlightTemplateData(templateData);
     this.$el.css("background", args.background);
-    this.urlParamsModel = args.urlParamsModel;
-    this.listenTo(this.urlParamsModel, 'change', _.bind(this._onUrlParamsChange, this));
+    this.urlParamsCollection = args.urlParamsCollection;
+    this.listenTo(this.urlParamsCollection, 'change', _.bind(this._onUrlParamsChange, this));
   },
 
   render: function () {
@@ -36,8 +39,8 @@ ExampleComponent = Backbone.View.extend({
   },
 
   _onUrlParamsChange: function () {
-    message = 'This component doesnt reinstantiate when the url changes but instead gets new params passed through the urlParamsModel: ';
-    this.$output.html(message + '<pre>' + this._stringify(this.urlParamsModel.toJSON())) + '</pre>';
+    message = 'This component doesnt reinstantiate when the url changes but instead gets new params passed through the urlParamsCollection: ';
+    this.$output.html(message + '<pre>' + this._stringify(this.urlParamsCollection.toJSON())) + '</pre>';
   },
 
   _stringify: function (string) {
@@ -51,5 +54,9 @@ ExampleComponent = Backbone.View.extend({
       }
     }
     return data;
+  },
+
+  _toggleFullsize: function (event) {
+    $(event.currentTarget).parent().toggleClass('example-component--fullsize');
   }
 });
