@@ -45,12 +45,7 @@ class Router extends Backbone.Router
 
     storeNames = (matches, args) ->
       for name, i in matches
-        name = name.replace(':', '')
-                   .replace('(', '')
-                   .replace(')', '')
-                   .replace('*', '')
-                   .replace('/', '')
-
+        name = name.replace /([^a-z0-9]+)/gi, ''
         params[name] = args[i]
 
     if optionalParams

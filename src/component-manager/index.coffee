@@ -71,8 +71,8 @@ class ComponentManager
     componentDefinitions = @_componentDefinitionsCollection.toJSON()
     instanceDefinitions = @_instanceDefinitionsCollection.toJSON()
 
-    for instanceDefinition in instanceDefinitions
-      instanceDefinition.instance = undefined
+    for componentDefinition in componentDefinitions
+      componentDefinition.componentClass = undefined
 
     $context = @getContext()
     if $context.length > 0
@@ -426,8 +426,12 @@ class ComponentManager
       reInstantiate = instanceDefinition.get 'reInstantiate'
       urlParams = undefined
 
-      if url
+      if url? or url is ''
         urlParams = router.getArguments instanceDefinition.get('urlPattern'), url
+      else
+        urlParams =
+          _id: 'noUrlPatternsDefined'
+          url: url
 
       activeInstanceObj =
         id: id

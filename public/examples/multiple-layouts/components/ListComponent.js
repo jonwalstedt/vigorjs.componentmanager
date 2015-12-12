@@ -5,14 +5,14 @@ app.components.ListComponent = Backbone.View.extend({
 
   className: 'example-list',
   template: _.template($('script.list-template').html()),
-  urlParams: undefined,
+  urlParamsModel: undefined,
 
   initialize: function (attributes) {
-    this.urlParams = attributes.urlParamsModel;
+    this.urlParamsModel = attributes.urlParamsCollection.at(0);
   },
 
   render: function () {
-    id = this.urlParams.get('id') || '';
+    id = this.urlParamsModel.get('id') || '';
     this.$el.html(this.template({
       id: id
     }));

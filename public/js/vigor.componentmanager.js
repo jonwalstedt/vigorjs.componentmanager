@@ -258,7 +258,7 @@
           results = [];
           for (i = j = 0, len = matches.length; j < len; i = ++j) {
             name = matches[i];
-            name = name.replace(':', '').replace('(', '').replace(')', '').replace('*', '').replace('/', '');
+            name = name.replace(/([^a-z0-9]+)/gi, '');
             results.push(params[name] = args[i]);
           }
           return results;
@@ -510,13 +510,13 @@
       };
 
       ComponentDefinitionModel.prototype.passesFilter = function(filterModel, globalConditionsModel) {
-        if (!this.areConditionsMet(filterModel, globalConditionsModel)) {
+        if (!this._areConditionsMet(filterModel, globalConditionsModel)) {
           return false;
         }
         return true;
       };
 
-      ComponentDefinitionModel.prototype.areConditionsMet = function(filterModel, globalConditionsModel) {
+      ComponentDefinitionModel.prototype._areConditionsMet = function(filterModel, globalConditionsModel) {
         var componentConditions, condition, filter, globalConditions, j, len, shouldBeIncluded;
         filter = (filterModel != null ? filterModel.toJSON() : void 0) || {};
         globalConditions = (globalConditionsModel != null ? globalConditionsModel.toJSON() : void 0) || {};
@@ -956,7 +956,7 @@
         filter = (filterModel != null ? filterModel.toJSON() : void 0) || {};
         globalConditions = (globalConditionsModel != null ? globalConditionsModel.toJSON() : void 0) || {};
         if ((filter != null ? filter.url : void 0) || (filter != null ? filter.url : void 0) === '') {
-          urlMatch = this.doesUrlPatternMatch(filter.url);
+          urlMatch = this._doesUrlPatternMatch(filter.url);
           if (urlMatch != null) {
             if (!urlMatch) {
               return false;
@@ -964,7 +964,7 @@
           }
         }
         if (this.get('conditions')) {
-          areConditionsMet = this.areConditionsMet(filter, globalConditions);
+          areConditionsMet = this._areConditionsMet(filter, globalConditions);
           if (areConditionsMet != null) {
             if (!areConditionsMet) {
               return false;
@@ -973,7 +973,7 @@
         }
         if (filter != null ? filter.filterString : void 0) {
           if (this.get('includeIfFilterStringMatches') != null) {
-            filterStringMatch = this.includeIfFilterStringMatches(filter.filterString);
+            filterStringMatch = this._includeIfFilterStringMatches(filter.filterString);
             if (filterStringMatch != null) {
               if (!filterStringMatch) {
                 return false;
@@ -981,7 +981,7 @@
             }
           }
           if (this.get('excludeIfFilterStringMatches') != null) {
-            filterStringMatch = this.excludeIfFilterStringMatches(filter.filterString);
+            filterStringMatch = this._excludeIfFilterStringMatches(filter.filterString);
             if (filterStringMatch != null) {
               if (!filterStringMatch) {
                 return false;
@@ -995,7 +995,7 @@
           }
         }
         if (filter != null ? filter.includeIfMatch : void 0) {
-          filterStringMatch = this.includeIfMatch(filter.includeIfMatch);
+          filterStringMatch = this._includeIfMatch(filter.includeIfMatch);
           if (filter != null ? (ref1 = filter.options) != null ? ref1.forceFilterStringMatching : void 0 : void 0) {
             filterStringMatch = !!filterStringMatch;
           }
@@ -1006,7 +1006,7 @@
           }
         }
         if (filter != null ? filter.excludeIfMatch : void 0) {
-          filterStringMatch = this.excludeIfMatch(filter.excludeIfMatch);
+          filterStringMatch = this._excludeIfMatch(filter.excludeIfMatch);
           if (filter != null ? (ref2 = filter.options) != null ? ref2.forceFilterStringMatching : void 0 : void 0) {
             filterStringMatch = !!filterStringMatch;
           }
@@ -1017,7 +1017,7 @@
           }
         }
         if (filter != null ? filter.hasToMatch : void 0) {
-          filterStringMatch = this.hasToMatch(filter.hasToMatch);
+          filterStringMatch = this._hasToMatch(filter.hasToMatch);
           if (filterStringMatch != null) {
             if (!filterStringMatch) {
               return false;
@@ -1025,7 +1025,7 @@
           }
         }
         if (filter != null ? filter.cantMatch : void 0) {
-          filterStringMatch = this.cantMatch(filter.cantMatch);
+          filterStringMatch = this._cantMatch(filter.cantMatch);
           if (filterStringMatch != null) {
             if (!filterStringMatch) {
               return false;
@@ -1051,7 +1051,32 @@
         return exceedsShowCount;
       };
 
-      InstanceDefinitionModel.prototype.includeIfMatch = function(regexp) {
+      InstanceDefinitionModel.prototype.dispose = function() {
+        return this.clear({
+          silent: true
+        });
+      };
+
+      InstanceDefinitionModel.prototype.isTargetAvailable = function($context) {
+        var ref;
+        if ($context == null) {
+          $context = $('body');
+        }
+        return ((ref = this.getTarget($context)) != null ? ref.length : void 0) > 0;
+      };
+
+      InstanceDefinitionModel.prototype.getTarget = function($context) {
+        var ref, ref1;
+        if ($context == null) {
+          $context = $('body');
+        }
+        if (!(((ref = this._$target) != null ? (ref1 = ref.selector) != null ? ref1.indexOf(this._getTargetName()) : void 0 : void 0) > -1)) {
+          this._refreshTarget($context);
+        }
+        return this._$target;
+      };
+
+      InstanceDefinitionModel.prototype._includeIfMatch = function(regexp) {
         var filterString;
         filterString = this.get('filterString');
         if (filterString) {
@@ -1059,7 +1084,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.excludeIfMatch = function(regexp) {
+      InstanceDefinitionModel.prototype._excludeIfMatch = function(regexp) {
         var filterString;
         filterString = this.get('filterString');
         if (filterString) {
@@ -1067,15 +1092,15 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.hasToMatch = function(regexp) {
-        return !!this.includeIfMatch(regexp);
+      InstanceDefinitionModel.prototype._hasToMatch = function(regexp) {
+        return !!this._includeIfMatch(regexp);
       };
 
-      InstanceDefinitionModel.prototype.cantMatch = function(regexp) {
-        return !!this.excludeIfMatch(regexp);
+      InstanceDefinitionModel.prototype._cantMatch = function(regexp) {
+        return !!this._excludeIfMatch(regexp);
       };
 
-      InstanceDefinitionModel.prototype.includeIfFilterStringMatches = function(filterString) {
+      InstanceDefinitionModel.prototype._includeIfFilterStringMatches = function(filterString) {
         var regexp;
         regexp = this.get('includeIfFilterStringMatches');
         if (regexp) {
@@ -1083,7 +1108,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.excludeIfFilterStringMatches = function(filterString) {
+      InstanceDefinitionModel.prototype._excludeIfFilterStringMatches = function(filterString) {
         var regexp;
         regexp = this.get('excludeIfFilterStringMatches');
         if (regexp) {
@@ -1091,7 +1116,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.doesUrlPatternMatch = function(url) {
+      InstanceDefinitionModel.prototype._doesUrlPatternMatch = function(url) {
         var j, len, match, pattern, routeRegExp, urlPattern;
         match = false;
         urlPattern = this.get('urlPattern');
@@ -1113,7 +1138,7 @@
         }
       };
 
-      InstanceDefinitionModel.prototype.areConditionsMet = function(filter, globalConditions) {
+      InstanceDefinitionModel.prototype._areConditionsMet = function(filter, globalConditions) {
         var condition, instanceConditions, j, len, shouldBeIncluded;
         instanceConditions = this.get('conditions');
         shouldBeIncluded = true;
@@ -1141,31 +1166,6 @@
           }
         }
         return shouldBeIncluded;
-      };
-
-      InstanceDefinitionModel.prototype.dispose = function() {
-        return this.clear({
-          silent: true
-        });
-      };
-
-      InstanceDefinitionModel.prototype.isTargetAvailable = function($context) {
-        var ref;
-        if ($context == null) {
-          $context = $('body');
-        }
-        return ((ref = this.getTarget($context)) != null ? ref.length : void 0) > 0;
-      };
-
-      InstanceDefinitionModel.prototype.getTarget = function($context) {
-        var ref, ref1;
-        if ($context == null) {
-          $context = $('body');
-        }
-        if (!(((ref = this._$target) != null ? (ref1 = ref.selector) != null ? ref1.indexOf(this._getTargetName()) : void 0 : void 0) > -1)) {
-          this._refreshTarget($context);
-        }
-        return this._$target;
       };
 
       InstanceDefinitionModel.prototype._refreshTarget = function($context) {
@@ -1399,14 +1399,14 @@
       };
 
       ComponentManager.prototype.serialize = function() {
-        var $context, classes, componentDefinitions, componentSettings, conditions, contextSelector, filter, instanceDefinition, instanceDefinitions, j, len, ref, settings, tagName;
+        var $context, classes, componentDefinition, componentDefinitions, componentSettings, conditions, contextSelector, filter, instanceDefinitions, j, len, ref, settings, tagName;
         componentSettings = {};
         conditions = this._globalConditionsModel.toJSON();
         componentDefinitions = this._componentDefinitionsCollection.toJSON();
         instanceDefinitions = this._instanceDefinitionsCollection.toJSON();
-        for (j = 0, len = instanceDefinitions.length; j < len; j++) {
-          instanceDefinition = instanceDefinitions[j];
-          instanceDefinition.instance = void 0;
+        for (j = 0, len = componentDefinitions.length; j < len; j++) {
+          componentDefinition = componentDefinitions[j];
+          componentDefinition.componentClass = void 0;
         }
         $context = this.getContext();
         if ($context.length > 0) {
@@ -1846,8 +1846,13 @@
             order = instanceDefinition.get('order');
             reInstantiate = instanceDefinition.get('reInstantiate');
             urlParams = void 0;
-            if (url) {
+            if ((url != null) || url === '') {
               urlParams = router.getArguments(instanceDefinition.get('urlPattern'), url);
+            } else {
+              urlParams = {
+                _id: 'noUrlPatternsDefined',
+                url: url
+              };
             }
             activeInstanceObj = {
               id: id,

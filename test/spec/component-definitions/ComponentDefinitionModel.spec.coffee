@@ -171,41 +171,41 @@ describe 'ComponentDefinitionModel', ->
       assert result is model.deferred.promise()
 
   describe 'passesFilter', ->
-    it 'should call areConditionsMet and pass the filterModel and the globalConditionsModel', ->
+    it 'should call _areConditionsMet and pass the filterModel and the globalConditionsModel', ->
       mockFilterModel = new Backbone.Model()
       mockGlobalConditionsModel = new Backbone.Model()
       model = new ComponentDefinitionModel()
 
-      areConditionsMetSpy = sandbox.spy model, 'areConditionsMet'
+      areConditionsMetSpy = sandbox.spy model, '_areConditionsMet'
 
       model.passesFilter mockFilterModel, mockGlobalConditionsModel
       assert areConditionsMetSpy.calledWith mockFilterModel, mockGlobalConditionsModel
 
-    it 'should return true if areConditionsMet returns true', ->
+    it 'should return true if _areConditionsMet returns true', ->
       mockFilterModel = new Backbone.Model()
       mockGlobalConditionsModel = new Backbone.Model()
       model = new ComponentDefinitionModel
         conditions: ->
           return true
 
-      areConditionsMetSpy = sandbox.spy model, 'areConditionsMet'
+      areConditionsMetSpy = sandbox.spy model, '_areConditionsMet'
 
       passesFilter = model.passesFilter mockFilterModel, mockGlobalConditionsModel
       assert.equal passesFilter, true
 
-    it 'should return false if areConditionsMet returns false', ->
+    it 'should return false if _areConditionsMet returns false', ->
       mockFilterModel = new Backbone.Model()
       mockGlobalConditionsModel = new Backbone.Model()
       model = new ComponentDefinitionModel
         conditions: ->
           return false
 
-      areConditionsMetSpy = sandbox.spy model, 'areConditionsMet'
+      areConditionsMetSpy = sandbox.spy model, '_areConditionsMet'
 
       passesFilter = model.passesFilter mockFilterModel, mockGlobalConditionsModel
       assert.equal passesFilter, false
 
-  describe 'areConditionsMet', ->
+  describe '_areConditionsMet', ->
     it 'should return false if the condition is a method that returns falsy', ->
       falsyValues = [false, undefined, 0, '', null, NaN]
       for value in falsyValues
@@ -215,7 +215,7 @@ describe 'ComponentDefinitionModel', ->
           conditions: -> return value
 
         model = new ComponentDefinitionModel(componentDefinitionObj)
-        assert.equal model.areConditionsMet(), false
+        assert.equal model._areConditionsMet(), false
 
     it 'should return true if the condition is a method that returns truthy', ->
       truthyValues = [true, {}, [], 42, 'foo', new Date()]
@@ -226,7 +226,7 @@ describe 'ComponentDefinitionModel', ->
           conditions: -> return value
 
         model = new ComponentDefinitionModel(componentDefinitionObj)
-        assert.equal model.areConditionsMet(), true
+        assert.equal model._areConditionsMet(), true
 
     it 'should return false if one out of many condition returns false', ->
       falsyMethod = ->
@@ -241,7 +241,7 @@ describe 'ComponentDefinitionModel', ->
         conditions: [truthyMethod, falsyMethod, truthyMethod]
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      assert.equal model.areConditionsMet(), false
+      assert.equal model._areConditionsMet(), false
 
     it 'should return true if all of out of many condition returns true', ->
       truthyMethod = ->
@@ -253,7 +253,7 @@ describe 'ComponentDefinitionModel', ->
         conditions: [truthyMethod, truthyMethod, truthyMethod]
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      assert.equal model.areConditionsMet(), true
+      assert.equal model._areConditionsMet(), true
 
     it 'should run condition method on globalConditions mode if condition is a
     string', ->
@@ -270,7 +270,7 @@ describe 'ComponentDefinitionModel', ->
         conditions: 'truthyMethod'
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      model.areConditionsMet(filterModel, globalConditionsModel)
+      model._areConditionsMet(filterModel, globalConditionsModel)
       assert.ok stub.called
 
     it 'should run condition methods on globalConditions object if conditions is
@@ -293,7 +293,7 @@ describe 'ComponentDefinitionModel', ->
         conditions: ['method1', 'method2', 'method3']
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      result = model.areConditionsMet(filterModel, globalConditionsModel)
+      result = model._areConditionsMet(filterModel, globalConditionsModel)
       assert.ok stub1.called
       assert.ok stub2.called
       assert.ok stub3.called
@@ -315,7 +315,7 @@ describe 'ComponentDefinitionModel', ->
           conditions: 'truthyMethod'
 
         model = new ComponentDefinitionModel(componentDefinitionObj)
-        result = model.areConditionsMet(filterModel, globalConditionsModel)
+        result = model._areConditionsMet(filterModel, globalConditionsModel)
         assert.equal result, false
 
     it 'should return true if condition is a string and can be used as a key on
@@ -335,7 +335,7 @@ describe 'ComponentDefinitionModel', ->
           conditions: 'truthyMethod'
 
         model = new ComponentDefinitionModel(componentDefinitionObj)
-        result = model.areConditionsMet(filterModel, globalConditionsModel)
+        result = model._areConditionsMet(filterModel, globalConditionsModel)
         assert.equal result, true
 
     it 'should throw an error if the condition is a string and no mehod is
@@ -352,7 +352,7 @@ describe 'ComponentDefinitionModel', ->
         falsyMethod: -> return false
 
       model = new ComponentDefinitionModel(componentDefinitionObj)
-      errorFn = -> model.areConditionsMet(filterModel, globalConditionsModel)
+      errorFn = -> model._areConditionsMet(filterModel, globalConditionsModel)
       assert.throws (-> errorFn()), /Trying to verify condition truthyMethod but it has not been registered yet/
 
   describe '_isUrl', ->

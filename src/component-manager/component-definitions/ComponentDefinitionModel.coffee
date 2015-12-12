@@ -96,11 +96,11 @@ class ComponentDefinitionModel extends BaseModel
     return @deferred.promise()
 
   passesFilter: (filterModel, globalConditionsModel) ->
-    unless @areConditionsMet filterModel, globalConditionsModel
+    unless @_areConditionsMet filterModel, globalConditionsModel
       return false
     return true
 
-  areConditionsMet: (filterModel, globalConditionsModel) ->
+  _areConditionsMet: (filterModel, globalConditionsModel) ->
     filter = filterModel?.toJSON() or {}
     globalConditions = globalConditionsModel?.toJSON() or {}
     componentConditions = @get 'conditions'

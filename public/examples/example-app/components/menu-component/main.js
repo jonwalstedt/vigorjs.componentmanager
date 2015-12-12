@@ -15,7 +15,7 @@ define(function (require) {
 
     constructor: function (options) {
       // console.log('Menu initialized');
-      this._urlParamsModel = options.urlParamsModel;
+      this._urlParamsModel = options.urlParamsCollection.at(0);
       this._menuViewModel = new MenuViewModel();
       this._menuView = new MenuView({
         viewModel: this._menuViewModel

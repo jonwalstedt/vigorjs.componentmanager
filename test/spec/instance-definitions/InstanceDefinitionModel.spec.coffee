@@ -123,11 +123,11 @@ describe 'InstanceDefinitionModel', ->
         assert.equal passesFilter, false
 
     describe 'conditions', ->
-      it 'should call areConditionsMet if conditions are set', ->
+      it 'should call _areConditionsMet if conditions are set', ->
         instanceDefinitionModel.set 'conditions', -> return false
-        sandbox.spy instanceDefinitionModel, 'areConditionsMet'
+        sandbox.spy instanceDefinitionModel, '_areConditionsMet'
         instanceDefinitionModel.passesFilter()
-        assert instanceDefinitionModel.areConditionsMet.called
+        assert instanceDefinitionModel._areConditionsMet.called
 
       it 'should return true if conditions passes and no other filters are defined', ->
         instanceDefinitionModel.set 'conditions', -> return true
@@ -495,386 +495,6 @@ describe 'InstanceDefinitionModel', ->
 
 
 
-
-  describe 'hasToMatch', ->
-    it 'should call includeIfMatch', ->
-      sandbox.spy instanceDefinitionModel, 'includeIfMatch'
-      instanceDefinitionModel.hasToMatch 'lorem ipsum'
-      assert instanceDefinitionModel.includeIfMatch.called
-
-    it 'should return true if string matches', ->
-      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
-      matches = instanceDefinitionModel.hasToMatch 'lorem ipsum'
-      assert.equal matches, true
-
-    it 'should return false if string doesnt match', ->
-      instanceDefinitionModel.set 'filterString', 'foo bar'
-      matches = instanceDefinitionModel.hasToMatch 'lorem ipsum'
-      assert.equal matches, false
-
-    it 'should return false if filterString is undefined', ->
-      instanceDefinitionModel.set 'filterString', 'foo bar'
-      matches = instanceDefinitionModel.hasToMatch 'lorem ipsum'
-      assert.equal matches, false
-
-
-
-
-  describe 'cantMatch', ->
-    it 'should call excludeIfMatch', ->
-      sandbox.spy instanceDefinitionModel, 'excludeIfMatch'
-      instanceDefinitionModel.cantMatch 'lorem ipsum'
-      assert instanceDefinitionModel.excludeIfMatch.called
-
-    it 'should return false if string matches', ->
-      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
-      matches = instanceDefinitionModel.cantMatch 'lorem ipsum'
-      assert.equal matches, false
-
-    it 'should return true if string doesnt match', ->
-      instanceDefinitionModel.set 'filterString', 'foo bar'
-      matches = instanceDefinitionModel.cantMatch 'lorem ipsum'
-      assert.equal matches, true
-
-    it 'should return true if filterString is undefined', ->
-      instanceDefinitionModel.set 'filterString', 'foo bar'
-      matches = instanceDefinitionModel.cantMatch 'lorem ipsum'
-      assert.equal matches, true
-
-
-
-
-  describe 'includeIfMatch', ->
-    it 'should return true if string matches', ->
-      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
-      matches = instanceDefinitionModel.includeIfMatch 'lorem ipsum'
-      assert.equal matches, true
-
-    it 'should return false if string doesnt match', ->
-      instanceDefinitionModel.set 'filterString', 'foo bar'
-      matches = instanceDefinitionModel.includeIfMatch 'lorem ipsum'
-      assert.equal matches, false
-
-    it 'should return undefined if filterString is undefined', ->
-      instanceDefinitionModel.set 'filterString', undefined
-      matches = instanceDefinitionModel.includeIfMatch 'lorem ipsum'
-      assert.equal matches, undefined
-
-    it 'should handle a regexp as passed filterString', ->
-      instanceDefinitionModel.set 'filterString', 'foo/bar/baz'
-      matches = instanceDefinitionModel.includeIfMatch /[a-z]+/g
-      assert.equal matches, true
-
-
-
-
-  describe 'includeIfFilterStringMatches', ->
-    it 'should return true if includeIfFilterStringMatches is defined and matches filterString', ->
-      instanceDefinitionModel.set 'includeIfFilterStringMatches', 'lorem ipsum'
-      matches = instanceDefinitionModel.includeIfFilterStringMatches 'lorem ipsum dolor'
-      assert.equal matches, true
-
-    it 'should return false if includeIfFilterStringMatches is defined and does not match the filterString', ->
-      instanceDefinitionModel.set 'includeIfFilterStringMatches', 'lorem ipsum'
-      matches = instanceDefinitionModel.includeIfFilterStringMatches 'foo bar'
-      assert.equal matches, false
-
-    it 'should return undefined if includeIfFilterStringMatches is undefined', ->
-      instanceDefinitionModel.set 'includeIfFilterStringMatches', undefined
-      matches = instanceDefinitionModel.includeIfFilterStringMatches 'lorem ipsum'
-      assert.equal matches, undefined
-
-
-
-
-  describe 'excludeIfFilterStringMatches', ->
-    it 'should return false if excludeIfFilterStringMatches is defined and matches filterString', ->
-      instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'lorem ipsum'
-      matches = instanceDefinitionModel.excludeIfFilterStringMatches 'lorem ipsum dolor'
-      assert.equal matches, false
-
-    it 'should return true if excludeIfFilterStringMatches is defined and does not match the filterString', ->
-      instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'lorem ipsum'
-      matches = instanceDefinitionModel.excludeIfFilterStringMatches 'foo bar'
-      assert.equal matches, true
-
-    it 'should return undefined if excludeIfFilterStringMatches is undefined', ->
-      instanceDefinitionModel.set 'excludeIfFilterStringMatches', undefined
-      matches = instanceDefinitionModel.excludeIfFilterStringMatches 'lorem ipsum'
-      assert.equal matches, undefined
-
-
-
-
-  describe 'doesUrlPatternMatch', ->
-    it 'should call router.routeToRegExp with the urlPattern', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      sandbox.spy router.prototype, 'routeToRegExp'
-      instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
-      assert router.prototype.routeToRegExp.calledWith 'foo/:id'
-
-    it 'should return true if a single urlPattern matches the passed url', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:name-:mode'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/bar-baz'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:type/:page/:id'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/*splat'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)(/:qux)'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
-      assert.equal match, true
-
-    it 'should return false if a single urlPattern does not match the passed url', ->
-      instanceDefinitionModel.set 'urlPattern', 'foo'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:name-:mode'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/bar-baz'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:type/:page/:id'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/*splat'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)(/:qux)'
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
-      assert.equal match, false
-
-    it 'should return true if one out of many urlPatterns matches the passed url', ->
-      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/bar-baz'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/bar-baz'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2/3'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'bar/1/2'
-      assert.equal match, true
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)(/:qux)', 'bar/:baz(/:qux)(/:quux)']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo/1/2/3'
-      assert.equal match, true
-
-    it 'should return false if the passed url doesnt match any of the urlPatterns', ->
-      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'baz'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/bar-baz'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2/3'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2/3'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2'
-      assert.equal match, false
-
-      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)(/:qux)', 'bar/:baz(/:qux)(/:quux)']
-      match = instanceDefinitionModel.doesUrlPatternMatch 'baz/1/2/3'
-      assert.equal match, false
-
-    it 'should return true if the passed url is an empty string and the urlPattern 
-    is an empty string', ->
-      instanceDefinitionModel.set 'urlPattern', ''
-      match = instanceDefinitionModel.doesUrlPatternMatch ''
-      assert.equal match, true
-
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
-      assert.equal match, false
-
-    it 'return undefined if the urlPattern is undefined', ->
-      instanceDefinitionModel.set 'urlPattern', undefined
-      match = instanceDefinitionModel.doesUrlPatternMatch 'foo'
-      assert.equal match, undefined
-
-
-
-
-  describe 'areConditionsMet', ->
-    it 'should return true if instanceConditions is undefined', ->
-      instanceDefinitionModel.set 'conditions', undefined
-      areConditionsMet = instanceDefinitionModel.areConditionsMet()
-      assert.equal areConditionsMet, true
-
-    it 'should return true if the condition is a method that returns true', ->
-      instanceDefinitionModel.set 'conditions', -> return true
-      areConditionsMet = instanceDefinitionModel.areConditionsMet()
-      assert.equal areConditionsMet, true
-
-    it 'should return false if the condition is a method that returns false', ->
-      instanceDefinitionModel.set 'conditions', -> return false
-      areConditionsMet = instanceDefinitionModel.areConditionsMet()
-      assert.equal areConditionsMet, false
-
-    it 'should return true if there are multiple conditions and all of them returns true', ->
-      instanceDefinitionModel.set 'conditions', [
-        -> return true,
-        -> return true,
-        -> return true
-      ]
-      areConditionsMet = instanceDefinitionModel.areConditionsMet()
-      assert.equal areConditionsMet, true
-
-    it 'should return false if there are multiple conditions and any of them returns false', ->
-      instanceDefinitionModel.set 'conditions', [
-        -> return true,
-        -> return true,
-        -> return false
-      ]
-      areConditionsMet = instanceDefinitionModel.areConditionsMet()
-      assert.equal areConditionsMet, false
-
-    it 'should use methods in globalConditions if the condition is a string
-    (the string will be used as a key in the globalConditions object)', ->
-      instanceDefinitionModel.set 'conditions', 'fooCheck'
-      filter = undefined
-      globalConditions =
-        fooCheck: sandbox.spy()
-
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
-      assert globalConditions.fooCheck.called
-
-    it 'should return true if targeted method in globalConditions returns true', ->
-      instanceDefinitionModel.set 'conditions', 'fooCheck'
-      filter = undefined
-      globalConditions =
-        fooCheck: -> return true
-
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
-      assert.equal areConditionsMet, true
-
-    it 'should return false if targeted method in globalConditions returns false', ->
-      instanceDefinitionModel.set 'conditions', 'fooCheck'
-      filter = undefined
-      globalConditions =
-        fooCheck: -> return false
-
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
-      assert.equal areConditionsMet, false
-
-    it 'should return true if all targeted methods in globalConditions returns true', ->
-      instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
-      filter = undefined
-      globalConditions =
-        fooCheck: -> return true
-        barCheck: -> return true
-        bazCheck: -> return true
-
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
-      assert.equal areConditionsMet, true
-
-    it 'should return false if any of the targeted methods in globalConditions returns false', ->
-      instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
-      filter = undefined
-      globalConditions =
-        fooCheck: -> return true
-        barCheck: -> return false
-        bazCheck: -> return true
-
-      areConditionsMet = instanceDefinitionModel.areConditionsMet(filter, globalConditions)
-      assert.equal areConditionsMet, false
-
-    it 'should throw an error if the condition is a string and no global conditions was passed', ->
-      instanceDefinitionModel.set 'conditions', 'fooCheck'
-      errorFn = -> instanceDefinitionModel.areConditionsMet()
-      assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
-
-    it 'should throw an error if the condition is a string and the key is not
-    present in the globalConditions', ->
-      instanceDefinitionModel.set 'conditions', 'fooCheck'
-      filter = undefined
-      globalConditions =
-        barCheck: -> return true
-
-      errorFn = -> instanceDefinitionModel.areConditionsMet(filter, globalConditions)
-      assert.throws (-> errorFn()), /Trying to verify condition fooCheck but it has not been registered yet/
-
-
-
   describe 'dispose', ->
     it 'should call clear', ->
       sandbox.spy instanceDefinitionModel, 'clear'
@@ -936,6 +556,386 @@ describe 'InstanceDefinitionModel', ->
 
       result = do instanceDefinitionModel.getTarget
       assert.equal result, $target
+
+
+
+
+  describe '_hasToMatch', ->
+    it 'should call _includeIfMatch', ->
+      sandbox.spy instanceDefinitionModel, '_includeIfMatch'
+      instanceDefinitionModel._hasToMatch 'lorem ipsum'
+      assert instanceDefinitionModel._includeIfMatch.called
+
+    it 'should return true if string matches', ->
+      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
+      matches = instanceDefinitionModel._hasToMatch 'lorem ipsum'
+      assert.equal matches, true
+
+    it 'should return false if string doesnt match', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel._hasToMatch 'lorem ipsum'
+      assert.equal matches, false
+
+    it 'should return false if filterString is undefined', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel._hasToMatch 'lorem ipsum'
+      assert.equal matches, false
+
+
+
+
+  describe '_cantMatch', ->
+    it 'should call _excludeIfMatch', ->
+      sandbox.spy instanceDefinitionModel, '_excludeIfMatch'
+      instanceDefinitionModel._cantMatch 'lorem ipsum'
+      assert instanceDefinitionModel._excludeIfMatch.called
+
+    it 'should return false if string matches', ->
+      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
+      matches = instanceDefinitionModel._cantMatch 'lorem ipsum'
+      assert.equal matches, false
+
+    it 'should return true if string doesnt match', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel._cantMatch 'lorem ipsum'
+      assert.equal matches, true
+
+    it 'should return true if filterString is undefined', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel._cantMatch 'lorem ipsum'
+      assert.equal matches, true
+
+
+
+
+  describe '_includeIfMatch', ->
+    it 'should return true if string matches', ->
+      instanceDefinitionModel.set 'filterString', 'lorem ipsum dolor'
+      matches = instanceDefinitionModel._includeIfMatch 'lorem ipsum'
+      assert.equal matches, true
+
+    it 'should return false if string doesnt match', ->
+      instanceDefinitionModel.set 'filterString', 'foo bar'
+      matches = instanceDefinitionModel._includeIfMatch 'lorem ipsum'
+      assert.equal matches, false
+
+    it 'should return undefined if filterString is undefined', ->
+      instanceDefinitionModel.set 'filterString', undefined
+      matches = instanceDefinitionModel._includeIfMatch 'lorem ipsum'
+      assert.equal matches, undefined
+
+    it 'should handle a regexp as passed filterString', ->
+      instanceDefinitionModel.set 'filterString', 'foo/bar/baz'
+      matches = instanceDefinitionModel._includeIfMatch /[a-z]+/g
+      assert.equal matches, true
+
+
+
+
+  describe '_includeIfFilterStringMatches', ->
+    it 'should return true if _includeIfFilterStringMatches is defined and matches filterString', ->
+      instanceDefinitionModel.set 'includeIfFilterStringMatches', 'lorem ipsum'
+      matches = instanceDefinitionModel._includeIfFilterStringMatches 'lorem ipsum dolor'
+      assert.equal matches, true
+
+    it 'should return false if _includeIfFilterStringMatches is defined and does not match the filterString', ->
+      instanceDefinitionModel.set 'includeIfFilterStringMatches', 'lorem ipsum'
+      matches = instanceDefinitionModel._includeIfFilterStringMatches 'foo bar'
+      assert.equal matches, false
+
+    it 'should return undefined if _includeIfFilterStringMatches is undefined', ->
+      instanceDefinitionModel.set 'includeIfFilterStringMatches', undefined
+      matches = instanceDefinitionModel._includeIfFilterStringMatches 'lorem ipsum'
+      assert.equal matches, undefined
+
+
+
+
+  describe '_excludeIfFilterStringMatches', ->
+    it 'should return false if _excludeIfFilterStringMatches is defined and matches filterString', ->
+      instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'lorem ipsum'
+      matches = instanceDefinitionModel._excludeIfFilterStringMatches 'lorem ipsum dolor'
+      assert.equal matches, false
+
+    it 'should return true if _excludeIfFilterStringMatches is defined and does not match the filterString', ->
+      instanceDefinitionModel.set 'excludeIfFilterStringMatches', 'lorem ipsum'
+      matches = instanceDefinitionModel._excludeIfFilterStringMatches 'foo bar'
+      assert.equal matches, true
+
+    it 'should return undefined if _excludeIfFilterStringMatches is undefined', ->
+      instanceDefinitionModel.set 'excludeIfFilterStringMatches', undefined
+      matches = instanceDefinitionModel._excludeIfFilterStringMatches 'lorem ipsum'
+      assert.equal matches, undefined
+
+
+
+
+  describe '_doesUrlPatternMatch', ->
+    it 'should call router.routeToRegExp with the urlPattern', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      sandbox.spy router.prototype, 'routeToRegExp'
+      instanceDefinitionModel._doesUrlPatternMatch 'foo/1'
+      assert router.prototype.routeToRegExp.calledWith 'foo/:id'
+
+    it 'should return true if a single urlPattern matches the passed url', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:name-:mode'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/bar-baz'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:type/:page/:id'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/*splat'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)(/:qux)'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+    it 'should return false if a single urlPattern does not match the passed url', ->
+      instanceDefinitionModel.set 'urlPattern', 'foo'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:id'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:name-:mode'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/bar-baz'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:type/:page/:id'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/*splat'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1/2'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', 'foo/:bar(/:baz)(/:qux)'
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, false
+
+    it 'should return true if one out of many urlPatterns matches the passed url', ->
+      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/bar-baz'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/bar-baz'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1/2/3'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'bar/1/2'
+      assert.equal match, true
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)(/:qux)', 'bar/:baz(/:qux)(/:quux)']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo/1/2/3'
+      assert.equal match, true
+
+    it 'should return false if the passed url doesnt match any of the urlPatterns', ->
+      instanceDefinitionModel.set 'urlPattern', ['foo', 'bar']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'baz'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:id', 'bar/:id']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'baz/1'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:name-:mode', 'bar/:name-:mode']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'baz/bar-baz'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:type/:page/:id', 'bar/:type/:page/:id']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'baz/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/*splat', 'bar/*splat']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'baz/1/2/3'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)', 'bar/:baz(/:qux)']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'baz/1/2'
+      assert.equal match, false
+
+      instanceDefinitionModel.set 'urlPattern', ['foo/:bar(/:baz)(/:qux)', 'bar/:baz(/:qux)(/:quux)']
+      match = instanceDefinitionModel._doesUrlPatternMatch 'baz/1/2/3'
+      assert.equal match, false
+
+    it 'should return true if the passed url is an empty string and the urlPattern 
+    is an empty string', ->
+      instanceDefinitionModel.set 'urlPattern', ''
+      match = instanceDefinitionModel._doesUrlPatternMatch ''
+      assert.equal match, true
+
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo'
+      assert.equal match, false
+
+    it 'return undefined if the urlPattern is undefined', ->
+      instanceDefinitionModel.set 'urlPattern', undefined
+      match = instanceDefinitionModel._doesUrlPatternMatch 'foo'
+      assert.equal match, undefined
+
+
+
+
+  describe '_areConditionsMet', ->
+    it 'should return true if instanceConditions is undefined', ->
+      instanceDefinitionModel.set 'conditions', undefined
+      areConditionsMet = instanceDefinitionModel._areConditionsMet()
+      assert.equal areConditionsMet, true
+
+    it 'should return true if the condition is a method that returns true', ->
+      instanceDefinitionModel.set 'conditions', -> return true
+      areConditionsMet = instanceDefinitionModel._areConditionsMet()
+      assert.equal areConditionsMet, true
+
+    it 'should return false if the condition is a method that returns false', ->
+      instanceDefinitionModel.set 'conditions', -> return false
+      areConditionsMet = instanceDefinitionModel._areConditionsMet()
+      assert.equal areConditionsMet, false
+
+    it 'should return true if there are multiple conditions and all of them returns true', ->
+      instanceDefinitionModel.set 'conditions', [
+        -> return true,
+        -> return true,
+        -> return true
+      ]
+      areConditionsMet = instanceDefinitionModel._areConditionsMet()
+      assert.equal areConditionsMet, true
+
+    it 'should return false if there are multiple conditions and any of them returns false', ->
+      instanceDefinitionModel.set 'conditions', [
+        -> return true,
+        -> return true,
+        -> return false
+      ]
+      areConditionsMet = instanceDefinitionModel._areConditionsMet()
+      assert.equal areConditionsMet, false
+
+    it 'should use methods in globalConditions if the condition is a string
+    (the string will be used as a key in the globalConditions object)', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
+      globalConditions =
+        fooCheck: sandbox.spy()
+
+      areConditionsMet = instanceDefinitionModel._areConditionsMet(filter, globalConditions)
+      assert globalConditions.fooCheck.called
+
+    it 'should return true if targeted method in globalConditions returns true', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
+      globalConditions =
+        fooCheck: -> return true
+
+      areConditionsMet = instanceDefinitionModel._areConditionsMet(filter, globalConditions)
+      assert.equal areConditionsMet, true
+
+    it 'should return false if targeted method in globalConditions returns false', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
+      globalConditions =
+        fooCheck: -> return false
+
+      areConditionsMet = instanceDefinitionModel._areConditionsMet(filter, globalConditions)
+      assert.equal areConditionsMet, false
+
+    it 'should return true if all targeted methods in globalConditions returns true', ->
+      instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
+      filter = undefined
+      globalConditions =
+        fooCheck: -> return true
+        barCheck: -> return true
+        bazCheck: -> return true
+
+      areConditionsMet = instanceDefinitionModel._areConditionsMet(filter, globalConditions)
+      assert.equal areConditionsMet, true
+
+    it 'should return false if any of the targeted methods in globalConditions returns false', ->
+      instanceDefinitionModel.set 'conditions', ['fooCheck', 'barCheck', 'bazCheck']
+      filter = undefined
+      globalConditions =
+        fooCheck: -> return true
+        barCheck: -> return false
+        bazCheck: -> return true
+
+      areConditionsMet = instanceDefinitionModel._areConditionsMet(filter, globalConditions)
+      assert.equal areConditionsMet, false
+
+    it 'should throw an error if the condition is a string and no global conditions was passed', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      errorFn = -> instanceDefinitionModel._areConditionsMet()
+      assert.throws (-> errorFn()), /No global conditions was passed, condition could not be tested/
+
+    it 'should throw an error if the condition is a string and the key is not
+    present in the globalConditions', ->
+      instanceDefinitionModel.set 'conditions', 'fooCheck'
+      filter = undefined
+      globalConditions =
+        barCheck: -> return true
+
+      errorFn = -> instanceDefinitionModel._areConditionsMet(filter, globalConditions)
+      assert.throws (-> errorFn()), /Trying to verify condition fooCheck but it has not been registered yet/
 
 
 

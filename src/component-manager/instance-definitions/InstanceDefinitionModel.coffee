@@ -73,23 +73,23 @@ class InstanceDefinitionModel extends BaseModel
     globalConditions = globalConditionsModel?.toJSON() or {}
 
     if filter?.url or filter?.url is ''
-      urlMatch = @doesUrlPatternMatch filter.url
+      urlMatch = @_doesUrlPatternMatch filter.url
       if urlMatch?
         return false unless urlMatch
 
     if @get('conditions')
-      areConditionsMet = @areConditionsMet filter, globalConditions
+      areConditionsMet = @_areConditionsMet filter, globalConditions
       if areConditionsMet?
         return false unless areConditionsMet
 
     if filter?.filterString
       if @get('includeIfFilterStringMatches')?
-        filterStringMatch = @includeIfFilterStringMatches filter.filterString
+        filterStringMatch = @_includeIfFilterStringMatches filter.filterString
         if filterStringMatch?
           return false unless filterStringMatch
 
       if @get('excludeIfFilterStringMatches')?
-        filterStringMatch = @excludeIfFilterStringMatches filter.filterString
+        filterStringMatch = @_excludeIfFilterStringMatches filter.filterString
         if filterStringMatch?
           return false unless filterStringMatch
 
@@ -102,7 +102,7 @@ class InstanceDefinitionModel extends BaseModel
         return false
 
     if filter?.includeIfMatch
-      filterStringMatch = @includeIfMatch filter.includeIfMatch
+      filterStringMatch = @_includeIfMatch filter.includeIfMatch
 
       if filter?.options?.forceFilterStringMatching
         filterStringMatch = !!filterStringMatch
@@ -111,7 +111,7 @@ class InstanceDefinitionModel extends BaseModel
         return false unless filterStringMatch
 
     if filter?.excludeIfMatch
-      filterStringMatch = @excludeIfMatch filter.excludeIfMatch
+      filterStringMatch = @_excludeIfMatch filter.excludeIfMatch
 
       if filter?.options?.forceFilterStringMatching
         filterStringMatch = !!filterStringMatch
@@ -120,12 +120,12 @@ class InstanceDefinitionModel extends BaseModel
         return false unless filterStringMatch
 
     if filter?.hasToMatch
-      filterStringMatch = @hasToMatch filter.hasToMatch
+      filterStringMatch = @_hasToMatch filter.hasToMatch
       if filterStringMatch?
         return false unless filterStringMatch
 
     if filter?.cantMatch
-      filterStringMatch = @cantMatch filter.cantMatch
+      filterStringMatch = @_cantMatch filter.cantMatch
       if filterStringMatch?
         return false unless filterStringMatch
 
@@ -145,33 +145,44 @@ class InstanceDefinitionModel extends BaseModel
 
     return exceedsShowCount
 
-  includeIfMatch: (regexp) ->
+  dispose: ->
+    @clear silent: true
+
+  isTargetAvailable: ($context = $('body')) ->
+    return @getTarget($context)?.length > 0
+
+  getTarget: ($context = $('body')) ->
+    unless @_$target?.selector?.indexOf(@_getTargetName()) > -1
+      @_refreshTarget $context
+    return @_$target
+
+  _includeIfMatch: (regexp) ->
     filterString = @get 'filterString'
     if filterString
       return !!filterString.match regexp
 
-  excludeIfMatch: (regexp) ->
+  _excludeIfMatch: (regexp) ->
     filterString = @get 'filterString'
     if filterString
       return not !!filterString.match regexp
 
-  hasToMatch: (regexp) ->
-    return !!@includeIfMatch regexp
+  _hasToMatch: (regexp) ->
+    return !!@_includeIfMatch regexp
 
-  cantMatch: (regexp) ->
-    return !!@excludeIfMatch regexp
+  _cantMatch: (regexp) ->
+    return !!@_excludeIfMatch regexp
 
-  includeIfFilterStringMatches: (filterString) ->
+  _includeIfFilterStringMatches: (filterString) ->
     regexp = @get 'includeIfFilterStringMatches'
     if regexp
       return !!filterString?.match regexp
 
-  excludeIfFilterStringMatches: (filterString) ->
+  _excludeIfFilterStringMatches: (filterString) ->
     regexp = @get 'excludeIfFilterStringMatches'
     if regexp
       return not !!filterString?.match regexp
 
-  doesUrlPatternMatch: (url) ->
+  _doesUrlPatternMatch: (url) ->
     match = false
     urlPattern = @get 'urlPattern'
     if urlPattern?
@@ -186,7 +197,7 @@ class InstanceDefinitionModel extends BaseModel
     else
       return undefined
 
-  areConditionsMet: (filter, globalConditions) ->
+  _areConditionsMet: (filter, globalConditions) ->
     instanceConditions = @get 'conditions'
     shouldBeIncluded = true
 
@@ -211,17 +222,6 @@ class InstanceDefinitionModel extends BaseModel
             break
 
     return shouldBeIncluded
-
-  dispose: ->
-    @clear silent: true
-
-  isTargetAvailable: ($context = $('body')) ->
-    return @getTarget($context)?.length > 0
-
-  getTarget: ($context = $('body')) ->
-    unless @_$target?.selector?.indexOf(@_getTargetName()) > -1
-      @_refreshTarget $context
-    return @_$target
 
   _refreshTarget: ($context = $('body')) ->
     targetName = do @_getTargetName
