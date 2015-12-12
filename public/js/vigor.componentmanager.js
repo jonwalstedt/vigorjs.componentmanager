@@ -25,7 +25,7 @@
       root.Vigor = factory(root, root.Backbone, root._, root.$);
     }
   })(this, function(root, Backbone, _, $) {
-    var ActiveInstanceDefinitionModel, ActiveInstancesCollection, BaseCollection, BaseInstanceCollection, BaseModel, ComponentDefinitionModel, ComponentDefinitionsCollection, ComponentManager, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, Vigor, __testOnly, router;
+    var ActiveInstanceDefinitionModel, ActiveInstancesCollection, BaseCollection, BaseInstanceCollection, BaseModel, ComponentDefinitionModel, ComponentDefinitionsCollection, ComponentManager, FilterModel, IframeComponent, InstanceDefinitionModel, InstanceDefinitionsCollection, Router, UrlParamsCollection, UrlParamsModel, Vigor, __testOnly, router;
     Vigor = Backbone.Vigor = root.Vigor || {};
     Vigor.extend = Vigor.extend || Backbone.Model.extend;
     BaseCollection = (function(superClass) {
@@ -217,6 +217,7 @@
           match = routeRegEx.test(url);
           if (match) {
             paramsObject = this._getArgumentsFromUrl(urlPattern, url);
+            paramsObject._id = urlPattern;
             paramsObject.url = url;
             args.push(paramsObject);
           }
@@ -472,30 +473,34 @@
             }
           };
         })(this);
-        if (_.isString(src) && this._isUrl(src)) {
-          resolveClassPromise(Vigor.IframeComponent);
-        } else if (_.isString(src)) {
-          if (_.isString(src) && typeof define === "function" && define.amd) {
-            require([src], (function(_this) {
-              return function(componentClass) {
-                return resolveClassPromise(componentClass);
-              };
-            })(this));
-          } else if (_.isString(src) && typeof exports === "object") {
-            resolveClassPromise(require(src));
-          } else {
-            obj = window;
-            srcObjParts = src.split('.');
-            for (j = 0, len = srcObjParts.length; j < len; j++) {
-              part = srcObjParts[j];
-              obj = obj[part];
-            }
-            resolveClassPromise(obj);
-          }
-        } else if (_.isFunction(src)) {
-          resolveClassPromise(src);
+        if (this.get('componentClass')) {
+          resolveClassPromise(this.get('componentClass'));
         } else {
-          throw this.ERROR.VALIDATION.SRC_WRONG_TYPE;
+          if (_.isString(src) && this._isUrl(src)) {
+            resolveClassPromise(Vigor.IframeComponent);
+          } else if (_.isString(src)) {
+            if (_.isString(src) && typeof define === "function" && define.amd) {
+              require([src], (function(_this) {
+                return function(componentClass) {
+                  return resolveClassPromise(componentClass);
+                };
+              })(this));
+            } else if (_.isString(src) && typeof exports === "object") {
+              resolveClassPromise(require(src));
+            } else {
+              obj = window;
+              srcObjParts = src.split('.');
+              for (j = 0, len = srcObjParts.length; j < len; j++) {
+                part = srcObjParts[j];
+                obj = obj[part];
+              }
+              resolveClassPromise(obj);
+            }
+          } else if (_.isFunction(src)) {
+            resolveClassPromise(src);
+          } else {
+            throw this.ERROR.VALIDATION.SRC_WRONG_TYPE;
+          }
         }
         return this.deferred.promise();
       };
@@ -603,6 +608,30 @@
       return ComponentDefinitionsCollection;
 
     })(BaseCollection);
+    UrlParamsModel = (function(superClass) {
+      extend(UrlParamsModel, superClass);
+
+      function UrlParamsModel() {
+        return UrlParamsModel.__super__.constructor.apply(this, arguments);
+      }
+
+      UrlParamsModel.prototype.idAttribute = "_id";
+
+      return UrlParamsModel;
+
+    })(Backbone.Model);
+    UrlParamsCollection = (function(superClass) {
+      extend(UrlParamsCollection, superClass);
+
+      function UrlParamsCollection() {
+        return UrlParamsCollection.__super__.constructor.apply(this, arguments);
+      }
+
+      UrlParamsCollection.prototype.model = UrlParamsModel;
+
+      return UrlParamsCollection;
+
+    })(Backbone.Collection);
     ActiveInstanceDefinitionModel = (function(superClass) {
       extend(ActiveInstanceDefinitionModel, superClass);
 
@@ -627,12 +656,15 @@
         reInstantiate: false,
         instance: void 0,
         urlParams: void 0,
-        urlParamsModel: new Backbone.Model(),
+        urlParamsCollection: void 0,
         serializedFilter: void 0
       };
 
       ActiveInstanceDefinitionModel.prototype.initialize = function() {
         ActiveInstanceDefinitionModel.__super__.initialize.apply(this, arguments);
+        this.set('urlParamsCollection', new UrlParamsCollection(), {
+          silent: true
+        });
         this.on('add', this._onAdd);
         this.on('remove', this._onRemove);
         this.on('change:instance', this._onInstanceChange);
@@ -640,24 +672,48 @@
         this.on('change:order', this._onOrderChange);
         this.on('change:target', this._onTargetChange);
         this.on('change:serializedFilter', this._onSerializedFilterChange);
-        return this._updateUrlParamsModel();
+        return this._updateUrlParamsCollection();
       };
 
-      ActiveInstanceDefinitionModel.prototype.createInstance = function() {
-        var componentClass, instance;
+      ActiveInstanceDefinitionModel.prototype.tryToReAddStraysToDom = function() {
+        var instance, isAttached;
+        if (!this._isAttached()) {
+          isAttached = this._addInstanceInOrder();
+          if (isAttached) {
+            instance = this.get('instance');
+            if ((instance != null ? instance.delegateEvents : void 0) && _.isFunction(instance != null ? instance.delegateEvents : void 0)) {
+              instance.delegateEvents();
+            }
+          } else {
+            this._disposeInstance();
+          }
+          return this._updateTargetPopulatedState();
+        }
+      };
+
+      ActiveInstanceDefinitionModel.prototype.dispose = function() {
+        this._disposeInstance();
+        this._updateTargetPopulatedState();
+        this.off();
+        return this.clear();
+      };
+
+      ActiveInstanceDefinitionModel.prototype._createInstance = function() {
+        var componentClass, componentClassName, instance;
         componentClass = this.get('componentClass');
+        componentClassName = this.get('componentClassName');
         instance = new componentClass(this._getInstanceArguments());
-        instance.$el.addClass(this.get('componentClassName'));
+        instance.$el.addClass(componentClassName);
         return this.set('instance', instance);
       };
 
-      ActiveInstanceDefinitionModel.prototype.renderInstance = function() {
+      ActiveInstanceDefinitionModel.prototype._renderInstance = function() {
         var instance;
         instance = this.get('instance');
         if (!instance) {
           return;
         }
-        if (!instance.render) {
+        if (!((instance.render != null) && _.isFunction(instance.render))) {
           throw this.ERROR.MISSING_RENDER_METHOD(this.get('id'));
         }
         if ((instance.preRender != null) && _.isFunction(instance.preRender)) {
@@ -669,7 +725,7 @@
         }
       };
 
-      ActiveInstanceDefinitionModel.prototype.addInstanceInOrder = function() {
+      ActiveInstanceDefinitionModel.prototype._addInstanceInOrder = function() {
         var $previousElement, $target, instance, isAttached, order;
         instance = this.get('instance');
         $target = this.get('target');
@@ -695,7 +751,7 @@
         } else {
           $target.append(instance.$el);
         }
-        isAttached = this.isAttached();
+        isAttached = this._isAttached();
         if (isAttached) {
           if ((instance.onAddedToDom != null) && _.isFunction(instance.onAddedToDom)) {
             instance.onAddedToDom();
@@ -704,7 +760,32 @@
         return isAttached;
       };
 
-      ActiveInstanceDefinitionModel.prototype.isAttached = function() {
+      ActiveInstanceDefinitionModel.prototype._disposeInstance = function() {
+        var instance;
+        instance = this.get('instance');
+        if ((instance != null ? instance.dispose : void 0) != null) {
+          instance.dispose();
+        }
+        instance = void 0;
+        return this.set('instance', void 0, {
+          silent: true
+        });
+      };
+
+      ActiveInstanceDefinitionModel.prototype._isTargetPopulated = function() {
+        var $target;
+        $target = this.get('target');
+        return ($target != null ? $target.children().length : void 0) > 0;
+      };
+
+      ActiveInstanceDefinitionModel.prototype._updateTargetPopulatedState = function() {
+        var $target, targetPrefix;
+        $target = this.get('target');
+        targetPrefix = this.get('targetPrefix');
+        return $target != null ? $target.toggleClass(targetPrefix + "--has-components", this._isTargetPopulated()) : void 0;
+      };
+
+      ActiveInstanceDefinitionModel.prototype._isAttached = function() {
         var attached, el, instance;
         instance = this.get('instance');
         attached = false;
@@ -722,61 +803,11 @@
         return attached;
       };
 
-      ActiveInstanceDefinitionModel.prototype.isTargetPopulated = function() {
-        var $target;
-        $target = this.get('target');
-        return $target.children().length > 0;
-      };
-
-      ActiveInstanceDefinitionModel.prototype.updateTargetPopulatedState = function() {
-        var $target, targetPrefix;
-        $target = this.get('target');
-        targetPrefix = this.get('targetPrefix');
-        return $target.toggleClass(targetPrefix + "--has-components", this.isTargetPopulated());
-      };
-
-      ActiveInstanceDefinitionModel.prototype.tryToReAddStraysToDom = function() {
-        var instance, isAttached;
-        if (!this.isAttached()) {
-          isAttached = this.addInstanceInOrder();
-          if (isAttached) {
-            instance = this.get('instance');
-            if ((instance != null ? instance.delegateEvents : void 0) && _.isFunction(instance != null ? instance.delegateEvents : void 0)) {
-              instance.delegateEvents();
-            }
-          } else {
-            this.disposeInstance();
-          }
-          return this.updateTargetPopulatedState();
-        }
-      };
-
-      ActiveInstanceDefinitionModel.prototype.dispose = function() {
-        this.disposeInstance();
-        this.updateTargetPopulatedState();
-        this.off();
-        return this.clear();
-      };
-
-      ActiveInstanceDefinitionModel.prototype.disposeInstance = function() {
-        var instance;
-        instance = this.get('instance');
-        if ((instance != null ? instance.dispose : void 0) != null) {
-          instance.dispose();
-        }
-        instance = void 0;
-        return this.set({
-          'instance': void 0
-        }, {
-          silent: true
-        });
-      };
-
       ActiveInstanceDefinitionModel.prototype._getInstanceArguments = function() {
         var args;
         args = this.get('instanceArguments') || {};
         args.urlParams = this.get('urlParams');
-        args.urlParamsModel = this.get('urlParamsModel');
+        args.urlParamsCollection = this.get('urlParamsCollection');
         return args;
       };
 
@@ -793,42 +824,40 @@
         }
       };
 
-      ActiveInstanceDefinitionModel.prototype._updateUrlParamsModel = function() {
-        var urlParams, urlParamsModel;
+      ActiveInstanceDefinitionModel.prototype._updateUrlParamsCollection = function() {
+        var urlParams, urlParamsCollection;
         urlParams = this.get('urlParams');
-        urlParamsModel = this.get('urlParamsModel');
-        if ((urlParams != null ? urlParams.length : void 0) > 0) {
-          return urlParamsModel.set(urlParams[0]);
-        }
+        urlParamsCollection = this.get('urlParamsCollection');
+        return urlParamsCollection.set(urlParams);
       };
 
       ActiveInstanceDefinitionModel.prototype._onInstanceChange = function() {
-        this.renderInstance();
-        this.addInstanceInOrder();
-        return this.updateTargetPopulatedState();
+        this._renderInstance();
+        this._addInstanceInOrder();
+        return this._updateTargetPopulatedState();
       };
 
       ActiveInstanceDefinitionModel.prototype._onUrlParamsChange = function() {
-        return this._updateUrlParamsModel();
+        return this._updateUrlParamsCollection();
       };
 
       ActiveInstanceDefinitionModel.prototype._onOrderChange = function() {
-        return this.addInstanceInOrder();
+        return this._addInstanceInOrder();
       };
 
       ActiveInstanceDefinitionModel.prototype._onTargetChange = function() {
-        return this.addInstanceInOrder();
+        return this._addInstanceInOrder();
       };
 
       ActiveInstanceDefinitionModel.prototype._onSerializedFilterChange = function() {
         if (this.get('reInstantiate')) {
-          this.disposeInstance();
-          return this.createInstance();
+          this._disposeInstance();
+          return this._createInstance();
         }
       };
 
       ActiveInstanceDefinitionModel.prototype._onAdd = function() {
-        return this.createInstance();
+        return this._createInstance();
       };
 
       ActiveInstanceDefinitionModel.prototype._onRemove = function() {
@@ -878,7 +907,10 @@
         showCount: 0
       };
 
+      InstanceDefinitionModel.prototype._$target = void 0;
+
       InstanceDefinitionModel.prototype.validate = function(attrs, options) {
+        var ref;
         if (!attrs.id) {
           throw this.ERROR.VALIDATION.ID_UNDEFINED;
         }
@@ -901,7 +933,7 @@
           throw this.ERROR.VALIDATION.TARGET_NAME_UNDEFINED;
         }
         if (!_.isString(attrs.targetName)) {
-          if (attrs.targetName.jquery == null) {
+          if (((ref = attrs.targetName) != null ? ref.jquery : void 0) == null) {
             throw this.ERROR.VALIDATION.TARGET_WRONG_FORMAT;
           }
         }
@@ -914,9 +946,7 @@
         }
         showCount = this.get('showCount');
         showCount++;
-        return this.set({
-          'showCount': showCount
-        }, {
+        return this.set('showCount', showCount, {
           silent: silent
         });
       };
@@ -1113,12 +1143,36 @@
         return shouldBeIncluded;
       };
 
+      InstanceDefinitionModel.prototype.dispose = function() {
+        return this.clear({
+          silent: true
+        });
+      };
+
+      InstanceDefinitionModel.prototype.isTargetAvailable = function($context) {
+        var ref;
+        if ($context == null) {
+          $context = $('body');
+        }
+        return ((ref = this.getTarget($context)) != null ? ref.length : void 0) > 0;
+      };
+
       InstanceDefinitionModel.prototype.getTarget = function($context) {
+        var ref, ref1;
+        if ($context == null) {
+          $context = $('body');
+        }
+        if (!(((ref = this._$target) != null ? (ref1 = ref.selector) != null ? ref1.indexOf(this._getTargetName()) : void 0 : void 0) > -1)) {
+          this._refreshTarget($context);
+        }
+        return this._$target;
+      };
+
+      InstanceDefinitionModel.prototype._refreshTarget = function($context) {
         var $target, targetName;
         if ($context == null) {
           $context = $('body');
         }
-        $target = void 0;
         targetName = this._getTargetName();
         if (_.isString(targetName)) {
           if (targetName === 'body') {
@@ -1127,21 +1181,14 @@
             $target = $(targetName, $context);
           }
         } else {
-          if (targetName.jquery != null) {
+          if ((targetName != null ? targetName.jquery : void 0) != null) {
             $target = targetName;
           } else {
             throw this.ERROR.VALIDATION.TARGET_WRONG_FORMAT;
           }
         }
-        return $target;
-      };
-
-      InstanceDefinitionModel.prototype.isTargetAvailable = function() {
-        return this.getTarget().length > 0;
-      };
-
-      InstanceDefinitionModel.prototype.dispose = function() {
-        return this.clear();
+        this._$target = $target;
+        return this._$target;
       };
 
       InstanceDefinitionModel.prototype._getTargetName = function() {
@@ -1427,10 +1474,14 @@
           ref2.reset();
         }
         if ((ref3 = this._filterModel) != null) {
-          ref3.clear();
+          ref3.clear({
+            silent: true
+          });
         }
         if ((ref4 = this._globalConditionsModel) != null) {
-          ref4.clear();
+          ref4.clear({
+            silent: true
+          });
         }
         this._$context = void 0;
         this._componentClassName = COMPONENT_CLASS_NAME;
@@ -1439,8 +1490,8 @@
       };
 
       ComponentManager.prototype.dispose = function() {
-        this.clear();
         this.removeListeners();
+        this.clear();
         this._componentDefinitionsCollection = void 0;
         this._instanceDefinitionsCollection = void 0;
         this._globalConditionsModel = void 0;
@@ -1755,8 +1806,10 @@
         componentClassPromises = this._componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions(instanceDefinitions);
         $.when.apply($, componentClassPromises).then((function(_this) {
           return function() {
-            var lastChange, returnData;
-            lastChange = _this._createActiveInstanceDefinitions(instanceDefinitions);
+            var activeInstanceDefinitionObjs, lastChange, returnData;
+            activeInstanceDefinitionObjs = _this._createActiveInstanceDefinitionObjects(instanceDefinitions);
+            lastChange = _this._activeInstancesCollection.set(activeInstanceDefinitionObjs, options);
+            _.invoke(lastChange, 'tryToReAddStraysToDom');
             returnData = {
               filter: _this._filterModel.toJSON(),
               activeInstances: _this._mapInstances(_this._activeInstancesCollection.models),
@@ -1770,39 +1823,48 @@
         return deferred.promise();
       };
 
-      ComponentManager.prototype._createActiveInstanceDefinitions = function(instanceDefinitions) {
-        var activeInstanceDefinitionObjs, excludeOptions, lastChange, options, url, urlParams;
+      ComponentManager.prototype._createActiveInstanceDefinitionObjects = function(instanceDefinitions) {
+        var $context, activeInstanceDefinitionObjs, componentClassName, excludeOptions, options, serializedFilter, targetPrefix, url;
+        excludeOptions = true;
         url = this._filterModel.get('url');
         options = this._filterModel.get('options');
-        urlParams = void 0;
-        excludeOptions = true;
+        serializedFilter = this._filterModel.serialize(excludeOptions);
+        targetPrefix = this.getTargetPrefix();
+        componentClassName = this.getComponentClassName();
+        $context = this.getContext();
+        if (!_.isArray(instanceDefinitions)) {
+          instanceDefinitions = [instanceDefinitions];
+        }
         activeInstanceDefinitionObjs = _.map(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            var activeInstanceObj, componentClass, componentDefinition, urlPattern;
+            var activeInstanceObj, componentClass, componentDefinition, id, instanceArguments, order, reInstantiate, target, urlParams;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
+            id = instanceDefinition.id;
             componentClass = componentDefinition.get('componentClass');
-            urlPattern = instanceDefinition.get('urlPattern');
+            target = instanceDefinition.getTarget($context);
+            instanceArguments = _this._getInstanceArguments(instanceDefinition, componentDefinition);
+            order = instanceDefinition.get('order');
+            reInstantiate = instanceDefinition.get('reInstantiate');
+            urlParams = void 0;
             if (url) {
-              urlParams = router.getArguments(urlPattern, url);
+              urlParams = router.getArguments(instanceDefinition.get('urlPattern'), url);
             }
             activeInstanceObj = {
-              id: instanceDefinition.id,
+              id: id,
               componentClass: componentClass,
-              target: instanceDefinition.getTarget(_this.getContext()),
-              targetPrefix: _this.getTargetPrefix(),
-              componentClassName: _this.getComponentClassName(),
-              instanceArguments: _this._getInstanceArguments(instanceDefinition, componentDefinition),
-              order: instanceDefinition.get('order'),
-              reInstantiate: instanceDefinition.get('reInstantiate'),
+              target: target,
+              targetPrefix: targetPrefix,
+              componentClassName: componentClassName,
+              instanceArguments: instanceArguments,
+              order: order,
+              reInstantiate: reInstantiate,
               urlParams: urlParams,
-              serializedFilter: _this._filterModel.serialize(excludeOptions)
+              serializedFilter: serializedFilter
             };
             return activeInstanceObj;
           };
         })(this));
-        lastChange = this._activeInstancesCollection.set(activeInstanceDefinitionObjs, options);
-        _.invoke(lastChange, 'tryToReAddStraysToDom');
-        return lastChange;
+        return activeInstanceDefinitionObjs;
       };
 
       ComponentManager.prototype._filterInstanceDefinitions = function() {
@@ -1865,7 +1927,7 @@
       ComponentManager.prototype._filterInstanceDefinitionsByTargetAvailability = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            return instanceDefinition.isTargetAvailable();
+            return instanceDefinition.isTargetAvailable(_this.getContext());
           };
         })(this));
       };
@@ -1915,33 +1977,22 @@
       };
 
       ComponentManager.prototype._onMessageReceived = function(event) {
-        var data, id;
-        id = event.data.id;
-        data = event.data.data;
-        return this.postMessageToInstance(id, data);
+        var id, message, ref, ref1;
+        id = event != null ? (ref = event.data) != null ? ref.id : void 0 : void 0;
+        message = event != null ? (ref1 = event.data) != null ? ref1.message : void 0 : void 0;
+        if (!id) {
+          throw this.ERROR.MESSAGE.MISSING_ID;
+        }
+        if (!message) {
+          throw this.ERROR.MESSAGE.MISSING_MESSAGE;
+        }
+        return this.postMessageToInstance(id, message);
       };
 
       return ComponentManager;
 
     })();
 
-    /* start-test-block */
-    __testOnly = {};
-    __testOnly.ActiveInstancesCollection = ActiveInstancesCollection;
-    __testOnly.ComponentDefinitionsCollection = ComponentDefinitionsCollection;
-    __testOnly.ComponentDefinitionModel = ComponentDefinitionModel;
-    __testOnly.InstanceDefinitionsCollection = InstanceDefinitionsCollection;
-    __testOnly.InstanceDefinitionModel = InstanceDefinitionModel;
-    __testOnly.ActiveInstanceDefinitionModel = ActiveInstanceDefinitionModel;
-    __testOnly.FilterModel = FilterModel;
-    __testOnly.IframeComponent = IframeComponent;
-    __testOnly.BaseCollection = BaseCollection;
-    __testOnly.BaseModel = BaseModel;
-    __testOnly.BaseInstanceCollection = BaseInstanceCollection;
-    __testOnly.router = Router;
-    ComponentManager.__testOnly = __testOnly;
-
-    /* end-test-block */
     _.extend(ComponentManager.prototype, Backbone.Events);
     Vigor.ComponentManager = ComponentManager;
     Vigor.componentManager = new Vigor.ComponentManager();

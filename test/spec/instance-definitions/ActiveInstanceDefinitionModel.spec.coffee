@@ -469,7 +469,7 @@ describe 'ActiveInstanceDefinitionModel', ->
     it 'should silently set the value of the instance attribute to undefined', ->
       setSpy = sandbox.spy activeInstanceDefinitionModel, 'set'
       do activeInstanceDefinitionModel._disposeInstance
-      assert setSpy.calledWith { 'instance': undefined }, { silent: true }
+      assert setSpy.calledWith 'instance', undefined, { silent: true }
 
 
 

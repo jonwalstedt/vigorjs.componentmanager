@@ -387,7 +387,11 @@ class ComponentManager
     componentClassPromises = @_componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions instanceDefinitions
 
     $.when.apply($, componentClassPromises).then =>
-      lastChange = @_createActiveInstanceDefinitions instanceDefinitions
+      activeInstanceDefinitionObjs = @_createActiveInstanceDefinitionObjects instanceDefinitions
+
+      lastChange = @_activeInstancesCollection.set activeInstanceDefinitionObjs, options
+      _.invoke lastChange, 'tryToReAddStraysToDom'
+
       returnData =
         filter: @_filterModel.toJSON()
         activeInstances: @_mapInstances @_activeInstancesCollection.models
@@ -399,38 +403,47 @@ class ComponentManager
 
     return deferred.promise()
 
-  _createActiveInstanceDefinitions: (instanceDefinitions) ->
+  _createActiveInstanceDefinitionObjects: (instanceDefinitions) ->
+    excludeOptions = true
     url = @_filterModel.get 'url'
     options = @_filterModel.get 'options'
-    urlParams = undefined
-    excludeOptions = true
+    serializedFilter = @_filterModel.serialize excludeOptions
+    targetPrefix = do @getTargetPrefix
+    componentClassName = do @getComponentClassName
+    $context = do @getContext
+
+    unless _.isArray(instanceDefinitions)
+      instanceDefinitions = [instanceDefinitions]
 
     activeInstanceDefinitionObjs = _.map instanceDefinitions, (instanceDefinition) =>
       componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
+
+      id = instanceDefinition.id
       componentClass = componentDefinition.get 'componentClass'
-      urlPatterns = instanceDefinition.get 'urlPattern'
+      target = instanceDefinition.getTarget $context
+      instanceArguments = @_getInstanceArguments instanceDefinition, componentDefinition
+      order = instanceDefinition.get 'order'
+      reInstantiate = instanceDefinition.get 'reInstantiate'
+      urlParams = undefined
 
       if url
-        urlParams = router.getArguments urlPatterns, url
+        urlParams = router.getArguments instanceDefinition.get('urlPattern'), url
 
-      activeInstanceObj = {
-        id: instanceDefinition.id
+      activeInstanceObj =
+        id: id
         componentClass: componentClass
-        target: instanceDefinition.getTarget @getContext()
-        targetPrefix: @getTargetPrefix()
-        componentClassName: @getComponentClassName()
-        instanceArguments: @_getInstanceArguments instanceDefinition, componentDefinition
-        order: instanceDefinition.get 'order'
-        reInstantiate: instanceDefinition.get 'reInstantiate'
+        target: target
+        targetPrefix: targetPrefix
+        componentClassName: componentClassName
+        instanceArguments: instanceArguments
+        order: order
+        reInstantiate: reInstantiate
         urlParams: urlParams
-        serializedFilter: @_filterModel.serialize excludeOptions
-      }
+        serializedFilter: serializedFilter
 
       return activeInstanceObj
 
-    lastChange = @_activeInstancesCollection.set activeInstanceDefinitionObjs, options
-    _.invoke lastChange, 'tryToReAddStraysToDom'
-    return lastChange
+    return activeInstanceDefinitionObjs
 
   _filterInstanceDefinitions: ->
     instanceDefinitions = @_instanceDefinitionsCollection.models
@@ -468,7 +481,7 @@ class ComponentManager
 
   _filterInstanceDefinitionsByTargetAvailability: (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) =>
-      return instanceDefinition.isTargetAvailable()
+      return instanceDefinition.isTargetAvailable @getContext()
 
   _getInstanceArguments: (instanceDefinition, componentDefinition) ->
     componentClass = componentDefinition.get 'componentClass'
@@ -512,9 +525,16 @@ class ComponentManager
     do instanceDefinition.incrementShowCount
 
   _onMessageReceived: (event) =>
-    id = event.data.id
-    data = event.data.data
-    @postMessageToInstance id, data
+    id = event?.data?.id
+    message = event?.data?.message
+
+    unless id
+      throw @ERROR.MESSAGE.MISSING_ID
+
+    unless message
+      throw @ERROR.MESSAGE.MISSING_MESSAGE
+
+    @postMessageToInstance id, message
 
 ### start-test-block ###
 # this will be removed in distribution build

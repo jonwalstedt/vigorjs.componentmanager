@@ -58,34 +58,37 @@ class ComponentDefinitionModel extends BaseModel
       else
         throw @ERROR.NO_CONSTRUCTOR_FOUND src
 
-    if _.isString(src) and @_isUrl(src)
-      resolveClassPromise Vigor.IframeComponent
-
-    else if _.isString(src)
-      # AMD require asynchronous
-      if (_.isString(src) and typeof define is "function" and define.amd)
-        require [src], (componentClass) =>
-          resolveClassPromise componentClass
-
-      # CommonJS require - synchronus
-      else if (_.isString(src) and typeof exports is "object")
-        resolveClassPromise require src
-
-      # try to find class through namespace path from the window object
-      else
-        obj = window
-        srcObjParts = src.split '.'
-
-        for part in srcObjParts
-          obj = obj[part]
-
-        resolveClassPromise obj
-
-    # if the class is set directly on the src attribute
-    else if _.isFunction(src)
-      resolveClassPromise src
+    if @get('componentClass')
+      resolveClassPromise @get('componentClass')
     else
-      throw @ERROR.VALIDATION.SRC_WRONG_TYPE
+      if _.isString(src) and @_isUrl(src)
+        resolveClassPromise Vigor.IframeComponent
+
+      else if _.isString(src)
+        # AMD require asynchronous
+        if (_.isString(src) and typeof define is "function" and define.amd)
+          require [src], (componentClass) =>
+            resolveClassPromise componentClass
+
+        # CommonJS require - synchronus
+        else if (_.isString(src) and typeof exports is "object")
+          resolveClassPromise require src
+
+        # try to find class through namespace path from the window object
+        else
+          obj = window
+          srcObjParts = src.split '.'
+
+          for part in srcObjParts
+            obj = obj[part]
+
+          resolveClassPromise obj
+
+      # if the class is set directly on the src attribute
+      else if _.isFunction(src)
+        resolveClassPromise src
+      else
+        throw @ERROR.VALIDATION.SRC_WRONG_TYPE
 
     return @deferred.promise()
 

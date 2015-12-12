@@ -235,6 +235,9 @@ describe 'InstanceDefinitionsCollection', ->
       parsedData = instanceDefinitionsCollection.parse data
       assert.deepEqual parsedData, expectedResults
 
+
+
+
   describe 'parseInstanceDefinition', ->
     it 'should add a new Backbone.Model as urlParamsModel', ->
       instanceDefinition =
@@ -268,39 +271,8 @@ describe 'InstanceDefinitionsCollection', ->
       parsedData = instanceDefinitionsCollection.parseInstanceDefinition instanceDefinition
       assert.deepEqual parsedData, expectedResults
 
-  describe 'addUrlParams', ->
-    it 'should call addUrlParams and pass along the url to all
-    instanceDefinitionModels passed to the method', ->
-      data =
-        instanceDefinitions: [
-          {
-            'id': 'instance-1',
-            'targetName': '.component-area--target1',
-            'componentId': 'component-id-1',
-            'urlPattern': 'global'
-          },
-          {
-            'id': 'instance-2',
-            'targetName': '.component-area--target2',
-            'componentId': 'component-id-2',
-            'urlPattern': 'global'
-          }
-        ]
 
-      url = 'foo/bar'
 
-      instanceDefinitionsCollection.set data,
-        parse: true
-        validate: true
-        remove: false
-
-      instanceDefinitions = instanceDefinitionsCollection.models
-      for instance in instanceDefinitions
-        sinon.spy instance, 'addUrlParams'
-
-      instanceDefinitionsCollection.addUrlParams instanceDefinitions, url
-      for instance in instanceDefinitions
-        assert instance.addUrlParams.calledWith(url)
 
   describe '_formatTargetName', ->
     it 'should not modify the selector if it is "body"', ->

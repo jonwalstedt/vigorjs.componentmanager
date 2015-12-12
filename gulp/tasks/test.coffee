@@ -7,6 +7,16 @@ jsdom = require 'jsdom'
 global.document = jsdom.jsdom()
 global.window = document.defaultView
 
+# Mock postMessage which is missing in jsdom
+postMessage = (message, targetOrigin, transfer) ->
+  event = this.document.createEvent 'messageevent'
+  event._type = 'message'
+  event.data = message
+  @dispatchEvent event
+
+window.postMessage = postMessage.bind window
+
+
 global.$ = require "jquery"
 global._ = require 'underscore'
 global.Backbone = require 'backbone'

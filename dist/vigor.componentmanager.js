@@ -473,30 +473,34 @@
             }
           };
         })(this);
-        if (_.isString(src) && this._isUrl(src)) {
-          resolveClassPromise(Vigor.IframeComponent);
-        } else if (_.isString(src)) {
-          if (_.isString(src) && typeof define === "function" && define.amd) {
-            require([src], (function(_this) {
-              return function(componentClass) {
-                return resolveClassPromise(componentClass);
-              };
-            })(this));
-          } else if (_.isString(src) && typeof exports === "object") {
-            resolveClassPromise(require(src));
-          } else {
-            obj = window;
-            srcObjParts = src.split('.');
-            for (j = 0, len = srcObjParts.length; j < len; j++) {
-              part = srcObjParts[j];
-              obj = obj[part];
-            }
-            resolveClassPromise(obj);
-          }
-        } else if (_.isFunction(src)) {
-          resolveClassPromise(src);
+        if (this.get('componentClass')) {
+          resolveClassPromise(this.get('componentClass'));
         } else {
-          throw this.ERROR.VALIDATION.SRC_WRONG_TYPE;
+          if (_.isString(src) && this._isUrl(src)) {
+            resolveClassPromise(Vigor.IframeComponent);
+          } else if (_.isString(src)) {
+            if (_.isString(src) && typeof define === "function" && define.amd) {
+              require([src], (function(_this) {
+                return function(componentClass) {
+                  return resolveClassPromise(componentClass);
+                };
+              })(this));
+            } else if (_.isString(src) && typeof exports === "object") {
+              resolveClassPromise(require(src));
+            } else {
+              obj = window;
+              srcObjParts = src.split('.');
+              for (j = 0, len = srcObjParts.length; j < len; j++) {
+                part = srcObjParts[j];
+                obj = obj[part];
+              }
+              resolveClassPromise(obj);
+            }
+          } else if (_.isFunction(src)) {
+            resolveClassPromise(src);
+          } else {
+            throw this.ERROR.VALIDATION.SRC_WRONG_TYPE;
+          }
         }
         return this.deferred.promise();
       };
@@ -1145,9 +1149,12 @@
         });
       };
 
-      InstanceDefinitionModel.prototype.isTargetAvailable = function() {
+      InstanceDefinitionModel.prototype.isTargetAvailable = function($context) {
         var ref;
-        return ((ref = this.getTarget()) != null ? ref.length : void 0) > 0;
+        if ($context == null) {
+          $context = $('body');
+        }
+        return ((ref = this.getTarget($context)) != null ? ref.length : void 0) > 0;
       };
 
       InstanceDefinitionModel.prototype.getTarget = function($context) {
@@ -1799,8 +1806,10 @@
         componentClassPromises = this._componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions(instanceDefinitions);
         $.when.apply($, componentClassPromises).then((function(_this) {
           return function() {
-            var lastChange, returnData;
-            lastChange = _this._createActiveInstanceDefinitions(instanceDefinitions);
+            var activeInstanceDefinitionObjs, lastChange, returnData;
+            activeInstanceDefinitionObjs = _this._createActiveInstanceDefinitionObjects(instanceDefinitions);
+            lastChange = _this._activeInstancesCollection.set(activeInstanceDefinitionObjs, options);
+            _.invoke(lastChange, 'tryToReAddStraysToDom');
             returnData = {
               filter: _this._filterModel.toJSON(),
               activeInstances: _this._mapInstances(_this._activeInstancesCollection.models),
@@ -1814,39 +1823,48 @@
         return deferred.promise();
       };
 
-      ComponentManager.prototype._createActiveInstanceDefinitions = function(instanceDefinitions) {
-        var activeInstanceDefinitionObjs, excludeOptions, lastChange, options, url, urlParams;
+      ComponentManager.prototype._createActiveInstanceDefinitionObjects = function(instanceDefinitions) {
+        var $context, activeInstanceDefinitionObjs, componentClassName, excludeOptions, options, serializedFilter, targetPrefix, url;
+        excludeOptions = true;
         url = this._filterModel.get('url');
         options = this._filterModel.get('options');
-        urlParams = void 0;
-        excludeOptions = true;
+        serializedFilter = this._filterModel.serialize(excludeOptions);
+        targetPrefix = this.getTargetPrefix();
+        componentClassName = this.getComponentClassName();
+        $context = this.getContext();
+        if (!_.isArray(instanceDefinitions)) {
+          instanceDefinitions = [instanceDefinitions];
+        }
         activeInstanceDefinitionObjs = _.map(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            var activeInstanceObj, componentClass, componentDefinition, urlPatterns;
+            var activeInstanceObj, componentClass, componentDefinition, id, instanceArguments, order, reInstantiate, target, urlParams;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
+            id = instanceDefinition.id;
             componentClass = componentDefinition.get('componentClass');
-            urlPatterns = instanceDefinition.get('urlPattern');
+            target = instanceDefinition.getTarget($context);
+            instanceArguments = _this._getInstanceArguments(instanceDefinition, componentDefinition);
+            order = instanceDefinition.get('order');
+            reInstantiate = instanceDefinition.get('reInstantiate');
+            urlParams = void 0;
             if (url) {
-              urlParams = router.getArguments(urlPatterns, url);
+              urlParams = router.getArguments(instanceDefinition.get('urlPattern'), url);
             }
             activeInstanceObj = {
-              id: instanceDefinition.id,
+              id: id,
               componentClass: componentClass,
-              target: instanceDefinition.getTarget(_this.getContext()),
-              targetPrefix: _this.getTargetPrefix(),
-              componentClassName: _this.getComponentClassName(),
-              instanceArguments: _this._getInstanceArguments(instanceDefinition, componentDefinition),
-              order: instanceDefinition.get('order'),
-              reInstantiate: instanceDefinition.get('reInstantiate'),
+              target: target,
+              targetPrefix: targetPrefix,
+              componentClassName: componentClassName,
+              instanceArguments: instanceArguments,
+              order: order,
+              reInstantiate: reInstantiate,
               urlParams: urlParams,
-              serializedFilter: _this._filterModel.serialize(excludeOptions)
+              serializedFilter: serializedFilter
             };
             return activeInstanceObj;
           };
         })(this));
-        lastChange = this._activeInstancesCollection.set(activeInstanceDefinitionObjs, options);
-        _.invoke(lastChange, 'tryToReAddStraysToDom');
-        return lastChange;
+        return activeInstanceDefinitionObjs;
       };
 
       ComponentManager.prototype._filterInstanceDefinitions = function() {
@@ -1909,7 +1927,7 @@
       ComponentManager.prototype._filterInstanceDefinitionsByTargetAvailability = function(instanceDefinitions) {
         return _.filter(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            return instanceDefinition.isTargetAvailable();
+            return instanceDefinition.isTargetAvailable(_this.getContext());
           };
         })(this));
       };
@@ -1959,10 +1977,16 @@
       };
 
       ComponentManager.prototype._onMessageReceived = function(event) {
-        var data, id;
-        id = event.data.id;
-        data = event.data.data;
-        return this.postMessageToInstance(id, data);
+        var id, message, ref, ref1;
+        id = event != null ? (ref = event.data) != null ? ref.id : void 0 : void 0;
+        message = event != null ? (ref1 = event.data) != null ? ref1.message : void 0 : void 0;
+        if (!id) {
+          throw this.ERROR.MESSAGE.MISSING_ID;
+        }
+        if (!message) {
+          throw this.ERROR.MESSAGE.MISSING_MESSAGE;
+        }
+        return this.postMessageToInstance(id, message);
       };
 
       return ComponentManager;

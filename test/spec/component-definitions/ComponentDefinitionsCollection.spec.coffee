@@ -65,17 +65,17 @@ describe 'ComponentDefinitionsCollection', ->
       assert firstCall.calledWith instanceDefinition
       assert secondCall.calledWith instanceDefinition2
 
-    it 'should call componentDefinition.getComponentClassPromise on every instanceDefinition in passed array', ->
+    it 'should call componentDefinition.getClass on every instanceDefinition in passed array', ->
       componentDefinition = componentDefinitionsCollection.get 'mock-component-1'
       componentDefinition2 = componentDefinitionsCollection.get 'mock-component-2'
 
-      getComponentClassPromiseSpy = sandbox.spy componentDefinition, 'getComponentClassPromise'
-      getComponentClassPromiseSpy2 = sandbox.spy componentDefinition2, 'getComponentClassPromise'
+      getClassSpy = sandbox.spy componentDefinition, 'getClass'
+      getClassSpy2 = sandbox.spy componentDefinition2, 'getClass'
 
       componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions instanceDefinitions
 
-      assert getComponentClassPromiseSpy.called
-      assert getComponentClassPromiseSpy2.called
+      assert getClassSpy.called
+      assert getClassSpy2.called
 
     it 'should return an array with componentClassPromises (promises)', ->
       result = componentDefinitionsCollection.getComponentClassPromisesByInstanceDefinitions instanceDefinitions

@@ -215,8 +215,8 @@ class InstanceDefinitionModel extends BaseModel
   dispose: ->
     @clear silent: true
 
-  isTargetAvailable: ->
-    return @getTarget()?.length > 0
+  isTargetAvailable: ($context = $('body')) ->
+    return @getTarget($context)?.length > 0
 
   getTarget: ($context = $('body')) ->
     unless @_$target?.selector?.indexOf(@_getTargetName()) > -1

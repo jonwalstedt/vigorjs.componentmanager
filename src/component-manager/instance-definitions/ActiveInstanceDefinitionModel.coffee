@@ -123,7 +123,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
     return attached unless instance
 
     if not instance.el and instance.$el
-      el = instance.$el.get(0)
+      el = instance.$el.get 0
     else
       el = instance.el
 
