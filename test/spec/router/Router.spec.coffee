@@ -41,6 +41,10 @@ describe 'Router', ->
           id: '123'
           url: 'foo/123'
         }
+        {
+          _id: 'bar/:id'
+          url: 'foo/123'
+        }
       ]
       assert.deepEqual args, expectedResults
 
@@ -76,12 +80,8 @@ describe 'Router', ->
       args = router.prototype.getArguments urlPatterns, url
       assert.deepEqual args, expectedResults
 
-    it 'should return an empty array if no urlPatterns matches the passed url', ->
-      urlPatterns = ['foo/:bar/:id', 'foo/*splat']
-      url = 'bar/bar/123'
-      expectedResults = []
-      args = router.prototype.getArguments urlPatterns, url
-      assert.deepEqual args, expectedResults
+
+
 
   describe 'routeToRegExp', ->
     it 'should call _routeToRegExp with passed urlPattern', ->
@@ -90,6 +90,9 @@ describe 'Router', ->
       router.prototype.routeToRegExp urlPattern
       assert _routeToRegExp.calledWith urlPattern
       do _routeToRegExp.restore
+
+
+
 
   describe '_getArgumentsFromUrl', ->
     it 'should call _routeToRegExp with the urlPattern if it isnt already regexp', ->
@@ -124,6 +127,9 @@ describe 'Router', ->
       router.prototype._getArgumentsFromUrl urlPattern, url
       assert _getParamsObject.calledWith urlPattern, extractedParams
       do _getParamsObject.restore
+
+
+
 
   describe '_getParamsObject', ->
     it 'should extract keys from the urlPattern and assign correct values from the allready extracted arguments ', ->

@@ -190,8 +190,7 @@ class InstanceDefinitionModel extends BaseModel
         urlPattern = [urlPattern]
 
       for pattern in urlPattern
-        routeRegExp = router.routeToRegExp pattern
-        match = routeRegExp.test url
+        match = router.doesUrlPatternMatch pattern, url
         if match then return match
       return match
     else

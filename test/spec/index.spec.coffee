@@ -2039,7 +2039,12 @@ describe 'The componentManager', ->
           }
         ]
 
-        secondExpectedUrlParams = []
+        secondExpectedUrlParams = [
+          {
+            _id: 'bar/:id'
+            url: 'foo/1'
+          }
+        ]
 
         componentManager._filterModel.set componentManager._filterModel.parse(url: 'foo/1')
 
@@ -2047,7 +2052,12 @@ describe 'The componentManager', ->
         assert.deepEqual results[0].urlParams, firstExpectedUrlParams
         assert.deepEqual results[1].urlParams, secondExpectedUrlParams
 
-        firstExpectedUrlParams = []
+        firstExpectedUrlParams = [
+          {
+            _id: 'foo/:id'
+            url: 'bar/1'
+          }
+        ]
 
         secondExpectedUrlParams = [
           {

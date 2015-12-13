@@ -7,19 +7,26 @@ class Router extends Backbone.Router
     args = []
 
     for urlPattern in urlPatterns
-      routeRegEx = @routeToRegExp urlPattern
-      match = routeRegEx.test url
+      match = @doesUrlPatternMatch urlPattern, url
 
       if match
         paramsObject = @_getArgumentsFromUrl urlPattern, url
         paramsObject._id = urlPattern
         paramsObject.url = url
-        args.push paramsObject
+      else
+        paramsObject =
+          _id: urlPattern
+          url: url
 
+      args.push paramsObject
     return args
 
   routeToRegExp: (urlPattern) ->
     @_routeToRegExp urlPattern
+
+  doesUrlPatternMatch: (urlPattern, url) ->
+    routeRegEx = @routeToRegExp urlPattern
+    return routeRegEx.test url
 
   _getArgumentsFromUrl: (urlPattern, url) ->
     origUrlPattern = urlPattern
@@ -49,13 +56,13 @@ class Router extends Backbone.Router
         params[name] = args[i]
 
     if optionalParams
-      storeNames optionalParams,extractedParams
+      storeNames optionalParams, extractedParams
 
     if names
-      storeNames names,extractedParams
+      storeNames names, extractedParams
 
     if splats
-      storeNames splats,extractedParams
+      storeNames splats, extractedParams
 
     return params
 

@@ -206,27 +206,37 @@
       }
 
       Router.prototype.getArguments = function(urlPatterns, url) {
-        var args, j, len, match, paramsObject, routeRegEx, urlPattern;
+        var args, j, len, match, paramsObject, urlPattern;
         if (!_.isArray(urlPatterns)) {
           urlPatterns = [urlPatterns];
         }
         args = [];
         for (j = 0, len = urlPatterns.length; j < len; j++) {
           urlPattern = urlPatterns[j];
-          routeRegEx = this.routeToRegExp(urlPattern);
-          match = routeRegEx.test(url);
+          match = this.doesUrlPatternMatch(urlPattern, url);
           if (match) {
             paramsObject = this._getArgumentsFromUrl(urlPattern, url);
             paramsObject._id = urlPattern;
             paramsObject.url = url;
-            args.push(paramsObject);
+          } else {
+            paramsObject = {
+              _id: urlPattern,
+              url: url
+            };
           }
+          args.push(paramsObject);
         }
         return args;
       };
 
       Router.prototype.routeToRegExp = function(urlPattern) {
         return this._routeToRegExp(urlPattern);
+      };
+
+      Router.prototype.doesUrlPatternMatch = function(urlPattern, url) {
+        var routeRegEx;
+        routeRegEx = this.routeToRegExp(urlPattern);
+        return routeRegEx.test(url);
       };
 
       Router.prototype._getArgumentsFromUrl = function(urlPattern, url) {
@@ -1117,7 +1127,7 @@
       };
 
       InstanceDefinitionModel.prototype._doesUrlPatternMatch = function(url) {
-        var j, len, match, pattern, routeRegExp, urlPattern;
+        var j, len, match, pattern, urlPattern;
         match = false;
         urlPattern = this.get('urlPattern');
         if (urlPattern != null) {
@@ -1126,8 +1136,7 @@
           }
           for (j = 0, len = urlPattern.length; j < len; j++) {
             pattern = urlPattern[j];
-            routeRegExp = router.routeToRegExp(pattern);
-            match = routeRegExp.test(url);
+            match = router.doesUrlPatternMatch(pattern, url);
             if (match) {
               return match;
             }
@@ -1837,7 +1846,7 @@
         }
         activeInstanceDefinitionObjs = _.map(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            var activeInstanceObj, componentClass, componentDefinition, id, instanceArguments, order, reInstantiate, target, urlParams;
+            var activeInstanceObj, componentClass, componentDefinition, id, instanceArguments, order, reInstantiate, target, urlParams, urlPattern;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
             id = instanceDefinition.id;
             componentClass = componentDefinition.get('componentClass');
@@ -1845,9 +1854,10 @@
             instanceArguments = _this._getInstanceArguments(instanceDefinition, componentDefinition);
             order = instanceDefinition.get('order');
             reInstantiate = instanceDefinition.get('reInstantiate');
+            urlPattern = instanceDefinition.get('urlPattern');
             urlParams = void 0;
-            if ((url != null) || url === '') {
-              urlParams = router.getArguments(instanceDefinition.get('urlPattern'), url);
+            if (urlPattern) {
+              urlParams = router.getArguments(urlPattern, url);
             } else {
               urlParams = {
                 _id: 'noUrlPatternsDefined',

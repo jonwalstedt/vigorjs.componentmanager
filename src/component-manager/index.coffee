@@ -424,10 +424,11 @@ class ComponentManager
       instanceArguments = @_getInstanceArguments instanceDefinition, componentDefinition
       order = instanceDefinition.get 'order'
       reInstantiate = instanceDefinition.get 'reInstantiate'
+      urlPattern = instanceDefinition.get 'urlPattern'
       urlParams = undefined
 
-      if url? or url is ''
-        urlParams = router.getArguments instanceDefinition.get('urlPattern'), url
+      if urlPattern
+        urlParams = router.getArguments urlPattern, url
       else
         urlParams =
           _id: 'noUrlPatternsDefined'
