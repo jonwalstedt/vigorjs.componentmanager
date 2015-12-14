@@ -35,7 +35,6 @@ class InstanceDefinitionsCollection extends BaseInstanceCollection
     return parsedResponse
 
   parseInstanceDefinition: (instanceDefinition) ->
-    instanceDefinition.urlParamsModel = new Backbone.Model()
     if instanceDefinition.urlPattern is 'global'
       instanceDefinition.urlPattern = ['*notFound', '*action']
     return instanceDefinition

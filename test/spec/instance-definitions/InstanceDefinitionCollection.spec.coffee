@@ -7,20 +7,11 @@ __testOnly = Vigor.ComponentManager.__testOnly
 InstanceDefinitionsCollection = __testOnly.InstanceDefinitionsCollection
 FilterModel = __testOnly.FilterModel
 
-class DummyModel
-  set: ->
-  get: ->
-
 describe 'InstanceDefinitionsCollection', ->
   instanceDefinitionsCollection = undefined
-  stubbedModel = undefined
 
   beforeEach ->
     instanceDefinitionsCollection = new InstanceDefinitionsCollection()
-    stubbedModel = sinon.stub Backbone, 'Model', DummyModel
-
-  afterEach ->
-    stubbedModel.restore()
 
   describe 'parse', ->
     describe 'if data is an object', ->
@@ -59,29 +50,25 @@ describe 'InstanceDefinitionsCollection', ->
             'id': 'instance-1',
             'componentId': 'component-id-1',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target1',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target1'
           },
           {
             'id': 'instance-2',
             'componentId': 'component-id-2',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target1',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target1'
           },
           {
             'id': 'instance-3',
             'componentId': 'component-id-3',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target2',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target2'
           },
           {
             'id': 'instance-4',
             'componentId': 'component-id-4',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target2',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target2'
           }
         ]
 
@@ -102,7 +89,6 @@ describe 'InstanceDefinitionsCollection', ->
           'componentId': 'component-id-1',
           'urlPattern': ['*notFound', '*action'],
           'targetName': '.my-prefix--target1',
-          'urlParamsModel': new DummyModel()
 
         parsedData = instanceDefinitionsCollection.parse data
         assert.deepEqual parsedData, expectedResults
@@ -143,29 +129,25 @@ describe 'InstanceDefinitionsCollection', ->
             'id': 'instance-1',
             'componentId': 'component-id-1',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target1',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target1'
           },
           {
             'id': 'instance-2',
             'componentId': 'component-id-2',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target2',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target2'
           },
           {
             'id': 'instance-3',
             'componentId': 'component-id-3',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target3',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target3'
           },
           {
             'id': 'instance-4',
             'componentId': 'component-id-4',
             'urlPattern': ['*notFound', '*action'],
-            'targetName': '.my-prefix--target4',
-            'urlParamsModel': new DummyModel()
+            'targetName': '.my-prefix--target4'
           }
         ]
 
@@ -195,15 +177,13 @@ describe 'InstanceDefinitionsCollection', ->
           'id': 'instance-1',
           'componentId': 'component-id-1',
           'urlPattern': ['*notFound', '*action'],
-          'targetName': '.my-prefix--target1',
-          'urlParamsModel': new DummyModel()
+          'targetName': '.my-prefix--target1'
         },
         {
           'id': 'instance-2',
           'componentId': 'component-id-2',
           'urlPattern': ['*notFound', '*action'],
-          'targetName': '.my-prefix--target2',
-          'urlParamsModel': new DummyModel()
+          'targetName': '.my-prefix--target2'
         }
       ]
 
@@ -227,8 +207,7 @@ describe 'InstanceDefinitionsCollection', ->
           'id': 'instance-1',
           'componentId': 'component-id-1',
           'urlPattern': ['*notFound', '*action'],
-          'targetName': 'body',
-          'urlParamsModel': new DummyModel()
+          'targetName': 'body'
         }
       ]
 
@@ -248,8 +227,7 @@ describe 'InstanceDefinitionsCollection', ->
       expectedResults =
         'id': 'instance-1',
         'targetName': '.foo--target1',
-        'componentId': 'component-id-1',
-        'urlParamsModel': new DummyModel()
+        'componentId': 'component-id-1'
 
       parsedData = instanceDefinitionsCollection.parseInstanceDefinition instanceDefinition
       assert.deepEqual parsedData, expectedResults
@@ -265,8 +243,7 @@ describe 'InstanceDefinitionsCollection', ->
         'id': 'instance-1',
         'targetName': '.foo--target1',
         'componentId': 'component-id-1',
-        'urlPattern': ['*notFound', '*action'],
-        'urlParamsModel': new DummyModel()
+        'urlPattern': ['*notFound', '*action']
 
       parsedData = instanceDefinitionsCollection.parseInstanceDefinition instanceDefinition
       assert.deepEqual parsedData, expectedResults
