@@ -1,4 +1,4 @@
-### <a name="settings"></a>The settings object
+### <a name="settings"></a>Settings
 To get started with the componentManager you need to setup the settings object which you will pass to the initialize function - typically during bootstrap of your application.
 
 There are a couple of different ways to structure the settings object and the most straight forward setup has the following structure (example below is using the default values):
@@ -20,7 +20,7 @@ The settings object can contain the four properties above and the componentSetti
 
 The conditions object is optional but if you use it it should contain any methods that you like to use to help filter out instances. These methods should return true or false. To use the conditions you reference the methods key in the conditions object from a componentDefinition or an instanceDefinitions conditions array.
 
-The components array should contain one or multiple [componentDefinitions](#component-definitions) and the instances array (or targets object - see alternative structure below) should contain one or multiple [instanceDefinitions](#instance-definitions).
+The components array should contain one or multiple [componentDefinitions](#component-definitions) and the instances array (or targets object - see [alternative structure](#alternative-structure) below) should contain one or multiple [instanceDefinitions](#instance-definitions).
 
 And here is an example of how it could look with some content:
 ```javascript
@@ -72,7 +72,7 @@ componentManager.initialize(settings);
 ```
 
 #### <a name="alternative-structure"></a> Alternative structure
-If you like to group your instances under their targets that is also possible by using the structure below. This strucure does not allow you to pass the target selector for each instance your self which might be good if you are using this as a way for third party users to add components to your appliction (ex ads).
+If you like to group your instances under their targets that is also possible by using the structure below. This structure does not allow you to pass the target selector for each instance your self which might be good if you are using this as a way for third party users to add components to your application (ex ads).
 
 ```javascript
 settings = {
@@ -140,7 +140,7 @@ componentManager.initialize(settings);
 In this case each of the target keys would be used as a part the selector to use for all of the instanceDefinitions within that array. The other part of the selector would be the targetPrefix so in the examples above any instanceDefiniton that would be part of the array for "header" would have the targetName set to **"component-area--header"**, for "main" it would be **"component-area--main"** and so on.
 
 #### Skip defaults
-If you dont want to change the defaults for context, componentClassName, targetPrefix and listenForMessages you pass in only the componentSettings part of the settings object:
+If you don't want to change the defaults for context, componentClassName, targetPrefix and listenForMessages you pass in only the componentSettings part of the settings object:
 ```javascript
 componentSettings: {
   conditions: {},
@@ -149,3 +149,10 @@ componentSettings: {
 }
 ```
 
+and if you are not using any conditions you can skip that as well:
+```javascript
+componentSettings: {
+  components: [],
+  instances: []
+}
+```

@@ -102,7 +102,7 @@ The filter object can contain the following properties:
 
       </td>
       <td class="docs-table__column docs-table__column-2">
-        <p>The options object can contain five different properties: **add**, **remove**, **merge**, **invert** and **forceFilterStringMAtching**.</p>
+        <p>The options object can contain five different properties: **add**, **remove**, **merge**, **invert** and **forceFilterStringMatching** (all options have boolean values).</p>
 
         <pre><code class="language-javascript hljs">//defaults:
 options: {
@@ -113,15 +113,19 @@ options: {
   forceFilterStringMatching: false
 }</code></pre>
 
-        <p>The **add** property determines if the instance belonging to instanceDefinitions that matches the filter should be added to the DOM or not.</p>
+        <p>The **add** property determines if matching instances should be added to the DOM or not.</p>
 
-        <p>The **remove** property determines if the instance belonging to instanceDefinitions that does not match the filter should be removed from the DOM or not.</p>
-
-        <p>The **merge** property determines if the instance belonging to instanceDefinitions that does match the filter should be *** TODO FIX ME *** or remove the property??? </p>
+        <p>The **remove** property determines if non matching instances should be removed from the DOM or not.</p>
 
         <p>As an example: By setting add to false and remove to true and then call refresh with your filter the componentManager will remove instances that does not match the filter but it will not add instances that does match the filter.</p>
 
         <p>And of course the opposite would happen if you set add to true and remove to false.</p>
+
+        <p>The **merge** property determines if updates to the instanceDefinition should be allowed or not. Ex if you change the order property on a instanceDefinition and set merge to false the change will be ignored.</p>
+
+        <p>The **invert** property will (if set to true) create and add instances of all instanceDefinitions that **does not** match the filter (the opposite of the default behavior).</p>
+
+        <p>The **forceFilterStringMatching** property will (if set to true) make all string filters be exclusive, instanceDefinitions that does not match the filter and instanceDefinitons that has an undefined filterString will not be created. Only instanceDefinitions with a direct match on the string filter will be created (even though other filters may pass).</p>
 
         <p>See the [Filter options](/examples/filter-options) for more examples.</p>
       </td>
@@ -129,7 +133,7 @@ options: {
   </tbody>
 </table>
 
-To actually filter on those properties you call the refresh method and pass a filter object. Calling the method without the filter object will create all instances at once - assuming that their targets are available.
+To actually filter on those properties you call the refresh method and pass a filter object. Calling the method without the filter will create all instances at once - assuming that their targets are available.
 
 The filtering process is inclusive, it always tries to include instanceDefinitions unless some filter fail. That means that if a instanceDefinition does not have the necessary property to match a certain filter it will, by default, still pass the filter (ex if you filter using the url property and a instanceDefinition does not have a urlPattern the url filter would be ignored and the instance would be created).
 
@@ -224,4 +228,15 @@ componentManager.refresh(filter);
 ```
 
 #### Custom properties
-TODO: fixme
+In addition to the default filter properties you can filter on any properties you like, these custom properties will be matched against custom properties defined on either componentDefinitions or instanceDefinitions (using _.isMatch). This could be useful if you for an example want to group instances together without using any of the other available filters.
+
+To use custom filter properties its just to add them to the filter:
+```javascript
+componentManager.refresh({
+  myCustomProperty: 'componentVal'
+});
+```
+
+This would then be matched with the same custom property on either a componentDefinition or a instanceDefinition.
+
+See the 'Custom properties' sections under [componentDefinitions](#component-definitions) and [instanceDefinitions](#instance-definitions) for more information and examples.

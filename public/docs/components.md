@@ -2,7 +2,7 @@
 
 The componentManager main purpose is to create and dispose instances of components. In this case a component is typically a View of some sort, either a Backbone.View or a view or class that exposes the interface of a larger component (see the [example app](/examples/example-app) for examples of more complex components).
 
-There are some required properties and methods that needs to be exposed on the instance though.
+There are some required properties and methods that needs to be exposed though, see below.
 
 A component have to expose the following properties and methods:
 

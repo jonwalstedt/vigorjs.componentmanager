@@ -1287,7 +1287,6 @@
       };
 
       InstanceDefinitionsCollection.prototype.parseInstanceDefinition = function(instanceDefinition) {
-        instanceDefinition.urlParamsModel = new Backbone.Model();
         if (instanceDefinition.urlPattern === 'global') {
           instanceDefinition.urlPattern = ['*notFound', '*action'];
         }

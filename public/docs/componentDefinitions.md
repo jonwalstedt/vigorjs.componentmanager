@@ -1,7 +1,7 @@
 ### <a name="component-definitions"></a> componentDefinitions
 ComponentDefinitions or componentDefinitionModels are the models that contains the definition of each component created by the componentManager. It stores a reference to the class to create instances from and also the conditions (if any) that should apply to create any instances of that class.
 
-To define your componentDefinitions you add an array of componentDefinitions to the [componentSettings object](#settings) passed to the componentManager during initialization.
+To define your componentDefinitions you add your componentDefinition objects to the components array in the [componentSettings](#settings).
 
 The only required properties for a componentDefinition is **id** and **src**. But a componentDefinition could also contain the default properties **args**, **conditions** and **maxShowCount**. All properties are undefined by default. Se the description for each below:
 
@@ -121,7 +121,7 @@ settings = {
 ```
 
 #### Custom Properties
-In adition to the default values you can add any properties you like to a componentDefinition. These properties will then be used to filter out instances (instanceDefinitions) of that componentDefinition. The custom properties would then also have to be used when creating the filter which would be passed to the refresh method. See example below.
+In addition to the default properties you can add any properties you like to a componentDefinition. Custom properties can then be used to refine the filter and target specific instanceDefinitions belonging to the componentDefinition that has the custom property. The custom properties would then also have to be used when creating the filter which would be passed to the refresh method. See example below.
 
 ```javascript
 componentSettings: {
@@ -129,7 +129,7 @@ componentSettings: {
     {
       id: 'my-component',
       src: 'components/chart',
-      myCustomProperty: 'customVal'
+      myCustomProperty: 'componentVal'
     }
   ],
   instances: [
@@ -142,13 +142,12 @@ componentSettings: {
 }
 ```
 
-In the example above the custom property myCustomProperty is set with the value 'customVal'
+In the example above the custom property myCustomProperty is set on the componentDefinition with the value 'componentVal'. The filter below  would create a new instance of the component 'my-component' using the information from the instanceDefinition 'my-instance'.
 
 ```javascript
-// This filter would create an instance of the first componentDefinition ('my-component') using the information from the instanceDefinition.
 componentManager.refresh({
-  myCustomProperty: 'customVal'
+  myCustomProperty: 'componentVal'
 });
 ```
 
-Custom properties on the componentDefinition may be overriden by custom properties on a intanceDefinition that belongs to that componentDefinition.
+Custom properties on the componentDefinition may be overridden by custom properties on a intanceDefinition that belongs to that componentDefinition.
