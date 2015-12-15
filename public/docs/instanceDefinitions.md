@@ -1,4 +1,4 @@
-### <a name="instance-definitions"></a> instanceDefinitions
+### <a name="instance-definitions"></a> InstanceDefinitions
 InstanceDefinitions or instanceDefinitionModels defines an instance of a componentDefinition. That means that one componentDefinition may have multiple instanceDefinitions. The connection between them is done with an id reference from each instanceDefinition to its componentDefinition's id. Each instanceDefinition have to have the property **componentId** with the id of the componentDefinition (which holds the class to create the instance from).
 
 To define your instanceDefinitions you add your instanceDefinition objects to the instance array in the [componentSettings](#settings) or use the [alternative structure](#alternative-structure).

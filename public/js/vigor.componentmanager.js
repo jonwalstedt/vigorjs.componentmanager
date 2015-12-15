@@ -1739,11 +1739,7 @@
       };
 
       ComponentManager.prototype._parse = function(settings) {
-        if (settings != null ? settings.context : void 0) {
-          this.setContext(settings.context);
-        } else {
-          this.setContext($('body'));
-        }
+        this.setContext(settings != null ? settings.context : void 0);
         if (settings != null ? settings.componentClassName : void 0) {
           this.setComponentClassName(settings.componentClassName);
         }

@@ -21,7 +21,6 @@ var componentSettings = {
       {
         id: 'filter-instance-1',
         componentId: 'filter-condition-component',
-        conditions: undefined,
         args: {
           title: 'id: filter-instance-1',
           background: '#9FEDFF'
@@ -31,7 +30,6 @@ var componentSettings = {
       {
         id: 'filter-instance-2',
         componentId: 'filter-condition-component',
-        conditions: undefined,
         args: {
           title: 'id: filter-instance-2',
           background: '#9F9EE8'

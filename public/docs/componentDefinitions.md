@@ -1,4 +1,4 @@
-### <a name="component-definitions"></a> componentDefinitions
+### <a name="component-definitions"></a> ComponentDefinitions
 ComponentDefinitions or componentDefinitionModels are the models that contains the definition of each component created by the componentManager. It stores a reference to the class to create instances from and also the conditions (if any) that should apply to create any instances of that class.
 
 To define your componentDefinitions you add your componentDefinition objects to the components array in the [componentSettings](#settings).

@@ -34,17 +34,18 @@ Completed
  ✔ Readd the ability to require components using amd or commonjs @done (15-11-16 16:18)
  ✔ Make it possible to load modules asynchronously with requirejs @done (15-11-16 16:18)
  ✔ Unit test the ability to have jquery objects as targetName @done (15-11-30 00:40)
+ ✔ Do a unittest to verify that the lastChange property in the object returned by _updateActiveComponents works like it should @done (15-12-15 11:09)
+ ✔ remove _createAndAddInstances and move logic to _onActiveInstanceAdd (it's the only mehtod using it) @done (15-12-15 11:09)
+ ✘ rename targetName to target? @cancelled (15-12-15 11:09)
 
  In progress
- ☐ remove _createAndAddInstances and move logic to _onActiveInstanceAdd (it's the only mehtod using it)
- ☐ rename targetName to target?
- ☐ Do a unittest to verify that the lastChange property in the object returned by _updateActiveComponents works like it should
+ ☐ Add documentation
  ☐ Add a full/advanced example that uses vigorjs
 
  Next up
  ☐ Make the example component more prensentable and easier to understand
+ ☐ Go through scss refactor/cleanup
  ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
- ☐ Add documentation
  ☐ Listen for reset on collections?
 
  To consider

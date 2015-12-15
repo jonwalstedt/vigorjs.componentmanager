@@ -312,10 +312,7 @@ class ComponentManager
   # Privat methods
   # ============================================================================
   _parse: (settings) ->
-    if settings?.context
-      @setContext settings.context
-    else
-      @setContext $('body')
+    @setContext settings?.context
 
     if settings?.componentClassName
       @setComponentClassName settings.componentClassName

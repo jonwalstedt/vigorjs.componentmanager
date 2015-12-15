@@ -16,7 +16,7 @@ settings = {
 }
 ```
 
-The settings object can contain the four properties above and the componentSettings object. The componentSettings object can contain the conditions object, the components array and the instances array. None of these are mandatory either but without components and instances the componentManager wont do much (they can be added on the fly later if you do not want to add them when initializing the componentManager).
+The settings object can contain the four properties above (see [Other settings](#other-settings) for a specification of these properties) and the componentSettings object. The componentSettings object can contain the conditions object, the components array and the instances array. None of these are mandatory either but without components and instances the componentManager wont do much (they can be added on the fly later if you want/need a dynamic setup).
 
 The conditions object is optional but if you use it it should contain any methods that you like to use to help filter out instances. These methods should return true or false. To use the conditions you reference the methods key in the conditions object from a componentDefinition or an instanceDefinitions conditions array.
 

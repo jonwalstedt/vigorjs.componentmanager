@@ -21,6 +21,9 @@ block sidebar
           a.sidebar__link(href="#components") Components
 
         li.sidebar_list-item
+          a.sidebar__link(href="#component-areas") Component Areas
+
+        li.sidebar_list-item
           a.sidebar__link(href="#component-definitions") ComponentDefinitions
 
         li.sidebar_list-item
@@ -66,6 +69,9 @@ block content
 
     section.sub-section
       != partial('./components')
+
+    section.sub-section
+      != partial('./component-areas')
 
     section.sub-section
       != partial('./componentDefinitions')

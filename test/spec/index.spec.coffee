@@ -1391,18 +1391,6 @@ describe 'The componentManager', ->
         componentManager._parse settings
         assert setContextSpy.calledWith $test
 
-
-      it 'should call setContext and pass body as a jquery object $("body") if no $context is defined in the passed settings', ->
-        $body = $('body')
-
-        settings =
-          someOtherSettings: 'something not related to setContext'
-
-        setContextSpy = sandbox.spy componentManager, 'setContext'
-
-        componentManager._parse settings
-        assert setContextSpy.calledWith $body
-
       it 'should call setComponentClassName with the componentClassName from the passed settings (if it is defined)', ->
 
         componentClassName = 'dummy-component-class-name'
