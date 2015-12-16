@@ -749,7 +749,7 @@
             instance.$el.data('order', 999);
             $target.append(instance.$el);
           } else {
-            $previousElement = this._previousElement($target.children().last(), order);
+            $previousElement = this._getPrecedingElement($target.children().last(), order);
             instance.$el.data('order', order);
             instance.$el.attr('data-order', order);
             if (!$previousElement) {
@@ -821,15 +821,15 @@
         return args;
       };
 
-      ActiveInstanceDefinitionModel.prototype._previousElement = function($el, order) {
+      ActiveInstanceDefinitionModel.prototype._getPrecedingElement = function($el, order) {
         if (order == null) {
           order = 0;
         }
         if ($el.length > 0) {
-          if ($el.data('order') < order) {
+          if ($el.data('order') <= order) {
             return $el;
           } else {
-            return this._previousElement($el.prev(), order);
+            return this._getPrecedingElement($el.prev(), order);
           }
         }
       };
@@ -1667,13 +1667,13 @@
         return this;
       };
 
-      ComponentManager.prototype.setComponentClassName = function(componentClassName) {
-        this._componentClassName = componentClassName || COMPONENT_CLASS_NAME;
+      ComponentManager.prototype.setComponentClassName = function(_componentClassName) {
+        this._componentClassName = _componentClassName != null ? _componentClassName : COMPONENT_CLASS_NAME;
         return this;
       };
 
-      ComponentManager.prototype.setTargetPrefix = function(targetPrefix) {
-        this._targetPrefix = targetPrefix || TARGET_PREFIX;
+      ComponentManager.prototype.setTargetPrefix = function(_targetPrefix) {
+        this._targetPrefix = _targetPrefix != null ? _targetPrefix : TARGET_PREFIX;
         return this;
       };
 

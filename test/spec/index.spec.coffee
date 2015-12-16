@@ -991,7 +991,8 @@ describe 'The componentManager', ->
         componentManager.setComponentClassName componentClassName
         assert.equal componentManager._componentClassName, componentClassName
 
-      it 'should use default componentClassName if method is called without passing a new name', ->
+      it 'should use default componentClassName if method is called without
+      passing a new name', ->
         componentClassName = 'dummy-class-name'
         componentManager.setComponentClassName componentClassName
         assert.equal componentManager._componentClassName, componentClassName

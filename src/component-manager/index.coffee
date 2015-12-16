@@ -254,12 +254,10 @@ class ComponentManager
       throw @ERROR.CONTEXT.WRONG_FORMAT
     return @
 
-  setComponentClassName: (componentClassName) ->
-    @_componentClassName = componentClassName or COMPONENT_CLASS_NAME
+  setComponentClassName: (@_componentClassName = COMPONENT_CLASS_NAME) ->
     return @
 
-  setTargetPrefix: (targetPrefix) ->
-    @_targetPrefix = targetPrefix or TARGET_PREFIX
+  setTargetPrefix: (@_targetPrefix = TARGET_PREFIX) ->
     return @
 
   getContext: ->

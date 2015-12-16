@@ -83,7 +83,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
         instance.$el.data 'order', 999
         $target.append instance.$el
       else
-        $previousElement = @_previousElement $target.children().last(), order
+        $previousElement = @_getPrecedingElement $target.children().last(), order
         instance.$el.data 'order', order
         instance.$el.attr 'data-order', order
         unless $previousElement
@@ -137,12 +137,12 @@ class ActiveInstanceDefinitionModel extends BaseModel
     args.urlParamsCollection = @get 'urlParamsCollection'
     return args
 
-  _previousElement: ($el, order = 0) ->
+  _getPrecedingElement: ($el, order = 0) ->
     if $el.length > 0
-      if $el.data('order') < order
+      if $el.data('order') <= order
         return $el
       else
-        @_previousElement $el.prev(), order
+        @_getPrecedingElement $el.prev(), order
 
   _updateUrlParamsCollection: ->
     urlParams = @get 'urlParams'

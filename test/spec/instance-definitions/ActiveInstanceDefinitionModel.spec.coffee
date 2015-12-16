@@ -354,10 +354,10 @@ describe 'ActiveInstanceDefinitionModel', ->
 
       assert.equal first, 'instance-1'
       assert.equal second, 'instance-2'
-      assert.equal third, 'instance-3'
-      assert.equal fourth, 'dummy1'
-      assert.equal fifth, 'instance-4'
-      assert.equal sixth, 'dummy2'
+      assert.equal third, 'dummy1'
+      assert.equal fourth, 'instance-3'
+      assert.equal fifth, 'dummy2'
+      assert.equal sixth, 'instance-4'
       assert.equal seventh, 'instance-5'
       assert.equal eighth, 'dummy3'
 
@@ -610,14 +610,11 @@ describe 'ActiveInstanceDefinitionModel', ->
 
 
 
-  describe '_previousElement', ->
+  describe '_getPrecedingElement', ->
 
     beforeEach ->
       activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
-        componentClass: MockComponent
-        instance: new MockComponent {id: "instance-1"}
-        target: $('body')
       , silent: true
 
       $('body').append '<div id="dummy1" class="dummy-elements" data-order="1"></div>'
@@ -631,45 +628,40 @@ describe 'ActiveInstanceDefinitionModel', ->
       do $('.dummy-elements').remove
       do $('.some-other-element').remove
 
-    it 'should return previous element based on the data-order attribute', ->
-      $startEl = $ '.dummy-elements[data-order="4"]'
-      $targetEl = $ '.dummy-elements[data-order="3"]'
+    it 'should return the passed in $el if its data-order attribute is less or
+    equal to the order that was passed in as a second argument', ->
+      $el = $ '#dummy1'
+      order = 1
 
-      $result = activeInstanceDefinitionModel._previousElement $startEl, $startEl.data('order')
-      resultId = $result.attr 'id'
-      targetId = $targetEl.attr 'id'
+      $result = activeInstanceDefinitionModel._getPrecedingElement $el, order
 
-      assert.equal resultId, targetId
+      assert.equal $el.data('order'), order
+      assert.equal $el.get(0), $result.get(0)
 
-    it 'should find the previous element even though the order is not strictly sequential', ->
-      $startEl = $ '.dummy-elements[data-order="8"]'
-      $targetEl = $ '.dummy-elements[data-order="4"]'
+    it 'should recursively walk backwards through each sibling element
+    until it it finds the first sibling with an order attribute that is equal
+    or lower than the passed in order', ->
+      $startEl = $ '#dummy5'
+      $expectedElement = $ '#dummy1'
+      order = 1
+      previousElementSpy = sandbox.spy activeInstanceDefinitionModel, '_getPrecedingElement'
+      $result = activeInstanceDefinitionModel._getPrecedingElement $startEl, order
 
-      $result = activeInstanceDefinitionModel._previousElement $startEl, $startEl.data('order')
-      resultId = $result.attr 'id'
-      targetId = $targetEl.attr 'id'
+      assert.equal previousElementSpy.callCount, 5
+      assert.equal $expectedElement.data('order'), order
+      assert.equal $expectedElement.get(0), $result.get(0)
 
-      assert.equal resultId, targetId
-
-    it 'should skip elements without a data-order attribute', ->
-      $startEl = $ '.dummy-elements[data-order="3"]'
-      $targetEl = $ '.dummy-elements[data-order="2"]'
-
-      $result = activeInstanceDefinitionModel._previousElement $startEl, $startEl.data('order')
-      resultId = $result.attr 'id'
-      targetId = $targetEl.attr 'id'
-
-      assert.equal resultId, targetId
-
-    it 'should return undefined if there is $el.length is 0', ->
-      $startEl = $ '.non-existing-element'
-      $result = activeInstanceDefinitionModel._previousElement $startEl, $startEl.data('order')
+    it 'should return undefined if there is no element in the DOM for the passed in $el', ->
+      $startEl = $ '#dummy10'
+      order = 1
+      $result = activeInstanceDefinitionModel._getPrecedingElement $startEl, order
 
       assert.equal $result, undefined
 
     it 'should return undefined if no previous element can be found', ->
-      $startEl = $ '.dummy-elements[data-order="1"]'
-      $result = activeInstanceDefinitionModel._previousElement $startEl, $startEl.data('order')
+      $startEl = $ '#dummy1'
+      order = 0
+      $result = activeInstanceDefinitionModel._getPrecedingElement $startEl, order
 
       assert.equal $result, undefined
 
