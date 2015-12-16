@@ -51,14 +51,16 @@ These properties are used to decide what component to create the instance from, 
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **order** Number
+        **order** Number / 'top' / 'bottom'
       </td>
       <td class="docs-table__column docs-table__column-2">
-        <p>The order property should be a Number (int) ex: **order: 4**.</p>
+        <p>The order property should be a Number (int) ex: **order: 4** or the string 'top' or 'bottom'.</p>
 
         <p>The order property specifies in what order to add instances to the DOM. The order property is also read back from the DOM when adding instances so it will order instances around elements that is not handled by the componentManager as long as they have a data-order="" attribute set on the element.</p>
 
         <p>If for example you specify the order to 4 on your instance definition and you have a static element already in the DOM with the data attribute data-order="3" your instance will be added after that element.</p>
+
+        <p>If you have set order to 'top' the element will be added first in the targeted component-area. If you instead set it to 'bottom' it will be added last in the targeted component-area.</p>
 
         <p>See the example: [Reorder components](/examples/reorder-components/) for more information.</p>
       </td>

@@ -1,4 +1,4 @@
-### <a name="filter"></a> Filter object
+### <a name="filter"></a> Filter
 
 The componentManager works like a funnel, you start by defining components (componentDefinitions) and then a list of instances (instanceDefinitions) of those components. Each componentDefinition and each instanceDefinition may have different properties (ex. condition methods, filterString, showCount, urlPatterns etc.) that will be used to decide if it makes it through the funnel.
 
