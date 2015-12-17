@@ -132,8 +132,8 @@ class ComponentManager
     return @
 
   dispose: ->
-    do @removeListeners
     do @clear
+    do @removeListeners
     @_componentDefinitionsCollection = undefined
     @_instanceDefinitionsCollection = undefined
     @_globalConditionsModel = undefined

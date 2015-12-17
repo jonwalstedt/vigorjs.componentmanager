@@ -10,3 +10,6 @@ class BaseModel extends Backbone.Model
           delete customProperties[key]
 
     return customProperties
+
+  # noop
+  dispose: ->
