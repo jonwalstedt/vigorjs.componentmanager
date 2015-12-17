@@ -195,6 +195,8 @@
         return customProperties;
       };
 
+      BaseModel.prototype.dispose = function() {};
+
       return BaseModel;
 
     })(Backbone.Model);
@@ -1227,6 +1229,11 @@
 
       BaseInstanceCollection.prototype.model = InstanceDefinitionModel;
 
+      BaseInstanceCollection.prototype.initialize = function() {
+        this.on('reset', this._onReset);
+        return BaseInstanceCollection.__super__.initialize.apply(this, arguments);
+      };
+
       BaseInstanceCollection.prototype.getInstanceDefinition = function(instanceId) {
         var instanceDefinition;
         instanceDefinition = this.get(instanceId);
@@ -1234,6 +1241,10 @@
           throw this.ERROR.UNKNOWN_INSTANCE_DEFINITION;
         }
         return instanceDefinition;
+      };
+
+      BaseInstanceCollection.prototype._onReset = function(collection, options) {
+        return _.invoke(options.previousModels, 'dispose');
       };
 
       return BaseInstanceCollection;
@@ -1498,8 +1509,8 @@
       };
 
       ComponentManager.prototype.dispose = function() {
-        this.removeListeners();
         this.clear();
+        this.removeListeners();
         this._componentDefinitionsCollection = void 0;
         this._instanceDefinitionsCollection = void 0;
         this._globalConditionsModel = void 0;

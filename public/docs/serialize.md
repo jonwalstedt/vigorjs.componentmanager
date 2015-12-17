@@ -8,3 +8,7 @@ The serialized string will not contain any applied filters but it will contain t
 ```javascript
 var serializedSettings = componentManager.serialize();
 ```
+
+Returns the current state of the componentManagers settings object as a string.
+
+See the [order/reorder](/examples/reorder-components) example.
