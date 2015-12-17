@@ -20,11 +20,14 @@ componentManager.updateSettings({
 The refresh method returns a promise that will be resolved (after any asynchronous components has been loaded) with an object containing:
 
 ```javascript
-returnData = {
-  filter: {...} // The current filter (object)
-  activeInstances: [...] // all active instances (array)
-  activeInstanceDefinitions: [...] // all activeInstanceDefinitions (array)
-  lastChangedInstances: [...] // the last changed instances (array)
-  lastChangedInstanceDefinitions: [...] // the last changed instanceDefinitions (array)
+componentManager.refresh(filter).then(function (returnData) {});
+
+// The returned data will contain the following properties:
+{
+  filter: {...}, // The current filter (object)
+  activeInstances: [...], // all active instances (array)
+  activeInstanceDefinitions: [...], // all activeInstanceDefinitions (array)
+  lastChangedInstances: [...], // the last changed instances (array)
+  lastChangedInstanceDefinitions: [...], // the last changed instanceDefinitions (array)
 }
 ```
