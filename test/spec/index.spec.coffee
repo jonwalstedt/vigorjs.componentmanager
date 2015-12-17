@@ -491,7 +491,8 @@ describe 'The componentManager', ->
         componentManager._globalConditionsModel = new Backbone.Model()
         componentManager._filterModel = new FilterModel()
 
-      it 'should add a throttled_diff listener on the _componentDefinitionsCollection with _updateActiveComponents as callback', ->
+      it 'should add a throttled_diff listener on the _componentDefinitionsCollection
+      with _updateActiveComponents as callback', ->
         componentDefinitionsCollectionOnSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'on'
         updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
 
@@ -503,7 +504,8 @@ describe 'The componentManager', ->
         clock.tick 51
         assert updateActiveComponentsSpy.called
 
-      it 'should add a throttled_diff listener on the _instanceDefinitionsCollection with _updateActiveComponents as callback', ->
+      it 'should add a throttled_diff listener on the _instanceDefinitionsCollection
+      with _updateActiveComponents as callback', ->
         instanceDefinitionsCollectionOnSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'on'
         updateActiveComponentsSpy = sandbox.spy componentManager, '_updateActiveComponents'
 
