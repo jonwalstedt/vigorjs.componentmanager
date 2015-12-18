@@ -1629,6 +1629,11 @@
       };
 
       ComponentManager.prototype.removeComponentDefinition = function(componentDefinitionId) {
+        var instanceDefinitions;
+        instanceDefinitions = this._instanceDefinitionsCollection.where({
+          componentId: componentDefinitionId
+        });
+        this._instanceDefinitionsCollection.remove(instanceDefinitions);
         this._componentDefinitionsCollection.remove(componentDefinitionId);
         return this;
       };
