@@ -222,6 +222,8 @@ class ComponentManager
     return @
 
   removeComponentDefinition: (componentDefinitionId) ->
+    instanceDefinitions = @_instanceDefinitionsCollection.where componentId: componentDefinitionId
+    @_instanceDefinitionsCollection.remove instanceDefinitions
     @_componentDefinitionsCollection.remove componentDefinitionId
     return @
 

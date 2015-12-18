@@ -858,7 +858,58 @@ describe 'The componentManager', ->
 
 
     describe 'removeComponentDefinition', ->
-      it 'should call remove on the _componentDefinitionsCollection with passed componentDefinitionId', ->
+      it 'should remove all instanceDefinitions referencing the componentDefinition
+      thats about to be removed', ->
+        componentSettings =
+          components: [
+            {
+              id: 'dummy-component',
+              src: MockComponent
+            }
+            {
+              id: 'dummy-component2',
+              src: MockComponent
+            }
+          ]
+          instances: [
+            {
+              id: 'instance1'
+              componentId: 'dummy-component'
+              targetName: 'body'
+            }
+            {
+              id: 'instance2'
+              componentId: 'dummy-component'
+              targetName: 'body'
+            }
+            {
+              id: 'instance3'
+              componentId: 'dummy-component2'
+              targetName: 'body'
+            }
+            {
+              id: 'instance4'
+              componentId: 'dummy-component2'
+              targetName: 'body'
+            }
+          ]
+        componentManager.initialize componentSettings
+
+        removeSpy = sandbox.spy componentManager._instanceDefinitionsCollection, 'remove'
+        expectedInstanceDefinitionsToBeRemoved = [componentManager._instanceDefinitionsCollection.at(2), componentManager._instanceDefinitionsCollection.at(3)]
+
+        assert componentManager._instanceDefinitionsCollection.models.length, 4
+
+        componentManager.removeComponentDefinition 'dummy-component2'
+
+        assert removeSpy.calledWith expectedInstanceDefinitionsToBeRemoved
+        assert.equal componentManager._instanceDefinitionsCollection.models.length, 2
+        assert.equal componentManager._instanceDefinitionsCollection.at(0).toJSON().id, 'instance1'
+        assert.equal componentManager._instanceDefinitionsCollection.at(1).toJSON().id, 'instance2'
+
+
+      it 'should call remove on the _componentDefinitionsCollection with passed
+      componentDefinitionId', ->
         componentId = 'dummy-component'
         do componentManager.initialize
         removeComponentsSpy = sandbox.spy componentManager._componentDefinitionsCollection, 'remove'
