@@ -190,7 +190,6 @@ class ComponentManager
     if _.isObject(conditions)
       existingConditions = @_globalConditionsModel.get('conditions') or {}
       conditions = _.extend existingConditions, conditions
-
       @_globalConditionsModel.set conditions, silent: silent
     else
       throw @ERROR.CONDITION.WRONG_FORMAT

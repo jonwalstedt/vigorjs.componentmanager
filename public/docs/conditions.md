@@ -62,4 +62,4 @@ The in addition to the 'isLoggedIn' condition the 'message-alert-component' uses
 
 Both instanceDefinitions ('user-profile-instance' and 'message-alert-instance') could in turn have more conditions in their conditions property. The value of this property could be a string (the key of a method registered in the conditions object), or a function or an array with both strings and functions.
 
-See the [componentDefinition](#component-definitions) and the [instanceDefinition](#instance-definitions) specifications.
+See the [componentDefinition](#component-definitions) and the [instanceDefinition](#instance-definitions) specifications. For more examples see the [conditions example](/examples/filter-by-conditions).

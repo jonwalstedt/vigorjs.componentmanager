@@ -5,6 +5,27 @@ To define your instanceDefinitions you add your instanceDefinition objects to th
 
 The only required properties for a instanceDefinition is **id** and **componentId**, but there are many more properties which can be used to pass arguments, specify instance order and behavior and of course properties to help out with filtering. See each property and their descriptions below:
 
+#### Example of an instanceDefinition object.
+```javascript
+instanceDefinition = {
+  id: 'my-instance-definition',
+  componentId: 'my-component-definition-id',
+  args: {
+    myArg: 'myArgValue'
+  },
+  order: 1,
+  targetName: '.component-area--header',
+  reInstantiate: true,
+
+  filterString: 'my-instance',
+  includeIfFilterStringMatches: 'lang=en_GB',
+  excludeIfFilterStringMatches: 'lang=sv_SE',
+  conditions: ['isLoggedIn'],
+  maxShowCount: 3,
+  urlPattern: 'global'
+}
+```
+
 #### InstanceDefinition Properties
 
 ##### Public properties

@@ -5,6 +5,19 @@ To define your componentDefinitions you add your componentDefinition objects to 
 
 The only required properties for a componentDefinition is **id** and **src**. But a componentDefinition could also contain the default properties **args**, **conditions** and **maxShowCount**. All properties are undefined by default. Se the description for each below:
 
+#### Example of an componentDefinition object.
+```javascript
+componentDefinition = {
+  id: 'my-component',
+  src: 'components/my-component',
+  args: {
+    myArg: 'myArgValue'
+  },
+  conditions: ['isLoggedIn', 'hasNewMessage'],
+  maxShowCount: 3
+}
+```
+
 #### ComponentDefinition Properties
 
 <table class="docs-table">

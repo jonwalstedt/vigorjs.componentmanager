@@ -8,6 +8,12 @@ var componentSettings = {
           allowed = (today >= startTime && today <= endTime);
       console.log('is within timespan: ', allowed);
       return allowed;
+    },
+    hasCorrectTitle: function (filter, args) {
+      return args.title == 'id: filter-instance-2';
+    },
+    hasCorrectBackground: function (filter, args) {
+      return args.background == '#9F9EE8';
     }
   },
 
@@ -22,7 +28,6 @@ var componentSettings = {
       {
         id: 'filter-instance-1',
         componentId: 'filter-condition-component',
-        conditions: undefined,
         args: {
           title: 'id: filter-instance-1',
           background: '#9FEDFF'
@@ -32,7 +37,7 @@ var componentSettings = {
       {
         id: 'filter-instance-2',
         componentId: 'filter-condition-component',
-        conditions: undefined,
+        conditions: ['hasCorrectTitle', 'hasCorrectBackground'],
         args: {
           title: 'id: filter-instance-2',
           background: '#9F9EE8'

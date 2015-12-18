@@ -28,4 +28,4 @@ settings = {
 componentManager.initialize(settings);
 ```
 
-Initialize returns the componentManager.
+Initialize returns the componentManager instance.
