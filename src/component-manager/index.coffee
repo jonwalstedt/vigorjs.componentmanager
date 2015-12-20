@@ -47,9 +47,6 @@ class ComponentManager
     @_globalConditionsModel = new Backbone.Model()
     @_filterModel = new FilterModel()
 
-    do @setComponentClassName
-    do @setTargetPrefix
-
     if settings?.listenForMessages
       @_listenForMessages = true
 
@@ -246,19 +243,27 @@ class ComponentManager
 
     return @
 
-  setContext: (context = 'body') ->
+  setContext: (context = 'body', updateActiveComponents = true) ->
     if _.isString(context)
       @_$context = $ context
     else if context.jquery?
       @_$context = context
     else
       throw @ERROR.CONTEXT.WRONG_FORMAT
+
+    if updateActiveComponents
+      _.invoke @_instanceDefinitionsCollection?.models, 'unsetTarget'
+      do @_activeInstancesCollection?.reset
+      do @_updateActiveComponents
+
     return @
 
   setComponentClassName: (@_componentClassName = COMPONENT_CLASS_NAME) ->
+    _.invoke @_activeInstancesCollection?.models, 'set', componentClassName: @_componentClassName
     return @
 
   setTargetPrefix: (@_targetPrefix = TARGET_PREFIX) ->
+    _.invoke @_instanceDefinitionsCollection?.models, 'updateTargetPrefix', @_targetPrefix
     return @
 
   getContext: ->
@@ -311,13 +316,10 @@ class ComponentManager
   # Privat methods
   # ============================================================================
   _parse: (settings) ->
-    @setContext settings?.context
-
-    if settings?.componentClassName
-      @setComponentClassName settings.componentClassName
-
-    if settings?.targetPrefix
-      @setTargetPrefix settings.targetPrefix
+    updateActiveComponents = false
+    @setContext settings?.context, updateActiveComponents
+    @setComponentClassName settings?.componentClassName
+    @setTargetPrefix settings?.targetPrefix
 
     if settings?.componentSettings
       @_parseComponentSettings settings.componentSettings

@@ -258,14 +258,14 @@ describe 'InstanceDefinitionsCollection', ->
       result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
       assert.equal result, 'body'
 
-    it 'should add a dot (class indicator) and the targetPrefix to targetName if
+    it 'should add a period (class indicator) and the targetPrefix to targetName if
     it does not already have it', ->
       targetName = 'my-target'
       targetPrefix = 'my-prefix'
       result = instanceDefinitionsCollection._formatTargetName targetName, targetPrefix
       assert.equal result, '.my-prefix--my-target'
 
-    it 'should add a dot (class indicator) to prefixed target names if it
+    it 'should add a period (class indicator) to prefixed target names if it
     does not already have it', ->
       targetName = 'my-prefix--my-target'
       targetPrefix = 'my-prefix'

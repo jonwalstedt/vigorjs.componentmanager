@@ -156,6 +156,14 @@ class InstanceDefinitionModel extends BaseModel
       @_refreshTarget $context
     return @_$target
 
+  unsetTarget: ->
+    @_$target = undefined
+
+  updateTargetPrefix: (targetPrefix) ->
+    targetName = @get 'targetName'
+    area = targetName.split('--')[1]
+    @set 'targetName', "#{targetPrefix}--#{area}"
+
   _includeIfMatch: (regexp) ->
     filterString = @get 'filterString'
     if filterString
@@ -244,4 +252,3 @@ class InstanceDefinitionModel extends BaseModel
       unless targetName is 'body' or targetName.charAt(0) is '.'
         targetName = ".#{targetName}"
     return targetName
-

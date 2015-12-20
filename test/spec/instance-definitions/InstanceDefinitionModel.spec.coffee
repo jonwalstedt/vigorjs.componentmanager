@@ -559,6 +559,29 @@ describe 'InstanceDefinitionModel', ->
 
 
 
+  describe 'unsetTarget', ->
+    it 'should set this._$target to undefined', ->
+      instanceDefinitionModel._$target = $('body')
+      assert instanceDefinitionModel._$target
+      assert.equal instanceDefinitionModel._$target.length, 1
+
+      do instanceDefinitionModel.unsetTarget
+
+      assert.equal instanceDefinitionModel._$target, undefined
+
+
+
+  describe 'updateTargetPrefix', ->
+    it 'should update targetName with the new prefix', ->
+      instanceDefinitionModel.set 'targetName', 'component-area--main'
+      setSpy = sandbox.spy instanceDefinitionModel, 'set'
+      assert.equal instanceDefinitionModel.get('targetName'), 'component-area--main'
+
+      instanceDefinitionModel.updateTargetPrefix 'new-prefix'
+      assert.equal instanceDefinitionModel.get('targetName'), 'new-prefix--main'
+
+
+
 
   describe '_hasToMatch', ->
     it 'should call _includeIfMatch', ->
@@ -994,14 +1017,14 @@ describe 'InstanceDefinitionModel', ->
 
 
   describe '_getTargetName', ->
-    it 'should return the target name prefixed with a dot (class selector)', ->
+    it 'should return the target name prefixed with a period (class selector)', ->
       targetName = 'vigor-component--test'
       expectedResults = '.vigor-component--test'
       instanceDefinitionModel.set targetName: targetName
       result = instanceDefinitionModel._getTargetName()
       assert.equal result, expectedResults
 
-    it 'should return the target name prefixed with a dot (class selector) even
+    it 'should return the target name prefixed with a period (class selector) even
       if it already has it ', ->
       targetName = '.vigor-component--test'
       expectedResults = '.vigor-component--test'
@@ -1009,7 +1032,7 @@ describe 'InstanceDefinitionModel', ->
       result = instanceDefinitionModel._getTargetName()
       assert.equal result, expectedResults
 
-    it 'should not prefix the selector "body" with a dot', ->
+    it 'should not prefix the selector "body" with a period', ->
       targetName = 'body'
       expectedResults = 'body'
       instanceDefinitionModel.set targetName: targetName

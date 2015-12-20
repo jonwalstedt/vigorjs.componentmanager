@@ -27,6 +27,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
     @on 'change:urlParams', @_onUrlParamsChange
     @on 'change:order', @_onOrderChange
     @on 'change:target', @_onTargetChange
+    @on 'change:componentClassName', @_onComponentClassNameChange
     @on 'change:serializedFilter', @_onSerializedFilterChange
     do @_updateUrlParamsCollection
 
@@ -50,10 +51,9 @@ class ActiveInstanceDefinitionModel extends BaseModel
 
   _createInstance: ->
     componentClass = @get 'componentClass'
-    componentClassName = @get 'componentClassName'
     instance = new componentClass @_getInstanceArguments()
-    instance.$el.addClass componentClassName
     @set 'instance', instance
+    do @_updateComponentClassNameOnInstance
 
   _renderInstance: ->
     instance = @get 'instance'
@@ -148,6 +148,17 @@ class ActiveInstanceDefinitionModel extends BaseModel
     urlParams = @get 'urlParams'
     urlParamsCollection = @get 'urlParamsCollection'
     urlParamsCollection.set urlParams
+
+  _updateComponentClassNameOnInstance: ->
+    instance = @get 'instance'
+    componentClassName = @get 'componentClassName'
+    prevComponentClassName = @previousAttributes().componentClassName
+    if prevComponentClassName isnt componentClassName
+      instance.$el.removeClass prevComponentClassName
+      instance.$el.addClass componentClassName
+
+  _onComponentClassNameChange: ->
+    do @_updateComponentClassNameOnInstance
 
   _onInstanceChange: ->
     do @_renderInstance

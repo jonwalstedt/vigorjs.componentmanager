@@ -55,6 +55,11 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel.initialize
       assert onSpy.calledWith 'change:target', activeInstanceDefinitionModel._onTargetChange
 
+    it 'should add a listener on "change:componentClassName" with _onComponentClassNameChange as callback', ->
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      do activeInstanceDefinitionModel.initialize
+      assert onSpy.calledWith 'change:componentClassName', activeInstanceDefinitionModel._onComponentClassNameChange
+
     it 'should add a listener on "change:serializedFilter" with _onSerializedFilterChange as callback', ->
       onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
       do activeInstanceDefinitionModel.initialize
@@ -185,14 +190,6 @@ describe 'ActiveInstanceDefinitionModel', ->
       assert constructorSpy.calledWith instanceArguments
       assert getInstanceArgumentsSpy.called
 
-    it 'should add the componentClassName as a class on the instance.$el DOM element', ->
-      componentClass = activeInstanceDefinitionModel.get 'componentClass'
-      tempInstance = new componentClass()
-      assert.equal tempInstance.$el.hasClass('.vigor-component'), false
-
-      do activeInstanceDefinitionModel._createInstance
-      instance = activeInstanceDefinitionModel.get 'instance'
-      assert instance.$el.hasClass('vigor-component')
 
     it 'should store the instance on the activeInstanceDefinitionModel "instance"
     property', ->
@@ -205,6 +202,10 @@ describe 'ActiveInstanceDefinitionModel', ->
       assert instance instanceof MockComponent
       assert setSpy.calledWith 'instance', instance
 
+    it 'should call _updateComponentClassNameOnInstance', ->
+      updateComponentClassNameOnInstanceSpy = sandbox.spy activeInstanceDefinitionModel, '_updateComponentClassNameOnInstance'
+      do activeInstanceDefinitionModel._createInstance
+      assert updateComponentClassNameOnInstanceSpy.called
 
 
 
@@ -690,6 +691,61 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel._updateUrlParamsCollection
 
       assert setSpy.calledWith activeInstanceDefinitionModel.get('urlParams')
+
+
+  describe '_updateComponentClassNameOnInstance', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+        instance: new MockComponent()
+      , silent: true
+
+    it 'should add the componentClassName on the instance.$el', ->
+      componentClassName = 'my-component-class-name'
+      instance = activeInstanceDefinitionModel.get 'instance'
+      assert.equal instance.$el.hasClass(componentClassName), false
+
+      activeInstanceDefinitionModel.set 'componentClassName', componentClassName
+
+      do activeInstanceDefinitionModel._updateComponentClassNameOnInstance
+
+      assert.equal instance.$el.hasClass(componentClassName), true
+
+    it 'should remove the old componentClassName from the instance.$el if
+    it is not the same as the new one', ->
+      componentClassName = 'my-component-class-name'
+      newComponentClassName = 'my-new-component-class-name'
+      instance = activeInstanceDefinitionModel.get 'instance'
+      assert.equal instance.$el.hasClass(componentClassName), false
+
+      activeInstanceDefinitionModel.set 'componentClassName', componentClassName
+
+      do activeInstanceDefinitionModel._updateComponentClassNameOnInstance
+
+      assert.equal instance.$el.hasClass(componentClassName), true
+
+      activeInstanceDefinitionModel.set 'componentClassName', newComponentClassName
+
+      do activeInstanceDefinitionModel._updateComponentClassNameOnInstance
+
+      assert.equal instance.$el.hasClass(componentClassName), false
+      assert.equal instance.$el.hasClass(newComponentClassName), true
+
+  describe '_onComponentClassNameChange', ->
+
+    beforeEach ->
+      activeInstanceDefinitionModel.set
+        id: 'my-active-instance-definition'
+        componentClass: MockComponent
+      , silent: true
+
+    it 'should call _updateComponentClassNameOnInstance', ->
+      updateComponentClassNameOnInstanceStub = sandbox.stub activeInstanceDefinitionModel, '_updateComponentClassNameOnInstance'
+      do activeInstanceDefinitionModel._onComponentClassNameChange
+
+      assert updateComponentClassNameOnInstanceStub.called
 
 
 

@@ -683,6 +683,7 @@
         this.on('change:urlParams', this._onUrlParamsChange);
         this.on('change:order', this._onOrderChange);
         this.on('change:target', this._onTargetChange);
+        this.on('change:componentClassName', this._onComponentClassNameChange);
         this.on('change:serializedFilter', this._onSerializedFilterChange);
         return this._updateUrlParamsCollection();
       };
@@ -711,12 +712,11 @@
       };
 
       ActiveInstanceDefinitionModel.prototype._createInstance = function() {
-        var componentClass, componentClassName, instance;
+        var componentClass, instance;
         componentClass = this.get('componentClass');
-        componentClassName = this.get('componentClassName');
         instance = new componentClass(this._getInstanceArguments());
-        instance.$el.addClass(componentClassName);
-        return this.set('instance', instance);
+        this.set('instance', instance);
+        return this._updateComponentClassNameOnInstance();
       };
 
       ActiveInstanceDefinitionModel.prototype._renderInstance = function() {
@@ -841,6 +841,21 @@
         urlParams = this.get('urlParams');
         urlParamsCollection = this.get('urlParamsCollection');
         return urlParamsCollection.set(urlParams);
+      };
+
+      ActiveInstanceDefinitionModel.prototype._updateComponentClassNameOnInstance = function() {
+        var componentClassName, instance, prevComponentClassName;
+        instance = this.get('instance');
+        componentClassName = this.get('componentClassName');
+        prevComponentClassName = this.previousAttributes().componentClassName;
+        if (prevComponentClassName !== componentClassName) {
+          instance.$el.removeClass(prevComponentClassName);
+          return instance.$el.addClass(componentClassName);
+        }
+      };
+
+      ActiveInstanceDefinitionModel.prototype._onComponentClassNameChange = function() {
+        return this._updateComponentClassNameOnInstance();
       };
 
       ActiveInstanceDefinitionModel.prototype._onInstanceChange = function() {
@@ -1086,6 +1101,17 @@
           this._refreshTarget($context);
         }
         return this._$target;
+      };
+
+      InstanceDefinitionModel.prototype.unsetTarget = function() {
+        return this._$target = void 0;
+      };
+
+      InstanceDefinitionModel.prototype.updateTargetPrefix = function(targetPrefix) {
+        var area, targetName;
+        targetName = this.get('targetName');
+        area = targetName.split('--')[1];
+        return this.set('targetName', targetPrefix + "--" + area);
       };
 
       InstanceDefinitionModel.prototype._includeIfMatch = function(regexp) {
@@ -1397,8 +1423,6 @@
         this._activeInstancesCollection = new ActiveInstancesCollection();
         this._globalConditionsModel = new Backbone.Model();
         this._filterModel = new FilterModel();
-        this.setComponentClassName();
-        this.setTargetPrefix();
         if (settings != null ? settings.listenForMessages : void 0) {
           this._listenForMessages = true;
         }
@@ -1669,9 +1693,13 @@
         return this;
       };
 
-      ComponentManager.prototype.setContext = function(context) {
+      ComponentManager.prototype.setContext = function(context, updateActiveComponents) {
+        var ref, ref1;
         if (context == null) {
           context = 'body';
+        }
+        if (updateActiveComponents == null) {
+          updateActiveComponents = true;
         }
         if (_.isString(context)) {
           this._$context = $(context);
@@ -1680,16 +1708,29 @@
         } else {
           throw this.ERROR.CONTEXT.WRONG_FORMAT;
         }
+        if (updateActiveComponents) {
+          _.invoke((ref = this._instanceDefinitionsCollection) != null ? ref.models : void 0, 'unsetTarget');
+          if ((ref1 = this._activeInstancesCollection) != null) {
+            ref1.reset();
+          }
+          this._updateActiveComponents();
+        }
         return this;
       };
 
       ComponentManager.prototype.setComponentClassName = function(_componentClassName) {
+        var ref;
         this._componentClassName = _componentClassName != null ? _componentClassName : COMPONENT_CLASS_NAME;
+        _.invoke((ref = this._activeInstancesCollection) != null ? ref.models : void 0, 'set', {
+          componentClassName: this._componentClassName
+        });
         return this;
       };
 
       ComponentManager.prototype.setTargetPrefix = function(_targetPrefix) {
+        var ref;
         this._targetPrefix = _targetPrefix != null ? _targetPrefix : TARGET_PREFIX;
+        _.invoke((ref = this._instanceDefinitionsCollection) != null ? ref.models : void 0, 'updateTargetPrefix', this._targetPrefix);
         return this;
       };
 
@@ -1755,13 +1796,11 @@
       };
 
       ComponentManager.prototype._parse = function(settings) {
-        this.setContext(settings != null ? settings.context : void 0);
-        if (settings != null ? settings.componentClassName : void 0) {
-          this.setComponentClassName(settings.componentClassName);
-        }
-        if (settings != null ? settings.targetPrefix : void 0) {
-          this.setTargetPrefix(settings.targetPrefix);
-        }
+        var updateActiveComponents;
+        updateActiveComponents = false;
+        this.setContext(settings != null ? settings.context : void 0, updateActiveComponents);
+        this.setComponentClassName(settings != null ? settings.componentClassName : void 0);
+        this.setTargetPrefix(settings != null ? settings.targetPrefix : void 0);
         if (settings != null ? settings.componentSettings : void 0) {
           this._parseComponentSettings(settings.componentSettings);
         } else {
