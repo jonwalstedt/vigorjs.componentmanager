@@ -1,3 +1,8 @@
+.sidebar-wrapper {
+  background: #2a2d33;
+  width: $sidebarWidth;
+}
+
 .sidebar {
   position: relative;
   background: #2a2d33;
@@ -6,13 +11,6 @@
     text-indent: 10px;
   }
 }
-
-// .sidebar-content {
-//   position: fixed;
-//   height: 100%;
-//   width: $sidebarWidth;
-//   overflow: auto;
-// }
 
 .sidebar_list {
   list-style: none;

@@ -1739,7 +1739,7 @@
       };
 
       ComponentManager.prototype.getComponentClassName = function() {
-        return this._componentClassName;
+        return this._componentClassName || COMPONENT_CLASS_NAME;
       };
 
       ComponentManager.prototype.getTargetPrefix = function() {
@@ -1779,15 +1779,15 @@
         return (ref = this._activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)) != null ? ref.get('instance') : void 0;
       };
 
-      ComponentManager.prototype.postMessageToInstance = function(id, message) {
+      ComponentManager.prototype.postMessageToInstance = function(instanceDefinitionId, message) {
         var instance;
-        if (!id) {
+        if (!instanceDefinitionId) {
           throw this.ERROR.MESSAGE.MISSING_ID;
         }
         if (!message) {
           throw this.ERROR.MESSAGE.MISSING_MESSAGE;
         }
-        instance = this.getActiveInstanceById(id);
+        instance = this.getActiveInstanceById(instanceDefinitionId);
         if (_.isFunction(instance != null ? instance.receiveMessage : void 0)) {
           return instance.receiveMessage(message);
         } else {

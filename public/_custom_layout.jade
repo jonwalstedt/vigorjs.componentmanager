@@ -20,7 +20,8 @@ html
               a(href="/examples" class="main-navigation__link #{ current.path[0] == 'examples' ? 'main-navigation__link--active' : '' }") Examples
 
     main.content-wrapper
-      block sidebar
+      div.sidebar-wrapper
+        block sidebar
 
       article.content
         block content
@@ -35,9 +36,7 @@ html
     script(src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js")
     script(srC="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js")
     script(src="/js/vigor.componentmanager.js")
-    script(src="/js/sidebar.js")
-    script.
-      hljs.initHighlightingOnLoad();
+    script(src="/js/main.js")
 
     block common-example-scripts
     block scripts

@@ -270,7 +270,7 @@ class ComponentManager
     return @_$context
 
   getComponentClassName: ->
-    return @_componentClassName
+    return @_componentClassName or COMPONENT_CLASS_NAME
 
   getTargetPrefix: ->
     return @_targetPrefix or TARGET_PREFIX
@@ -299,14 +299,14 @@ class ComponentManager
   getActiveInstanceById: (instanceDefinitionId) ->
     return @_activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)?.get 'instance'
 
-  postMessageToInstance: (id, message) ->
-    unless id
+  postMessageToInstance: (instanceDefinitionId, message) ->
+    unless instanceDefinitionId
       throw @ERROR.MESSAGE.MISSING_ID
 
     unless message
       throw @ERROR.MESSAGE.MISSING_MESSAGE
 
-    instance = @getActiveInstanceById id
+    instance = @getActiveInstanceById instanceDefinitionId
     if _.isFunction(instance?.receiveMessage)
       instance.receiveMessage message
     else
