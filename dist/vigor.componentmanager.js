@@ -848,10 +848,10 @@
         instance = this.get('instance');
         componentClassName = this.get('componentClassName');
         prevComponentClassName = this.previousAttributes().componentClassName;
-        if (prevComponentClassName !== componentClassName) {
+        if (componentClassName !== prevComponentClassName) {
           instance.$el.removeClass(prevComponentClassName);
-          return instance.$el.addClass(componentClassName);
         }
+        return instance.$el.addClass(componentClassName);
       };
 
       ActiveInstanceDefinitionModel.prototype._onComponentClassNameChange = function() {

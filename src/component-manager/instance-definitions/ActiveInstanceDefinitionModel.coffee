@@ -153,9 +153,9 @@ class ActiveInstanceDefinitionModel extends BaseModel
     instance = @get 'instance'
     componentClassName = @get 'componentClassName'
     prevComponentClassName = @previousAttributes().componentClassName
-    if prevComponentClassName isnt componentClassName
+    if componentClassName isnt prevComponentClassName
       instance.$el.removeClass prevComponentClassName
-      instance.$el.addClass componentClassName
+    instance.$el.addClass componentClassName
 
   _onComponentClassNameChange: ->
     do @_updateComponentClassNameOnInstance
