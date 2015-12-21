@@ -2,9 +2,7 @@
 
 The componentManager main purpose is to create and dispose instances of components. In this case a component is typically a View of some sort, either a Backbone.View or a view or class that exposes the interface of a larger component (see the [example app](/examples/example-app) for examples of more complex components).
 
-There are some required properties and methods that needs to be exposed though, see below.
-
-A component have to expose the following properties and methods:
+There are some required properties and methods that needs to be exposed and some optional methods that will be called by the componentManager if they exists, see below.
 
 <table class="docs-table">
   <thead>
@@ -71,6 +69,15 @@ A component have to expose the following properties and methods:
         <p>This scenario could in most cases be avoided by not removing componentAreas without first removing the active instances in the componentManager by calling refresh with the new filter.</p>
 
         <p>See delegateEvents on [Backbone.Views](http://backbonejs.org/#View-delegateEvents).</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        **receiveMessage** method (optional)
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        This method will be called if you use the postMessageToInstance method on the componentManager. It will receive a message (can be anything) as argument.
       </td>
     </tr>
   </tbody>
