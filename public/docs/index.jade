@@ -4,55 +4,56 @@ block sidebar
 
   - publicMethods = ['initialize', 'updateSettings', 'refresh', 'serialize', 'parse', 'clear', 'dispose', 'addListeners', 'addConditions', 'addComponentDefinitions', 'addInstanceDefinitions', 'updateComponentDefinitions', 'updateInstanceDefinitions', 'removeComponentDefinition', 'removeInstanceDefinition', 'removeListeners', 'setContext', 'setComponentClassName', 'setTargetPrefix', 'getContext', 'getComponentClassName', 'getTargetPrefix', 'getActiveFilter', 'getConditions', 'getComponentDefinitionById', 'getInstanceDefinitionById', 'getComponentDefinitions', 'getInstanceDefinitions', 'getActiveInstances', 'getActiveInstanceById', 'postMessageToInstance']
 
-  aside.sidebar
-    div.sidebar-content
-      h4.sidebar__title Introduction
-      ul.sidebar_list
-        li.sidebar_list-item
-          a.sidebar__link(href="#introduction") Introduction
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#dependencies") Dependencies
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#getting-started") Getting started
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#components") Components
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#component-areas") Component Areas
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#component-definitions") ComponentDefinitions
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#instance-definitions") InstanceDefinitions
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#filter") Filter
-
-      h4.sidebar__title Settings
-      ul.sidebar_list
-        li.sidebar_list-item
-          a.sidebar__link(href="#settings") Settings
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#conditions") Conditions
-
-        li.sidebar_list-item
-          a.sidebar__link(href="#other-settings") Other settings
-
-
-      h4.sidebar__title Public methods
-      ul.sidebar_list
-        each link in publicMethods
+  div.sidebar-wrapper
+    aside.sidebar
+      div.sidebar-content
+        h4.sidebar__title Introduction
+        ul.sidebar_list
           li.sidebar_list-item
-            a.sidebar__link(href="#" + link)=link
+            a.sidebar__link(href="#introduction") Introduction
 
-      h4.sidebar__title Events
-      ul.sidebar_list
-        li.sidebar_list-item
+          li.sidebar_list-item
+            a.sidebar__link(href="#dependencies") Dependencies
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#getting-started") Getting started
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#components") Components
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#component-areas") Component Areas
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#component-definitions") ComponentDefinitions
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#instance-definitions") InstanceDefinitions
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#filter") Filter
+
+        h4.sidebar__title Settings
+        ul.sidebar_list
+          li.sidebar_list-item
+            a.sidebar__link(href="#settings") Settings
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#conditions") Conditions
+
+          li.sidebar_list-item
+            a.sidebar__link(href="#other-settings") Other settings
+
+
+        h4.sidebar__title Public methods
+        ul.sidebar_list
+          each link in publicMethods
+            li.sidebar_list-item
+              a.sidebar__link(href="#" + link)=link
+
+        h4.sidebar__title Events
+        ul.sidebar_list
+          li.sidebar_list-item
 
 block content
 

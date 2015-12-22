@@ -83,12 +83,12 @@ pre {
 }
 
 @media (min-width: 768px) {
-  .sidebar {
+  .sidebar-wrapper {
     flex: 0 0 $sidebarWidth;
   }
 }
 
-.sidebar {
+.sidebar-wrapper {
   order: -1;
 }
 

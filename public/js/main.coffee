@@ -3,21 +3,39 @@ class App
     @$body = $ 'html, body'
     @$contentWrapper = $ '.content-wrapper'
     @$sidebar = $ '.sidebar'
-    @$sidebarWrapper = $ '.sidebar-wrapper'
-    @origTop = @$sidebar.offset().top
+  
+    if @$sidebar.length
+      @$sidebarLinks = @$sidebar.find 'a'
+      @$sidebarWrapper = $ '.sidebar-wrapper'
+      @origTop = @$sidebar.offset().top
+      hash = window.location.hash
 
-    $(window).on 'scroll', @_onScroll
-    $(window).trigger 'scroll'
-    @$sidebar.find('a').on 'click', @_onAnchorClick
+      if hash
+        $currentTarget = $ "[href='#{hash}']", @$sidebar
+        @_updateSidebarLinkActiveState $currentTarget
+
+      $(window).on 'scroll', @_onScroll
+      $(window).trigger 'scroll'
+      @$sidebarLinks.on 'click', @_onAnchorClick
 
     do hljs.initHighlightingOnLoad
 
+  _updateSidebarLinkActiveState: ($link) ->
+    @$sidebarLinks.removeClass 'sidebar__link--active'
+    $link.addClass 'sidebar__link--active'
+
   _onAnchorClick: (event) =>
     $currentTarget = $ event.currentTarget
-    href = $currentTarget.attr('href').substring 1
-    $target = $ "[name='#{href}']"
-    @$body.stop().animate scrollTop: $target.offset().top, 1000
-    do event.preventDefault
+    href = $currentTarget.attr 'href'
+    if href.indexOf('#') > -1
+      @_updateSidebarLinkActiveState $currentTarget
+      strippedHref = href.substring 1
+      $target = $ "[name='#{strippedHref}']"
+      if $target.length
+        @$body.stop().animate scrollTop: $target.offset().top, 1000, ->
+          console.log href
+
+      do event.preventDefault
 
   _onScroll: (event) =>
     scrollTop = document.documentElement.scrollTop || document.body.scrollTop
