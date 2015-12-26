@@ -51,15 +51,20 @@ block sidebar
             li.sidebar_list-item
               a.sidebar__link(href="#" + link)=link
 
-        h4.sidebar__title Events
-        ul.sidebar_list
-          li.sidebar_list-item
-            a.sidebar__link(href="#Events") Events
-
         h4.sidebar__title IframeComponent
         ul.sidebar_list
           li.sidebar_list-item
             a.sidebar__link(href="#iframe-component") IframeComponent
+
+        h4.sidebar__title Events
+        ul.sidebar_list
+          li.sidebar_list-item
+            a.sidebar__link(href="#component-definition-events") ComponentDefinition events
+          li.sidebar_list-item
+            a.sidebar__link(href="#instance-definition-events") InstanceDefinition events
+          li.sidebar_list-item
+            a.sidebar__link(href="#active-instance-events") Active instance events
+
 
 block content
 
@@ -113,3 +118,5 @@ block content
 
   section.main-section
     h2 Events
+    section.sub-section
+      != partial('./events')

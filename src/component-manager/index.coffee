@@ -146,33 +146,33 @@ class ComponentManager
     # Propagate events
     # Component definitions
     @_componentDefinitionsCollection.on 'add', (model, collection, options) =>
-      @trigger.apply @, [@EVENTS.COMPONENT_ADD, [model.toJSON(), collection.toJSON()]]
+      @trigger.call @, @EVENTS.COMPONENT_ADD, model.toJSON(), collection.toJSON()
 
     @_componentDefinitionsCollection.on 'change', (model, options) =>
-      @trigger.apply @, [@EVENTS.COMPONENT_CHANGE, [model.toJSON()]]
+      @trigger.call @, @EVENTS.COMPONENT_CHANGE, model.toJSON(), @_componentDefinitionsCollection.toJSON()
 
     @_componentDefinitionsCollection.on 'remove', (model, collection, options) =>
-      @trigger.apply @, [@EVENTS.COMPONENT_REMOVE, [model.toJSON(), collection.toJSON()]]
+      @trigger.call @, @EVENTS.COMPONENT_REMOVE, model.toJSON(), collection.toJSON()
 
     # Instance definitions
     @_instanceDefinitionsCollection.on 'add', (model, collection, options) =>
-      @trigger.apply @, [@EVENTS.INSTANCE_ADD, [model.toJSON(), collection.toJSON()]]
+      @trigger.call @, @EVENTS.INSTANCE_ADD, model.toJSON(), collection.toJSON()
 
     @_instanceDefinitionsCollection.on 'change', (model, options) =>
-      @trigger.apply @, [@EVENTS.INSTANCE_CHANGE, [model.toJSON()]]
+      @trigger.call @, @EVENTS.INSTANCE_CHANGE, model.toJSON(), @_instanceDefinitionsCollection.toJSON()
 
     @_instanceDefinitionsCollection.on 'remove', (model, collection, options) =>
-      @trigger.apply @, [@EVENTS.INSTANCE_REMOVE, [model.toJSON(), collection.toJSON()]]
+      @trigger.call @, @EVENTS.INSTANCE_REMOVE, model.toJSON(), collection.toJSON()
 
     # Active components
     @_activeInstancesCollection.on 'add', (model, collection, options) =>
-      @trigger.apply @, [@EVENTS.ADD, [model.toJSON(), collection.toJSON()]]
+      @trigger.call @, @EVENTS.ADD, model.toJSON(), collection.toJSON()
 
     @_activeInstancesCollection.on 'change', (model, options) =>
-      @trigger.apply @, [@EVENTS.CHANGE, [model.toJSON()]]
+      @trigger.call @, @EVENTS.CHANGE, model.toJSON(), @_activeInstancesCollection.toJSON()
 
     @_activeInstancesCollection.on 'remove', (model, collection, options) =>
-      @trigger.apply @, [@EVENTS.REMOVE, [model.toJSON(), collection.toJSON()]]
+      @trigger.call @, @EVENTS.REMOVE, model.toJSON(), collection.toJSON()
 
     if @_listenForMessages
       eventMethod = if window.addEventListener then 'addEventListener' else 'attachEvent'
