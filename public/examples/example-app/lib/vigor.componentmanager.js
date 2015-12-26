@@ -361,6 +361,9 @@
       function IframeComponent(attrs) {
         this.onIframeLoaded = bind(this.onIframeLoaded, this);
         _.extend(this.attributes, attrs != null ? attrs.iframeAttributes : void 0);
+        if (attrs != null ? attrs.targetOrigin : void 0) {
+          this.targetOrigin = attrs.targetOrigin;
+        }
         IframeComponent.__super__.constructor.apply(this, arguments);
       }
 

@@ -13,6 +13,10 @@ class IframeComponent extends Backbone.View
 
   constructor: (attrs) ->
     _.extend @attributes, attrs?.iframeAttributes
+
+    if attrs?.targetOrigin
+      @targetOrigin = attrs.targetOrigin
+
     super
 
   initialize: (attrs) ->

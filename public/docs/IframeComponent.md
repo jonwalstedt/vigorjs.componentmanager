@@ -4,7 +4,7 @@ By setting a url as src attribute on a [instanceDefinition](#instance-definition
 
 The IframemComponent is exposed on the Vigor object so it's easy to extend it and create custom IframeComponents if additional logic is needed.
 
-The IframeComponent extends Backbone.View and have the following default attributes:
+The IframeComponent extends Backbone.View and have the following default attributes (the Backbone.View attributes property):
 
 ```javascript
 attributes: {
@@ -41,10 +41,43 @@ componentManager.refresh();
 This will add an IframeComponent instance with the following iframe markup:
 
 ```html
-<iframe seamless="seamless" scrolling="false" border="0" frameborder="0" width="400" class="vigor-component--iframe vigor-component" src="http://www.google.com"></iframe>
+<iframe
+  seamless="seamless"
+  scrolling="false"
+  border="0"
+  frameborder="0"
+  width="400"
+  class="vigor-component--iframe
+  vigor-component"
+  src="http://www.google.com">
+</iframe>
 ```
 
-The IframeComponent class exposed the following public methods:
+The IframeComponent exposes the public property targetOrigin which defaults to 'http://localhost:7070' which you override by passing the desired targetOrigin value in the args object (see the [targetOrigin documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)):
+
+```javascript
+componentManager.initialize({
+  components: [{
+    id: 'my-component-definition',
+    src: 'http://www.google.com'
+  }],
+  instances: [{
+    id: 'my-instance-definition',
+    componentId: 'my-component-definition',
+    args: {
+      targetOrigin: 'http://www.mydomain.com',
+      iframeAttributes: {
+        width: 400
+      }
+    },
+    targetName: 'body'
+  }]
+});
+
+componentManager.refresh();
+```
+
+The IframeComponent class exposes the following public methods:
 
 <table class="docs-table">
   <thead>
@@ -59,6 +92,7 @@ The IframeComponent class exposed the following public methods:
         **initialize**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        The initialize method will call the addListeners method and set the this.src property if it was passed during instantiation.
       </td>
     </tr>
 
@@ -67,6 +101,7 @@ The IframeComponent class exposed the following public methods:
         **addListeners**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        The addListeners method will add a listener for 'onload' on the iframe and call onIframeLoaded as a callback when the iframe is finished loading.
       </td>
     </tr>
 
@@ -75,6 +110,7 @@ The IframeComponent class exposed the following public methods:
         **removeListeners**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        The removeListeners method will remove the 'onload' listener.
       </td>
     </tr>
 
@@ -83,6 +119,7 @@ The IframeComponent class exposed the following public methods:
         **render**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        The render method will set the src attribute on the iframe and start loading it's content. It returns the instance for chainability.
       </td>
     </tr>
 
@@ -91,6 +128,7 @@ The IframeComponent class exposed the following public methods:
         **dispose**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        Dispose will call removeListeners and remove to remove event listeners and remove the element from the DOM.
       </td>
     </tr>
 
@@ -99,6 +137,7 @@ The IframeComponent class exposed the following public methods:
         **postMessageToIframe**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        This method will forward a message from the IframeComponent (Backbone.View) class into the contentWindow of the iframe using the postMessage api. It will also pass along the targetOrigin property of the IframeComponent.
       </td>
     </tr>
 
@@ -107,6 +146,7 @@ The IframeComponent class exposed the following public methods:
         **receiveMessage**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        The default implementation is a noop
       </td>
     </tr>
 
@@ -115,6 +155,7 @@ The IframeComponent class exposed the following public methods:
         **onIframeLoaded**
       </td>
       <td class="docs-table__column docs-table__column-2">
+        The default implementation is a noop
       </td>
     </tr>
   </tbody>
