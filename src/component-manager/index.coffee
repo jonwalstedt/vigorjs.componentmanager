@@ -166,13 +166,13 @@ class ComponentManager
 
     # Active components
     @_activeInstancesCollection.on 'add', (model, collection, options) =>
-      @trigger @EVENTS.ADD, model.toJSON(), collection.toJSON()
+      @trigger @EVENTS.ADD, model.get('instance'), do @getActiveInstances
 
     @_activeInstancesCollection.on 'change', (model, options) =>
-      @trigger @EVENTS.CHANGE, model.toJSON(), @_activeInstancesCollection.toJSON()
+      @trigger @EVENTS.CHANGE, model.get('instance'), do @getActiveInstances
 
     @_activeInstancesCollection.on 'remove', (model, collection, options) =>
-      @trigger @EVENTS.REMOVE, model.toJSON(), collection.toJSON()
+      @trigger @EVENTS.REMOVE, model.get('instance'), do @getActiveInstances
 
     if @_listenForMessages
       eventMethod = if window.addEventListener then 'addEventListener' else 'attachEvent'

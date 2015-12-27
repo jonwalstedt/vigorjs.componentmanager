@@ -1583,17 +1583,17 @@
         })(this));
         this._activeInstancesCollection.on('add', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger(_this.EVENTS.ADD, model.toJSON(), collection.toJSON());
+            return _this.trigger(_this.EVENTS.ADD, model.get('instance'), _this.getActiveInstances());
           };
         })(this));
         this._activeInstancesCollection.on('change', (function(_this) {
           return function(model, options) {
-            return _this.trigger(_this.EVENTS.CHANGE, model.toJSON(), _this._activeInstancesCollection.toJSON());
+            return _this.trigger(_this.EVENTS.CHANGE, model.get('instance'), _this.getActiveInstances());
           };
         })(this));
         this._activeInstancesCollection.on('remove', (function(_this) {
           return function(model, collection, options) {
-            return _this.trigger(_this.EVENTS.REMOVE, model.toJSON(), collection.toJSON());
+            return _this.trigger(_this.EVENTS.REMOVE, model.get('instance'), _this.getActiveInstances());
           };
         })(this));
         if (this._listenForMessages) {
