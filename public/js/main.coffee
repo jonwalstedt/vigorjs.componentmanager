@@ -1,4 +1,7 @@
 class App
+
+  VIEWPORT_CUTOF: 200
+
   constructor: ->
     @$window = $ window
     @$body = $ 'html, body'
@@ -6,16 +9,18 @@ class App
     @$contentWrapper = $ '.content-wrapper'
     @$sidebarWrapper = $ '.sidebar-wrapper'
     @$sidebar = $ '.sidebar'
+    @$sectionHeaders = $ '.sub-section > h3 > a'
+    @origTop = @$sidebar.offset().top or 0
+    @_debouncedOnScroll = _.debounce @_onScroll, 10
+    @_debouncedSetActiveSectionFromScrollPosition = _.debounce @_setActiveSectionFromScrollPosition, 100
     do @_updateActiveLinks
 
     @$window.on 'hashchange', @_updateActiveLinks
-
-    @origTop = @$sidebar.offset().top or 0
-    @$window.on 'scroll', @_onScroll
+    @$window.on 'scroll', @_debouncedOnScroll
+    @$window.on 'scroll', @_debouncedSetActiveSectionFromScrollPosition
     @$window.trigger 'scroll'
 
-    if @$sidebar.length
-      $('.sidebar a, .docs .content a').on 'click', @_onLinkClick
+    $('.sidebar a, .docs .content a').on 'click', @_onLinkClick
 
     do hljs.initHighlightingOnLoad
 
@@ -49,4 +54,26 @@ class App
         @$sidebarWrapper.removeAttr 'style'
         @$contentWrapper.removeClass 'sidebar--fixed'
 
-new App()
+  _setActiveSectionFromScrollPosition: =>
+    for el in @$sectionHeaders
+      $el = $ el
+      if @_isElementInTopOfViewport(el)
+        hash = $el.attr 'name'
+        $el.removeAttr 'name'
+        window.location.hash = hash
+        $el.attr 'name', hash
+
+  _isElementInTopOfViewport: (el) ->
+    if typeof jQuery is "function" and el instanceof jQuery
+      el = el[0]
+
+    rect = el.getBoundingClientRect()
+
+    return (
+      rect.top >= 0 and
+      rect.left >= 0 and
+      rect.bottom <= @VIEWPORT_CUTOF and
+      rect.right <= $(window).width()
+    )
+
+window.app = new App()
