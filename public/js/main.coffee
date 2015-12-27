@@ -1,45 +1,40 @@
 class App
   constructor: (@$contentWrapper, @$sidebar) ->
     @$body = $ 'html, body'
+    @$links = $ 'a'
     @$contentWrapper = $ '.content-wrapper'
+    @$sidebarWrapper = $ '.sidebar-wrapper'
     @$sidebar = $ '.sidebar'
+    do @_updateActiveLinks
+    @_debouncedUpdateActiveLinks = _.debounce @_updateActiveLinks, 0
 
     if @$sidebar.length
-      @$sidebarLinks = @$sidebar.find 'a'
-      @$sidebarWrapper = $ '.sidebar-wrapper'
       @origTop = @$sidebar.offset().top
-      hash = window.location.hash
-
-      if hash
-        $currentTarget = $ "[href='#{hash}']", @$sidebar
-        @_updateSidebarLinkActiveState $currentTarget
 
       $(window).on 'scroll', @_onScroll
       $(window).trigger 'scroll'
-      $('a').on 'click', @_onLinkClick
+      $('.sidebar a, .docs .content a').on 'click', @_onLinkClick
 
     do hljs.initHighlightingOnLoad
 
-  _updateSidebarLinkActiveState: ($link) ->
-    @$sidebarLinks.removeClass 'sidebar__link--active'
-    $link.addClass 'sidebar__link--active'
-
-  _onHashUpdate: (event) =>
+  _updateActiveLinks: ->
     hash = window.location.hash
-    strippedHash = hash.substring 1
-    $target = $ "[name='#{strippedHash}']"
-    @$body.stop().animate scrollTop: $target.offset().top, 1000
+    pathname = window.location.pathname
+    $activeLinks = $ "[href='#{hash}'], [href='#{pathname}']"
+    @$links.removeClass 'link--active'
+    $activeLinks.addClass 'link--active'
 
   _onLinkClick: (event) =>
     $currentTarget = $ event.currentTarget
     href = $currentTarget.attr 'href'
+    href = href.split('/').pop()
     if href.indexOf('#') > -1
-      @_updateSidebarLinkActiveState $currentTarget
       strippedHref = href.substring 1
       $target = $ "[name='#{strippedHref}']"
       if $target.length
-        @$body.stop().animate scrollTop: $target.offset().top, 1000, ->
+        @$body.stop().animate scrollTop: $target.offset().top, 1000, =>
           window.location.hash = href
+          do @_debouncedUpdateActiveLinks
 
       do event.preventDefault
 

@@ -6,7 +6,7 @@ html
     link(rel="stylesheet" href="/css/main.css")
     block includes
 
-  body
+  body(class="#{current.path[0]}")
     header.header
       div.header-content
         h1
