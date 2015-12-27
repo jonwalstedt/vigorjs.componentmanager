@@ -10,11 +10,11 @@ class App
 
     @$window.on 'hashchange', @_updateActiveLinks
 
-    if @$sidebar.length
-      @origTop = @$sidebar.offset().top
+    @origTop = @$sidebar.offset().top or 0
+    @$window.on 'scroll', @_onScroll
+    @$window.trigger 'scroll'
 
-      $(window).on 'scroll', @_onScroll
-      $(window).trigger 'scroll'
+    if @$sidebar.length
       $('.sidebar a, .docs .content a').on 'click', @_onLinkClick
 
     do hljs.initHighlightingOnLoad
@@ -41,11 +41,12 @@ class App
 
   _onScroll: (event) =>
     scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-    if scrollTop > @origTop
-      @$sidebarWrapper.height @$sidebar.height()
-      @$contentWrapper.addClass 'sidebar--fixed'
-    else
-      @$sidebarWrapper.removeAttr 'style'
-      @$contentWrapper.removeClass 'sidebar--fixed'
+    if @$sidebar.length
+      if scrollTop > @origTop
+        @$sidebarWrapper.height @$sidebar.height()
+        @$contentWrapper.addClass 'sidebar--fixed'
+      else
+        @$sidebarWrapper.removeAttr 'style'
+        @$contentWrapper.removeClass 'sidebar--fixed'
 
 new App()
