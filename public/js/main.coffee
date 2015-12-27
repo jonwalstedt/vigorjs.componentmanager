@@ -1,12 +1,14 @@
 class App
-  constructor: (@$contentWrapper, @$sidebar) ->
+  constructor: ->
+    @$window = $ window
     @$body = $ 'html, body'
     @$links = $ 'a'
     @$contentWrapper = $ '.content-wrapper'
     @$sidebarWrapper = $ '.sidebar-wrapper'
     @$sidebar = $ '.sidebar'
     do @_updateActiveLinks
-    @_debouncedUpdateActiveLinks = _.debounce @_updateActiveLinks, 0
+
+    @$window.on 'hashchange', @_updateActiveLinks
 
     if @$sidebar.length
       @origTop = @$sidebar.offset().top
@@ -17,7 +19,7 @@ class App
 
     do hljs.initHighlightingOnLoad
 
-  _updateActiveLinks: ->
+  _updateActiveLinks: =>
     hash = window.location.hash
     pathname = window.location.pathname
     $activeLinks = $ "[href='#{hash}'], [href='#{pathname}']"
@@ -34,7 +36,6 @@ class App
       if $target.length
         @$body.stop().animate scrollTop: $target.offset().top, 1000, =>
           window.location.hash = href
-          do @_debouncedUpdateActiveLinks
 
       do event.preventDefault
 

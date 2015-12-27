@@ -2,7 +2,7 @@
 
 Component areas are the DOM elements where instances of components will be placed. The component areas can be any element but they have to have a class that matches the class defined in your instanceDefinitions targetName property plus the targetPrefix ex. **'component-area--main'** where **'component-area'** is the default prefix.
 
-The prefix can be changed to anything you like by setting the targetPrefix property on the [settings object](#settings") to the string you would like to use as a prefix.
+The prefix can be changed to anything you like by setting the targetPrefix property on the [settings object](#settings) to the string you would like to use as a prefix.
 
 See example below.
 
