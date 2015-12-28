@@ -1,4 +1,4 @@
-$leftColumnWidth: 260px;
+$leftColumnWidth: 290px;
 
 .main-section {
   margin: 80px 0px;
@@ -9,9 +9,9 @@ $leftColumnWidth: 260px;
 
 .sub-section {
   h3 {
-    margin: 180px 0 30px 0;
+    margin: 180px 0 0 0;
     border-bottom: 1px dashed #ccc;
-    padding: 20px 0px;
+    padding: 10px 0px;
   }
   a {
     font-weight: bold;
@@ -71,7 +71,7 @@ $leftColumnWidth: 260px;
 }
 
 .docs-table__column-1 {
-  strong {
+  code {
     display: block;
   }
   width: $leftColumnWidth;
