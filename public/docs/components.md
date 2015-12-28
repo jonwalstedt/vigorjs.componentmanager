@@ -77,7 +77,7 @@ There are some required properties and methods that needs to be exposed and some
         `receiveMessage` method (optional)
       </td>
       <td class="docs-table__column docs-table__column-2">
-        This method will be called if you use the postMessageToInstance method on the componentManager. It will receive a message (can be anything) as argument.
+        This method will be called if you use the `postMessageToInstance` method on the componentManager. It will receive a message (can be anything) as argument.
       </td>
     </tr>
   </tbody>
