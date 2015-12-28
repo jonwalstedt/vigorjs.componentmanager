@@ -53,7 +53,7 @@ This will add an IframeComponent instance with the following iframe markup:
 </iframe>
 ```
 
-The IframeComponent exposes the public property targetOrigin which defaults to 'http://localhost:7070' which you override by passing the desired targetOrigin value in the args object (see the [targetOrigin documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)):
+The IframeComponent exposes the public property targetOrigin which defaults to `http://localhost:7070` which you override by passing the desired targetOrigin value in the args object (see the [targetOrigin documentation](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage)):
 
 ```javascript
 componentManager.initialize({
@@ -89,7 +89,7 @@ The IframeComponent class exposes the following public methods:
   <tbody>
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **initialize**
+        `initialize`
       </td>
       <td class="docs-table__column docs-table__column-2">
         The initialize method will call the addListeners method and set the this.src property if it was passed during instantiation.
@@ -98,7 +98,7 @@ The IframeComponent class exposes the following public methods:
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **addListeners**
+        `addListeners`
       </td>
       <td class="docs-table__column docs-table__column-2">
         The addListeners method will add a listener for 'onload' on the iframe and call onIframeLoaded as a callback when the iframe is finished loading.
@@ -107,7 +107,7 @@ The IframeComponent class exposes the following public methods:
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **removeListeners**
+        `removeListeners`
       </td>
       <td class="docs-table__column docs-table__column-2">
         The removeListeners method will remove the 'onload' listener.
@@ -116,7 +116,7 @@ The IframeComponent class exposes the following public methods:
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **render**
+        `render`
       </td>
       <td class="docs-table__column docs-table__column-2">
         The render method will set the src attribute on the iframe and start loading it's content. It returns the instance for chainability.
@@ -125,7 +125,7 @@ The IframeComponent class exposes the following public methods:
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **dispose**
+        `dispose`
       </td>
       <td class="docs-table__column docs-table__column-2">
         Dispose will call removeListeners and remove to remove event listeners and remove the element from the DOM.
@@ -134,7 +134,7 @@ The IframeComponent class exposes the following public methods:
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **postMessageToIframe**
+        `postMessageToIframe`
       </td>
       <td class="docs-table__column docs-table__column-2">
         This method will forward a message from the IframeComponent (Backbone.View) class into the contentWindow of the iframe using the postMessage api. It will also pass along the targetOrigin property of the IframeComponent.
@@ -143,7 +143,7 @@ The IframeComponent class exposes the following public methods:
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **receiveMessage**
+        `receiveMessage`
       </td>
       <td class="docs-table__column docs-table__column-2">
         The default implementation is a noop
@@ -152,7 +152,7 @@ The IframeComponent class exposes the following public methods:
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **onIframeLoaded**
+        `onIframeLoaded`
       </td>
       <td class="docs-table__column docs-table__column-2">
         The default implementation is a noop

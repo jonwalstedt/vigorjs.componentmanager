@@ -137,7 +137,7 @@ settings = {
 
 componentManager.initialize(settings);
 ```
-In this case each of the target keys would be used as a part the selector to use for all of the instanceDefinitions within that array. The other part of the selector would be the targetPrefix so in the examples above any instanceDefiniton that would be part of the array for "header" would have the targetName set to **"component-area--header"**, for "main" it would be **"component-area--main"** and so on.
+In this case each of the target keys would be used as a part the selector to use for all of the instanceDefinitions within that array. The other part of the selector would be the targetPrefix so in the examples above any instanceDefiniton that would be part of the array for "header" would have the targetName set to `"component-area--header"`, for "main" it would be `"component-area--main"` and so on.
 
 #### Skip defaults
 If you don't want to change the defaults for context, componentClassName, targetPrefix and listenForMessages you pass in only the componentSettings part of the settings object:

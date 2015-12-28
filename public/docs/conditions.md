@@ -1,6 +1,6 @@
 ### <a name="conditions"></a> Conditions
 
-Conditions are methods that you either set on a [componentDefinition](#component-definitions), an [instanceDefinition](#instance-definitions) or in the conditions object within the componentSettings object (see [settings](#settings)). These methods should return **true** or **false** and.
+Conditions are methods that you either set on a [componentDefinition](#component-definitions), an [instanceDefinition](#instance-definitions) or in the conditions object within the componentSettings object (see [settings](#settings)). These methods should return `true` or `false` and.
 
 Condition methods will be passed the active filter and the args object on the instanceDefinition or on the componentDefinition depending on where the condition method is used.
 

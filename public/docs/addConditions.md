@@ -1,8 +1,8 @@
 ### <a name="addConditions"></a> addConditions
 
-The addConditions method takes an object containing the condition methods to run and a silent flag that determines if the change should trigger an event or not (**the silent flag defaults to false**). The passed object will be merged with the conditions object registered during initialization.
+The addConditions method takes an object containing the condition methods to run and a silent flag that determines if the change should trigger an event or not (**the silent flag defaults to `false`**). The passed object will be merged with the conditions object registered during initialization.
 
-To run these method you reference their keys in either the componentDefinitions or instanceDefinitions **conditions** property.
+To run these method you reference their keys in either the componentDefinitions or instanceDefinitions `conditions` property.
 
 Each condition method will receive the active filter and the args object of the componentDefinition or instanceDefinition if it is defined.
 

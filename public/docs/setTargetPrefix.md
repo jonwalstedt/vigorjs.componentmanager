@@ -17,6 +17,7 @@ componentManager.addInstanceDefinition({
 })
 ```
 
+And the markup would look like this with the prefixed class:
 ```html
 <div class="my-component-area--main"><div>
 ```

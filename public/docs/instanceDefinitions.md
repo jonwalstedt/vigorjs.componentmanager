@@ -1,9 +1,9 @@
 ### <a name="instance-definitions"></a> InstanceDefinitions
-InstanceDefinitions or instanceDefinitionModels defines an instance of a componentDefinition. That means that one componentDefinition may have multiple instanceDefinitions. The connection between them is done with an id reference from each instanceDefinition to its componentDefinition's id. Each instanceDefinition have to have the property **componentId** with the id of the componentDefinition (which holds the class to create the instance from).
+InstanceDefinitions or instanceDefinitionModels defines an instance of a componentDefinition. That means that one componentDefinition may have multiple instanceDefinitions. The connection between them is done with an id reference from each instanceDefinition to its componentDefinition's id. Each instanceDefinition have to have the property `componentId` with the id of the componentDefinition (which holds the class to create the instance from).
 
 To define your instanceDefinitions you add your instanceDefinition objects to the instance array in the [componentSettings](#settings) or use the [alternative structure](#alternative-structure).
 
-The only required properties for a instanceDefinition is **id** and **componentId**, but there are many more properties which can be used to pass arguments, specify instance order and behavior and of course properties to help out with filtering. See each property and their descriptions below:
+The only required properties for a instanceDefinition is `id` and `componentId`, but there are many more properties which can be used to pass arguments, specify instance order and behavior and of course properties to help out with filtering. See each property and their descriptions below:
 
 #### Example of an instanceDefinition object.
 ```javascript
@@ -41,7 +41,7 @@ These properties are used to decide what component to create the instance from, 
   <tbody>
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **id** String (required)
+        `id` String (required)
       </td>
       <td class="docs-table__column docs-table__column-2">
         The id property is required. It should be a unique identifier for the instanceDefinition and it should be a string.
@@ -50,7 +50,7 @@ These properties are used to decide what component to create the instance from, 
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **componentId** String (required)
+        `componentId` String (required)
       </td>
       <td class="docs-table__column docs-table__column-2">
         <p>The componentId property is required. It should be the uniqe identifier for the componentDefinition to create instances from and it should be a string.</p>
@@ -61,7 +61,7 @@ These properties are used to decide what component to create the instance from, 
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **args** Object
+        `args` Object
       </td>
       <td class="docs-table__column docs-table__column-2">
         <p>The args property is an object containing any key value pairs you like. This args object will be merged to the args object on the componentDefinition (if any) and override any properties that exists in both objects.</p>
@@ -72,10 +72,10 @@ These properties are used to decide what component to create the instance from, 
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **order** Number / 'top' / 'bottom'
+        `order` Number / 'top' / 'bottom'
       </td>
       <td class="docs-table__column docs-table__column-2">
-        <p>The order property should be a Number (int) ex: **order: 4** or the string 'top' or 'bottom'.</p>
+        <p>The order property should be a Number (int) ex: `order: 4` or the string `'top'` or `'bottom'`.</p>
 
         <p>The order property specifies in what order to add instances to the DOM. The order property is also read back from the DOM when adding instances so it will order instances around elements that is not handled by the componentManager as long as they have a data-order="" attribute set on the element.</p>
 
@@ -89,24 +89,24 @@ These properties are used to decide what component to create the instance from, 
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **targetName** String / jQuery object (required - depending on structure in the settingsObject)
+        `targetName` String / jQuery object (required - depending on structure in the settingsObject)
       </td>
       <td class="docs-table__column docs-table__column-2">
-        <p>If the targetName is a string is a string it should be a class selector like **'.component-area--sidebar'** and it should have the prefix that you defined in your settings object (default prefix is 'component-area'). If the prefix is not present it will be added for you so if you set the targetName to '.header' it will be changed to be '.component-area--header'. You would of course have to add the class 'component-area--header' to your markup your self.</p>
+        <p>If the targetName is a string is a string it should be a class selector like `'.component-area--sidebar'` and it should have the prefix that you defined in your settings object (default prefix is 'component-area'). If the prefix is not present it will be added for you so if you set the targetName to '.header' it will be changed to be '.component-area--header'. You would of course have to add the class 'component-area--header' to your markup your self.</p>
 
         <p>The targetName property could also be a jquey object like $('.my-element')</p>
 
-        <p>The **targetName is required** if you use the default setup with an instances array in your componentSettings object (not using the [alternative structure](#alternative-structure)).</p>
+        <p>The `targetName` is required if you use the default setup with an instances array in your componentSettings object (not using the [alternative structure](#alternative-structure)).</p>
         <p>The targetName property is not needed if you are using the [alternative sturcture](#alternative-structure) for your componentSettings object since it will be parsed from the object keys.</p>
       </td>
     </tr>
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **reInstantiate** Boolean
+        `reInstantiate` Boolean
       </td>
       <td class="docs-table__column docs-table__column-2">
-        <p>The reInstantiate flag is a boolean which defaults to **false**. Setting this flag to true will cause the instance to be reInstantiated when matching two different filters after each other.</p>
+        <p>The reInstantiate flag is a boolean which defaults to `false`. Setting this flag to true will cause the instance to be reInstantiated when matching two different filters after each other.</p>
 
         <p>If you for an example pass a filter with the url property set to 'foo/1' and your instanceDefinition have the urlPattern 'foo/:id' your component would pass the filter and be instantiated and added to the DOM. If you then do another refresh with the url set to 'foo/2' the default behavior would be not to reInstantiate the instance since it's already created, rendered and added to the DOM. But with this flag set to true it will force the instance to be recreated and readded whenever the filter change (and it passes the filter).</p>
 
@@ -129,7 +129,7 @@ These properties are used to decide if the instance passes the filter or not.
   <tbody>
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **filterString** String
+        `filterString` String
       </td>
       <td class="docs-table__column docs-table__column-2">
         The filterString property is a string that you can match against the regexp you define in your filter object (by adding your regexp to one of these filter properties: includeIfMatch, excludeIfMatch, hasToMatch, cantMatch).
@@ -138,7 +138,7 @@ These properties are used to decide if the instance passes the filter or not.
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **includeIfFilterStringMatches** String / Regexp
+        `includeIfFilterStringMatches` String / Regexp
       </td>
       <td class="docs-table__column docs-table__column-2">
         The includeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches the filterString the instance will be created. If includeIfFilterStringMatches is defined and does not match the filterString the instanceDefinition will not pass the filter.
@@ -147,7 +147,7 @@ These properties are used to decide if the instance passes the filter or not.
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **excludeIfFilterStringMatches** String / Regexp
+        `excludeIfFilterStringMatches` String / Regexp
       </td>
       <td class="docs-table__column docs-table__column-2">
         The excludeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches filterString in the filter object the instance will be excluded.
@@ -156,7 +156,7 @@ These properties are used to decide if the instance passes the filter or not.
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **conditions** Array / Function / String
+        `conditions` Array / Function / String
       </td>
       <td class="docs-table__column docs-table__column-2">
         <p>A condition for a componentDefinition or instanceDefinition should be a function returning true or false. One or multiple conditions can be used to help determine if an instance of the component should be created or not.</p>
@@ -171,7 +171,7 @@ These properties are used to decide if the instance passes the filter or not.
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **excludeIfFilterStringMatches** String / Regexp
+        `excludeIfFilterStringMatches` String / Regexp
       </td>
       <td class="docs-table__column docs-table__column-2">
         The excludeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches filterString in the filter object the instance will be excluded.
@@ -180,7 +180,7 @@ These properties are used to decide if the instance passes the filter or not.
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **maxShowCount** Number
+        `maxShowCount` Number
       </td>
       <td class="docs-table__column docs-table__column-2">
         <p>The property maxShowCount should be a number if defined. The instanceDefinitions maxShowCount overrides the componentDefinitions maxShowCount property.</p>
@@ -191,7 +191,7 @@ These properties are used to decide if the instance passes the filter or not.
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **urlPattern** String / Array
+        `urlPattern` String / Array
       </td>
       <td class="docs-table__column docs-table__column-2">
         <p>The urlPattern property should be a string in the form of a Backbone url pattern / route or an array containing multiple url patterns.</p>
@@ -200,7 +200,7 @@ These properties are used to decide if the instance passes the filter or not.
 
         <p>By passing multiple urlPatterns you can have the same instance active across multiple urls without reinstantiation. For an example: if you set the urlPattern to ['home', 'products/:id'] your instance would be created once when matching 'home' and then still keep the same instance active when navigating to any page that matches the 'products/:id' pattern (products/1, products/2 etc.)</p>
 
-        <p>You can also set the urlPattern to **'global'** to have it match any url. This is useful if you want an instance of your component to always stay on page, like a header or a main menu.</p>
+        <p>You can also set the urlPattern to `'global'` to have it match any url. This is useful if you want an instance of your component to always stay on page, like a header or a main menu.</p>
 
         <p>See the [Filter by url](/examples/filter-by-url) example.</p>
       </td>

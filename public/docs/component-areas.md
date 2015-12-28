@@ -1,6 +1,6 @@
 ### <a name="component-areas"></a> Component Areas
 
-Component areas are the DOM elements where instances of components will be placed. The component areas can be any element but they have to have a class that matches the class defined in your instanceDefinitions targetName property plus the targetPrefix ex. **'component-area--main'** where **'component-area'** is the default prefix.
+Component areas are the DOM elements where instances of components will be placed. The component areas can be any element but they have to have a class that matches the class defined in your instanceDefinitions targetName property plus the targetPrefix ex. `component-area--main` where `component-area` is the default prefix.
 
 The prefix can be changed to anything you like by setting the targetPrefix property on the [settings object](#settings) to the string you would like to use as a prefix.
 
@@ -58,7 +58,7 @@ componentManager.initialize(settings);
 ```
 
 
-In the examples above the prefix is set to 'my-component-area' which means that all DOM elements that should receive instances by the componentManager should have class names that starts with 'my-component-area', ex: **class="my-component-area--main"** or **class="my-component-area--sidebar"** etc.
+In the examples above the prefix is set to `'my-component-area'` which means that all DOM elements that should receive instances by the componentManager should have class names that starts with `'my-component-area'`, ex: `class="my-component-area--main"` or `class="my-component-area--sidebar"` etc.
 
 ```html
 <div class="my-component-area--main"></div>

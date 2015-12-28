@@ -14,7 +14,7 @@ There are some required properties and methods that needs to be exposed and some
   <tbody>
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **$el** jQuery object (required)
+        `$el` jQuery object (required)
       </td>
       <td class="docs-table__column docs-table__column-2">
         A jQuery object containing a reference to the main DOM element of the component.
@@ -23,7 +23,7 @@ There are some required properties and methods that needs to be exposed and some
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **render** method (required)
+        `render` method (required)
       </td>
       <td class="docs-table__column docs-table__column-2">
         Typically the render method should update the this.$el element with the rendered state of the component
@@ -32,7 +32,7 @@ There are some required properties and methods that needs to be exposed and some
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **dispose** method (required)
+        `dispose` method (required)
       </td>
       <td class="docs-table__column docs-table__column-2">
         The dispose method should clean up and remove the component. Typically it would remove all event listeners, variables and elements used within the component.
@@ -41,7 +41,7 @@ There are some required properties and methods that needs to be exposed and some
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **preRender** method (optional)
+        `preRender` method (optional)
       </td>
       <td class="docs-table__column docs-table__column-2">
         This method will be called before render if it is defined.
@@ -50,7 +50,7 @@ There are some required properties and methods that needs to be exposed and some
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **postRender** method (optional)
+        `postRender` method (optional)
       </td>
       <td class="docs-table__column docs-table__column-2">
         This method will be called after render if it is defined.
@@ -59,7 +59,7 @@ There are some required properties and methods that needs to be exposed and some
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **delegateEvents**  method (optional)
+        `delegateEvents`  method (optional)
       </td>
       <td class="docs-table__column docs-table__column-2">
         <p>Components might get reparented if you remove parent DOM elements without disposing the instance and add a new DOM element with the same class and call refresh on the componentManager.</p>
@@ -74,7 +74,7 @@ There are some required properties and methods that needs to be exposed and some
 
     <tr>
       <td class="docs-table__column docs-table__column-1">
-        **receiveMessage** method (optional)
+        `receiveMessage` method (optional)
       </td>
       <td class="docs-table__column docs-table__column-2">
         This method will be called if you use the postMessageToInstance method on the componentManager. It will receive a message (can be anything) as argument.
