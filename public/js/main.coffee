@@ -1,6 +1,7 @@
 class App
 
   VIEWPORT_CUTOF: 200
+  ACTIVE_LINK_CLASS: 'link--active'
 
   constructor: ->
     @$window = $ window
@@ -28,31 +29,8 @@ class App
     hash = window.location.hash
     pathname = window.location.pathname
     $activeLinks = $ "[href='#{hash}'], [href='#{pathname}']"
-    @$links.removeClass 'link--active'
-    $activeLinks.addClass 'link--active'
-
-  _onLinkClick: (event) =>
-    $currentTarget = $ event.currentTarget
-    href = $currentTarget.attr 'href'
-    href = href.split('/').pop()
-    if href.indexOf('#') > -1
-      strippedHref = href.substring 1
-      $target = $ "[name='#{strippedHref}']"
-      if $target.length
-        @$body.stop().animate scrollTop: $target.offset().top, 1000, =>
-          window.location.hash = href
-
-      do event.preventDefault
-
-  _onScroll: (event) =>
-    scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-    if @$sidebar.length
-      if scrollTop > @origTop
-        @$sidebarWrapper.height @$sidebar.height()
-        @$contentWrapper.addClass 'sidebar--fixed'
-      else
-        @$sidebarWrapper.removeAttr 'style'
-        @$contentWrapper.removeClass 'sidebar--fixed'
+    @$links.removeClass @ACTIVE_LINK_CLASS
+    $activeLinks.addClass @ACTIVE_LINK_CLASS
 
   _setActiveSectionFromScrollPosition: =>
     for el in @$sectionHeaders
@@ -75,5 +53,26 @@ class App
       rect.bottom <= @VIEWPORT_CUTOF and
       rect.right <= $(window).width()
     )
+
+  _onLinkClick: (event) =>
+    $currentTarget = $ event.currentTarget
+    href = $currentTarget.attr('href').split('/').pop()
+    if href.indexOf('#') > -1
+      strippedHref = href.substring 1
+      $target = $ "[name='#{strippedHref}']"
+      if $target.length
+        @$body.stop().animate scrollTop: $target.offset().top, 1000
+      do event.preventDefault
+
+  _onScroll: (event) =>
+    scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+    if @$sidebar.length
+      if scrollTop > @origTop
+        @$sidebarWrapper.height @$sidebar.height()
+        @$contentWrapper.addClass 'sidebar--fixed'
+      else
+        @$sidebarWrapper.removeAttr 'style'
+        @$contentWrapper.removeClass 'sidebar--fixed'
+
 
 window.app = new App()
