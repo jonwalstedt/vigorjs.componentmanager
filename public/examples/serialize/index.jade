@@ -5,17 +5,19 @@ block content
   != partial("../_components", {code: partial("./components"), conditions: '1', components: '1', instances: '5'})
 
   div.app-wrapper
-    div.controls
-      button.randomize Randomize
-      button.serialize Serialize
-      button.save Save to localStorage
-      button.clear Remove from localStorage
 
     small active filter
     div.active-filter
 
     small info
     div.examples-info
+
+    small controls
+    div.controls
+      button.randomize Randomize
+      button.serialize Serialize
+      button.save Save to localStorage
+      button.clear Remove from localStorage
 
     small .serialized-output
     pre.serialized-output

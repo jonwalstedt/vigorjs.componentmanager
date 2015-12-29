@@ -1,30 +1,50 @@
 ExampleComponent = Backbone.View.extend({
   className: 'example-component',
   template: _.template($('.example-component-template').html()),
+
+  // only used to display incomming properties
+  defaultInstanceDefinitionObj: {
+    id: undefined,
+    componentId: undefined,
+    args: undefined,
+    order: undefined,
+    targetName: undefined,
+    reInstantiate: false,
+
+    filterString: undefined,
+    includeIfFilterStringMatches: undefined,
+    excludeIfFilterStringMatches: undefined,
+    conditions: undefined,
+    maxShowCount: undefined,
+    urlPattern: undefined
+  },
+
   events: {
     'click .toggle-fullsize': '_toggleFullsize'
   },
 
   initialize: function (args) {
     var
-      title = args.title || args.id,
-      templateData = {
-        title: title,
-        urlPattern: args.urlPattern || 'undefined',
-        filterString: args.filterString || 'undefined',
-        includeIfFilterStringMatches: args.includeIfFilterStringMatches || 'undefined',
-        excludeIfFilterStringMatches: args.excludeIfFilterStringMatches || 'undefined',
-        conditions: args.conditions || 'undefined',
-        urlParamsCollection: this._stringify(args.urlParamsCollection.toJSON()),
-        args: this._stringify(args)
-      };
+      id = args.title || args.id,
+      templateData,
+      instanceDefinition = _.extend({},
+        this.defaultInstanceDefinitionObj,
+        _.omit(args, 'urlParams', 'urlParamsCollection', 'title', 'background')
+      );
 
-    console.log('ExampleComponent with id ' + title + ' has been instantiated');
-    this.title = title;
-    this.templateData = this._highlightTemplateData(templateData);
+    instanceDefinition.args = args;
+    this.templateData = {
+      id: id,
+      instanceDefinition: this._stringify(instanceDefinition),
+      arguments: this._stringify(arguments),
+    };
+
+    console.log('ExampleComponent with id ' + id + ' has been instantiated');
+    this.arguments = arguments;
+    this.id = id;
     this.$el.css("background", args.background);
     this.urlParamsCollection = args.urlParamsCollection;
-    this.listenTo(this.urlParamsCollection, 'change', _.bind(this._onUrlParamsChange, this));
+    this.listenTo(this.urlParamsCollection.at(0), 'change:url', _.bind(this._onUrlParamsChange, this));
   },
 
   render: function () {
@@ -34,26 +54,28 @@ ExampleComponent = Backbone.View.extend({
   },
 
   dispose: function () {
-    console.log('ExampleComponent with id: ' + this.title + ' has been disposed');
+    console.log('ExampleComponent with id: ' + this.id + ' has been disposed');
     this.remove();
   },
 
   _onUrlParamsChange: function () {
+    console.log('_onUrlParamsChange', this.id);
     message = 'This component doesnt reinstantiate when the url changes but instead gets new params passed through the urlParamsCollection: ';
     this.$output.html(message + '<pre>' + this._stringify(this.urlParamsCollection.toJSON())) + '</pre>';
+    this.$el.flash(400, 1);
   },
 
   _stringify: function (string) {
-    return JSON.stringify(string, null, 2);
-  },
-
-  _highlightTemplateData: function (data) {
-    for (var key in data) {
-      if (data[key] && data[key].indexOf('undefined') < 0) {
-        data[key] = '<b>' + data[key] + '</b>';
+    function replacer(key, value) {
+      if (typeof value === 'undefined') {
+        return 'undefined';
       }
+      if (typeof value !== 'object') {
+        return '<b>' + value + '</b>';
+      }
+      return value;
     }
-    return data;
+    return JSON.stringify(string, replacer, 2);
   },
 
   _toggleFullsize: function (event) {

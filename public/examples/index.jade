@@ -21,7 +21,7 @@ block sidebar
           a(href="/examples/filter-by-conditions/" class="sidebar__link #{ current.path[1] == 'filter-by-conditions' ? 'sidebar__link--active' : '' }") Filter by conditions
 
         li.sidebar_list-item
-          a(href="/examples/filter-by-custom-properties" class="sidebar__link #{ current.path[1] == 'filter-by-custom-properties' ? 'sidebar__link--active' : '' }") Filter by custom properties
+          a(href="/examples/filter-by-custom-properties/" class="sidebar__link #{ current.path[1] == 'filter-by-custom-properties' ? 'sidebar__link--active' : '' }") Filter by custom properties
 
         li.sidebar_list-item
           a(href="/examples/iframe-components/" class="sidebar__link #{ current.path[1] == 'iframe-components' ? 'sidebar__link--active' : '' }") Iframe Components
@@ -52,21 +52,22 @@ block content
   != partial("./examples")
 
 block common-example-scripts
-  script(src="/js/vigor.componentmanager.js")
-
   script(type="text/template" class="example-component-template").
-    <h2>ExampleComponent: <%= title %></h2>
+    <h2>ExampleComponent:
+      <span class="example-component__title"><%= id %></span>
+    </h2>
     <button class="toggle-fullsize">Toggle fullsize</button>
+
+    <p>This instance was created from the following instanceDefinition:</p>
     <pre>
-    tilte: <%= title %>
-    urlPattern: <%= urlPattern %>
-    filterString: <%= filterString %>
-    includeIfFilterStringMatches: <%= includeIfFilterStringMatches %>
-    excludeIfFilterStringMatches: <%= excludeIfFilterStringMatches %>
-    conditions: <%= conditions %>
-    urlParamsCollection: <%= urlParamsCollection %>
-    args: <%= args %>
+    <%= instanceDefinition %>
     </pre>
+
+    <p>This instance was created with the following arguments passed to the constructor:</p>
+    <pre>
+    arguments: <%= arguments %>
+    </pre>
+
     <div class="component-output"></div>
 
   script(type="text/template" class="active-filter-template").
@@ -78,6 +79,8 @@ block common-example-scripts
     }</code>
     </pre>
 
+  script(src="/js/vigor.componentmanager.js")
+  script(type="text/javascript" src="/examples/jquery.flash.js")
   script(type="text/javascript" src="/examples/ExampleComponent.js")
 
   script.

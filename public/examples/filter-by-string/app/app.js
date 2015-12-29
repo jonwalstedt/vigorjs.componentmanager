@@ -109,7 +109,7 @@ var app = app || {};
     },
 
     updateFilterStringUrl: function () {
-      var filterString = 'state=one|lang=sv_SE|http://www.google.com';
+      var filterString = 'state=one|lang=sv_SE|url=http://www.google.com';
       this._updateFilterString(filterString);
     },
 

@@ -11,7 +11,7 @@ var componentSettings = {
         componentId: 'hello-world-component',
         urlPattern: 'add-hello-world', // #add-hello-world
         args: {
-          title: 'hello-world-instance',
+          id: 'hello-world-instance',
           urlPattern: 'add-hello-world'
           background: '#F6FFBA'
         }

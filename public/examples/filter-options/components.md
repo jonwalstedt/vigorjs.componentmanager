@@ -12,7 +12,7 @@ var componentSettings = {
         componentId: 'filter-condition-component',
         urlPattern: 'foo/:bar',
         args: {
-          title: 'id: filter-instance-1',
+          id: 'id: filter-instance-1',
           urlPattern: 'foo/:bar',
           background: '#9FEDFF'
         }
@@ -23,7 +23,7 @@ var componentSettings = {
         componentId: 'filter-condition-component',
         urlPattern: 'foo/:bar',
         args: {
-          title: 'id: filter-instance-2',
+          id: 'id: filter-instance-2',
           urlPattern: 'foo/:bar',
           background: '#9FEDFF'
         }
@@ -34,7 +34,7 @@ var componentSettings = {
         componentId: 'filter-condition-component',
         urlPattern: 'foo/:bar',
         args: {
-          title: 'id: filter-instance-3',
+          id: 'id: filter-instance-3',
           urlPattern: 'foo/:bar',
           background: '#9FEDFF'
         }
@@ -45,7 +45,7 @@ var componentSettings = {
         componentId: 'filter-condition-component',
         urlPattern: 'bar/:baz',
         args: {
-          title: 'id: filter-instance-4',
+          id: 'id: filter-instance-4',
           urlPattern: 'bar/:baz',
           background: '#9F9EE8'
         }
@@ -56,7 +56,7 @@ var componentSettings = {
         componentId: 'filter-condition-component',
         urlPattern: 'bar/:baz',
         args: {
-          title: 'id: filter-instance-5',
+          id: 'id: filter-instance-5',
           urlPattern: 'bar/:baz',
           background: '#9F9EE8'
         }
@@ -67,7 +67,7 @@ var componentSettings = {
         componentId: 'filter-condition-component',
         urlPattern: 'bar/:baz',
         args: {
-          title: 'id: filter-instance-6',
+          id: 'id: filter-instance-6',
           urlPattern: 'bar/:baz',
           background: '#9F9EE8'
         }
@@ -79,7 +79,7 @@ var componentSettings = {
         urlPattern: 'bar/:baz',
         filterString: 'bar',
         args: {
-          title: "id: filter-instance-7",
+          id: "id: filter-instance-7",
           urlPattern: 'bar/:baz',
           background: '#0F9EF8',
           filterString: 'bar'

@@ -9,8 +9,8 @@ var componentSettings = {
       console.log('is within timespan: ', allowed);
       return allowed;
     },
-    hasCorrectTitle: function (filter, args) {
-      return args.title == 'id: filter-instance-2';
+    hasCorrectId: function (filter, args) {
+      return args.id == 'id: filter-instance-2';
     },
     hasCorrectBackground: function (filter, args) {
       return args.background == '#9F9EE8';
@@ -29,7 +29,7 @@ var componentSettings = {
         id: 'filter-instance-1',
         componentId: 'filter-condition-component',
         args: {
-          title: 'id: filter-instance-1',
+          id: 'id: filter-instance-1',
           background: '#9FEDFF'
         }
       },
@@ -37,9 +37,9 @@ var componentSettings = {
       {
         id: 'filter-instance-2',
         componentId: 'filter-condition-component',
-        conditions: ['hasCorrectTitle', 'hasCorrectBackground'],
+        conditions: ['hasCorrectId', 'hasCorrectBackground'],
         args: {
-          title: 'id: filter-instance-2',
+          id: 'id: filter-instance-2',
           background: '#9F9EE8'
         }
       }

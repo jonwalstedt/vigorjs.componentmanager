@@ -20,7 +20,7 @@ var componentSettings = {
         urlPattern: 'foo/:bar',
         type: 'grey-component',
         args: {
-          title: 'id: filter-instance-1',
+          id: 'id: filter-instance-1',
           urlPattern: 'foo/:bar',
           type: 'grey-component',
           background: 'grey'
@@ -33,7 +33,7 @@ var componentSettings = {
         urlPattern: 'bar/:baz',
         type: 'grey-component',
         args: {
-          title: 'id: filter-instance-2',
+          id: 'id: filter-instance-2',
           urlPattern: 'bar/:baz',
           type: 'grey-component',
           background: 'grey'
@@ -46,7 +46,7 @@ var componentSettings = {
         urlPattern: 'foo/:bar',
         type: 'green-component',
         args: {
-          title: 'id: filter-instance-3',
+          id: 'id: filter-instance-3',
           urlPattern: 'foo/:bar',
           type: 'green-component',
           background: 'green'
@@ -59,7 +59,7 @@ var componentSettings = {
         urlPattern: 'bar/:baz',
         type: 'green-component',
         args: {
-          title: 'id: filter-instance-4',
+          id: 'id: filter-instance-4',
           urlPattern: 'bar/:baz',
           type: 'green-component',
           background: 'green'
@@ -72,7 +72,7 @@ var componentSettings = {
         urlPattern: 'foo/:bar',
         type: 'red-component',
         args: {
-          title: 'id: filter-instance-5',
+          id: 'id: filter-instance-5',
           urlPattern: 'foo/:bar',
           type: 'red-component',
           background: 'red'
@@ -85,7 +85,7 @@ var componentSettings = {
         urlPattern: 'bar/:baz',
         type: 'red-component',
         args: {
-          title: 'id: filter-instance-6',
+          id: 'id: filter-instance-6',
           urlPattern: 'bar/:baz',
           type: 'red-component',
           background: 'red'
@@ -98,7 +98,7 @@ var componentSettings = {
         urlPattern: 'bar/:baz',
         type: 'red-component',
         args: {
-          title: 'id: filter-instance-7',
+          id: 'id: filter-instance-7',
           urlPattern: 'bar/:baz',
           type: 'red-component',
           background: 'red'
@@ -110,7 +110,7 @@ var componentSettings = {
         componentId: 'filter-condition-component2',
         urlPattern: 'foo/:bar',
         args: {
-          title: 'id: filter-instance-8',
+          id: 'id: filter-instance-8',
           urlPattern: 'foo/:bar',
           background: 'yellow'
         }

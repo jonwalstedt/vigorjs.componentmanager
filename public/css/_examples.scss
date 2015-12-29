@@ -28,16 +28,31 @@
     display: inline-block;
     margin: 0 4px 4px 0;
   }
+  ul {
+    @extend %clearfix;
+    padding: 0;
+    margin: 0;
+  }
+  li {
+    float: left;
+    list-style: none;
+    // margin: 0 10px 0 0;
+    width: 50%;
+  }
 }
 
 .example-component {
   position: relative;
   box-sizing: content-box;
-  width: 320px;
+  width: 306px;
   height: 220px;
   float: left;
   overflow: auto;
   margin: 6px;
+}
+
+.example-component__title {
+  display: block;
 }
 
 .example-component.example-component--fullsize {

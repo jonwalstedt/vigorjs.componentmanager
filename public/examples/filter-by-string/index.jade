@@ -8,21 +8,24 @@ block content
     div.example-one
       != partial("./filter-string-on-instance-definition")
 
+      small active filter
+      div.active-filter
+
+      small info
+      div.examples-info
+
+      small controls
       div.controls
         button.restore Restore
         button.include-if-string-matches includeIfMatch "first"
         button.exclude-if-string-matches excludeIfMatch "first"
         button.has-to-match-string hasToMatch "first"
         button.cant-match-string cantMatch "first"
-        //- button.toggle-forced-filter-string-matching toggle forceFilterStringMatching
         div
           label
             input(type="checkbox" class="force-filter-string-matching")
             | ForceFilterStringMatching
 
-      div.active-filter
-      small info
-      div.examples-info
 
       small .component-area--first-examples
       div.component-area.component-area--first-examples
@@ -30,15 +33,18 @@ block content
     div.example-two
       != partial("./filter-string-on-filter")
 
+      small active filter
+      div.active-filter
+
+      small info
+      div.examples-info
+
+      small controls
       div.controls
         button.restore Restore
         button.update-filter-string-lang-en-gb set filterString to "state=one|lang=en_GB"
         button.update-filter-string-lang-sv-se set filterString to "state=one|lang=sv_SE"
         button.update-filter-string-url set filterString to "state=one|lang=sv_SE|http://www.google.com"
-
-      div.active-filter
-      small info
-      div.examples-info
 
       small .component-area--second-examples
       div.component-area.component-area--second-examples

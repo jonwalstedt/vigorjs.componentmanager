@@ -5,15 +5,18 @@ block content
   != partial("../_components", {code: partial("./components"), conditions: '3', components: '1', instances: '2'})
 
   div.app-wrapper
+    small active filter
+    div.active-filter
+
+    small info
+    div.examples-info
+
+    small controls
     div.controls
       button.register-condition Register condition
       button.apply-condition-to-component Add condition to component "filter-condition-component"
       button.apply-condition-to-instance Add condition to instance "filter-instance-2"
       button.reset Reset components
-
-      div.active-filter
-      small info
-      div.examples-info
 
     small .component-area--main
     div.component-area.component-area--main

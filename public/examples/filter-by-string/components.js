@@ -10,7 +10,7 @@ var componentSettings = {
         componentId: 'filter-string-component',
         order: 1,
         args: {
-          title: 'id: 1',
+          id: 'id: 1',
           filterString: 'undefined',
           background: '#F6FFBA'
         }
@@ -20,7 +20,7 @@ var componentSettings = {
         componentId: 'filter-string-component',
         order: 2,
         args: {
-          title: 'id: 2',
+          id: 'id: 2',
           filterString: 'lorem/ipsum/<b>first</b>',
           background: '#B7E8D4'
         },
@@ -31,7 +31,7 @@ var componentSettings = {
         componentId: 'filter-string-component',
         order: 3,
         args: {
-          title: 'id: 3',
+          id: 'id: 3',
           filterString: 'a filter string could be any string',
           background: '#B6C4FF'
         },
@@ -44,7 +44,7 @@ var componentSettings = {
         componentId: 'filter-string-component',
         order: 4,
         args: {
-          title: 'id: 4',
+          id: 'id: 4',
           filterString: 'undefined - the filterString is set on the filter passed to the refresh method',
           includeIfFilterStringMatches: 'state=one',
           background: '#9FEDFF'
@@ -56,7 +56,7 @@ var componentSettings = {
         componentId: 'filter-string-component',
         order: 5,
         args: {
-          title: 'id: 5',
+          id: 'id: 5',
           filterString: 'undefined - the filterString is set on the filter passed to the refresh method',
           includeIfFilterStringMatches: 'state=one',
           excludeIfFilterStringMatches: 'lang=en_GB',
@@ -70,7 +70,7 @@ var componentSettings = {
         componentId: 'filter-string-component',
         order: 6,
         args: {
-          title: 'id: 6',
+          id: 'id: 6',
           filterString: 'undefined - the filterString is set on the filter passed to the refresh method',
           includeIfFilterStringMatches: 'lang=en_GB',
           background: '#F9D1FF'
@@ -82,7 +82,7 @@ var componentSettings = {
         componentId: 'filter-string-component',
         order: 7,
         args: {
-          title: 'id: 7',
+          id: 'id: 7',
           filterString: 'undefined - the filterString is set on the filter passed to the refresh method',
           includeIfFilterStringMatches: '/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/',
           background: '#E8CECB'

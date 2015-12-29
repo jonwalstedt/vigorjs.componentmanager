@@ -11,7 +11,7 @@ var componentSettings = {
         componentId: 'filter-url-component',
         order: 1,
         args: {
-          title: 'id: 1',
+          id: 'id: 1',
           urlPattern: 'passing-arguments/:type/:id',
           background: 'coral'
         },
@@ -22,7 +22,7 @@ var componentSettings = {
         componentId: 'filter-url-component',
         order: 2,
         args: {
-          title: 'id: 2',
+          id: 'id: 2',
           urlPattern: 'passing-arguments/:type/:id',
           background: 'pink'
         },
@@ -34,7 +34,7 @@ var componentSettings = {
         componentId: 'filter-url-component',
         order: 3,
         args: {
-          title: 'id: 3',
+          id: 'id: 3',
           urlPattern: 'splat/*path',
           background: 'yellow'
         },
@@ -45,7 +45,7 @@ var componentSettings = {
         componentId: 'filter-url-component',
         order: 4,
         args: {
-          title: 'id: 4',
+          id: 'id: 4',
           urlPattern: 'optional/:section(/:subsection)',
           background: 'Aquamarine '
         },
@@ -56,7 +56,7 @@ var componentSettings = {
         componentId: 'filter-url-component',
         order: 5,
         args: {
-          title: 'id: 5',
+          id: 'id: 5',
           urlPattern: 'optional/:section(/:subsection)(/:id)',
           background: 'silver'
         },
@@ -67,7 +67,7 @@ var componentSettings = {
         componentId: 'filter-url-component',
         order: 6,
         args: {
-          title: 'id: 6',
+          id: 'id: 6',
           urlPattern: 'global',
           background: 'aqua'
         },
@@ -78,7 +78,7 @@ var componentSettings = {
         componentId: 'filter-url-component',
         order: 7,
         args: {
-          title: 'id: 7',
+          id: 'id: 7',
           urlPattern: '["multiple-url-patterns/:id", "multiple-url-patterns2/:id"]',
           background: '#58EBA9'
         },

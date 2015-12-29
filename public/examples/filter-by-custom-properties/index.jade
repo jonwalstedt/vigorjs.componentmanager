@@ -1,8 +1,5 @@
 extends ../index.jade
 
-block includes
-  link(rel="stylesheet" href="css/styles.css")
-
 block content
   != partial("./filter-by-custom-properties")
   != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '8'})
@@ -11,6 +8,10 @@ block content
     small active filter
     div.active-filter
 
+    small info
+    div.examples-info
+
+    small controls
     div.controls
       div.options
         p Filter on custom component property "componentStyle":
@@ -74,9 +75,6 @@ block content
           | Invert
 
       button.refresh Refresh
-
-    small info
-    div.examples-info
 
     small .component-area--main
     div.component-area.component-area--main
