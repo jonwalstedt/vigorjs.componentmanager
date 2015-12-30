@@ -1,11 +1,14 @@
 .sidebar-wrapper {
-  background: #2a2d33;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar {
   position: relative;
+  width: $sidebarWidth;
   background: #2a2d33;
   color: #eee;
+  flex: 1;
   h4 {
     text-indent: 10px;
   }

@@ -9,6 +9,7 @@ class App
     @$links = $ 'a'
     @$contentWrapper = $ '.content-wrapper'
     @$sidebarWrapper = $ '.sidebar-wrapper'
+    @$menuToggle = $ '.menu-toggle'
     @$sidebar = $ '.sidebar'
     @$sectionHeaders = $ '.sub-section > h3 > a'
     @origTop = @$sidebar.offset().top or 0
@@ -20,6 +21,7 @@ class App
     @$window.on 'scroll', @_debouncedOnScroll
     @$window.on 'scroll', @_debouncedSetActiveSectionFromScrollPosition
     @$window.trigger 'scroll'
+    @$menuToggle.on 'click', @_onMenuToggleClick
 
     $('.sidebar a, .docs .content a').on 'click', @_onLinkClick
 
@@ -73,6 +75,10 @@ class App
       else
         @$sidebarWrapper.removeAttr 'style'
         @$contentWrapper.removeClass 'sidebar--fixed'
+
+  _onMenuToggleClick: =>
+    @$menuToggle.toggleClass 'menu-toggle--active'
+    @$contentWrapper.toggleClass 'sidebar--visible'
 
 
 window.app = new App()

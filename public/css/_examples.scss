@@ -1,9 +1,5 @@
-
-.vigor-component {
-  padding: 10px;
-  h2 {
-    margin: 4px 0 6px;
-  }
+.app-wrapper small {
+  display: block;
 }
 
 .examples-info {
@@ -36,30 +32,29 @@
   li {
     float: left;
     list-style: none;
-    // margin: 0 10px 0 0;
     width: 50%;
   }
 }
 
-.example-component {
-  position: relative;
-  box-sizing: content-box;
-  width: 306px;
-  height: 220px;
-  float: left;
-  overflow: auto;
-  margin: 6px;
-}
-
-.example-component__title {
-  display: block;
-}
-
-.example-component.example-component--fullsize {
-  width: calc(100% - 30px);
-  height: auto;
-}
 
 .filter-by-url__header {
   margin-bottom: 4px;
 }
+
+.components-js__code {
+  display: none;
+}
+
+.components-js {
+  h4 {
+    margin-bottom: 8px;
+  }
+  p {
+    margin-top: 0;
+  }
+  span strong {
+    display: inline-block;
+    margin: 0 10px;
+  }
+}
+

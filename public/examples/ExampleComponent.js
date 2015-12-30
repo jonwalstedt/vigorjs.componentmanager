@@ -20,7 +20,7 @@ ExampleComponent = Backbone.View.extend({
   },
 
   events: {
-    'click .toggle-fullsize': '_toggleFullsize'
+    'click .example-component__toggle-fullsize': '_toggleFullsize'
   },
 
   initialize: function (args) {
@@ -79,6 +79,10 @@ ExampleComponent = Backbone.View.extend({
   },
 
   _toggleFullsize: function (event) {
-    $(event.currentTarget).parent().toggleClass('example-component--fullsize');
+    $btn = $(event.currentTarget);
+    $parent = $btn.parent();
+    $btn.toggleClass('entypo-resize-full');
+    $btn.toggleClass('entypo-resize-small');
+    $parent.toggleClass('example-component--fullsize');
   }
 });
