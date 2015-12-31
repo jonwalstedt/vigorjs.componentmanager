@@ -26,19 +26,31 @@
   }
   ul {
     @extend %clearfix;
-    padding: 0;
     margin: 0;
+    padding: 0;
+    border: 1px dashed #444;
+    height: 300px;
+    overflow-y: auto;
   }
   li {
-    float: left;
+    padding: 10px 20px;
+    font-size: 14px;
+    line-height: 20px;
     list-style: none;
-    width: 50%;
+    transition: background-color 0.4s ease-out;
+    &:hover {
+      background-color: #E9E8E8;
+    }
   }
-}
-
-
-.filter-by-url__header {
-  margin-bottom: 4px;
+  h4 {
+    font-weight: bold;
+  }
+  p {
+    margin: 0 0 16px 0;
+  }
+  a {
+    display: block;
+  }
 }
 
 .components-js__code {

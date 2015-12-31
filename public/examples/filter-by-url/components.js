@@ -78,10 +78,10 @@ var componentSettings = {
         order: 7,
         args: {
           id: 'id: 7',
-          urlPattern: '["multiple-url-patterns/:id", "multiple-url-patterns2/:id"]',
+          urlPattern: '["some-url/:id", "some-other-url(/:year)(/:month)(/:day)"]',
           background: '#58EBA9'
         },
-        urlPattern: ['multiple-url-patterns/:id', 'multiple-url-patterns2/:id']
+        urlPattern: ['some-url/:id', 'some-other-url(/:year)(/:month)(/:day)']
       }
     ]
   }

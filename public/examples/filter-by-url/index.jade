@@ -9,49 +9,54 @@ block content
     small active filter
     div.active-filter
 
+    p Try filtering the components using the different links below. View each matching instance to see their urlPatterns and what data they where instantiated with.
+
+    p Note that the instances that flashes when you navigate between the links does not get reinstantiated, they match multiple urlPatterns and receive new urlParams whenever the refresh method gets called with a new filter (assuming they still match the filter).
+
     small controls
     div.controls
-      p Try filtering the components using the links below
+      a(href="#") Reset
+      ul
+        li
+          h4 Url parameters
+          p In this example the links below will match the <code>urlPattern: 'passing-arguments/:type/:id'</code> and pass type and id as urlParams to each matching instance.
 
-      ul.filter-by-url__example-list
-        li.filter-by-url__list-item
-          a(href="#" class="filter-by-url__link") Reset
+          p Note that the second matching instance has <code>reInstantiate</code> set to true which makes the componentManager dispose and recreate that instance when going between the two different urls while the first instance has a short flash animation to indicate that it recieved new data (in this case urlParams) without reinstantiate.
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Passing arguments ex: passing-arguments/:type/:id
-          a(href="#passing-arguments/news/political" class="filter-by-url__link") #passing-arguments/news/political
+          a(href="#passing-arguments/news/political") #passing-arguments/news/political
+          a(href="#passing-arguments/news/domestic") #passing-arguments/news/domestic
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Passing arguments ex: passing-arguments/:type/:id
-          a(href="#passing-arguments/news/domestic" class="filter-by-url__link") #passing-arguments/news/domestic
+        li
+          h4 Optional url parameters
+          p In this example the link below will match the <code>urlPattern: 'optional/:section(/:subsection)'</code> and the <code>urlPattern: 'optional/:section(/:subsection)(/:id)'</code>.
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Splats  ex: splat/*path
-          a(href="#splat/a/lot/of/sub/sections/in/the/url" class="filter-by-url__link") #splat/a/lot/of/sub/sections/in/the/url
+          a(href="#optional/arguments") #optional/arguments
+          a(href="#optional/arguments/can-be-optional") #optional/arguments/can-be-optional
+          a(href="#optional/arguments/can-be-optional/my-id") #optional/arguments/can-be-optional/my-id
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Optional Arguments 1 ex: optional/:section(/:subsection)
-          a(href="#optional/arguments" class="filter-by-url__link") #optional/arguments
+        li
+          h4 Splats
+          p In this example the link below will match the <code>urlPattern: 'splat/*path'</code> and pass everything in the url after 'splat/' to the instances urlParams.
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Optional Arguments 2 ex: optional/:section(/:subsection)
-          a(href="#optional/arguments/can-be-optional" class="filter-by-url__link") #optional/arguments/can-be-optional
+          a(href="#splat/a/lot/of/sub/sections/in/the/url") #splat/a/lot/of/sub/sections/in/the/url
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Optional Arguments 3 ex: optional/:section(/:subsection)(/:id)
-          a(href="#optional/arguments/can-be-optional/my-id" class="filter-by-url__link") #optional/arguments/can-be-optional/my-id
+        li
+          h4 Global urlPatterns
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Global ex: all urls
-          a(href="#a-random-url" class="filter-by-url__link") #a-random-url
+          p Instances with the urlPatterns set to 'global' will match any url that was passed to the filter <code>urlPattern: 'global'</code>
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Multiple urlPatterns 1
-          a(href="#multiple-url-patterns/1" class="filter-by-url__link") #multiple-url-patterns/1
+          p Note that instance 6 is present on all the different example links since it uses the 'global' urlPattern and matches any url that is passed in the filter.
 
-        li.filter-by-url__list-item
-          p.filter-by-url__header Multiple urlPatterns 2
-          a(href="#multiple-url-patterns/2" class="filter-by-url__link") #multiple-url-patterns/2
+          a(href="#a-random-url") #a-random-url
+
+        li
+          h4 Multiple urlPatterns
+          p Each instanceDefinition may have an array with multiple urlPatterns as value for the urlPattern property. In that case the instance will be matched against both urlPatterns and if the url in the filter matches any of the patterns the instance will be created (assuming all other filters passes as well).
+
+          p <code>urlPattern: ['multiple-url-patterns/:id', 'multiple-url-patterns2/:id']</code>
+
+          a(href="#some-url/1") #some-url/1/2
+          a(href="#some-other-url/2015/10/1") #some-other-url/2015/10/1
 
     small .component-area--main
     div.component-area.component-area--main
