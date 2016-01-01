@@ -2,7 +2,7 @@ var componentSettings = {
 
   components: [{
     id: 'order-component',
-    src: 'app.components.FilterComponent'
+    src: 'app.components.ReorderComponent'
   }],
 
   targets: {

@@ -15,9 +15,9 @@ var
       Vigor.componentManager.refresh(filter);
 
       if (filter.url == 'add-components'){
-        showMsg('The matching component - our menu-component (which is a amd package/module is rendered)', filter);
+        exampleHelpers.showMsg('The matching component - our menu-component (which is a amd package/module is rendered)', Vigor.componentManager._filterModel.toJSON());
       } else {
-        showMsg('The component does not matches the filter - if it was instantiated it will now be disposed', filter);
+        exampleHelpers.showMsg('The component does not matches the filter - if it was instantiated it will now be disposed', Vigor.componentManager._filterModel.toJSON());
       }
     }
 });

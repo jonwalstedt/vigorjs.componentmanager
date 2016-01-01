@@ -25,12 +25,12 @@ var app = app || {};
 
       Vigor.componentManager.refresh();
       this._updateFilter();
-      showMsg('Components Refreshed', this.filter);
+      exampleHelpers.showMsg('Components Refreshed');
     },
 
     _onRefreshClick: function () {
       Vigor.componentManager.refresh(this.filter);
-      showMsg('Components filtered', this.filter);
+      exampleHelpers.showMsg('Components filtered');
     },
 
     _updateFilter: function () {

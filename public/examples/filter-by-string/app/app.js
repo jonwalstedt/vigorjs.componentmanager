@@ -30,7 +30,7 @@ var app = app || {};
       Vigor.componentManager.refresh();
       this.forceFilterStringMatching = false;
       this.$forceFilterStringMatching.attr('checked', false);
-      showMsg('Click links above to see examples of filtering using a filterString', {});
+      exampleHelpers.showMsg('Click links above to see examples of filtering using a filterString');
     },
 
     // examples where the filterString is set on the instanceDefinition
@@ -44,7 +44,7 @@ var app = app || {};
         },
         msg = 'includeIfMatch - will show instanceDefinitions that has a filterString that matches <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
       Vigor.componentManager.refresh(filter);
-      showMsg(msg, filter);
+      exampleHelpers.showMsg(msg);
     },
 
     excludeIfMatch: function () {
@@ -58,7 +58,7 @@ var app = app || {};
         msg = 'excludeIfMatch - will show instanceDefinitions that has a filterString that does <b>not</b> match <b>"first"</b>, including instanceDefinitions that has the filterString property set to undefined (unless forceFilterStringMatching is set to true)';
 
       Vigor.componentManager.refresh(filter);
-      showMsg(msg, filter);
+      exampleHelpers.showMsg(msg);
     },
 
     hasToMatch: function () {
@@ -72,7 +72,7 @@ var app = app || {};
         msg = 'hasToMatch - will filter instanceDefinitions to only show instances that has a filterString that matches <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
 
       Vigor.componentManager.refresh(filter);
-      showMsg(msg, filter);
+      exampleHelpers.showMsg(msg);
     },
 
     cantMatch: function () {
@@ -85,7 +85,7 @@ var app = app || {};
         },
         msg = 'cantMatch - will filter instanceDefinitions to only show instances that has a filterString that does <b>not</b> match <b>"first"</b>, excluding instanceDefinitions that has the filterString set to undefined';
       Vigor.componentManager.refresh(filter);
-      showMsg(msg, filter);
+      exampleHelpers.showMsg(msg);
     },
 
     toggleForcedFilterStringMatching: function () {
@@ -94,7 +94,7 @@ var app = app || {};
       this.forceFilterStringMatching = !this.forceFilterStringMatching;
       filter.options.forceFilterStringMatching = this.forceFilterStringMatching;
       Vigor.componentManager.refresh(filter);
-      showMsg(msg, filter);
+      exampleHelpers.showMsg(msg);
     },
 
     // examples where the filterString is set on the filter (opposite logic from above)
@@ -123,7 +123,7 @@ var app = app || {};
         },
         msg = 'filterString on the filter passed to the refresh method set to: <b>' + filterString + '</b>';
       Vigor.componentManager.refresh(filter);
-      showMsg(msg, filter);
+      exampleHelpers.showMsg(msg);
     },
 
   });

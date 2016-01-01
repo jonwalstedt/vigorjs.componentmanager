@@ -1,9 +1,10 @@
 var app = app || {};
 app.components = app.components || {};
 
-app.components.FilterComponent = Backbone.View.extend({
+app.components.ReorderComponent = Backbone.View.extend({
 
   order: undefined,
+  className: 'reorder-component',
 
   initialize: function (args) {
     console.log('component initialized', arguments);
@@ -12,7 +13,7 @@ app.components.FilterComponent = Backbone.View.extend({
   },
 
   render: function () {
-    markup = '<h3>Instance with order: ' + this.order + '</h3>';
+    markup = '<h2>Instance with order: ' + this.order + '</h2>';
     this.$el.html(markup);
     this.$order = this.$el.find('.order');
     return this;

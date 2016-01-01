@@ -15,7 +15,7 @@ var app = app || {};
         url: Backbone.history.fragment
       };
       Vigor.componentManager.refresh(filter);
-      showMsg('When the url updates the current fragment is matched against the urlPattern in the hello-world instanceDefinition configured in the targets section in components.js', filter);
+      exampleHelpers.showMsg('When the url updates the current fragment is matched against the urlPattern in the hello-world instanceDefinition configured in the targets section in components.js');
     }
 
   });

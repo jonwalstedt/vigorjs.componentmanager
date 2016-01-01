@@ -26,7 +26,7 @@ var app = app || {};
         console.log('activeInstances: ',  activeInstances);
       });
 
-      showMsg('', filter);
+      exampleHelpers.showMsg('Components refreshed');
     }
 
   });

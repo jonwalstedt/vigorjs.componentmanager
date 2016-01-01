@@ -28,7 +28,7 @@ var app = app || {};
     _onResetClick: function () {
       Vigor.componentManager.updateComponentDefinitions(window.componentSettings.components);
       Vigor.componentManager.updateInstanceDefinitions(window.componentSettings.targets.main);
-      showMsg('Components and instances has been reset');
+      exampleHelpers.showMsg('Components and instances has been reset');
     },
 
     _onRegisterConditionClick: function () {
@@ -38,7 +38,7 @@ var app = app || {};
           return window.innerWidth > 600;
         }
       });
-      showMsg('The condition "correctWidth" was registered to the componentManager');
+      exampleHelpers.showMsg('The condition "correctWidth" was registered to the componentManager');
     },
 
     _onApplyConditionClick: function () {
@@ -47,9 +47,9 @@ var app = app || {};
           id: 'filter-condition-component',
           conditions: ['correctWidth']
         });
-        showMsg('The condition "correctWidth" assigned for all instances of the component "filter-condition-component" - try resizing your browser below 600px width to see the condition in action');
+        exampleHelpers.showMsg('The condition "correctWidth" assigned for all instances of the component "filter-condition-component" - try resizing your browser below 600px width to see the condition in action');
       } catch (error) {
-        showMsg('You need to register the condition first - conditions can be added and assigned on the fly.');
+        exampleHelpers.showMsg('You need to register the condition first - conditions can be added and assigned on the fly.');
       }
     },
 
@@ -59,9 +59,9 @@ var app = app || {};
           id: 'filter-instance-2',
           conditions: ['correctWidth']
         });
-        showMsg('The condition "correctWidth" the instance with id "filter-instance-2" - try resizing your browser below 600px width to see the condition in action');
+        exampleHelpers.showMsg('The condition "correctWidth" the instance with id "filter-instance-2" - try resizing your browser below 600px width to see the condition in action');
       } catch (error) {
-        showMsg('You need to register the condition first - conditions can be added and assigned on the fly.');
+        exampleHelpers.showMsg('You need to register the condition first - conditions can be added and assigned on the fly.');
       }
     }
 

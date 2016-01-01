@@ -73,15 +73,11 @@ block common-example-scripts
     <div class="component-output"></div>
 
   script(type="text/template" class="active-filter-template").
-    <pre><code class="language-javascript">{<% _.each(filterObj, function(val, key, list) { %>
-      <%= key %>: <%= val %><% }); %>
-      options: {<% _.each(options, function(val, key, list) { %>
-        <%= key %>: <%= val %><% }); %>
-      }
-    }</code>
+    <pre>
+    <%= activeFilter %>
     </pre>
 
   script(src="/js/vigor.componentmanager.js")
   script(type="text/javascript" src="/examples/jquery.flash.js")
   script(type="text/javascript" src="/examples/ExampleComponent.js")
-  script(type="text/javascript" src="/examples/display-filter.js")
+  script(type="text/javascript" src="/examples/example-helpers.js")

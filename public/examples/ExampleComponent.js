@@ -35,8 +35,8 @@ ExampleComponent = Backbone.View.extend({
     instanceDefinition.args = args;
     this.templateData = {
       id: id,
-      instanceDefinition: this._stringify(instanceDefinition),
-      arguments: this._stringify(arguments),
+      instanceDefinition: exampleHelpers.stringify(instanceDefinition),
+      arguments: exampleHelpers.stringify(arguments),
     };
 
     console.log('ExampleComponent with id ' + id + ' has been instantiated');
@@ -61,21 +61,8 @@ ExampleComponent = Backbone.View.extend({
   _onUrlParamsChange: function () {
     console.log('_onUrlParamsChange', this.id);
     message = 'This component doesnt reinstantiate when the url changes but instead gets new params passed through the urlParamsCollection: ';
-    this.$output.html(message + '<pre>' + this._stringify(this.urlParamsCollection.toJSON())) + '</pre>';
+    this.$output.html(message + '<pre>' + exampleHelpers.stringify(this.urlParamsCollection.toJSON())) + '</pre>';
     this.$el.flash(400, 1);
-  },
-
-  _stringify: function (string) {
-    function replacer(key, value) {
-      if (typeof value === 'undefined') {
-        return 'undefined';
-      }
-      if (typeof value !== 'object') {
-        return '<b>' + value + '</b>';
-      }
-      return value;
-    }
-    return JSON.stringify(string, replacer, 2);
   },
 
   _toggleFullsize: function (event) {

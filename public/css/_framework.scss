@@ -20,7 +20,7 @@ body {
   height: 50px;
   appearance: normal;
   background: #49B5FA;
-  transition: opacity 0.4s ease-out;
+  transition: all 0.3s ease-out;
   border: none;
   cursor: pointer;
   outline: none;
@@ -100,7 +100,8 @@ body {
 
 @media (min-width: 768px) {
   .menu-toggle {
-    display: none;
+    left: -999em;
+    opacity: 0;
   }
 
   .sidebar--visible .sidebar-wrapper, .sidebar-wrapper {

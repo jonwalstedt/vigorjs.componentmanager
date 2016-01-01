@@ -6,11 +6,13 @@ var App = function () {},
     MainLayoutView = require('./MainLayoutView');
 
 App.prototype.initialize = function () {
+  var componentManager;
+
   this.mainLayout = new MainLayoutView({
     el: '.app-wrapper'
   });
 
-  Vigor.componentManager.initialize({
+  componentManager = Vigor.componentManager.initialize({
     componentSettings: componentSettings,
     context: this.mainLayout.$el
   });

@@ -26,7 +26,7 @@ var app = app || {};
     },
 
     _onSerialiseBtnClick: function () {
-      showMsg('The componentManager has been serialized - see output below');
+      exampleHelpers.showMsg('The componentManager has been serialized - see output below');
       $('.serialized-output').html(Vigor.componentManager.serialize());
     },
 
@@ -53,18 +53,18 @@ var app = app || {};
       console.log('components: ', components);
 
       Vigor.componentManager.updateInstanceDefinitions(components);
-      showMsg('Instances has been randomized - try saving them to localStorage and reload');
+      exampleHelpers.showMsg('Instances has been randomized - try saving them to localStorage and reload');
     },
 
     _onSaveBtnClick: function () {
       componentSettings = Vigor.componentManager.serialize();
       window.localStorage.setItem('componentSettings', componentSettings)
-      showMsg('Current settings saved - try to reload the page and see that the order stays the same');
+      exampleHelpers.showMsg('Current settings saved - try to reload the page and see that the order stays the same');
     },
 
     _onClearBtnClick: function () {
       localStorage.removeItem('componentSettings');
-      showMsg('localStorage cleared - reload the page');
+      exampleHelpers.showMsg('localStorage cleared - reload the page');
     },
 
     shuffle: function (o) {

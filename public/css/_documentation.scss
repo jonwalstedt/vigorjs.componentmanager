@@ -49,11 +49,7 @@ $leftColumnWidth: 290px;
   dt:first-child + dd {
     margin-top: 0;
   }
-  &:after {
-    content: '';
-    clear: both;
-    display: table;
-  }
+  @extend %clearfix;
 }
 
 .docs-table {
