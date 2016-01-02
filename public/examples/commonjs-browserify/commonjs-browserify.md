@@ -6,12 +6,19 @@ To play around with example first run npm install and then install browserify an
 
 To build bundle run:
 
-    node bundler.js > bundle.js
+
+<div class="hljs javascript">
+  <pre>node bundler.js > bundle.js</pre>
+</div>
 
 To build vendor bundle run:
 
-    node bundler.js vendor > bundle.vendors.js
+<div class="hljs javascript">
+  <pre>node bundler.js vendor > bundle.vendors.js</pre>
+</div>
 
 to build and watch run:
 
-    watchify main.js -o 'node bundler.js > bundle.js' -v
+<div class="hljs javascript">
+  <pre>watchify main.js -o 'node bundler.js > bundle.js' -v</pre>
+</div>

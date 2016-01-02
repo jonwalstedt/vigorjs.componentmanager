@@ -8,6 +8,8 @@ Of course you can compile the project down to a single file and have all compone
 
 To try out the compiled version uncomment the script tag in index.jade and run:
 
-    node r.js -o build-vendors.js
-    node r.js -o build.js
+<div class="hljs javascript">
+  <pre>node r.js -o build-vendors.js
+node r.js -o build.js</pre>
+</div>
 

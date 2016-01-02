@@ -16,6 +16,11 @@ var exampleHelpers = {
     this.activeFilterTemplate = _.template($('.active-filter-template').html())
 
     this.$componentsToggle.on('click', _.bind(this._onComponentsToggleClick, this));
+
+
+    $('.hljs').each(function () {
+      hljs.highlightBlock(this);
+    });
   },
 
   stringify: function (object) {

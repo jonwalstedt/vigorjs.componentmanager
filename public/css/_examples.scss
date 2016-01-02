@@ -2,11 +2,14 @@
   display: block;
 }
 
+.example-info-wrapper {
+  background: #efecf4;
+  padding: .5em;
+}
+
 .examples-info {
-  border: 1px dashed #555;
+  border: 1px solid #ccc;
   line-height: 20px;
-  background-color: #eee;
-  margin: 0px 0px 10px 0px;
   padding: 20px 10px;
   font-size: 14px;
 }
