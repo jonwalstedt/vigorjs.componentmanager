@@ -17,7 +17,7 @@
 .component-area {
   position: relative;
   padding: 10px;
-  border: 1px dashed #555;
+  border: 1px dashed $dashedBorderColor;
   @extend %clearfix;
 }
 
@@ -32,8 +32,8 @@
   ul {
     @extend %clearfix;
     margin: 0;
-    padding: 0;
-    border: 1px dashed #444;
+    padding: 10px;
+    border: 1px dashed $dashedBorderColor;
     max-height: 300px;
     overflow-y: auto;
   }

@@ -12,9 +12,11 @@ class App
     @$menuToggle = $ '.menu-toggle'
     @$sidebar = $ '.sidebar'
     @$sectionHeaders = $ '.sub-section > h3 > a'
-    @origTop = @$sidebar.offset().top or 0
+    @origTop = 0
     @_debouncedOnScroll = _.debounce @_onScroll, 10
     @_debouncedSetActiveSectionFromScrollPosition = _.debounce @_setActiveSectionFromScrollPosition, 100
+    if @$sidebar.length
+      @origTop = @$sidebar.offset().top
     do @_updateActiveLinks
 
     @$window.on 'hashchange', @_updateActiveLinks
