@@ -1,5 +1,5 @@
 $button-size : 1.4rem;
-$transition: .3s; // increase this to see the transformations in slow-motion
+$transition: .5s; // increase this to see the transformations in slow-motion
 $color: white;
 
 @mixin line {
@@ -10,7 +10,7 @@ $color: white;
   transition: $transition;
 }
 
-.menu-toggle {
+.example-app__menu-toggle {
   height: $button-size;
   margin: 0 10px;
   display: inline-block;
@@ -42,7 +42,7 @@ $color: white;
 }
 
 
-.menu-toggle.close .lines {
+.example-app__menu-toggle.close .lines {
   background: transparent;
 
   &:before, &:after{

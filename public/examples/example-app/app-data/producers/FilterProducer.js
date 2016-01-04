@@ -21,8 +21,6 @@ define(function (require) {
     sectionsFetchSubscription: undefined,
     articlesFetchSubscription: undefined,
 
-    subscribe: function () {},
-
     subscribeToRepositories: function () {
       Producer.prototype.subscribeToRepositories.call(this);
 
@@ -42,20 +40,23 @@ define(function (require) {
     currentData: function () {
       var filters,
           sections = this.modelsToJSON(SectionsRepository.models),
-          time = FilterRepository.getTimeFilterValue();
+          time = FilterRepository.getTimeFilterValue(),
+          activeFilters = [];
 
       sections.forEach(function (section) {
         var selected = FilterRepository.get(section.id);
         if (selected) {
+          activeFilters.push(selected);
           section.selected = true;
         }
       });
 
       filters = {
+        activeFilters: activeFilters,
         sections: sections,
         time: time
       };
-      console.log('FilterProducer:filters: ', filters);
+
       return filters;
     },
 

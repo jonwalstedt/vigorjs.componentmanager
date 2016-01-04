@@ -15,11 +15,15 @@ define(function (require) {
       '*notFound': '_onAllRoutes'
     },
 
-    _onAllRoutes: function () {
-      this.triggerCustomRouteInfo();
+    getRoute: function () {
+      return Backbone.history.fragment;
     },
 
-    triggerCustomRouteInfo: function (route) {
+    _onAllRoutes: function () {
+      this._triggerCustomRouteInfo();
+    },
+
+    _triggerCustomRouteInfo: function (route) {
       var route = this.getRoute(),
           currentDepth,
           previousDepth,
@@ -54,11 +58,7 @@ define(function (require) {
 
       EventBus.send(EventKeys.ROUTE_CHANGE, routeInfo);
       this.previousRoute = route;
-    },
-
-    getRoute: function () {
-      return Backbone.history.fragment;
-    },
+    }
 
   });
 

@@ -21,6 +21,7 @@
   min-height: $appMinHeight;
   margin-top: 20px;
   overflow: hidden;
+  z-index: 0;
 
   .main {
     transition: transform 0.2s ease-out;

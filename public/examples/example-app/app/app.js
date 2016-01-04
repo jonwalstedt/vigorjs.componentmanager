@@ -25,7 +25,7 @@ define(function (require) {
 
       events: {
         'click .start-example-btn': 'startApplication',
-        'click .menu-toggle': 'onMenuToggleClick'
+        'click .example-app__menu-toggle': 'onMenuToggleClick'
       },
 
       $overlay: undefined,
@@ -46,7 +46,7 @@ define(function (require) {
 
         this.$overlay = $('.overlay', this.$el);
         this.$contentWrapper = $('.content-wrapper', this.$el);
-        this.$menuToggle = $('.menu-toggle', this.$el);
+        this.$menuToggle = $('.example-app__menu-toggle', this.$el);
 
         this.showOverlay();
 
