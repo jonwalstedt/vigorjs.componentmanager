@@ -148,11 +148,12 @@ class InstanceDefinitionModel extends BaseModel
   dispose: ->
     @clear silent: true
 
-  isTargetAvailable: ($context = $('body')) ->
-    return @getTarget($context)?.length > 0
+  isTargetAvailable: ($context = $('body'), forceRefresh = true) ->
+    return @getTarget($context, forceRefresh)?.length > 0
 
-  getTarget: ($context = $('body')) ->
-    unless @_$target?.selector?.indexOf(@_getTargetName()) > -1
+  getTarget: ($context = $('body'), forceRefresh = false) ->
+    selector = @_$target?.selector or ''
+    if not (selector.indexOf(@_getTargetName()) > -1) or forceRefresh
       @_refreshTarget $context
     return @_$target
 

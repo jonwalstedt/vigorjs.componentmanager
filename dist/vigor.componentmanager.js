@@ -1087,20 +1087,27 @@
         });
       };
 
-      InstanceDefinitionModel.prototype.isTargetAvailable = function($context) {
+      InstanceDefinitionModel.prototype.isTargetAvailable = function($context, forceRefresh) {
         var ref;
         if ($context == null) {
           $context = $('body');
         }
-        return ((ref = this.getTarget($context)) != null ? ref.length : void 0) > 0;
+        if (forceRefresh == null) {
+          forceRefresh = true;
+        }
+        return ((ref = this.getTarget($context, forceRefresh)) != null ? ref.length : void 0) > 0;
       };
 
-      InstanceDefinitionModel.prototype.getTarget = function($context) {
-        var ref, ref1;
+      InstanceDefinitionModel.prototype.getTarget = function($context, forceRefresh) {
+        var ref, selector;
         if ($context == null) {
           $context = $('body');
         }
-        if (!(((ref = this._$target) != null ? (ref1 = ref.selector) != null ? ref1.indexOf(this._getTargetName()) : void 0 : void 0) > -1)) {
+        if (forceRefresh == null) {
+          forceRefresh = false;
+        }
+        selector = ((ref = this._$target) != null ? ref.selector : void 0) || '';
+        if (!(selector.indexOf(this._getTargetName()) > -1) || forceRefresh) {
           this._refreshTarget($context);
         }
         return this._$target;
