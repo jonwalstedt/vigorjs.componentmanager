@@ -1,6 +1,6 @@
 assert = require 'assert'
 sinon = require 'sinon'
-Vigor = require '../../dist/vigor.componentmanager'
+Vigor = require '../../dist/vigorjs.componentmanager'
 
 componentManager = new Vigor.ComponentManager()
 __testOnly = Vigor.ComponentManager.__testOnly

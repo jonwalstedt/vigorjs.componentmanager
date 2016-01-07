@@ -2,7 +2,7 @@ assert = require 'assert'
 sinon = require 'sinon'
 $ = require 'jquery'
 Backbone = require 'backbone'
-Vigor = require '../../../dist/vigor.componentmanager'
+Vigor = require '../../../dist/vigorjs.componentmanager'
 
 __testOnly = Vigor.ComponentManager.__testOnly
 ActiveInstanceDefinitionModel = __testOnly.ActiveInstanceDefinitionModel

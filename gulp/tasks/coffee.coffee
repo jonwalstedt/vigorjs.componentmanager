@@ -4,6 +4,7 @@ include = require 'gulp-include'
 rename = require 'gulp-rename'
 stripCode = require 'gulp-strip-code'
 header = require 'gulp-header'
+uglify = require 'gulp-uglify'
 pkg = require '../../package.json'
 config = require '../config'
 
@@ -35,6 +36,10 @@ buildLib = ->
     .pipe gulp.dest(config.dest)
     .pipe gulp.dest(config.publicDest)
     .pipe gulp.dest(config.exampleAppDest)
+    .pipe uglify()
+    .pipe rename(config.outputNameMinified)
+    .pipe gulp.dest(config.dest)
+    .pipe gulp.dest(config.publicDest)
 
 buildTestLib = ->
   gulp.src(config.bootstrap)

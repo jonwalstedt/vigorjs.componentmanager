@@ -1,6 +1,6 @@
 assert = require 'assert'
 sinon = require 'sinon'
-Vigor = require '../../../dist/vigor.componentmanager'
+Vigor = require '../../../dist/vigorjs.componentmanager'
 MockComponent = require '../MockComponent'
 MockComponent2 = require '../MockComponent2'
 

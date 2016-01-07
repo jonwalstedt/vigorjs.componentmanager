@@ -1,6 +1,7 @@
 config =
   bootstrap: './src/bootstrap.coffee'
-  outputName: 'vigor.componentmanager.js'
+  outputName: 'vigorjs.componentmanager.js'
+  outputNameMinified: 'vigorjs.componentmanager.min.js'
   serverTarget: './examples'
   specFiles: ['test/**/*.coffee']
   dest: './dist'

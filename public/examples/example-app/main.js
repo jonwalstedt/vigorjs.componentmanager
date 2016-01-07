@@ -10,7 +10,7 @@ requirejs.config({
     Chart: '//cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min',
     TweenMax: '//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min',
     vigor: './lib/vigor',
-    componentManager: './lib/vigor.componentmanager',
+    componentManager: './lib/vigorjs.componentmanager',
     app: './app',
     components: './components',
     templates: './templates',
