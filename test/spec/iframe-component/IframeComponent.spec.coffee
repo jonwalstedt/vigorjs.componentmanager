@@ -119,6 +119,7 @@ describe 'IframeComponent', ->
   describe 'postMessageToIframe', ->
     it 'should call postMessage with the passed message and the targetOrigin', ->
       iframeComponent = new IframeComponent()
+      $('body').append iframeComponent.render().$el
       contentWindow = iframeComponent.$el.get(0).contentWindow
       postMessageSpy = contentWindow.postMessage = sinon.stub()
       message = 'dummy message'

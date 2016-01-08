@@ -1,7 +1,9 @@
 class ComponentManager
 
+  COMPONENT_MANAGER_ID = 'vigorjs.componentmanager'
   COMPONENT_CLASS_NAME = 'vigor-component'
   TARGET_PREFIX = 'component-area'
+  TARGET_ORIGIN = 'http://localhost:3000'
 
   ERROR:
     CONDITION:
@@ -10,6 +12,7 @@ class ComponentManager
       MISSING_ID: 'The id of targeted instance must be passed as first argument'
       MISSING_MESSAGE: 'No message was passed'
       MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
+      UNAUTHORIZED: 'targetOrigin is not authorized to post message to the componentManager'
     CONTEXT:
       WRONG_FORMAT: 'context should be a string or a jquery object'
 
@@ -36,6 +39,7 @@ class ComponentManager
   _componentClassName: undefined
   _targetPrefix: undefined
   _listenForMessages: false
+  _targetOrigin: TARGET_ORIGIN
 
   #
   # Public methods
@@ -126,6 +130,7 @@ class ComponentManager
     @_$context = undefined
     @_componentClassName = COMPONENT_CLASS_NAME
     @_targetPrefix = TARGET_PREFIX
+    @_targetOrigin = TARGET_ORIGIN
     return @
 
   dispose: ->
@@ -320,6 +325,9 @@ class ComponentManager
     @setContext settings?.context, updateActiveComponents
     @setComponentClassName settings?.componentClassName
     @setTargetPrefix settings?.targetPrefix
+
+    if settings?.targetOrigin?
+      @_targetOrigin = settings.targetOrigin
 
     if settings?.componentSettings
       @_parseComponentSettings settings.componentSettings
@@ -528,16 +536,21 @@ class ComponentManager
     do instanceDefinition.incrementShowCount
 
   _onMessageReceived: (event) =>
-    id = event?.data?.id
-    message = event?.data?.message
+    if event.origin isnt @_targetOrigin
+      throw @ERROR.MESSAGE.UNAUTHORIZED
+    else
+      data = event.data
+      if data and data.recipient is COMPONENT_MANAGER_ID
+        id = data.id
+        message = data.message
 
-    unless id
-      throw @ERROR.MESSAGE.MISSING_ID
+        unless id
+          throw @ERROR.MESSAGE.MISSING_ID
 
-    unless message
-      throw @ERROR.MESSAGE.MISSING_MESSAGE
+        unless message
+          throw @ERROR.MESSAGE.MISSING_MESSAGE
 
-    @postMessageToInstance id, message
+        @postMessageToInstance id, message
 
 ### start-test-block ###
 # this will be removed in distribution build

@@ -1371,7 +1371,7 @@
 
     })(BaseInstanceCollection);
     ComponentManager = (function() {
-      var COMPONENT_CLASS_NAME, TARGET_PREFIX;
+      var COMPONENT_CLASS_NAME, COMPONENT_MANAGER_ID, TARGET_ORIGIN, TARGET_PREFIX;
 
       function ComponentManager() {
         this._onMessageReceived = bind(this._onMessageReceived, this);
@@ -1379,9 +1379,13 @@
         this._updateActiveComponents = bind(this._updateActiveComponents, this);
       }
 
+      COMPONENT_MANAGER_ID = 'vigorjs.componentmanager';
+
       COMPONENT_CLASS_NAME = 'vigor-component';
 
       TARGET_PREFIX = 'component-area';
+
+      TARGET_ORIGIN = 'http://localhost:3000';
 
       ComponentManager.prototype.ERROR = {
         CONDITION: {
@@ -1390,7 +1394,8 @@
         MESSAGE: {
           MISSING_ID: 'The id of targeted instance must be passed as first argument',
           MISSING_MESSAGE: 'No message was passed',
-          MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
+          MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method',
+          UNAUTHORIZED: 'targetOrigin is not authorized to post message to the componentManager'
         },
         CONTEXT: {
           WRONG_FORMAT: 'context should be a string or a jquery object'
@@ -1426,6 +1431,8 @@
       ComponentManager.prototype._targetPrefix = void 0;
 
       ComponentManager.prototype._listenForMessages = false;
+
+      ComponentManager.prototype._targetOrigin = TARGET_ORIGIN;
 
       ComponentManager.prototype.initialize = function(settings) {
         this._componentDefinitionsCollection = new ComponentDefinitionsCollection();
@@ -1539,6 +1546,7 @@
         this._$context = void 0;
         this._componentClassName = COMPONENT_CLASS_NAME;
         this._targetPrefix = TARGET_PREFIX;
+        this._targetOrigin = TARGET_ORIGIN;
         return this;
       };
 
@@ -1811,6 +1819,9 @@
         this.setContext(settings != null ? settings.context : void 0, updateActiveComponents);
         this.setComponentClassName(settings != null ? settings.componentClassName : void 0);
         this.setTargetPrefix(settings != null ? settings.targetPrefix : void 0);
+        if ((settings != null ? settings.targetOrigin : void 0) != null) {
+          this._targetOrigin = settings.targetOrigin;
+        }
         if (settings != null ? settings.componentSettings : void 0) {
           this._parseComponentSettings(settings.componentSettings);
         } else {
@@ -2052,16 +2063,23 @@
       };
 
       ComponentManager.prototype._onMessageReceived = function(event) {
-        var id, message, ref, ref1;
-        id = event != null ? (ref = event.data) != null ? ref.id : void 0 : void 0;
-        message = event != null ? (ref1 = event.data) != null ? ref1.message : void 0 : void 0;
-        if (!id) {
-          throw this.ERROR.MESSAGE.MISSING_ID;
+        var data, id, message;
+        if (event.origin !== this._targetOrigin) {
+          throw this.ERROR.MESSAGE.UNAUTHORIZED;
+        } else {
+          data = event.data;
+          if (data && data.recipient === COMPONENT_MANAGER_ID) {
+            id = data.id;
+            message = data.message;
+            if (!id) {
+              throw this.ERROR.MESSAGE.MISSING_ID;
+            }
+            if (!message) {
+              throw this.ERROR.MESSAGE.MISSING_MESSAGE;
+            }
+            return this.postMessageToInstance(id, message);
+          }
         }
-        if (!message) {
-          throw this.ERROR.MESSAGE.MISSING_MESSAGE;
-        }
-        return this.postMessageToInstance(id, message);
       };
 
       return ComponentManager;

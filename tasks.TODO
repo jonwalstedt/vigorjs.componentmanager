@@ -37,6 +37,8 @@ Completed
  ✔ Do a unittest to verify that the lastChange property in the object returned by _updateActiveComponents works like it should @done (15-12-15 11:09)
  ✔ remove _createAndAddInstances and move logic to _onActiveInstanceAdd (it's the only mehtod using it) @done (15-12-15 11:09)
  ✘ rename targetName to target? @cancelled (15-12-15 11:09)
+ ✔ Make it possible to pass targetOrigin in the settings object, use for postMessage callback @done (16-01-08 01:02)
+ ✔ Add a property to the message sent by postMessage to verify that it is intended to be picked up  by the componentManager, ignore all other messages @done (16-01-08 01:02)
 
  In progress
  ☐ Add documentation

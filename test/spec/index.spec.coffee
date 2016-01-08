@@ -188,6 +188,12 @@ describe 'The componentManager', ->
         do componentManager.serialize
         assert toJSONSpy.called
 
+      it 'should get the contextSelector from the context if it is set', ->
+        $context = componentManager.getContext()
+        assert $context.length > 0
+        serializedResult = do componentManager.serialize
+        assert serializedResult.indexOf('"context":".test-prefix--header"') > -1
+
       it 'should call getComponentClassName', ->
         getComponentClassNameSpy = sandbox.spy componentManager, 'getComponentClassName'
         do componentManager.serialize
@@ -590,6 +596,21 @@ describe 'The componentManager', ->
         componentManager.on componentManager.EVENTS.REMOVE, removeSpy
         componentManager._activeInstancesCollection.trigger 'remove', new Backbone.Model(), componentManager._activeInstancesCollection
         assert removeSpy.called
+
+      it 'should add an eventlistener for "message" with _onMessageReceived as
+      callback if _listenForMessages is set to true', ->
+        componentManager._listenForMessages = true
+        useCapture = false
+        addEventListenerSpy = sandbox.spy window, 'addEventListener'
+        do componentManager.addListeners
+        assert addEventListenerSpy.calledWith 'message', componentManager._onMessageReceived, useCapture
+
+      it 'should not add an eventlistener for "message" with _onMessageReceived
+      as callback if _listenForMessages is set to false', ->
+        componentManager._listenForMessages = false
+        addEventListenerSpy = sandbox.spy window, 'addEventListener'
+        do componentManager.addListeners
+        assert addEventListenerSpy.notCalled
 
       it 'should return the componentManager for chainability', ->
         cm = componentManager.addListeners()
@@ -1628,6 +1649,19 @@ describe 'The componentManager', ->
 
         componentManager._parse settings
         assert setTargetPrefixSpy.calledWith targetPrefix
+
+      it 'should set _targetOrigin if targetOrigin is present in the settings
+      object', ->
+        targetOrigin = 'http://mytargetorigin.com'
+
+        settings =
+          targetOrigin: targetOrigin
+
+        assert.equal componentManager._targetOrigin, 'http://localhost:3000'
+
+        componentManager._parse settings
+
+        assert.equal componentManager._targetOrigin, targetOrigin
 
       it 'should call _parseComponentSettings with the componentSettings from the
       passed settings (if it is defined)', ->
@@ -3086,24 +3120,76 @@ describe 'The componentManager', ->
             }
           ]
 
+      it 'should not throw an MESSAGE.MISSING_ID if the wrong recipient is
+      present', ->
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            recipient: 'wrongrecipient'
+            message: 'data is missing an id'
 
-      it 'should be called if a message is recieved', ->
-        data =
-          id: 'instance-1'
-          message: 'im a message'
+        errorFn = -> componentManager._onMessageReceived event
+        assert.doesNotThrow (-> errorFn()), /The id of targeted instance must be passed as first argument/
 
-        onMessageReceivedSpy = sandbox.spy componentManager, '_onMessageReceived'
-        componentManager.initialize settings
+      it 'should not throw an MESSAGE.MISSING_MESSAGE if the wrong recipient is
+      present', ->
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            recipient: 'wrongrecipient'
+            id: 'data is missing a message'
 
-        window.postMessage data
+        errorFn = -> componentManager._onMessageReceived event
+        assert.doesNotThrow (-> errorFn()), /No message was passed/
 
-        assert onMessageReceivedSpy.called
+      it 'should not call postMessageToInstance if the wrong recipient is
+      present', ->
+        postMessageToInstanceStub = sandbox.stub componentManager, 'postMessageToInstance'
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            recipient: 'wrongrecipient'
+            id: 'im the id'
+            message: 'im the message'
+
+        componentManager._onMessageReceived event
+        assert postMessageToInstanceStub.notCalled
+
+      it 'should not throw an MESSAGE.MISSING_ID if recipient is not present', ->
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            message: 'data is missing an id'
+
+        errorFn = -> componentManager._onMessageReceived event
+        assert.doesNotThrow (-> errorFn()), /The id of targeted instance must be passed as first argument/
+
+      it 'should not throw an MESSAGE.MISSING_MESSAGE if recipient is not present', ->
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            id: 'data is missing a message'
+
+        errorFn = -> componentManager._onMessageReceived event
+        assert.doesNotThrow (-> errorFn()), /No message was passed/
+
+      it 'should not call postMessageToInstance if recipient is not present', ->
+        postMessageToInstanceStub = sandbox.stub componentManager, 'postMessageToInstance'
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            id: 'im the id'
+            message: 'im the message'
+
+        componentManager._onMessageReceived event
+        assert postMessageToInstanceStub.notCalled
 
       it 'should throw an MESSAGE.MISSING_ID error if the event.data is missing
       an id', ->
-
         event =
+          origin: 'http://localhost:3000'
           data:
+            recipient: 'vigorjs.componentmanager'
             message: 'data is missing an id'
 
         errorFn = -> componentManager._onMessageReceived event
@@ -3111,9 +3197,10 @@ describe 'The componentManager', ->
 
       it 'should throw an MESSAGE.MISSING_MESSAGE error if the event.data is
       missing a message', ->
-
         event =
+          origin: 'http://localhost:3000'
           data:
+            recipient: 'vigorjs.componentmanager'
             id: 'data is missing a message'
 
         errorFn = -> componentManager._onMessageReceived event
@@ -3123,7 +3210,9 @@ describe 'The componentManager', ->
       from the event', ->
         postMessageToInstanceStub = sandbox.stub componentManager, 'postMessageToInstance'
         event =
+          origin: 'http://localhost:3000'
           data:
+            recipient: 'vigorjs.componentmanager'
             id: 'im the id'
             message: 'im the message'
 
