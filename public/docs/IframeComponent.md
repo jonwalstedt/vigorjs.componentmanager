@@ -77,6 +77,25 @@ componentManager.initialize({
 componentManager.refresh();
 ```
 
+#### Cross origin message to a instance
+To send messages to instances cross origin using the postMessage api you need to set the origin in the whitelistedOrigins property of the componentManager. Each message needs to have an 'id' property with the id of the instance which the message should be forwarded to. It also needs the 'message' property containing the message to forward and the 'recipient' property set to 'vigorjs.componentmanager'.
+
+See example below.
+
+From within the iframed content:
+```javascript
+var data = {
+  recipient: 'vigorjs.componentmanager',
+  id: 'an-instance-id'
+  message: 'the message to forward'
+},
+targetOrigin = 'http://localhost:3000';
+parent.postMessage(data, targetOrigin);
+```
+
+The targetOrigin needs to be registered within the whitelistedOrigins.
+To see this in action view the IframeComponent examples: [IframeComponent example](/examples/iframe-components/)
+
 The IframeComponent class exposes the following public methods:
 
 <table class="docs-table">

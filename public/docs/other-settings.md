@@ -1,5 +1,5 @@
 ### <a name="other-settings"></a> Other settings
-The settings object can contain four properties except for the componentSettings object: context, componentClassName, targetPrefix and listenForMessages. See specifications and example below.
+The settings object can contain five properties except for the componentSettings object: context, componentClassName, targetPrefix, listenForMessages and whitelistedOrigins. See specifications and example below.
 
 <table class="docs-table">
   <thead>
@@ -52,6 +52,21 @@ The settings object can contain four properties except for the componentSettings
         <p>By setting the listenForMessages to true the componentManager will start listening for incoming messages.</p>
 
         <p>The listenForMessages defaults to `false`.</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        `whitelistedOrigins` String / Array
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        <p>The whitelistedOrigins property is intended to be used when working with [IframeComponents](#iframe-component) and cross-origin communication using the `postMessage` method.</p>
+
+        <p>Only messages sent from origins that are registered in the whitelistedOrigins array (or string if you only allow communication from one origin) will be picked up by the componentManager.</p>
+
+        <p>In addition to setting the whitelistedOrigins property each message sent with the postMessage method must have the property 'recipient' set to 'vigorjs.componentmanager' to be forwarded to instances.</p>
+
+        <p>The whitelistedOrigins defaults to `http://localhost:3000`.</p>
       </td>
     </tr>
   </tbody>
