@@ -60,15 +60,23 @@ describe 'The componentManager', ->
         assert componentManager._globalConditionsModel
         assert componentManager._filterModel
 
-      it 'should call setComponentClassName', ->
-        setComponentClassName = sandbox.spy componentManager, 'setComponentClassName'
-        do componentManager.initialize
-        assert setComponentClassName.called
+      it 'should set _listenForMessages to true if it is present and set to true
+      in the settings object', ->
+        assert.equal componentManager._listenForMessages, false
+        componentManager.initialize listenForMessages: true
+        assert.equal componentManager._listenForMessages, true
 
-      it 'should call setTargetPrefix', ->
-        setTargetPrefix = sandbox.spy componentManager, 'setTargetPrefix'
-        do componentManager.initialize
-        assert setTargetPrefix.called
+      it 'should set _listenForMessages to false if it is present and set to
+      false in the settings object', ->
+        assert.equal componentManager._listenForMessages, false
+        componentManager.initialize listenForMessages: false
+        assert.equal componentManager._listenForMessages, false
+
+      it 'should keep the default (false) for _listenForMessages if it is
+      not present in the settings object', ->
+        assert.equal componentManager._listenForMessages, false
+        componentManager.initialize {}
+        assert.equal componentManager._listenForMessages, false
 
       it 'should call addListeners', ->
         addListeners = sandbox.spy componentManager, 'addListeners'
@@ -437,6 +445,15 @@ describe 'The componentManager', ->
         $context = componentManager.getContext()
         assert.deepEqual $context, undefined
 
+      it 'should reset the listenForMessages to the default', ->
+        assert.equal componentManager._listenForMessages, false
+        componentManager.initialize listenForMessages: true
+        assert.equal componentManager._listenForMessages, true
+
+        do componentManager.clear
+
+        assert.equal componentManager._listenForMessages, false
+
       it 'should reset the componentClassName to the default', ->
         componentClassName = componentManager.getComponentClassName()
         assert.equal componentClassName, 'test-class-name'
@@ -454,6 +471,15 @@ describe 'The componentManager', ->
 
         targetPrefix = componentManager.getTargetPrefix()
         assert.equal targetPrefix, 'component-area'
+
+      it 'should reset the whitelistedOrigins to the default', ->
+        whitelistedOrigins = ['http://mywhitelistedorigin.com', 'http://mysecondwhitelistedorigin.com']
+        componentManager.setWhitelistedOrigins whitelistedOrigins
+        assert.deepEqual componentManager._whitelistedOrigins, whitelistedOrigins
+
+        do componentManager.clear
+
+        assert.deepEqual componentManager._whitelistedOrigins, ['http://localhost:3000']
 
       it 'should return the componentManager for chainability', ->
         cm = componentManager.clear()
@@ -1262,6 +1288,30 @@ describe 'The componentManager', ->
 
 
 
+    describe 'setWhitelistedOrigins', ->
+      it 'should store whitelisted origins', ->
+        whitelistedOrigins = 'http://www.mywhitelistedorigin.com'
+        componentManager.setWhitelistedOrigins whitelistedOrigins
+        assert.deepEqual componentManager._whitelistedOrigins, [whitelistedOrigins]
+
+      it 'should store whitelisted origins as an array if you pass an array', ->
+        whitelistedOrigins = ['http://www.mywhitelistedorigin.com', 'http://www.mysecondwhitelistedorigin.com']
+        componentManager.setWhitelistedOrigins whitelistedOrigins
+        assert.deepEqual componentManager._whitelistedOrigins, whitelistedOrigins
+
+      it 'should store whitelisted origins as an array even if you pass just a
+      single string', ->
+        whitelistedOrigins = 'http://www.mywhitelistedorigin.com'
+        componentManager.setWhitelistedOrigins whitelistedOrigins
+        assert _.isArray(componentManager._whitelistedOrigins)
+        assert.deepEqual componentManager._whitelistedOrigins, [whitelistedOrigins]
+
+      it 'should return the componentManager for chainability', ->
+        cm = componentManager.setWhitelistedOrigins()
+        assert.equal cm, componentManager
+
+
+
     describe 'getContext', ->
       it 'should return the context', ->
         $context = $('<div/>')
@@ -1650,18 +1700,17 @@ describe 'The componentManager', ->
         componentManager._parse settings
         assert setTargetPrefixSpy.calledWith targetPrefix
 
-      it 'should set _targetOrigin if targetOrigin is present in the settings
-      object', ->
-        targetOrigin = 'http://mytargetorigin.com'
+      it 'should call setWhitelistedOrigins with the whitelistedOrigins from the
+      passed settings (if it is defined)', ->
+        whitelistedOrigins = ['http://mywhitelistedorigin.com', 'http://mysecondwhitelistedorigin.com']
 
         settings =
-          targetOrigin: targetOrigin
+          whitelistedOrigins: whitelistedOrigins
 
-        assert.equal componentManager._targetOrigin, 'http://localhost:3000'
+        setWhitelistedOriginsSpy = sandbox.spy componentManager, 'setWhitelistedOrigins'
 
         componentManager._parse settings
-
-        assert.equal componentManager._targetOrigin, targetOrigin
+        assert setWhitelistedOriginsSpy.calledWith whitelistedOrigins
 
       it 'should call _parseComponentSettings with the componentSettings from the
       passed settings (if it is defined)', ->
@@ -3103,22 +3152,50 @@ describe 'The componentManager', ->
 
 
     describe '_onMessageReceived', ->
-      settings =
-        listenForMessages: true
-        componentSettings:
-          components: [
-            {
-              id: 'mock-iframe-component'
-              src: 'http://www.github.com'
-            }
-          ]
-          instances: [
-            {
-              id: 'instance-1'
-              componentId: 'mock-component'
-              targetName: 'body'
-            }
-          ]
+      it 'if @_whitelistedOrigins somehow isnt an array it should be put into an
+      array', ->
+        postMessageToInstanceStub = sandbox.stub componentManager, 'postMessageToInstance'
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            recipient: 'vigorjs.componentmanager'
+            id: 'im the id'
+            message: 'im the message'
+
+        componentManager._whitelistedOrigins = 'http://localhost:3000'
+        assert.deepEqual componentManager._whitelistedOrigins, 'http://localhost:3000'
+        componentManager._onMessageReceived event
+        assert.deepEqual componentManager._whitelistedOrigins, ['http://localhost:3000']
+
+      it 'should only call postMessageToInstance if event.origin is present in
+      the _whitelistedOrigins array', ->
+        postMessageToInstanceStub = sandbox.stub componentManager, 'postMessageToInstance'
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            recipient: 'vigorjs.componentmanager'
+            id: 'im the id'
+            message: 'im the message'
+
+        assert.deepEqual componentManager._whitelistedOrigins, ['http://localhost:3000']
+        componentManager._onMessageReceived event
+        assert postMessageToInstanceStub.called
+
+      it 'should not call postMessageToInstance if event.origin is not present in
+      the _whitelistedOrigins array', ->
+        postMessageToInstanceStub = sandbox.stub componentManager, 'postMessageToInstance'
+        event =
+          origin: 'http://localhost:3000'
+          data:
+            recipient: 'vigorjs.componentmanager'
+            id: 'im the id'
+            message: 'im the message'
+
+        whitelistedOrigins = ['http://www.google.com', 'http://www.amazon.com']
+        componentManager.setWhitelistedOrigins(whitelistedOrigins)
+        assert.deepEqual componentManager._whitelistedOrigins, whitelistedOrigins
+        componentManager._onMessageReceived event
+        assert postMessageToInstanceStub.notCalled
 
       it 'should not throw an MESSAGE.MISSING_ID if the wrong recipient is
       present', ->

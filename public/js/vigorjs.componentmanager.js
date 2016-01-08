@@ -1371,7 +1371,7 @@
 
     })(BaseInstanceCollection);
     ComponentManager = (function() {
-      var COMPONENT_CLASS_NAME, COMPONENT_MANAGER_ID, TARGET_ORIGIN, TARGET_PREFIX;
+      var COMPONENT_CLASS_NAME, COMPONENT_MANAGER_ID, TARGET_PREFIX, WHITELISTED_ORIGINS;
 
       function ComponentManager() {
         this._onMessageReceived = bind(this._onMessageReceived, this);
@@ -1385,7 +1385,7 @@
 
       TARGET_PREFIX = 'component-area';
 
-      TARGET_ORIGIN = 'http://localhost:3000';
+      WHITELISTED_ORIGINS = 'http://localhost:3000';
 
       ComponentManager.prototype.ERROR = {
         CONDITION: {
@@ -1394,8 +1394,7 @@
         MESSAGE: {
           MISSING_ID: 'The id of targeted instance must be passed as first argument',
           MISSING_MESSAGE: 'No message was passed',
-          MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method',
-          UNAUTHORIZED: 'targetOrigin is not authorized to post message to the componentManager'
+          MISSING_RECEIVE_MESSAGE_METHOD: 'The instance does not seem to have a receiveMessage method'
         },
         CONTEXT: {
           WRONG_FORMAT: 'context should be a string or a jquery object'
@@ -1432,7 +1431,7 @@
 
       ComponentManager.prototype._listenForMessages = false;
 
-      ComponentManager.prototype._targetOrigin = TARGET_ORIGIN;
+      ComponentManager.prototype._whitelistedOrigins = WHITELISTED_ORIGINS;
 
       ComponentManager.prototype.initialize = function(settings) {
         this._componentDefinitionsCollection = new ComponentDefinitionsCollection();
@@ -1440,8 +1439,8 @@
         this._activeInstancesCollection = new ActiveInstancesCollection();
         this._globalConditionsModel = new Backbone.Model();
         this._filterModel = new FilterModel();
-        if (settings != null ? settings.listenForMessages : void 0) {
-          this._listenForMessages = true;
+        if ((settings != null ? settings.listenForMessages : void 0) != null) {
+          this._listenForMessages = settings != null ? settings.listenForMessages : void 0;
         }
         this.addListeners();
         this._parse(settings);
@@ -1544,9 +1543,10 @@
           });
         }
         this._$context = void 0;
+        this._listenForMessages = false;
         this._componentClassName = COMPONENT_CLASS_NAME;
         this._targetPrefix = TARGET_PREFIX;
-        this._targetOrigin = TARGET_ORIGIN;
+        this._whitelistedOrigins = [WHITELISTED_ORIGINS];
         return this;
       };
 
@@ -1752,6 +1752,14 @@
         return this;
       };
 
+      ComponentManager.prototype.setWhitelistedOrigins = function(_whitelistedOrigins) {
+        this._whitelistedOrigins = _whitelistedOrigins != null ? _whitelistedOrigins : [WHITELISTED_ORIGINS];
+        if (!_.isArray(this._whitelistedOrigins)) {
+          this._whitelistedOrigins = [this._whitelistedOrigins];
+        }
+        return this;
+      };
+
       ComponentManager.prototype.getContext = function() {
         return this._$context;
       };
@@ -1819,9 +1827,7 @@
         this.setContext(settings != null ? settings.context : void 0, updateActiveComponents);
         this.setComponentClassName(settings != null ? settings.componentClassName : void 0);
         this.setTargetPrefix(settings != null ? settings.targetPrefix : void 0);
-        if ((settings != null ? settings.targetOrigin : void 0) != null) {
-          this._targetOrigin = settings.targetOrigin;
-        }
+        this.setWhitelistedOrigins(settings != null ? settings.whitelistedOrigins : void 0);
         if (settings != null ? settings.componentSettings : void 0) {
           this._parseComponentSettings(settings.componentSettings);
         } else {
@@ -2064,9 +2070,10 @@
 
       ComponentManager.prototype._onMessageReceived = function(event) {
         var data, id, message;
-        if (event.origin !== this._targetOrigin) {
-          throw this.ERROR.MESSAGE.UNAUTHORIZED;
-        } else {
+        if (!_.isArray(this._whitelistedOrigins)) {
+          this._whitelistedOrigins = [this._whitelistedOrigins];
+        }
+        if (this._whitelistedOrigins.indexOf(event.origin) > -1) {
           data = event.data;
           if (data && data.recipient === COMPONENT_MANAGER_ID) {
             id = data.id;

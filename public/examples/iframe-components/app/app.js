@@ -10,7 +10,7 @@ var app = app || {};
       Vigor.componentManager.initialize({
         componentSettings: window.componentSettings,
         listenForMessages: true,
-        targetOrigin: 'http://localhost:7070',
+        whitelistedOrigins: 'http://localhost:7070',
         context: this.$el
       });
 
