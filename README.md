@@ -1,14 +1,14 @@
 <section class="hero-unit">
-  <div class="hero-unit__content">
-    <h1>VigorJS <br/>ComponentManager</h1>
-    <p>The VigorJS ComponentManager is a small framework intended to help decouple and simplify the application structure of large scale [Backbone](http://backbonejs.org/) applications.</p>
+<div class="hero-unit__content">
+<h1>VigorJS <br/>ComponentManager</h1>
+<p>The VigorJS ComponentManager is a small framework intended to help decouple and simplify the application structure of large scale [Backbone](http://backbonejs.org/) applications.</p>
 
-    <div class="hero-unit__links">
-      [View on GitHub](https://github.com/jonwalstedt/vigorjs.componentmanager)
-      [Download (0.0.5)](js/vigorjs.componentmanager.min.js)
-      [Documentation](docs/)
-    </div>
-  </div>
+<div class="hero-unit__links">
+<a href="js/vigorjs.componentmanager.min.js">Download (0.0.5)</a>
+<a href="docs/">Documentation</a>
+<a href="examples/">Examples</a>
+</div>
+</div>
 </section>
 
 <section class="about">
