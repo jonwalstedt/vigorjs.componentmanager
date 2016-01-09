@@ -5,7 +5,8 @@ define(function (require) {
       $ = require('jquery'),
       _ = require('underscore'),
       Backbone = require('backbone'),
-      TweenMax = require('TweenMax');
+      TweenMax = require('TweenMax'),
+      COMPONENT_AREA_CLASS_NAME = 'component-area--main',
 
   PageView = Backbone.View.extend({
 
@@ -15,6 +16,9 @@ define(function (require) {
     transitionPages: function (index, route) {
       var $current = $('.current-page', this.$el),
           $nextUp = $('.page:not(.current-page)', this.$el);
+
+      $current.removeClass(COMPONENT_AREA_CLASS_NAME);
+      $nextUp.addClass(COMPONENT_AREA_CLASS_NAME);
 
       if (index > 0) {
         this.scaleIn($nextUp, route);
@@ -33,7 +37,7 @@ define(function (require) {
     // Page transitions
     // --------------------------------------------
     slideIn: function ($el, route) {
-      $el.addClass('component-area--main page--on-top');
+      $el.addClass('page--on-top');
 
       TweenMax.fromTo($el, this.animationDuration, {
         xPercent: -100
@@ -51,7 +55,7 @@ define(function (require) {
     },
 
     scaleOut: function ($el, scaleTarget) {
-      $el.removeClass('component-area--main page--on-top');
+      $el.removeClass('page--on-top');
       TweenMax.fromTo($el, this.animationDuration, {
         scale: 1,
         opacity: 1
@@ -68,8 +72,6 @@ define(function (require) {
     },
 
     scaleIn: function ($el, route) {
-      $el.addClass('component-area--main');
-
       TweenMax.fromTo($el, this.animationDuration, {
         opacity: 0,
         scale: .8
@@ -88,7 +90,6 @@ define(function (require) {
     },
 
     slideOut: function ($el) {
-      $el.removeClass('component-area--main');
       TweenMax.fromTo($el, this.animationDuration, {
         xPercent: 0
       }, {

@@ -4,7 +4,6 @@ define(function (require) {
 
   var TimeFilterView,
       $ = require('jquery'),
-      // _ = require('underscore'),
       Backbone = require('backbone'),
       timeFilterTemplate = require('hbars!./templates/time-filter-template');
 

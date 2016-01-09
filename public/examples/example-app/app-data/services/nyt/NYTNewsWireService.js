@@ -11,7 +11,7 @@ define(function (require) {
     APIKey: 'd75403c2e948b8515c11be6c6d8cb36b:2:73508591',
 
     parse: function (response) {
-      console.log('response: ', response);
+      // console.log('response: ', response);
       var articles = response.results;
 
       articles.forEach(function (article) {
@@ -27,8 +27,8 @@ define(function (require) {
       var url,
           source = 'all',
           section = model.get('section') || 'all',
-          timePeriod = model.get('timePeriod') || 720,
-          limit = model.get('limit') || 50,
+          timePeriod = model.get('timePeriod') || 24,
+          limit = model.get('limit') || 20,
           offset = model.get('offset') || 0;
 
       url = [source, section, timePeriod].join('/');

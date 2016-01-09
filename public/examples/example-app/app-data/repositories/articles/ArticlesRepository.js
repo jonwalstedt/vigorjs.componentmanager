@@ -39,6 +39,7 @@ define(function (require) {
 
     _onArticlesReceived: function (models) {
       this.set(models, {add: true, remove: false, merge: true});
+      console.log(this.toJSON());
     }
   });
 

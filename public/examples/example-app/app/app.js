@@ -127,9 +127,9 @@ define(function (require) {
 
         // We need to wait to be sure that the class-names have been swapped
         // before adding new components
-        _.defer(_.bind(function () {
-          this.addMatchingComponents(route);
-        }, this));
+        // _.defer(_.bind(function () {
+        // }, this));
+        this.addMatchingComponents(route);
 
         this.pageView.transitionPages(index, route);
         this.closeMenu();
