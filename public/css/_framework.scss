@@ -98,7 +98,7 @@ body {
   }
 }
 
-@media (min-width: 768px) {
+@media (min-width: $breakpointLarge) {
   .menu-toggle {
     left: -999em;
     opacity: 0;
