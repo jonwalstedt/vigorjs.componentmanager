@@ -1,0 +1,15 @@
+<h3><a name="instance-definition-events"></a> InstanceDefinition Events</h3><p>The componentManager triggers events when adding, removing or changing instanceDefinitions. To use these events listen for either <code>instance-add</code>, <code>instance-remove</code> or <code>instance-change</code> on the componentManager instance. The callback will get the affected instanceDefinition and an array with all registered instanceDefinitions as arguments.</p>
+<pre><code class="language-javascript">componentManager.on(&#39;instance-add&#39;, function (addedInstanceDefinition, allInstanceDefinitions) {});
+
+componentManager.on(&#39;instance-change&#39;, function (changedInstanceDefinition, allInstanceDefinitions) {});
+
+componentManager.on(&#39;instance-remove&#39;, function (removedInstanceDefinition, allInstanceDefinitions) {});
+
+// or
+
+componentManager.on(componentManager.EVENTS.INSTANCE_ADD, function (addedInstanceDefinition, allInstanceDefinitions) {});
+
+componentManager.on(componentManager.EVENTS.INSTANCE_CHANGE, function (changedInstanceDefinition, allInstanceDefinitions) {});
+
+componentManager.on(componentManager.EVENTS.INSTANCE_REMOVE, function (removedInstanceDefinition, allInstanceDefinitions) {});
+</code></pre>

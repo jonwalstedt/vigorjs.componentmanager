@@ -1,0 +1,132 @@
+<!DOCTYPE html><html><head><title>Vigorjs ComponentManager</title><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/atelier-cave.light.min.css" rel="stylesheet" type="text/css"><link href="/css/main.css" rel="stylesheet" type="text/css"><meta name="viewport" content="initial-scale=1, maximum-scale=1"></head><body class="examples"><header class="header"><div class="header-content"><h1><a href="/" class="header__title">Vigorjs ComponentManager</a></h1><nav class="main-navigation"><ul class="main-navigation__list"><li class="main-navigation__list-item"><a href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="main-navigation__link">View on GitHub</a></li><li class="main-navigation__list-item"><a href="/docs" class="main-navigation__link ">Docs</a></li><li class="main-navigation__list-item"><a href="/examples" class="main-navigation__link main-navigation__link--active">Examples</a></li></ul></nav><button class="menu-toggle entypo-menu"><span>Toggle Menu</span></button></div></header><main class="content-wrapper"><div class="sidebar-wrapper"><aside class="sidebar"><h4>Features</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/hello-world/" class="sidebar__link ">Hello World</a></li><li class="sidebar_list-item"><a href="/examples/filter-options/" class="sidebar__link sidebar__link--active">Filter options</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-url/" class="sidebar__link ">Filter by url</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-string/" class="sidebar__link ">Filter by string</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-conditions/" class="sidebar__link ">Filter by conditions</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-custom-properties/" class="sidebar__link ">Filter by custom properties</a></li><li class="sidebar_list-item"><a href="/examples/iframe-components/" class="sidebar__link ">Iframe Components</a></li><li class="sidebar_list-item"><a href="/examples/reorder-components/" class="sidebar__link ">Order/Reorder components</a></li><li class="sidebar_list-item"><a href="/examples/serialize/" class="sidebar__link ">Serialize</a></li></ul><h4>Concepts</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/multiple-layouts/" class="sidebar__link ">Multiple layouts</a></li><li class="sidebar_list-item"><a href="/examples/example-app/" class="sidebar__link ">Example app</a></li></ul><h4>Module loaders</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/amd-requirejs/" class="sidebar__link ">AMD - Requirejs</a></li><li class="sidebar_list-item"><a href="/examples/commonjs-browserify/" class="sidebar__link ">COMMONJS - Browserify</a></li></ul></aside></div><article class="content"><h2>Filter options</h2><p>When filtering components in the componentManager you can set different options depending on the desired result.</p>
+<p>The available options (and their default values) are:</p>
+<pre><code>options: {
+  add: true,
+  remove: true,
+  merge: true,
+  invert: false,
+  forceFilterStringMatching: false
+}
+</code></pre><p>Add and remove are just what you would expect, if you set add to false and filter it will not add the matching components, but if remove is set to true it will remove any components that does not match the filter.</p>
+<p>The same thing applies to the remove property. If you filter components and set remove to false it will not remove the previous set of components but it will still add your new set of components (if add is set to true). The old components will stay active until you do another refresh with the remove option set to true.</p>
+<p>This sort of behaviour could be useful when doing transitions. If you for an example are animating in new components and don&#39;t want to remove the old ones until the animation is complete you pass your filter with the remove option set to false. When the animation is done you do another refresh with the same filter but with the remove option set to true. This will remove the old components since they no longer matches the filter and it will not affect the active (new) components since they are already active - they will not be reinstantiated just because you do another refresh with the same filter. In the <a href="/examples/example-app/">Example App</a> you can see this in action.</p>
+<p>Merge will update existing active instanceDefinitions if set to true, if set to false any active componentDefinitions that might have changed since the last refresh will be ignored.</p>
+<p>Invert will invert the filter and return all components that doesn&#39;t match the filter.</p>
+<p>ForceFilterStringMatching is used in combination with the filters includeIfMatch, excludeIfMatch, hasToMatch or cantMatchtring to allow or disallow components that does not have a filterString set (enabled it will make instanceDefinitions active only when the filter is doing string matching - even if other filters matches). See the <a href="/examples/filter-by-string">Filter by string</a> example.</p>
+<p>Play around with the example below to get a better understanding of the different options.</p>
+<div class="components-js"><p>Take a look at components.js to see component the setup for this example.</p><p><span>conditions:<strong>0</strong></span><span>components:<strong>1</strong></span><span>instances:<strong>7</strong></span></p><button class="components-js__toggle">Show components.js</button><div class="components-js__code"><pre><code class="language-javascript">var componentSettings = {
+  components: [{
+    id: &#39;filter-condition-component&#39;,
+    src: &#39;ExampleComponent&#39; // ExampleComponent.js in the examples directory - exposed on window
+  }],
+
+  targets: {
+    main: [
+      {
+        id: &#39;filter-instance-1&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        args: {
+          id: &#39;id: filter-instance-1&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          background: &#39;#9FEDFF&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-2&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        args: {
+          id: &#39;id: filter-instance-2&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          background: &#39;#9FEDFF&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-3&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        args: {
+          id: &#39;id: filter-instance-3&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          background: &#39;#9FEDFF&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-4&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        args: {
+          id: &#39;id: filter-instance-4&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#9F9EE8&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-5&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        args: {
+          id: &#39;id: filter-instance-5&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#9F9EE8&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-6&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        args: {
+          id: &#39;id: filter-instance-6&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#9F9EE8&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-7&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        filterString: &#39;bar&#39;,
+        args: {
+          id: &quot;id: filter-instance-7&quot;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#0F9EF8&#39;,
+          filterString: &#39;bar&#39;
+        }
+      }
+    ]
+  }
+}
+</code></pre>
+</div></div><div class="app-wrapper"><small>active filter</small><div class="active-filter"></div><small>info</small><div class="example-info-wrapper"><div class="examples-info"></div></div><small>controls</small><div class="controls"><div class="options"><p>Filter on url:</p><label><input type="radio" name="url" value="all" checked class="all">all</label><label><input type="radio" name="url" value="foo/1" class="foo">foo/1</label><label><input type="radio" name="url" value="bar/1" class="bar">bar/1</label><p>Filter on filterString (using includeIfMatch in filter):</p><label><input type="radio" name="filter-string" value="none" checked class="all">none</label><label><input type="radio" name="filter-string" value="foo" class="foo">foo</label><label><input type="radio" name="filter-string" value="bar" class="bar">bar</label><p>Options:</p><label><input type="checkbox" checked class="add">Add</label><label><input type="checkbox" checked class="remove">Remove</label><label><input type="checkbox" checked class="merge">Merge</label><label><input type="checkbox" class="invert">Invert</label><label><input type="checkbox" class="force-filter-string-matching">ForceFilterStringMatching</label></div><button class="refresh">Refresh</button></div><small>.component-area--main</small><div class="component-area component-area--main"></div></div></article></main><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script><script src="/js/vigorjs.componentmanager.js"></script><script src="/js/main.js"></script><script type="text/template" class="example-component-template"><h2>ExampleComponent:
+  <span class="example-component__title"><%= id %></span>
+</h2>
+<button class="example-component__toggle-fullsize entypo-resize-full">
+  <span>Toggle fullsize</span>
+</button>
+
+<p>This instance was created from the following instanceDefinition:</p>
+<pre>
+<%= instanceDefinition %>
+</pre>
+
+<p>This instance was created with the following arguments passed to the constructor:</p>
+<pre>
+arguments: <%= arguments %>
+</pre>
+
+<div class="component-output"></div>
+</script><script type="text/template" class="active-filter-template"><pre>
+<%= activeFilter %>
+</pre>
+</script><script src="/js/vigorjs.componentmanager.js"></script><script type="text/javascript" src="/examples/jquery.flash.js"></script><script type="text/javascript" src="/examples/ExampleComponent.js"></script><script type="text/javascript" src="/examples/example-helpers.js"></script><script src="./components.js"></script><script src="./app/app.js"></script><script>$(document).ready(function () {
+  new app.Filter({
+    el: '.app-wrapper'
+  });
+});</script></body></html>

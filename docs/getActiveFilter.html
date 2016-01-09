@@ -1,0 +1,13 @@
+<h3><a name="getActiveFilter"></a> getActiveFilter</h3><p>Returns the currently applied filter of the componentManager. The filter is updated by running the <a href="#refresh">refresh</a> method with <a href="#filter">filter object</a>.</p>
+<pre><code class="language-javascript">var currentlyAppliedFilter,
+filter = {
+  url: my/current/route,
+  includeIfMatch: &#39;lang=en_GB&#39;
+}
+
+componentManager.refresh(filter);
+
+currentlyAppliedFilter = componentManager.getFilter();
+
+// The currentlyAppliedFilter is the same as the filter.
+</code></pre>

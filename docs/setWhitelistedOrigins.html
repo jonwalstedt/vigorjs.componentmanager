@@ -1,0 +1,8 @@
+<h3><a name="setWhitelistedOrigins"></a> setWhitelistedOrigins</h3><p>The setWhitelistedOrigins method sets the whitelisted origin (or origins) that will be allowed to send messages to instances created by the componentManager. It takes a string (the origin to use) or an array of origins as an argument.</p>
+<p>This method will be called internally during initialization to update the whitelistedOrigins from the whitelistedOrigins property in the <a href="#settings">settings ojbect</a> (if it is set). You usually do not have to call this method after initialization unless you intend to change the whitelisted origins  on the fly.</p>
+<pre><code class="language-javascript">componentManager.setWhitelistedOrigins(&#39;http://myorigin.com&#39;);
+</code></pre>
+<p>or</p>
+<pre><code class="language-javascript">componentManager.setWhitelistedOrigins([&#39;http://myorigin.com&#39;, &#39;http://mysecondorigin.com&#39;]);
+</code></pre>
+<p>The whitelistedOrigins defaults to &#39;<a href="http://localhost:3000">http://localhost:3000</a>&#39; and it returns the componentManager instance.</p>

@@ -1,0 +1,15 @@
+<h3><a name="component-definition-events"></a> ComponentDefinition Events</h3><p>The componentManager triggers events when adding, removing or changing componentDefinitions. To use these events listen for either <code>component-add</code>, <code>component-remove</code> or <code>component-change</code> on the componentManager instance. The callback will get the affected componentDefinition and an array with all registered componentDefinitions as arguments.</p>
+<pre><code class="language-javascript">componentManager.on(&#39;component-add&#39;, function (addedComponentDefinition, allComponentDefinitions) {});
+
+componentManager.on(&#39;component-change&#39;, function (changedComponentDefinition, allComponentDefinitions) {});
+
+componentManager.on(&#39;component-remove&#39;, function (removedComponentDefinition, allComponentDefinitions) {});
+
+// or
+
+componentManager.on(componentManager.EVENTS.COMPONENT_ADD, function (addedComponentDefinition, allComponentDefinitions) {});
+
+componentManager.on(componentManager.EVENTS.COMPONENT_CHANGE, function (changedComponentDefinition, allComponentDefinitions) {});
+
+componentManager.on(componentManager.EVENTS.COMPONENT_REMOVE, function (removedComponentDefinition, allComponentDefinitions) {});
+</code></pre>

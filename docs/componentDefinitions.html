@@ -1,0 +1,144 @@
+<h3><a name="component-definitions"></a> ComponentDefinitions</h3><p>ComponentDefinitions or componentDefinitionModels are the models that contains the definition of each component created by the componentManager. It stores a reference to the class to create instances from and also the conditions (if any) that should apply to create any instances of that class.</p>
+<p>To define your componentDefinitions you add your componentDefinition objects to the components array in the <a href="#settings">componentSettings</a>.</p>
+<p>The only required properties for a componentDefinition is <code>id</code> and <code>src</code>. But a componentDefinition could also contain the default properties <code>args</code>, <code>conditions</code> and <code>maxShowCount</code>. All properties are undefined by default. Se the description for each below:</p>
+<h4>Example of an componentDefinition object.</h4><pre><code class="language-javascript">componentDefinition = {
+  id: &#39;my-component&#39;,
+  src: &#39;components/my-component&#39;,
+  args: {
+    myArg: &#39;myArgValue&#39;
+  },
+  conditions: [&#39;isLoggedIn&#39;, &#39;hasNewMessage&#39;],
+  maxShowCount: 3
+}
+</code></pre>
+<h4>ComponentDefinition Properties</h4><table class="docs-table">
+  <thead>
+    <tr>
+      <th class="docs-table__column docs-table__column-1">Property</th>
+      <th class="docs-table__column docs-table__column-2">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>id</code> String (required)
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The id property is required. It should be a uniqe identifier for the componentDefinition and it should be a string. InstanceDefinitions will reference this id to know what class to create the instance from.
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>src</code> String / Function (required)
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        <p>The src property is also required and can be either a string or a constructor function. If it is a string it should either be a url (ex: <code>&#39;http://www.google.com&#39;</code>), a path that can be <code>required</code> by a AMD or CommonJS module loader (ex: <code>&#39;components/my-component&#39;</code>) or a namespace path to the class starting from the window object, leaving out the window object it self (ex: src: <code>&#39;app.components.Chart&#39;</code>).</p>
+
+        <p>If you are using a AMD ocr CommonJS module loader the string will always be required unless its a url. It will not try to find the class on the window object even if you send in a string like <code>&#39;app.components.Chart&#39;</code>.</p>
+
+        <p>If the string is a <code>url</code> (ex. <code>&#39;http://www.google.com&#39;</code>) the component manager will use the <a href="#iframe-component">IframeComponent</a> as a class for any instanceDefinition referencing this componentDefinition.</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>args</code> Object
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        <p>The args property is an object containing any key value pairs you like. When an instanceDefinition reference this componentDefinition that instanceDefinitions args will extend this args object, it will then be passed as an argument to the created instance.</p>
+
+        <p>This means that all instanceDefinitions referencing a componentDefinition with an args object will get that object passed to its instance upon instantiation.</p>
+
+        <p>Each instanceDefinitions args object may override properties on the componentDefinitions args object.</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>conditions</code> String / Array / Function
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        <p>A condition for a componentDefinition or instanceDefinition should be a function returning true or false. One or multiple conditions can be used to help determine if an instance of the component should be created or not.</p>
+
+        <p>Instead of a function you may also use a string that will be used as a key for a condition registered in the conditions property of the <a href="#settings">componentSettings</a> object (or conditions added using the addConditions method).</p>
+
+        <p>You can mix both of these methods and pass an array containing functions or strings or both. All conditions will have to return true to have the instance created.</p>
+
+        <p>If the instanceDefinition have conditions of its own both the conditions of the componentDefinition and the instanceDefinition will have to return true for the instance to be created.</p>
+
+        <p>Note that conditions defined on the componentDefinition will apply to all instances of that component.</p>
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>maxShowCount</code> Number
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The property maxShowCount should be a number if defined. If used it will limit the number of times a instance of that component may be created. For an example you could set it to 1 if you want to display a component only one time - even if other filters pass.
+      </td>
+    </tr>
+
+  </tbody>
+</table>
+
+
+<h4>Example</h4><p>Here is an example of an componentDefinition:</p>
+<pre><code class="language-javascript">  {
+    id: &#39;my-chart&#39;, //a unique string
+    src: &#39;components/chart&#39;, // path to be required
+    args: {
+      type: &#39;bar-chart&#39; // arguments to pass to instance
+    },
+    conditions: [&#39;correct-width&#39;, function (..) {}], // conditions for when to allow instance to be created
+    maxShowCount: 1 // instances of this component may only be created/shown once
+  }
+</code></pre>
+<p>and this is how it would look in the settings object:</p>
+<pre><code class="language-javascript">settings = {
+  componentSettings: {
+    conditions: {
+      ...
+    },
+    components: [
+      {
+        id: &#39;my-chart&#39;
+        src: &#39;components/chart&#39;
+        args: {
+          type: &#39;bar-chart&#39;
+        }
+        conditions: [&#39;correct-width&#39;, function (..) {}]
+        maxShowCount: 1
+      }
+    ],
+    instances: [
+      ...
+    ]
+  }
+}
+</code></pre>
+<h4>Custom Properties</h4><p>In addition to the default properties you can add any properties you like to a componentDefinition. Custom properties can then be used to refine the filter and target specific instanceDefinitions belonging to the componentDefinition that has the custom property. The custom properties would then also have to be used when creating the filter which would be passed to the refresh method. See example below.</p>
+<pre><code class="language-javascript">componentSettings: {
+  components: [
+    {
+      id: &#39;my-component&#39;,
+      src: &#39;components/chart&#39;,
+      myCustomProperty: &#39;componentVal&#39;
+    }
+  ],
+  instances: [
+    {
+      id: &#39;my-instance&#39;,
+      componentId: &#39;my-component&#39;,
+      targetName: &#39;body&#39;
+    }
+  ]
+}
+</code></pre>
+<p>In the example above the custom property myCustomProperty is set on the componentDefinition with the value &#39;componentVal&#39;. The filter below  would create a new instance of the component &#39;my-component&#39; using the information from the instanceDefinition &#39;my-instance&#39;.</p>
+<pre><code class="language-javascript">componentManager.refresh({
+  myCustomProperty: &#39;componentVal&#39;
+});
+</code></pre>
+<p>Custom properties on the componentDefinition may be overridden by custom properties on a intanceDefinition that belongs to that componentDefinition.</p>

@@ -1,0 +1,74 @@
+<pre><code class="language-javascript">var componentSettings = {
+  conditions: {
+    withinTimeSpan: function () {
+      var today = new Date().getHours(),
+          startTime = 0,
+          endTime = 24,
+          allowed = (today &gt;= startTime &amp;&amp; today &lt;= endTime);
+      console.log(&#39;is within timespan: &#39;, allowed);
+      return allowed;
+    }
+  },
+
+  components: [{
+    id: &#39;order-component&#39;,
+    src: &#39;app.components.FilterComponent&#39;,
+    conditions: [&#39;withinTimeSpan&#39;]
+  }],
+
+  targets: {
+    main: [
+      {
+        id: &#39;order-instance-1&#39;,
+        componentId: &#39;order-component&#39;,
+        order: 1,
+        args: {
+          order: &#39;1&#39;,
+          background: &#39;aqua&#39;
+        },
+        urlPattern: &#39;global&#39;
+      },
+      {
+        id: &#39;order-instance-2&#39;,
+        componentId: &#39;order-component&#39;,
+        order: 2,
+        args: {
+          order: &#39;2&#39;,
+          background: &#39;green&#39;
+        },
+        urlPattern: &#39;global&#39;
+      },
+      {
+        id: &#39;order-instance-3&#39;,
+        componentId: &#39;order-component&#39;,
+        order: 3,
+        args: {
+          order: &#39;3&#39;,
+          background: &#39;silver&#39;
+        },
+        urlPattern: &#39;global&#39;
+      },
+      {
+        id: &#39;order-instance-4&#39;,
+        componentId: &#39;order-component&#39;,
+        order: 4,
+        args: {
+          order: &#39;4&#39;,
+          background: &#39;yellow&#39;
+        },
+        urlPattern: &#39;global&#39;
+      },
+      {
+        id: &#39;order-instance-5&#39;,
+        componentId: &#39;order-component&#39;,
+        order: 5,
+        args: {
+          order: &#39;5&#39;,
+          background: &#39;pink&#39;
+        },
+        urlPattern: &#39;global&#39;
+      }
+    ]
+  }
+}
+</code></pre>

@@ -1,0 +1,15 @@
+<h3><a name="active-instance-events"></a> Active instance events</h3><p>The componentManager triggers events when adding, removing or changing active instances (instances that are currently being added, removed or changed by the componentManager in the DOM). To use these events listen for either <code>add</code>, <code>remove</code> or <code>change</code> on the componentManager instance. The callback will get the affected component instance and an array with all active instances as arguments.</p>
+<pre><code class="language-javascript">componentManager.on(&#39;add&#39;, function (addedInstance, allActiveInstances) {});
+
+componentManager.on(&#39;change&#39;, function (changedInstance, allActiveInstances) {});
+
+componentManager.on(&#39;remove&#39;, function (removedInstance, allActiveInstances) {});
+
+// or
+
+componentManager.on(componentManager.EVENTS.ADD, function (addedInstance, allActiveInstances) {});
+
+componentManager.on(componentManager.EVENTS.CHANGE, function (changedInstance, allActiveInstances) {});
+
+componentManager.on(componentManager.EVENTS.REMOVE, function (removedInstance, allActiveInstances) {});
+</code></pre>

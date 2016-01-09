@@ -1,0 +1,48 @@
+<pre><code class="language-javascript">var componentSettings = {
+  conditions: {
+    withinTimeSpan: function () {
+      var today = new Date().getHours(),
+          startTime = 0,
+          endTime = 24,
+          allowed = (today &gt;= startTime &amp;&amp; today &lt;= endTime);
+      console.log(&#39;is within timespan: &#39;, allowed);
+      return allowed;
+    },
+    hasCorrectId: function (filter, args) {
+      return args.id == &#39;id: filter-instance-2&#39;;
+    },
+    hasCorrectBackground: function (filter, args) {
+      return args.background == &#39;#9F9EE8&#39;;
+    }
+  },
+
+  components: [{
+    id: &#39;filter-condition-component&#39;,
+    src: &#39;ExampleComponent&#39;, // ExampleComponent.js in the examples directory - exposed on window
+    conditions: [&#39;withinTimeSpan&#39;]
+  }],
+
+  targets: {
+    main: [
+      {
+        id: &#39;filter-instance-1&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-1&#39;,
+          background: &#39;#9FEDFF&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-2&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        conditions: [&#39;hasCorrectId&#39;, &#39;hasCorrectBackground&#39;],
+        args: {
+          id: &#39;id: filter-instance-2&#39;,
+          background: &#39;#9F9EE8&#39;
+        }
+      }
+    ]
+  }
+}
+</code></pre>

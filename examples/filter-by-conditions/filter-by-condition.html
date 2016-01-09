@@ -1,0 +1,23 @@
+<h2>Filter components by conditions</h2><p>Condition methods can be defined on the conditions object in componentSetting (global conditions) or directly in the conditions property on the instanceDefinition or on the componentDefinition. If you want to reuse a condition method between different components you should assign the method to a key in the conditions object when passing componentSettings, those methods will then be global - accessible for all components simply by using the key from that object in the conditionDefinitions or instanceDefinitions conditions property (see the withinTimeSpan example below).</p>
+<p>One or multiple conditions can be set on both a component level and an instance level. If applied on a component level all insances of that component will be affected. If applied on an instance level only that instance will be affected.</p>
+<p>In this example we add differnt conditions and update components and instances to only be allowed if the conditions are met.</p>
+<h3>Example condition: &quot;withinTimeSpan&quot;</h3><p>This condition is defined in the components.js file and passed along with the componentSettings object to the initialize method. componentDefinitions and instanceDefinitions then reference this condition by using its key as value for their conditions property. In this case it will allways return true unless you play around with the start and end time.</p>
+<pre><code class="language-javascript">{
+  withinTimeSpan: function () {
+    var today = new Date().getHours(),
+        startTime = 0,
+        endTime = 24,
+        allowed = (today &gt;= startTime &amp;&amp; today &lt;= endTime);
+    console.log(&#39;is within timespan: &#39;, allowed);
+    return allowed;
+  }
+}
+</code></pre>
+<h3>Example condition: &quot;correctWidth&quot;</h3><p>Components using this condition will only be allowed if the browser width is more than 600px.</p>
+<pre><code class="language-javascript">{
+  &quot;correct-width&quot;: function () {
+    return window.outerWidth &gt; 600;
+  }
+}
+</code></pre>
+<p>Click the &quot;Register condition&quot; to make the condition available for the components, then click either &quot;Add condition to component &quot;filter-instance&quot; or &quot;Add condition to instance &quot;filter-instance-2&quot; depending on if you want the condition to be applied on a component level or instance level.</p>

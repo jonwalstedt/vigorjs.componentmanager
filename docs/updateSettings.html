@@ -1,0 +1,24 @@
+<h3><a name="updateSettings"></a> updateSettings</h3><p>The updateSettings method updates the componentManager with new settings after initialization. It should be called with the <a href="#settings">settings object</a>.</p>
+<p>Example (using the <a href="#alternative-structure">alternative structure</a>):</p>
+<pre><code class="language-javascript">settings = {
+  componentSettings: {
+    components: [
+      {
+        id: &#39;my-component&#39;,
+        src: &#39;components/my-component&#39;
+      }
+    ],
+    targets: {
+      main: [
+        {
+          id: &#39;instance-1&#39;,
+          componentId: &#39;my-component&#39;,
+          urlPattern: &#39;foo/:bar&#39;
+        }
+      ]
+    }
+  }
+}
+
+componentManager.updateSettings(settings);
+</code></pre>

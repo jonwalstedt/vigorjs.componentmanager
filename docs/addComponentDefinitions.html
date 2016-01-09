@@ -1,0 +1,14 @@
+<h3><a name="addComponentDefinitions"></a> addComponentDefinitions</h3><p>The addComponentDefinitions method is used to add componentDefinitions on the fly after initialization. It takes an <a href="#component-definitions">componentDefinition</a> object or an array of componentDefinition objects.</p>
+<p>When adding new componentDefinitions the componentManager will immediately do refresh with the currently applied filter to add any new instances to the DOM.</p>
+<pre><code class="language-javascript">componentManager.addComponentDefinitions([
+  {
+    id: &#39;my-first-component&#39;,
+    src: &#39;components/my-first-component&#39;
+  },
+  {
+    id: &#39;my-second-component&#39;,
+    src: &#39;components/my-second-component&#39;,
+    conditions: &#39;isLoggedIn&#39;
+  }
+]);
+</code></pre>

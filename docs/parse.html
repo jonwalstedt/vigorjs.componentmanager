@@ -1,0 +1,8 @@
+<h3><a name="parse"></a> parse</h3><p>The parse method takes two parameters: a serialized settings object (created by calling componentManager.<a href="#serialize">serialize</a>()) and a boolean to decide if it should update the current settings or just return a parsed settings object.</p>
+<p>If you set the updateSetting boolean to true, it will update the current instance of the componentManager with the parsed settings object created from the serialized string (it will return the settings object). If it is set to false (<strong>it defaults to <code>false</code></strong>) it will just return an object containing the parsed settings.</p>
+<pre><code class="language-javascript">var serializedSettings = componentManager.serialize();
+    updateSettings = true,
+    parsedSettings = componentManager.parse(serializedSettings, updateSettings);
+</code></pre>
+<p>Returns the parsed settings object.</p>
+<p>See the <a href="/examples/reorder-components">order/reorder</a> example.</p>
