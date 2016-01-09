@@ -1,0 +1,23 @@
+<h3><a name="refresh"></a> refresh</h3><p>The refresh method can be called with or without a <a href="#filter">filter</a>.</p>
+<p>When calling refresh with a filter all instances that doesn&#39;t match that filter will be disposed and removed from the DOM and all instances that does match the filter will be added.</p>
+<p>If calling the refresh method without a filter all instances will be created and added to the DOM (assuming their component-areas are available).</p>
+<p>Example:</p>
+<pre><code class="language-javascript">componentManager.updateSettings({
+  url: &#39;foo/1&#39;
+  options: {
+    remove: false
+  }
+});
+</code></pre>
+<p>The refresh method returns a promise that will be resolved (after any asynchronous components has been loaded) with an object containing:</p>
+<pre><code class="language-javascript">componentManager.refresh(filter).then(function (returnData) {});
+
+// The returned data will contain the following properties:
+{
+  filter: {...}, // The current filter (object)
+  activeInstances: [...], // all active instances (array)
+  activeInstanceDefinitions: [...], // all activeInstanceDefinitions (array)
+  lastChangedInstances: [...], // the last changed instances (array)
+  lastChangedInstanceDefinitions: [...], // the last changed instanceDefinitions (array)
+}
+</code></pre>

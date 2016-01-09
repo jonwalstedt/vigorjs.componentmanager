@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <title>Example banner one</title>
+    <style>
+      body, html {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      .banner-img {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      (function () {
+        var Banner = function () {
+          this.img = undefined;
+          this.initialize = function () {
+            var img = new Image();
+            img.className = 'banner-img'
+            img.onload = function () {
+              postMsg(getId(), 'loading-complete');
+              document.body.appendChild(img);
+            };
+            img.src = 'https://placeimg.com/640/180/any';
+          };
+
+          function getId ()  {
+            var id = undefined;
+            id = window.location.search.substring(window.location.search.indexOf('id=') + 3);
+
+            if (id.indexOf('&') >= 0) {
+              id = id.substring(0, id.indexOf('&'));
+            }
+            return id
+          };
+
+          function postMsg(id, data) {
+            var data = {
+              id: id,
+              data: data
+            },
+            targetOrigin = 'http://localhost:3000';
+            parent.postMessage(data, targetOrigin);
+          }
+        }
+
+        banner = new Banner();
+        banner.initialize();
+
+      })();
+
+    </script>
+  </body>
+</html>

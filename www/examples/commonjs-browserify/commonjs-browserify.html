@@ -1,0 +1,16 @@
+<h2>COMMONJS example using browserify</h2><p>This is a small example of how you can let the componentManager require components using browserify (CommonJS).</p>
+<p>To play around with example first run npm install and then install browserify and watchify globaly with npm install -g browserify and npm install -g watchify, you may have to use sudo to install them globaly.</p>
+<p>To build bundle run:</p>
+<div class="hljs javascript">
+  <pre>node bundler.js &gt; bundle.js</pre>
+</div>
+
+<p>To build vendor bundle run:</p>
+<div class="hljs javascript">
+  <pre>node bundler.js vendor &gt; bundle.vendors.js</pre>
+</div>
+
+<p>to build and watch run:</p>
+<div class="hljs javascript">
+  <pre>watchify main.js -o &#39;node bundler.js &gt; bundle.js&#39; -v</pre>
+</div>

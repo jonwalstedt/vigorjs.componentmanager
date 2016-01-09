@@ -1,0 +1,8 @@
+<h3><a name="setContext"></a> setContext</h3><p>The setContext method takes a DOM element selector or a jQuery object as first argument. The element with the passed selector will be used as context, if no argument is passed it will default to use the body as context.</p>
+<p>When updating the context on the fly the componentManager will dispose all active instances and try to recreate and add them within the new context.</p>
+<pre><code class="language-javascript">componentManager.setContext($(&#39;.my-app&#39;));
+</code></pre>
+<p>or</p>
+<pre><code class="language-javascript">componentManager.setContext(&#39;.my-app&#39;);
+</code></pre>
+<p>The setContext method returns the componentManager instance.</p>

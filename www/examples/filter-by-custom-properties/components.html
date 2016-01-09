@@ -1,0 +1,121 @@
+<pre><code class="language-javascript">var componentSettings = {
+  components: [
+    {
+      id: &#39;filter-condition-component&#39;,
+      src: &#39;ExampleComponent&#39; // ExampleComponent.js in the examples directory - exposed on window
+    },
+    {
+      id: &#39;filter-condition-component2&#39;,
+      src: &#39;ExampleComponent&#39;, // ExampleComponent.js in the examples directory - exposed on window
+      type: &#39;yellow-component&#39;,
+      componentStyle: &#39;custom&#39;
+    }
+  ],
+
+  targets: {
+    main: [
+      {
+        id: &#39;filter-instance-1&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        type: &#39;grey-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-1&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          type: &#39;grey-component&#39;,
+          background: &#39;grey&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-2&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        type: &#39;grey-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-2&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          type: &#39;grey-component&#39;,
+          background: &#39;grey&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-3&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        type: &#39;green-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-3&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          type: &#39;green-component&#39;,
+          background: &#39;green&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-4&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        type: &#39;green-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-4&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          type: &#39;green-component&#39;,
+          background: &#39;green&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-5&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        type: &#39;red-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-5&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          type: &#39;red-component&#39;,
+          background: &#39;red&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-6&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        type: &#39;red-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-6&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          type: &#39;red-component&#39;,
+          background: &#39;red&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-7&#39;,
+        componentId: &#39;filter-condition-component2&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        type: &#39;red-component&#39;,
+        args: {
+          id: &#39;id: filter-instance-7&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          type: &#39;red-component&#39;,
+          background: &#39;red&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-8&#39;,
+        componentId: &#39;filter-condition-component2&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        args: {
+          id: &#39;id: filter-instance-8&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;yellow&#39;
+        }
+      }
+    ]
+  }
+}
+</code></pre>

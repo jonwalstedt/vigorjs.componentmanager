@@ -1,0 +1,89 @@
+<pre><code class="language-javascript">var componentSettings = {
+  components: [{
+    id: &#39;filter-url-component&#39;,
+    src: &#39;ExampleComponent&#39;
+  }],
+  targets: {
+    main: [
+      {
+        id: &#39;filter-url-instance-1&#39;,
+        componentId: &#39;filter-url-component&#39;,
+        order: 1,
+        args: {
+          id: &#39;id: 1&#39;,
+          urlPattern: &#39;passing-arguments/:type/:id&#39;,
+          background: &#39;coral&#39;
+        },
+        urlPattern: &#39;passing-arguments/:type/:id&#39;
+      },
+      {
+        id: &#39;filter-url-instance-2&#39;,
+        componentId: &#39;filter-url-component&#39;,
+        order: 2,
+        args: {
+          id: &#39;id: 2&#39;,
+          urlPattern: &#39;passing-arguments/:type/:id&#39;,
+          background: &#39;pink&#39;
+        },
+        urlPattern: &#39;passing-arguments/:type/:id&#39;,
+        reInstantiate: true
+      },
+      {
+        id: &#39;filter-url-instance-3&#39;,
+        componentId: &#39;filter-url-component&#39;,
+        order: 3,
+        args: {
+          id: &#39;id: 3&#39;,
+          urlPattern: &#39;splat/*path&#39;,
+          background: &#39;yellow&#39;
+        },
+        urlPattern: &#39;splat/*path&#39;
+      },
+      {
+        id: &#39;filter-url-instance-4&#39;,
+        componentId: &#39;filter-url-component&#39;,
+        order: 4,
+        args: {
+          id: &#39;id: 4&#39;,
+          urlPattern: &#39;optional/:section(/:subsection)&#39;,
+          background: &#39;Aquamarine &#39;
+        },
+        urlPattern: &#39;optional/:section(/:subsection)&#39;
+      },
+      {
+        id: &#39;filter-url-instance-5&#39;,
+        componentId: &#39;filter-url-component&#39;,
+        order: 5,
+        args: {
+          id: &#39;id: 5&#39;,
+          urlPattern: &#39;optional/:section(/:subsection)(/:id)&#39;,
+          background: &#39;silver&#39;
+        },
+        urlPattern: &#39;optional/:section(/:subsection)(/:id)&#39;
+      },
+      {
+        id: &#39;filter-url-instance-6&#39;,
+        componentId: &#39;filter-url-component&#39;,
+        order: 6,
+        args: {
+          id: &#39;id: 6&#39;,
+          urlPattern: &#39;global&#39;,
+          background: &#39;aqua&#39;
+        },
+        urlPattern: &#39;global&#39;
+      },
+      {
+        id: &#39;filter-url-instance-7&#39;,
+        componentId: &#39;filter-url-component&#39;,
+        order: 7,
+        args: {
+          id: &#39;id: 7&#39;,
+          urlPattern: &#39;[&quot;some-url/:id&quot;, &quot;some-other-url(/:year)(/:month)(/:day)&quot;]&#39;,
+          background: &#39;#58EBA9&#39;
+        },
+        urlPattern: [&#39;some-url/:id&#39;, &#39;some-other-url(/:year)(/:month)(/:day)&#39;]
+      }
+    ]
+  }
+}
+</code></pre>

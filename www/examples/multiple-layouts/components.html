@@ -1,0 +1,116 @@
+<pre><code class="language-javascript">var componentSettings = {
+  conditions: {
+    authenticated: function ()  {
+      return (window.localStorage.getItem(&#39;isAuthenticated&#39;) === &#39;true&#39;);
+    },
+    &#39;not-authenticated&#39;: function () {
+      return !(window.localStorage.getItem(&#39;isAuthenticated&#39;) === &#39;true&#39;);
+    }
+  },
+  components: [
+    {
+      id: &#39;app-navigation&#39;,
+      src: &#39;app.components.NavigationComponent&#39;,
+      conditions: &#39;authenticated&#39;
+    },
+    {
+      id: &#39;app-login&#39;,
+      src: &#39;app.components.LoginComponent&#39;,
+      conditions: &#39;not-authenticated&#39;
+    },
+    {
+      id: &#39;app-marquee&#39;,
+      src: &#39;app.components.MarqueeComponent&#39;
+    },
+    {
+      id: &#39;app-profile-overview&#39;,
+      src: &#39;app.components.ProfileOverViewComponent&#39;
+    },
+    {
+      id: &#39;app-social-media&#39;,
+      src: &#39;app.components.SocialMediaComponent&#39;
+    },
+    {
+      id: &#39;app-list&#39;,
+      src: &#39;app.components.ListComponent&#39;
+    },
+    {
+      id: &#39;app-banner&#39;,
+      src: &#39;http://www.bido.com/Banner?s=20060&amp;a=0000&#39;
+    },
+
+  ],
+
+
+  targets: {
+    header: [
+      {
+        id: &#39;navigation&#39;,
+        componentId: &#39;app-navigation&#39;,
+        urlPattern: &#39;global&#39;
+      }
+    ],
+
+    main: [
+      {
+        id: &#39;app-login&#39;,
+        componentId: &#39;app-login&#39;,
+        urlPattern: [&#39;&#39;, &#39;landing&#39;, &#39;logout&#39;]
+      },
+      {
+        id: &#39;app-list&#39;,
+        componentId: &#39;app-list&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      }
+    ],
+
+   &#39;below-header&#39;: [
+      {
+        id: &#39;app-marquee&#39;,
+        componentId: &#39;app-marquee&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      }
+   ],
+
+   &#39;sidebar-top&#39;: [
+      {
+        id: &#39;app-profile-overview&#39;,
+        componentId: &#39;app-profile-overview&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      }
+   ],
+
+   &#39;sidebar-bottom&#39;: [
+      {
+        id: &#39;app-social-media&#39;,
+        componentId: &#39;app-social-media&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      },
+      {
+        id: &#39;app-banner&#39;,
+        componentId: &#39;app-banner&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;],
+        args: {
+          iframeAttributes: {
+            scrolling: &#39;no&#39;,
+            border: 0,
+            frameborder: 0,
+            width: 200,
+            height: 60,
+            style: &#39;margin: 20px auto; display: block;&#39;
+          }
+        }
+      }
+   ],
+
+   &#39;right-column&#39;: [
+      {
+        id: &#39;app-list-two&#39;,
+        componentId: &#39;app-list&#39;,
+        urlPattern: &#39;event/:id&#39;,
+        reInstantiate: true
+      }
+   ]
+  }
+}
+</code></pre>

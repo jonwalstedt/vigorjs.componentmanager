@@ -1,0 +1,25 @@
+<h3><a name="initialize"></a> initalize</h3><p>The componentManagers initialize method registers <a href="#component-definitions">componentDefinitons</a> and <a href="#instance-definitons">instanceDefinitions</a> and should be called with the <a href="#settings">settings object</a> before you can start use the componentManager.</p>
+<p>Example (using the <a href="#alternative-structure">alternative structure</a>):</p>
+<pre><code class="language-javascript">settings = {
+  componentSettings: {
+    components: [
+      {
+        id: &#39;my-component&#39;,
+        src: &#39;components/my-component&#39;
+      }
+    ],
+    targets: {
+      main: [
+        {
+          id: &#39;instance-1&#39;,
+          componentId: &#39;my-component&#39;,
+          urlPattern: &#39;foo/:bar&#39;
+        }
+      ]
+    }
+  }
+}
+
+componentManager.initialize(settings);
+</code></pre>
+<p>Initialize returns the componentManager instance.</p>

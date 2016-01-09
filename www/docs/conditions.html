@@ -1,0 +1,54 @@
+<h3><a name="conditions"></a> Conditions</h3><p>Conditions are methods that you either set on a <a href="#component-definitions">componentDefinition</a>, an <a href="#instance-definitions">instanceDefinition</a> or in the conditions object within the componentSettings object (see <a href="#settings">settings</a>). These methods should return <code>true</code> or <code>false</code> and.</p>
+<p>Condition methods will be passed the active filter and the args object on the instanceDefinition or on the componentDefinition depending on where the condition method is used.</p>
+<p>If a condition is set on the componentDefinition and it returns false no instances of that componentDefinition will be created. If it instead is set on an instanceDefinition and it returns false only that instanceDefinition will not be created.</p>
+<p>The conditions object in the componentSettings is to be used when you want to reuse the same method as a condition for multiple componentDefinitions or instanceDefinitions. You then add your condition methods to that object and reference it by its key when defining your componentDefinitions or instanceDefinitions.</p>
+<p>See example below:</p>
+<pre><code class="language-javascript">settings = {
+  componentSettings: {
+    conditions: {
+      isLoggedIn: function (filter, args) {
+        return args.user.isLoggedIn();
+      },
+      hasNewMessage: function (filter, args) {
+        return args.user.hasNewMessage();
+      }
+    },
+    components: [
+      {
+        id: &#39;user-profile-component&#39;,
+        src: &#39;components/user-profile&#39;
+        conditions: &#39;isLoggedIn&#39;,
+        args: {
+          user: app.userModel;
+        }
+      },
+      {
+        id: &#39;message-alert-component&#39;,
+        src: &#39;components/message-alert&#39;,
+        conditions: [&#39;isLoggedIn&#39;, &#39;hasNewMessage&#39;],
+        args: {
+          user: app.userModel;
+        }
+      }
+    ],
+    instances: [
+      {
+        id: &#39;user-profile-instance&#39;,
+        componentId: &#39;user-profile-component&#39;,
+        targetName: &#39;body&#39;,
+        urlPattern: &#39;global&#39;
+      },
+      {
+        id: &#39;message-alert-instance&#39;,
+        componentId: &#39;message-alert-component&#39;,
+        targetName: &#39;main&#39;,
+        urlPattern: &#39;global&#39;
+      }
+    ]
+  }
+}
+</code></pre>
+<p>In this example there are two methods defined in the conditions object: isLoggedIn and hasNewMessage. Both componentDefinition uses the &#39;isLoggedIn&#39; condition which means that all instances of those two components will check to see if the user is logged in before being instantiated, if not they will not be created.</p>
+<p>The in addition to the &#39;isLoggedIn&#39; condition the &#39;message-alert-component&#39; uses the &#39;hasNewMessage&#39; condition and will therefore only be created if the user hasNewMessage method returns true.</p>
+<p>Both instanceDefinitions (&#39;user-profile-instance&#39; and &#39;message-alert-instance&#39;) could in turn have more conditions in their conditions property. The value of this property could be a string (the key of a method registered in the conditions object), or a function or an array with both strings and functions.</p>
+<p>See the <a href="#component-definitions">componentDefinition</a> and the <a href="#instance-definitions">instanceDefinition</a> specifications. For more examples see the <a href="/examples/filter-by-conditions">conditions example</a>.</p>

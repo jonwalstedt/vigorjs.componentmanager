@@ -1,0 +1,42 @@
+<!DOCTYPE html><html><head><title>Vigorjs ComponentManager</title><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/atelier-cave.light.min.css" rel="stylesheet" type="text/css"><link href="/css/main.css" rel="stylesheet" type="text/css"><meta name="viewport" content="initial-scale=1, maximum-scale=1"></head><body class="examples"><header class="header"><div class="header-content"><h1><a href="/" class="header__title">Vigorjs ComponentManager</a></h1><nav class="main-navigation"><ul class="main-navigation__list"><li class="main-navigation__list-item"><a href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="main-navigation__link">View on GitHub</a></li><li class="main-navigation__list-item"><a href="/docs" class="main-navigation__link ">Docs</a></li><li class="main-navigation__list-item"><a href="/examples" class="main-navigation__link main-navigation__link--active">Examples</a></li></ul></nav><button class="menu-toggle entypo-menu"><span>Toggle Menu</span></button></div></header><main class="content-wrapper"><div class="sidebar-wrapper"><aside class="sidebar"><h4>Features</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/hello-world/" class="sidebar__link ">Hello World</a></li><li class="sidebar_list-item"><a href="/examples/filter-options/" class="sidebar__link ">Filter options</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-url/" class="sidebar__link ">Filter by url</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-string/" class="sidebar__link ">Filter by string</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-conditions/" class="sidebar__link ">Filter by conditions</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-custom-properties/" class="sidebar__link ">Filter by custom properties</a></li><li class="sidebar_list-item"><a href="/examples/iframe-components/" class="sidebar__link ">Iframe Components</a></li><li class="sidebar_list-item"><a href="/examples/reorder-components/" class="sidebar__link ">Order/Reorder components</a></li><li class="sidebar_list-item"><a href="/examples/serialize/" class="sidebar__link ">Serialize</a></li></ul><h4>Concepts</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/multiple-layouts/" class="sidebar__link ">Multiple layouts</a></li><li class="sidebar_list-item"><a href="/examples/example-app/" class="sidebar__link ">Example app</a></li></ul><h4>Module loaders</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/amd-requirejs/" class="sidebar__link ">AMD - Requirejs</a></li><li class="sidebar_list-item"><a href="/examples/commonjs-browserify/" class="sidebar__link ">COMMONJS - Browserify</a></li></ul></aside></div><article class="content"><h2>Examples</h2><p>Here are some examples of how to use the componentManager. Checkout the project and view the code or inspect it in the browser.</p>
+<h3>Features</h3><ul>
+<li><a href="/examples/hello-world">Hello World</a></li>
+<li><a href="/examples/filter-options">Filter options</a></li>
+<li><a href="/examples/filter-by-url">Filter by url</a></li>
+<li><a href="/examples/filter-by-string">Filter by string</a></li>
+<li><a href="/examples/filter-by-conditions">Filter by conditions</a></li>
+<li><a href="/examples/filter-by-custom-properties">Filter by custom properties</a></li>
+<li><a href="/examples/iframe-components">Iframe Components</a></li>
+<li><a href="/examples/reorder-components">Order/Reordercomponents</a></li>
+<li><a href="/examples/serialize">Serialize</a></li>
+</ul>
+<h3>Concepts</h3><ul>
+<li><a href="/examples/multiple-layouts">Multiple layouts</a></li>
+<li><a href="/examples/example-app">Example app</a></li>
+</ul>
+<h3>Module loaders</h3><ul>
+<li><a href="/examples/amd-requirejs">AMD - Requirejs</a></li>
+<li><a href="/examples/commonjs-browserify">COMMONJS - Browserify</a></li>
+</ul>
+</article></main><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script><script src="/js/vigorjs.componentmanager.js"></script><script src="/js/main.js"></script><script type="text/template" class="example-component-template"><h2>ExampleComponent:
+  <span class="example-component__title"><%= id %></span>
+</h2>
+<button class="example-component__toggle-fullsize entypo-resize-full">
+  <span>Toggle fullsize</span>
+</button>
+
+<p>This instance was created from the following instanceDefinition:</p>
+<pre>
+<%= instanceDefinition %>
+</pre>
+
+<p>This instance was created with the following arguments passed to the constructor:</p>
+<pre>
+arguments: <%= arguments %>
+</pre>
+
+<div class="component-output"></div>
+</script><script type="text/template" class="active-filter-template"><pre>
+<%= activeFilter %>
+</pre>
+</script><script src="/js/vigorjs.componentmanager.js"></script><script type="text/javascript" src="/examples/jquery.flash.js"></script><script type="text/javascript" src="/examples/ExampleComponent.js"></script><script type="text/javascript" src="/examples/example-helpers.js"></script></body></html>

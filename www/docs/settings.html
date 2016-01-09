@@ -1,0 +1,140 @@
+<h3><a name="settings"></a>Settings</h3><p>To get started with the componentManager you need to setup the settings object which you will pass to the initialize function - typically during bootstrap of your application.</p>
+<p>There are a couple of different ways to structure the settings object and the most straight forward setup has the following structure (example below is using the default values):</p>
+<pre><code class="language-javascript">settings = {
+  context: &#39;body&#39;,
+  componentClassName: &#39;vigor-component&#39;,
+  targetPrefix: &#39;component-area&#39;,
+  listenForMessages: false,
+  whitelistedOrigins: &#39;http://localhost:3000&#39;,
+  componentSettings: {
+    conditions: {},
+    components: [],
+    instances: []
+  }
+}
+</code></pre>
+<p>The settings object can contain the five properties above (see <a href="#other-settings">Other settings</a> for a specification of these properties) and the componentSettings object. The componentSettings object can contain the conditions object, the components array and the instances array. None of these are mandatory either but without components and instances the componentManager wont do much (they can be added on the fly later if you want/need a dynamic setup).</p>
+<p>The conditions object is optional but if you use it it should contain any methods that you like to use to help filter out instances. These methods should return true or false. To use the conditions you reference the methods key in the conditions object from a componentDefinition or an instanceDefinitions conditions array.</p>
+<p>The components array should contain one or multiple <a href="#component-definitions">componentDefinitions</a> and the instances array (or targets object - see <a href="#alternative-structure">alternative structure</a> below) should contain one or multiple <a href="#instance-definitions">instanceDefinitions</a>.</p>
+<p>And here is an example of how it could look with some content:</p>
+<pre><code class="language-javascript">settings = {
+  context: &#39;.my-app&#39;,
+  componentClassName: &#39;my-component&#39;,
+  targetPrefix: &#39;my-component-area&#39;,
+  componentSettings: {
+    conditions: {
+      isValWithinLimit: function (filter, args) {
+        var limit = 400;
+        return args.val &lt; limit;
+      }
+    },
+
+    components: [
+      {
+        id: &#39;my-component&#39;,
+        src: MyComponent
+      },
+      {
+        id: &#39;my-second-component&#39;,
+        src: MySecondComponent
+      }
+    ],
+
+    instances: [
+      {
+        id: &#39;instance-1&#39;,
+        componentId: &#39;my-component&#39;,
+        targetName: &#39;.my-component-area--header&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        order: 1,
+        args: {
+          val: this.getVal()
+        }
+      },
+      {
+        id: &#39;instance-2&#39;,
+        componentId: &#39;my-second-component&#39;,
+        targetName: &#39;.my-component-area--main&#39;,
+        urlPattern: &#39;bar/:baz(/:qux)&#39;
+      }
+    ]
+  }
+}
+
+componentManager.initialize(settings);
+</code></pre>
+<h4><a name="alternative-structure"></a> Alternative structure</h4><p>If you like to group your instances under their targets that is also possible by using the structure below. This structure does not allow you to pass the target selector for each instance your self which might be good if you are using this as a way for third party users to add components to your application (ex ads).</p>
+<pre><code class="language-javascript">settings = {
+  context: &#39;body&#39;,
+  componentClassName: &#39;vigor-component&#39;,
+  targetPrefix: &#39;component-area&#39;,
+  listenForMessages: false,
+  componentSettings: {
+    conditions: {},
+    components: [],
+    targets: {}
+  }
+}
+</code></pre>
+<p>And here is an example of how this could look with some content:</p>
+<pre><code class="language-javascript">settings = {
+  context: &#39;.my-app&#39;,
+  componentClassName: &#39;my-component&#39;,
+  targetPrefix: &#39;my-component-area&#39;,
+  componentSettings: {
+    conditions: {
+      isValWithinLimit: function (filter, args) {
+        var limit = 400;
+        return args.val &lt; limit;
+      }
+    },
+
+    components: [
+      {
+        id: &#39;my-component&#39;,
+        src: MyComponent
+      },
+      {
+        id: &#39;my-second-component&#39;,
+        src: MySecondComponent
+      }
+    ],
+    targets: {
+      header: [
+        {
+          id: &#39;instance-1&#39;,
+          componentId: &#39;my-component&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          order: 1,
+          args: {
+            val: this.getVal()
+          }
+        }
+      ]
+      main: [
+        {
+          id: &#39;instance-2&#39;,
+          componentId: &#39;my-second-component&#39;,
+          urlPattern: &#39;bar/:baz(/:qux)&#39;
+        }
+      ]
+    }
+  }
+}
+
+componentManager.initialize(settings);
+</code></pre>
+<p>In this case each of the target keys would be used as a part the selector to use for all of the instanceDefinitions within that array. The other part of the selector would be the targetPrefix so in the examples above any instanceDefiniton that would be part of the array for &quot;header&quot; would have the targetName set to <code>&quot;component-area--header&quot;</code>, for &quot;main&quot; it would be <code>&quot;component-area--main&quot;</code> and so on.</p>
+<h4>Skip defaults</h4><p>If you don&#39;t want to change the defaults for context, componentClassName, targetPrefix and listenForMessages you pass in only the componentSettings part of the settings object:</p>
+<pre><code class="language-javascript">componentSettings: {
+  conditions: {},
+  components: [],
+  instances: []
+}
+</code></pre>
+<p>and if you are not using any conditions you can skip that as well:</p>
+<pre><code class="language-javascript">componentSettings: {
+  components: [],
+  instances: []
+}
+</code></pre>

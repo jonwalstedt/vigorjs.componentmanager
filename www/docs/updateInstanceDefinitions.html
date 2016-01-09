@@ -1,0 +1,17 @@
+<h3><a name="updateInstanceDefinitions"></a> updateInstanceDefinitions</h3><p>The updateInstanceDefinitions method is used to update existing instanceDefinitions on the fly after initialization. It actually calls <a href="#addInstanceDefinitions">addInstanceDefinitions</a> so it works exactly the same, if you pass an object with an id that is already registered in the componentManager it will update that object with the properties in the passed object.</p>
+<p>When updating instanceDefinitions the componentManager will immediately do refresh with the currently applied filter to add/readd any changed instances to the DOM.</p>
+<pre><code class="language-javascript">componentManager.updateInstanceDefinitions([
+  {
+    id: &#39;instance-1&#39;,
+    componentId: &#39;my-first-component&#39;,
+    targetName: &#39;.my-component-area--header&#39;,
+    urlPattern: &#39;foo/:bar&#39;
+  },
+  {
+    id: &#39;instance-2&#39;,
+    componentId: &#39;my-second-component&#39;,
+    targetName: &#39;.my-component-area--header&#39;,
+    urlPattern: &#39;bar/:foo&#39;
+  }
+]);
+</code></pre>

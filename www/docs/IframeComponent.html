@@ -1,0 +1,160 @@
+<h3><a name="iframe-component"></a> IframeComponent</h3><p>By setting a url as src attribute on a <a href="#instance-definitions">instanceDefinition</a> the componentManager will create an instance of the IframeComponent class to load the url in an iframe.</p>
+<p>The IframemComponent is exposed on the Vigor object so it&#39;s easy to extend it and create custom IframeComponents if additional logic is needed.</p>
+<p>The IframeComponent extends Backbone.View and have the following default attributes (the Backbone.View attributes property):</p>
+<pre><code class="language-javascript">attributes: {
+  seamless: &#39;seamless&#39;,
+  scrolling: no,
+  border: 0,
+  frameborder: 0
+}
+</code></pre>
+<p>If you pass a iframeAttributes object in the args object passed to the <a href="#instance-definitions">instanceDefinition</a> those properties will be merged into the attributes of the IframeComponent class and added to the DOM element. See example below.</p>
+<pre><code class="language-javascript">componentManager.initialize({
+  components: [{
+    id: &#39;my-component-definition&#39;,
+    src: &#39;http://www.google.com&#39;
+  }],
+  instances: [{
+    id: &#39;my-instance-definition&#39;,
+    componentId: &#39;my-component-definition&#39;,
+    args: {
+      iframeAttributes: {
+        width: 400
+      }
+    },
+    targetName: &#39;body&#39;
+  }]
+});
+
+componentManager.refresh();
+</code></pre>
+<p>This will add an IframeComponent instance with the following iframe markup:</p>
+<pre><code class="language-html">&lt;iframe
+  seamless=&quot;seamless&quot;
+  scrolling=&quot;false&quot;
+  border=&quot;0&quot;
+  frameborder=&quot;0&quot;
+  width=&quot;400&quot;
+  class=&quot;vigor-component--iframe
+  vigor-component&quot;
+  src=&quot;http://www.google.com&quot;&gt;
+&lt;/iframe&gt;
+</code></pre>
+<p>The IframeComponent exposes the public property targetOrigin which defaults to <code>http://localhost:7070</code> which you override by passing the desired targetOrigin value in the args object (see the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage">targetOrigin documentation</a>):</p>
+<pre><code class="language-javascript">componentManager.initialize({
+  components: [{
+    id: &#39;my-component-definition&#39;,
+    src: &#39;http://www.google.com&#39;
+  }],
+  instances: [{
+    id: &#39;my-instance-definition&#39;,
+    componentId: &#39;my-component-definition&#39;,
+    args: {
+      targetOrigin: &#39;http://www.mydomain.com&#39;,
+      iframeAttributes: {
+        width: 400
+      }
+    },
+    targetName: &#39;body&#39;
+  }]
+});
+
+componentManager.refresh();
+</code></pre>
+<h4>Cross origin message to a instance</h4><p>To send messages to instances cross origin using the postMessage api you need to set the origin in the whitelistedOrigins property of the componentManager. Each message needs to have an &#39;id&#39; property with the id of the instance which the message should be forwarded to. It also needs the &#39;message&#39; property containing the message to forward and the &#39;recipient&#39; property set to &#39;vigorjs.componentmanager&#39;.</p>
+<p>See example below.</p>
+<p>From within the iframed content:</p>
+<pre><code class="language-javascript">var data = {
+  recipient: &#39;vigorjs.componentmanager&#39;,
+  id: &#39;an-instance-id&#39;
+  message: &#39;the message to forward&#39;
+},
+targetOrigin = &#39;http://localhost:3000&#39;;
+parent.postMessage(data, targetOrigin);
+</code></pre>
+<p>The targetOrigin needs to be registered within the whitelistedOrigins.
+To see this in action view the IframeComponent examples: <a href="/examples/iframe-components/">IframeComponent example</a></p>
+<p>The IframeComponent class exposes the following public methods:</p>
+<table class="docs-table">
+  <thead>
+    <tr>
+      <th class="docs-table__column docs-table__column-1">Property</th>
+      <th class="docs-table__column docs-table__column-2">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>initialize</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The initialize method will call the addListeners method and set the this.src property if it was passed during instantiation.
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>addListeners</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The addListeners method will add a listener for &#39;onload&#39; on the iframe and call onIframeLoaded as a callback when the iframe is finished loading.
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>removeListeners</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The removeListeners method will remove the &#39;onload&#39; listener.
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>render</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The render method will set the src attribute on the iframe and start loading it&#39;s content. It returns the instance for chainability.
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>dispose</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        Dispose will call removeListeners and remove to remove event listeners and remove the element from the DOM.
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>postMessageToIframe</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        This method will forward a message from the IframeComponent (Backbone.View) class into the contentWindow of the iframe using the postMessage api. It will also pass along the targetOrigin property of the IframeComponent.
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>receiveMessage</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The default implementation is a noop
+      </td>
+    </tr>
+
+    <tr>
+      <td class="docs-table__column docs-table__column-1">
+        <code>onIframeLoaded</code>
+      </td>
+      <td class="docs-table__column docs-table__column-2">
+        The default implementation is a noop
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>See the <a href="/examples/iframe-components/">IframeComponent example</a>.</p>

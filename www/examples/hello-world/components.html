@@ -1,0 +1,21 @@
+<pre><code class="language-javascript">var componentSettings = {
+  components: [{
+    id: &#39;hello-world-component&#39;,
+    src: &#39;ExampleComponent&#39; // ExampleComponent.js in the examples directory - exposed on window
+  }],
+  targets: {
+    main: [
+      {
+        id: &#39;hello-world-instance&#39;,
+        componentId: &#39;hello-world-component&#39;,
+        urlPattern: &#39;add-hello-world&#39;, // #add-hello-world
+        args: {
+          id: &#39;hello-world-instance&#39;,
+          urlPattern: &#39;add-hello-world&#39;
+          background: &#39;#F6FFBA&#39;
+        }
+      }
+    ]
+  }
+}
+</code></pre>

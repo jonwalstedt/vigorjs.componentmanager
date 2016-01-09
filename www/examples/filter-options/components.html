@@ -1,0 +1,90 @@
+<pre><code class="language-javascript">var componentSettings = {
+  components: [{
+    id: &#39;filter-condition-component&#39;,
+    src: &#39;ExampleComponent&#39; // ExampleComponent.js in the examples directory - exposed on window
+  }],
+
+  targets: {
+    main: [
+      {
+        id: &#39;filter-instance-1&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        args: {
+          id: &#39;id: filter-instance-1&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          background: &#39;#9FEDFF&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-2&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        args: {
+          id: &#39;id: filter-instance-2&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          background: &#39;#9FEDFF&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-3&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;foo/:bar&#39;,
+        args: {
+          id: &#39;id: filter-instance-3&#39;,
+          urlPattern: &#39;foo/:bar&#39;,
+          background: &#39;#9FEDFF&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-4&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        args: {
+          id: &#39;id: filter-instance-4&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#9F9EE8&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-5&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        args: {
+          id: &#39;id: filter-instance-5&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#9F9EE8&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-6&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        args: {
+          id: &#39;id: filter-instance-6&#39;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#9F9EE8&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-instance-7&#39;,
+        componentId: &#39;filter-condition-component&#39;,
+        urlPattern: &#39;bar/:baz&#39;,
+        filterString: &#39;bar&#39;,
+        args: {
+          id: &quot;id: filter-instance-7&quot;,
+          urlPattern: &#39;bar/:baz&#39;,
+          background: &#39;#0F9EF8&#39;,
+          filterString: &#39;bar&#39;
+        }
+      }
+    ]
+  }
+}
+</code></pre>

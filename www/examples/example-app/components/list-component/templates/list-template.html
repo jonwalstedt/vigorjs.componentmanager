@@ -1,0 +1,15 @@
+{{#each listItems}}
+  <li class="list-component__list-item">
+    <div class="list-component__thumb-wrapper">
+      <img class="list-component__thumb" src="{{thumbnail}}"/>
+    </div>
+    <div class="list-component__conent">
+      <a href="<%= item.href %>" class="list-component__link">
+        <h3 class="list-component__title">{{{title}}}</h3>
+        <p class="list-component__abstract">{{{abstract}}}</p>
+        <small class="list-component__section">{{section}}</small>
+        <small class="list-component__date">{{updated}}</small>
+      </a>
+    </div>
+  </li>
+{{/each}}

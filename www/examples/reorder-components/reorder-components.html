@@ -1,0 +1,12 @@
+<h2>Ordering and reordering components</h2><p>By setting the order property when defining instances the componentManager will add each instance in order. The order property (like any other property) can be changed on the fly.</p>
+<p>Ordering is handled by looking at the data-attribute data-order, which means that components will order them selfs alongside elements thats not handled by the componentManager as long as they have an data-order set.</p>
+<p>Changing the order on the fly only changes the property on the targeted instance (not all instances), thats why it takes to clicks to see any change on the &#39;Increment instance 1s ordernr&#39; button the first time (it will then go from one to two - and since there already is an instance with order 2 it wont move)</p>
+<h3>Example Instance definition</h3><pre><code class="language-javascript">{
+  &quot;id&quot;: &quot;order-instance-1&quot;,
+  &quot;componentId&quot;: &quot;order-component&quot;,
+  &quot;order&quot;: 1,
+  &quot;args&quot;: {
+    &quot;background&quot;: &quot;aqua&quot;
+  }
+}
+</code></pre>

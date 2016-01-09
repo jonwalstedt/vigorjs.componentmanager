@@ -1,0 +1,75 @@
+<pre><code class="language-javascript">var componentSettings = {
+  components: [
+    {
+      id: &#39;iframe-component&#39;,
+      src: &#39;http://en.wikipedia.org/wiki/Main_Page&#39;
+    },
+    {
+      id: &#39;extended-iframe-component&#39;,
+      src: &#39;app.components.ExtendedIframeComponent&#39;,
+      args: {
+        iframeAttributes:{
+          src: &#39;http://en.wikipedia.org/wiki/Main_Page&#39;
+        }
+      }
+    },
+    {
+      id: &#39;extended-iframe-component-that-sends-message&#39;,
+      src: &#39;app.components.ExtendedIframeComponentThatSendsMessage&#39;
+    }
+  ],
+
+  targets: {
+    first: [
+      {
+        id: &#39;iframe-instance&#39;,
+        componentId: &#39;iframe-component&#39;,
+        args: {
+          iframeAttributes: {
+            width: 600,
+            height: 400
+          }
+        }
+      }
+    ],
+    second: [
+      {
+        id: &#39;iframe-instance-2&#39;,
+        componentId: &#39;extended-iframe-component&#39;,
+        args: {
+          iframeAttributes: {
+            width: 600,
+            height: 400
+          }
+        }
+      }
+    ],
+    third: [
+      {
+        id: &#39;iframe-instance-3&#39;,
+        componentId: &#39;extended-iframe-component-that-sends-message&#39;,
+        args: {
+          iframeAttributes: {
+            width: 600,
+            height: 400,
+            style: &#39;border: 1px solid red&#39;,
+            src: &#39;http://localhost:7070/examples/iframe-components/iframed-example-page-1.html?id1=iframe-instance-3&amp;=id2=iframe-instance-4&#39;
+          }
+        }
+      },
+      {
+        id: &#39;iframe-instance-4&#39;,
+        componentId: &#39;extended-iframe-component-that-sends-message&#39;,
+        args: {
+          iframeAttributes: {
+            width: 600,
+            height: 400,
+            style: &#39;border: 1px solid blue&#39;,
+            src: &#39;http://localhost:7070/examples/iframe-components/iframed-example-page-2.html&#39;
+          }
+        }
+      }
+    ]
+  }
+}
+</code></pre>

@@ -1,0 +1,100 @@
+<pre><code class="language-javascript">var componentSettings = {
+  components: [{
+    id: &#39;filter-string-component&#39;,
+    src: &#39;ExampleComponent&#39; // ExampleComponent.js in the examples directory - exposed on window
+  }],
+  targets: {
+    &#39;first-examples&#39;: [
+      {
+        id: &#39;filter-string-instance-1&#39;,
+        componentId: &#39;filter-string-component&#39;,
+        order: 1,
+        args: {
+          id: &#39;id: 1&#39;,
+          filterString: &#39;undefined&#39;,
+          background: &#39;#F6FFBA&#39;
+        }
+      },
+
+      {
+        id: &#39;filter-string-instance-2&#39;,
+        componentId: &#39;filter-string-component&#39;,
+        order: 2,
+        args: {
+          id: &#39;id: 2&#39;,
+          filterString: &#39;lorem/ipsum/first&#39;,
+          background: &#39;#B7E8D4&#39;
+        },
+        filterString: &#39;lorem/ipsum/first&#39;
+      },
+
+      {
+        id: &#39;filter-string-instance-3&#39;,
+        componentId: &#39;filter-string-component&#39;,
+        order: 3,
+        args: {
+          id: &#39;id: 3&#39;,
+          filterString: &#39;a filter string could be any string&#39;,
+          background: &#39;#B6C4FF&#39;
+        },
+        filterString: &#39;a filter string could be any string&#39;
+      },
+    ],
+    &#39;second-examples&#39;: [
+      {
+        id: &#39;filter-string-instance-4&#39;,
+        componentId: &#39;filter-string-component&#39;,
+        order: 4,
+        args: {
+          id: &#39;id: 4&#39;,
+          filterString: &#39;undefined - the filterString is set on the filter passed to the refresh method&#39;,
+          includeIfFilterStringMatches: &#39;state=one&#39;,
+          background: &#39;#9FEDFF&#39;
+        },
+        includeIfFilterStringMatches: &#39;state=one&#39;
+      },
+
+      {
+        id: &#39;filter-string-instance-5&#39;,
+        componentId: &#39;filter-string-component&#39;,
+        order: 5,
+        args: {
+          id: &#39;id: 5&#39;,
+          filterString: &#39;undefined - the filterString is set on the filter passed to the refresh method&#39;,
+          includeIfFilterStringMatches: &#39;state=one&#39;,
+          excludeIfFilterStringMatches: &#39;lang=en_GB&#39;,
+          background: &#39;#9F9EE8&#39;
+        },
+        includeIfFilterStringMatches: &#39;state=one&#39;,
+        excludeIfFilterStringMatches: &#39;lang=en_GB&#39;
+      },
+
+      {
+        id: &#39;filter-string-instance-6&#39;,
+        componentId: &#39;filter-string-component&#39;,
+        order: 6,
+        args: {
+          id: &#39;id: 6&#39;,
+          filterString: &#39;undefined - the filterString is set on the filter passed to the refresh method&#39;,
+          includeIfFilterStringMatches: &#39;lang=en_GB&#39;,
+          background: &#39;#F9D1FF&#39;
+        },
+        includeIfFilterStringMatches: &#39;lang=en_GB&#39;
+      },
+
+      {
+        id: &#39;filter-string-instance-7&#39;,
+        componentId: &#39;filter-string-component&#39;,
+        order: 7,
+        args: {
+          id: &#39;id: 7&#39;,
+          filterString: &#39;undefined - the filterString is set on the filter passed to the refresh method&#39;,
+          includeIfFilterStringMatches: &#39;/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&amp;//=]*)/&#39;,
+          background: &#39;#E8CECB&#39;
+        },
+        includeIfFilterStringMatches: /[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&amp;//=]*)/
+      }
+    ]
+  }
+}
+</code></pre>

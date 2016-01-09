@@ -1,0 +1,14 @@
+<h3><a name="updateComponentDefinitions"></a> updateComponentDefinitions</h3><p>The updateComponentDefinitions method is used to update existing componentDefinitions on the fly after initialization. It actually calls <a href="#addComponentDefinitions">addComponentDefinitions</a> so it works exactly the same, if you pass an object with an id that is already registered in the componentManager it will update that object with the properties in the passed object.</p>
+<p>When updating componentDefinitions the componentManager will immediately do refresh with the currently applied filter to add/readd any changed instances to the DOM.</p>
+<pre><code class="language-javascript">componentManager.updateComponentDefinitions([
+  {
+    id: &#39;my-first-component&#39;,
+    src: &#39;components/my-first-component&#39;
+  },
+  {
+    id: &#39;my-second-component&#39;,
+    src: &#39;components/my-second-component&#39;,
+    conditions: &#39;isLoggedIn&#39;
+  }
+]);
+</code></pre>

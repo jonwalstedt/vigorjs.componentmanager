@@ -1,0 +1,17 @@
+<h3><a name="setTargetPrefix"></a> setTargetPrefix</h3><p>The setTargetPrefix method takes a string (the prefix to use - without a period) as an argument.</p>
+<p>The setTargetPrefix method sets the class prefix that will be used to prefix the targetName property on instanceDefinitions with. The prefixed targetName is the element class name that will be used to find the DOM elements where to add instances (<a href="#component-areas">componentAreas</a>).</p>
+<p>The structure of the class name that is needed on componentAreas is {{prefix}}--{{name}}, see example below:</p>
+<pre><code class="language-javascript">componentManager.setComponentClassName(&#39;my-component-area&#39;);
+
+componentManager.addInstanceDefinition({
+  id: &#39;my-instance&#39;,
+  componentId: &#39;my-component&#39;,
+  targetName: &#39;main&#39;
+})
+</code></pre>
+<p>And the markup would look like this with the prefixed class:</p>
+<pre><code class="language-html">&lt;div class=&quot;my-component-area--main&quot;&gt;&lt;div&gt;
+</code></pre>
+<p>In the example above the prefix is set to &#39;my-component-area&#39; and the name of the component area is &#39;main&#39;. When using the method setTargetPrefix to change the targetPrefix the componentManager will try to move all active instances that has been added to component areas to component ares with the new prefix, if there are no such component areas the instances will be disposed.</p>
+<p>This method will be called internally during initialization to update the targetPrefix from the targetPrefix property in the <a href="#settings">settings ojbect</a> (if it is set). You usually do not have to call this method after initialization unless you intend to change the targetPrefix on the fly.</p>
+<p>The targetPrefix defaults to &#39;component-area&#39; and the method returns the componentManager instance.</p>

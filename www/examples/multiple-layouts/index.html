@@ -1,0 +1,209 @@
+<!DOCTYPE html><html><head><title>Vigorjs ComponentManager</title><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/atelier-cave.light.min.css" rel="stylesheet" type="text/css"><link href="/css/main.css" rel="stylesheet" type="text/css"><link rel="stylesheet" href="css/styles.css"><meta name="viewport" content="initial-scale=1, maximum-scale=1"></head><body class="examples"><header class="header"><div class="header-content"><h1><a href="/" class="header__title">Vigorjs ComponentManager</a></h1><nav class="main-navigation"><ul class="main-navigation__list"><li class="main-navigation__list-item"><a href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="main-navigation__link">View on GitHub</a></li><li class="main-navigation__list-item"><a href="/docs" class="main-navigation__link ">Docs</a></li><li class="main-navigation__list-item"><a href="/examples" class="main-navigation__link main-navigation__link--active">Examples</a></li></ul></nav><button class="menu-toggle entypo-menu"><span>Toggle Menu</span></button></div></header><main class="content-wrapper"><div class="sidebar-wrapper"><aside class="sidebar"><h4>Features</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/hello-world/" class="sidebar__link ">Hello World</a></li><li class="sidebar_list-item"><a href="/examples/filter-options/" class="sidebar__link ">Filter options</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-url/" class="sidebar__link ">Filter by url</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-string/" class="sidebar__link ">Filter by string</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-conditions/" class="sidebar__link ">Filter by conditions</a></li><li class="sidebar_list-item"><a href="/examples/filter-by-custom-properties/" class="sidebar__link ">Filter by custom properties</a></li><li class="sidebar_list-item"><a href="/examples/iframe-components/" class="sidebar__link ">Iframe Components</a></li><li class="sidebar_list-item"><a href="/examples/reorder-components/" class="sidebar__link ">Order/Reorder components</a></li><li class="sidebar_list-item"><a href="/examples/serialize/" class="sidebar__link ">Serialize</a></li></ul><h4>Concepts</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/multiple-layouts/" class="sidebar__link sidebar__link--active">Multiple layouts</a></li><li class="sidebar_list-item"><a href="/examples/example-app/" class="sidebar__link ">Example app</a></li></ul><h4>Module loaders</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="/examples/amd-requirejs/" class="sidebar__link ">AMD - Requirejs</a></li><li class="sidebar_list-item"><a href="/examples/commonjs-browserify/" class="sidebar__link ">COMMONJS - Browserify</a></li></ul></aside></div><article class="content"><h2>Multiple layouts</h2><p>This is en example where a whole application is handled by the componentManager eaven though there are multiple views being used.</p>
+<div class="components-js"><p>Take a look at components.js to see component the setup for this example.</p><p><span>conditions:<strong>2</strong></span><span>components:<strong>7</strong></span><span>instances:<strong>8</strong></span></p><button class="components-js__toggle">Show components.js</button><div class="components-js__code"><pre><code class="language-javascript">var componentSettings = {
+  conditions: {
+    authenticated: function ()  {
+      return (window.localStorage.getItem(&#39;isAuthenticated&#39;) === &#39;true&#39;);
+    },
+    &#39;not-authenticated&#39;: function () {
+      return !(window.localStorage.getItem(&#39;isAuthenticated&#39;) === &#39;true&#39;);
+    }
+  },
+  components: [
+    {
+      id: &#39;app-navigation&#39;,
+      src: &#39;app.components.NavigationComponent&#39;,
+      conditions: &#39;authenticated&#39;
+    },
+    {
+      id: &#39;app-login&#39;,
+      src: &#39;app.components.LoginComponent&#39;,
+      conditions: &#39;not-authenticated&#39;
+    },
+    {
+      id: &#39;app-marquee&#39;,
+      src: &#39;app.components.MarqueeComponent&#39;
+    },
+    {
+      id: &#39;app-profile-overview&#39;,
+      src: &#39;app.components.ProfileOverViewComponent&#39;
+    },
+    {
+      id: &#39;app-social-media&#39;,
+      src: &#39;app.components.SocialMediaComponent&#39;
+    },
+    {
+      id: &#39;app-list&#39;,
+      src: &#39;app.components.ListComponent&#39;
+    },
+    {
+      id: &#39;app-banner&#39;,
+      src: &#39;http://www.bido.com/Banner?s=20060&amp;a=0000&#39;
+    },
+
+  ],
+
+
+  targets: {
+    header: [
+      {
+        id: &#39;navigation&#39;,
+        componentId: &#39;app-navigation&#39;,
+        urlPattern: &#39;global&#39;
+      }
+    ],
+
+    main: [
+      {
+        id: &#39;app-login&#39;,
+        componentId: &#39;app-login&#39;,
+        urlPattern: [&#39;&#39;, &#39;landing&#39;, &#39;logout&#39;]
+      },
+      {
+        id: &#39;app-list&#39;,
+        componentId: &#39;app-list&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      }
+    ],
+
+   &#39;below-header&#39;: [
+      {
+        id: &#39;app-marquee&#39;,
+        componentId: &#39;app-marquee&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      }
+   ],
+
+   &#39;sidebar-top&#39;: [
+      {
+        id: &#39;app-profile-overview&#39;,
+        componentId: &#39;app-profile-overview&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      }
+   ],
+
+   &#39;sidebar-bottom&#39;: [
+      {
+        id: &#39;app-social-media&#39;,
+        componentId: &#39;app-social-media&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;]
+      },
+      {
+        id: &#39;app-banner&#39;,
+        componentId: &#39;app-banner&#39;,
+        urlPattern: [&#39;home&#39;, &#39;event/*path&#39;],
+        args: {
+          iframeAttributes: {
+            scrolling: &#39;no&#39;,
+            border: 0,
+            frameborder: 0,
+            width: 200,
+            height: 60,
+            style: &#39;margin: 20px auto; display: block;&#39;
+          }
+        }
+      }
+   ],
+
+   &#39;right-column&#39;: [
+      {
+        id: &#39;app-list-two&#39;,
+        componentId: &#39;app-list&#39;,
+        urlPattern: &#39;event/:id&#39;,
+        reInstantiate: true
+      }
+   ]
+  }
+}
+</code></pre>
+</div></div><script type="text/template" class="login-template"><input type="text" placeholder="Username" class="login__field login__field--username"/>
+<input type="password" placeholder="Password" class="login__field login__field--password"/>
+<button type="button" class="login__button login__submit">Login</button>
+</script><script type="text/template" class="navigation-template"><ul class="example-main-menu">
+  <li class="main-menu__list-item"><a href="#home" class="link main-menu__link">Home</a></li>
+  <li class="main-menu__list-item"><a href="#news" class="link main-menu__link">News</a></li>
+  <li class="main-menu__list-item"><a href="#logout" class="link main-menu__link">Logout</a></li>
+</ul>
+</script><script type="text/template" class="marquee-template"><p>Marquee</p>
+</script><script type="text/template" class="profile-overview-template"><p>Profile Overview</p>
+</script><script type="text/template" class="social-media-template"><a href="http://www.facebook.com?share=blabla">Share on Facebook</a>
+<a href="http://www.twitter.com?share=blabla">Share on Twitter</a>
+<a href="http://www.linkedin.com?share=blabla">Share on LinkedIn</a>
+<a href="http://www.googleplus.com?share=blabla">Share on Google+</a>
+</script><script type="text/template" class="list-template"><div class="list-header">
+  List of stuff <%= id %>
+</div>
+<ul class="example-generic-list">
+  <li class="list__list-item"><a href="#event/1" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/2" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/3" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/4" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/5" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/6" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/7" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/8" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/9" class="list__link">List Item</a></li>
+  <li class="list__list-item"><a href="#event/10" class="list__link">List Item</a></li>
+</ul>
+</script><script type="text/template" class="landing-template"><header class="example-header">
+  <h1>Multiple Layouts - Example</h1>
+  <div class="component-area component-area--header"></div>
+</header>
+<div class="component-area component-area--main"></div>
+<footer class"example-footer component-area component-area--footer"></footer>
+</script><script type="text/template" class="main-template"><aside class="example-sidebar">
+  <div class="component-area component-area--sidebar-top"></div>
+  <ul class="example-sub-menu">
+    <li><a href="#route1/1" class="link sub-menu__link">link1</a></li>
+    <li><a href="#route1/1" class="link sub-menu__link">link2</a></li>
+    <li><a href="#route1/1" class="link sub-menu__link">link3</a></li>
+    <li><a href="#route1/1" class="link sub-menu__link">link4</a></li>
+  </ul>
+  <div class="component-area component-area--sidebar-bottom"></div>
+</aside>
+
+<div class="example-content-wrapper">
+  <header class="example-header">
+    <h1>Multiple layouts - Example</h1>
+    <div class="component-area component-area--header"></div>
+  </header>
+
+  <div class="example-main-content-wrapper">
+    <div class="component-area component-area--below-header"></div>
+
+    <section class="example-main-section">
+      <div class="example-main-content component-area component-area--main"> </div>
+
+      <aside class="example-right-column component-area component-area--right-column">
+        <a href="#home" clasS="right-column__back-btn">Back</a>
+      </aside>
+    </section>
+  </div>
+</div>
+
+<footer class="example-footer component-area component-area--footer"></footer>
+</script><div class="app-wrapper"></div></article></main><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script><script src="/js/vigorjs.componentmanager.js"></script><script src="/js/main.js"></script><script type="text/template" class="example-component-template"><h2>ExampleComponent:
+  <span class="example-component__title"><%= id %></span>
+</h2>
+<button class="example-component__toggle-fullsize entypo-resize-full">
+  <span>Toggle fullsize</span>
+</button>
+
+<p>This instance was created from the following instanceDefinition:</p>
+<pre>
+<%= instanceDefinition %>
+</pre>
+
+<p>This instance was created with the following arguments passed to the constructor:</p>
+<pre>
+arguments: <%= arguments %>
+</pre>
+
+<div class="component-output"></div>
+</script><script type="text/template" class="active-filter-template"><pre>
+<%= activeFilter %>
+</pre>
+</script><script src="/js/vigorjs.componentmanager.js"></script><script type="text/javascript" src="/examples/jquery.flash.js"></script><script type="text/javascript" src="/examples/ExampleComponent.js"></script><script type="text/javascript" src="/examples/example-helpers.js"></script><script src="./components/ListComponent.js"></script><script src="./components/LoginComponent.js"></script><script src="./components/MarqueeComponent.js"></script><script src="./components/NavigationComponent.js"></script><script src="./components/ProfileOverViewComponent.js"></script><script src="./components/SocialMediaComponent.js"></script><script src="./components.js"></script><script src="./app/Router.js"></script><script src="./app/MainView.js"></script><script src="./app/LandingView.js"></script><script src="./app/app.js"></script><script>$(document).ready(function () {
+  new app.ExampleApp({
+    el: '.app-wrapper'
+  });
+});</script></body></html>

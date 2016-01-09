@@ -1,0 +1,86 @@
+<h3><a name="component-areas"></a> Component Areas</h3><p>Component areas are the DOM elements where instances of components will be placed. The component areas can be any element but they have to have a class that matches the class defined in your instanceDefinitions targetName property plus the targetPrefix ex. <code>component-area--main</code> where <code>component-area</code> is the default prefix.</p>
+<p>The prefix can be changed to anything you like by setting the targetPrefix property on the <a href="#settings">settings object</a> to the string you would like to use as a prefix.</p>
+<p>See example below.</p>
+<pre><code class="language-javascript">settings = {
+  targetPrefix: &#39;my-component-area&#39;,
+  componentSettings: {
+    components: [
+      {
+        id: &#39;my-component&#39;,
+        src: &#39;components/my-component&#39;
+      }
+    ],
+    instances: [
+      {
+        id: &#39;instance-1&#39;,
+        componentId: &#39;my-component&#39;,
+        targetName: &#39;.my-component-area--main&#39;,
+        urlPattern: &#39;foo/:bar&#39;
+      }
+    ]
+  }
+}
+
+componentManager.initialize(settings);
+</code></pre>
+<p>or using the <a href="#alternative-structure">alternative structure</a> it would look like this:</p>
+<pre><code class="language-javascript">settings = {
+  targetPrefix: &#39;my-component-area&#39;,
+  componentSettings: {
+    components: [
+      {
+        id: &#39;my-component&#39;,
+        src: &#39;components/my-component&#39;
+      }
+    ],
+    targets: {
+      main: [
+        {
+          id: &#39;instance-1&#39;,
+          componentId: &#39;my-component&#39;,
+          urlPattern: &#39;foo/:bar&#39;
+        }
+      ]
+    }
+  }
+}
+
+componentManager.initialize(settings);
+</code></pre>
+<p>In the examples above the prefix is set to <code>&#39;my-component-area&#39;</code> which means that all DOM elements that should receive instances by the componentManager should have class names that starts with <code>&#39;my-component-area&#39;</code>, ex: <code>class=&quot;my-component-area--main&quot;</code> or <code>class=&quot;my-component-area--sidebar&quot;</code> etc.</p>
+<pre><code class="language-html">&lt;div class=&quot;my-component-area--main&quot;&gt;&lt;/div&gt;
+</code></pre>
+<p>Component areas does not have to be empty, they can contain elements that are not part of any instantiated components. If the order of these elements in relation to the created instance elements is important they should have an data-order attribute. Instances in the component manager gets the order attribute by setting the order property to the desired value.</p>
+<p>See example below:</p>
+<pre><code class="language-javascript">settings = {
+  targetPrefix: &#39;my-component-area&#39;,
+  componentSettings: {
+    components: [
+      {
+        id: &#39;my-component&#39;,
+        src: &#39;components/my-component&#39;
+      }
+    ],
+    instances: [
+      {
+        id: &#39;instance-1&#39;,
+        componentId: &#39;my-component&#39;,
+        targetName: &#39;.my-component-area--main&#39;,
+        order: 3,
+        urlPattern: &#39;foo/:bar&#39;
+      }
+    ]
+  }
+}
+
+componentManager.initialize(settings);
+</code></pre>
+<p>Markup</p>
+<pre><code class="language-html">&lt;div class=&quot;my-component-area--main&quot;&gt;
+  &lt;div class=&quot;im-not-a-component im-a-static-element&quot; data-order=&quot;1&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;im-not-a-component im-a-static-element&quot; data-order=&quot;2&quot;&gt;&lt;/div&gt;
+  &lt;!-- instance-1 will end up here  --&gt;
+  &lt;div class=&quot;im-not-a-component im-a-static-element&quot; data-order=&quot;4&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Note that if multiple elements have the same order value they will end up after each other in the order they was added.</p>
