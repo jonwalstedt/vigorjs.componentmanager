@@ -34,9 +34,13 @@ $exampleComponentMargin: 6px;
   outline: none;
   background: #eee;
   opacity: 0.9;
+  transition: .3s;
   span {
     display: none;
     text-indent: -999em
+  }
+  &:hover {
+    background: #ccc;
   }
 }
 
