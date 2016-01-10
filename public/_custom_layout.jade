@@ -1,11 +1,16 @@
 doctype
 html
   head
+    meta(name="viewport" content="initial-scale=1, maximum-scale=1")
+    meta(charset="UTF-8")
+    meta(name="description" content="Vigorjs ComponentManager helps you decouple large scale Backbone applications")
+    meta(name="keywords" content="vigorjs,component manager,componentManager,components,javascript")
+    meta(name="author" content="Jon Wålstedt")
+
     title Vigorjs ComponentManager
     link(href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/atelier-cave.light.min.css" rel="stylesheet" type="text/css")
     link(href="#{base_url}/css/main.css" rel="stylesheet" type="text/css")
     block includes
-    meta(name="viewport" content="initial-scale=1, maximum-scale=1")
 
   body(class="#{current.path[0]}")
     header.header
