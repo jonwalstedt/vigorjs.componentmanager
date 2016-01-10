@@ -26,14 +26,8 @@
           id: id,
           message: message
         },
-        targetOrigin;
-
-        if (window.location.host == 'localhost:7070') {
-          targetOrigin = 'http://localhost:3000';
-        } else {
-          targetOrigin = 'http://jonwalstedt.github.io/vigorjs.componentmanager';
-        }
-
+        // targetOrigin = 'http://localhost:3000';
+        targetOrigin = 'http://jonwalstedt.github.io/vigorjs.componentmanager';
         parent.postMessage(data, targetOrigin);
       }
 
