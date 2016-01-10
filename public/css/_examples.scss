@@ -18,6 +18,8 @@
   position: relative;
   padding: 10px;
   border: 1px dashed $dashedBorderColor;
+  width: 100%;
+  overflow: auto;
   @extend %clearfix;
 }
 
