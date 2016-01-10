@@ -33,6 +33,15 @@ body {
     opacity: 1;
   }
 
+  &:before {
+    display: block;
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    top: 0;
+    left: 0;
+  }
+
   &.menu-toggle--active {
     &:after {
       content: '';
@@ -85,6 +94,7 @@ body {
     top: 0;
     bottom: 0;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -96,6 +106,10 @@ body {
   .sidebar-wrapper {
     flex: 0 0 0;
   }
+}
+
+.index .menu-toggle {
+  display: none;
 }
 
 @media (min-width: $breakpointLarge) {

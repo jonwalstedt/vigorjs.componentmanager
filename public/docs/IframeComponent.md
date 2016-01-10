@@ -98,86 +98,88 @@ To see this in action view the IframeComponent examples: [IframeComponent exampl
 
 The IframeComponent class exposes the following public methods:
 
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `initialize`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The initialize method will call the addListeners method and set the this.src property if it was passed during instantiation.
-      </td>
-    </tr>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `initialize`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The initialize method will call the addListeners method and set the this.src property if it was passed during instantiation.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `addListeners`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The addListeners method will add a listener for 'onload' on the iframe and call onIframeLoaded as a callback when the iframe is finished loading.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `addListeners`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The addListeners method will add a listener for 'onload' on the iframe and call onIframeLoaded as a callback when the iframe is finished loading.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `removeListeners`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The removeListeners method will remove the 'onload' listener.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `removeListeners`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The removeListeners method will remove the 'onload' listener.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `render`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The render method will set the src attribute on the iframe and start loading it's content. It returns the instance for chainability.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `render`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The render method will set the src attribute on the iframe and start loading it's content. It returns the instance for chainability.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `dispose`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        Dispose will call removeListeners and remove to remove event listeners and remove the element from the DOM.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `dispose`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          Dispose will call removeListeners and remove to remove event listeners and remove the element from the DOM.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `postMessageToIframe`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will forward a message from the IframeComponent (Backbone.View) class into the contentWindow of the iframe using the postMessage api. It will also pass along the targetOrigin property of the IframeComponent.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `postMessageToIframe`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will forward a message from the IframeComponent (Backbone.View) class into the contentWindow of the iframe using the postMessage api. It will also pass along the targetOrigin property of the IframeComponent.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `receiveMessage`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The default implementation is a noop
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `receiveMessage`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The default implementation is a noop
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        `onIframeLoaded`
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The default implementation is a noop
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          `onIframeLoaded`
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The default implementation is a noop
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 See the [IframeComponent example](/examples/iframe-components/).

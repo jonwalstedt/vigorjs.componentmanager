@@ -19,8 +19,12 @@
   text-align: center;
 
   h1 {
-    line-height: 34px;
-    font-size: 24px;
+    line-height: 28px;
+    font-size: 22px;
+  }
+
+  p {
+    line-height: 22px;
   }
 }
 
@@ -34,6 +38,8 @@
 
 .hero-unit__links a {
   transition: .5s;
+  display: inline-block;
+  margin: 0 4px;
 }
 
 .about {

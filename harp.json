@@ -2,6 +2,6 @@
   "globals": {
     "title": "Vigorjs ComponentManager",
     "name": "Jon Wålstedt",
-    "uri": "http://localhost.dev"
+    "base_url": ""
   }
 }

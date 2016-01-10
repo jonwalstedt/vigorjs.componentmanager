@@ -1,4 +1,4 @@
-$exampleComponentMargin: 6px;
+$exampleComponentMargin: 0px;
 
 .example-component {
   position: relative;
@@ -6,7 +6,8 @@ $exampleComponentMargin: 6px;
   height: 220px;
   float: left;
   overflow: auto;
-  margin: $exampleComponentMargin;
+  -webkit-overflow-scrolling: touch;
+  margin: 4px $exampleComponentMargin;
   padding: 10px;
   h2 {
     line-height: 30px;
@@ -45,18 +46,23 @@ $exampleComponentMargin: 6px;
 }
 
 @media (min-width: 900px) {
+  $exampleComponentMargin: 6px;
   .example-component {
+    margin: $exampleComponentMargin;
     max-width: calc(50% - #{$exampleComponentMargin * 2});
   }
 }
 
 @media (min-width: 1200px) {
+  $exampleComponentMargin: 6px;
   .example-component {
+    margin: $exampleComponentMargin;
     max-width: calc(33.33% - #{$exampleComponentMargin * 2});
   }
 }
 
 .example-component.example-component--fullsize {
+  $exampleComponentMargin: 6px;
   max-width: calc(100% - #{$exampleComponentMargin * 2});
   height: auto;
 }

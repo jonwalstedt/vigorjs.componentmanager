@@ -39,20 +39,23 @@ Completed
  ✘ rename targetName to target? @cancelled (15-12-15 11:09)
  ✔ Make it possible to pass targetOrigin in the settings object, use for postMessage callback @done (16-01-08 01:02)
  ✔ Add a property to the message sent by postMessage to verify that it is intended to be picked up  by the componentManager, ignore all other messages @done (16-01-08 01:02)
+ ✔ Add analytics @done (16-01-10 11:42)
 
  In progress
  ☐ Add documentation
- ☐ Add a full/advanced example that uses vigorjs
+ ☐ Add a full/advanced example that uses vigorjs (finish up the example-app)
+ ☐ Fix css and layout for mobile
+ ☐ Add meta-tags
+ ☐ Publish on npm
+ ☐ Write the "Getting started" section
+ ☐ Get some designer help :)
 
  Next up
  ☐ Make the example component more prensentable and easier to understand
  ☐ Go through scss refactor/cleanup
- ☐ Add "filterString", "includeIfFilterStringMatches", "excludeIfFilterStringMatches" to ComponentDefinitionModel and logic to handle theese properties (is it needed? does it make sence?)
- ☐ Listen for reset on collections?
 
  To consider
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable
- ☐ Is there a usecase for the hidden array (that belongs inside the componentmanager or should it be handled from the outside)?
  ☐ Protected components?
 
  Potential problems

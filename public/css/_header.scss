@@ -8,9 +8,32 @@
 }
 
 .header h1 {
-  margin: 0;
+  $logoSize: 42px;
+  position: relative;
+  margin: 2px 4px;
   padding: 0;
   width: $sidebarWidth;
+  text-indent: -9999em;
+  &:after {
+    position: absolute;
+    content: '';
+    display: block;
+    width: $logoSize;
+    height: $logoSize;
+    top: 50%;
+    margin-top: -$logoSize/2 - 2px;
+    left: 0;
+    background: url(https://placeholdit.imgix.net/~text?txtsize=13&txt=logo&w=40&h=40&txttrack=0);
+  }
+}
+
+@media (min-width: $breakpointLarge) {
+  .header h1 {
+    text-indent: 0;
+    &:after {
+      display: none;
+    }
+  }
 }
 
 .header__title {

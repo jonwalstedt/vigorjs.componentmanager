@@ -52,8 +52,16 @@ $leftColumnWidth: 290px;
   @extend %clearfix;
 }
 
+.docs-table-wrapper {
+  position: relative;
+  max-width: 100%;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+
 .docs-table {
   border: 1px solid #ccc;
+  min-width: 600px;
   padding: 8px;
   text-align: left;
   line-height: 24px;
