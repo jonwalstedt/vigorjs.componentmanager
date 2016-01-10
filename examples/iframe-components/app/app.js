@@ -10,7 +10,7 @@ var app = app || {};
       Vigor.componentManager.initialize({
         componentSettings: window.componentSettings,
         listenForMessages: true,
-        whitelistedOrigins: 'http://localhost:7070',
+        whitelistedOrigins: ['http://localhost:7070', 'http://jonwalstedt.github.io/vigorjs.componentmanager'],
         context: this.$el
       });
 
