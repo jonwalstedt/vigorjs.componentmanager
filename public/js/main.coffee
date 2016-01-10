@@ -17,6 +17,14 @@ class App
     @_debouncedSetActiveSectionFromScrollPosition = _.debounce @_setActiveSectionFromScrollPosition, 100
     if @$sidebar.length
       @origTop = @$sidebar.offset().top
+
+    setTimeout =>
+      hash = window.location.hash?.substring 1
+      $target = $ "[name='#{hash}']"
+      if $target.length
+        @_scrollToTarget $target
+    , 1000
+
     do @_updateActiveLinks
 
     @$window.on 'hashchange', @_updateActiveLinks
@@ -58,6 +66,9 @@ class App
       rect.right <= $(window).width()
     )
 
+  _scrollToTarget: ($target) =>
+    @$body.stop().animate scrollTop: $target.offset().top, 1000
+
   _onLinkClick: (event) =>
     $currentTarget = $ event.currentTarget
     href = $currentTarget.attr('href').split('/').pop()
@@ -65,7 +76,7 @@ class App
       strippedHref = href.substring 1
       $target = $ "[name='#{strippedHref}']"
       if $target.length
-        @$body.stop().animate scrollTop: $target.offset().top, 1000
+        @_scrollToTarget $target
       do event.preventDefault
 
   _onScroll: (event) =>

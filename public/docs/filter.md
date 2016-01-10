@@ -99,6 +99,7 @@ The filter object can contain the following properties:
 
       <tr>
         <td class="docs-table__column docs-table__column-1">
+          <a name="options"></a>
           `options` Object (optional)
         </td>
         <td class="docs-table__column docs-table__column-2">
