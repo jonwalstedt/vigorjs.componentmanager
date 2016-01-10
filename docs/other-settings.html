@@ -1,74 +1,76 @@
 <h3><a name="other-settings"></a> Other settings</h3><p>The settings object can contain five properties except for the componentSettings object: context, componentClassName, targetPrefix, listenForMessages and whitelistedOrigins. See specifications and example below.</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>context</code> String / jQuery object
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The context property of the settings object should be either a element selector as a string (ex. &#39;#my-id&#39; or &#39;.my-class&#39;) or a jQuery object (ex $(&#39;.my-element&#39;)). The element will be used as context for the componentManager and all DOM related actions will be kept within that context.</p>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>context</code> String / jQuery object
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The context property of the settings object should be either a element selector as a string (ex. &#39;#my-id&#39; or &#39;.my-class&#39;) or a jQuery object (ex $(&#39;.my-element&#39;)). The element will be used as context for the componentManager and all DOM related actions will be kept within that context.</p>
 
-        <p>The context defaults to <code>&#39;body&#39;</code>.</p>
-      </td>
-    </tr>
+          <p>The context defaults to <code>&#39;body&#39;</code>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>componentClassName</code> String
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The componentClassName should be a string and it will be used as a class on each instance created by the componentManager.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>componentClassName</code> String
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The componentClassName should be a string and it will be used as a class on each instance created by the componentManager.</p>
 
-        <p>The componentClassName defaults to &#39;<code>vigor-component</code>&#39;.</p>
-      </td>
-    </tr>
+          <p>The componentClassName defaults to &#39;<code>vigor-component</code>&#39;.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>targetPrefix</code> String
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The targetPrefix should be a string and it should prefix all <a href="#component-areas">component-areas</a> that will receive instances by the componentManager. If you set your targetPrefix to be &#39;my-prefix&#39; your component areas should have class names like &#39;my-prefix--header&#39;, &#39;my-prefix--main&#39; etc.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>targetPrefix</code> String
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The targetPrefix should be a string and it should prefix all <a href="#component-areas">component-areas</a> that will receive instances by the componentManager. If you set your targetPrefix to be &#39;my-prefix&#39; your component areas should have class names like &#39;my-prefix--header&#39;, &#39;my-prefix--main&#39; etc.</p>
 
-        <p>The targetPrefix defaults to <code>&#39;component-area&#39;</code>.</p>
-      </td>
-    </tr>
+          <p>The targetPrefix defaults to <code>&#39;component-area&#39;</code>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>listenForMessages</code> Boolean
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The listenForMessages property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>listenForMessages</code> Boolean
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The listenForMessages property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
 
-        <p>By setting the listenForMessages to true the componentManager will start listening for incoming messages.</p>
+          <p>By setting the listenForMessages to true the componentManager will start listening for incoming messages.</p>
 
-        <p>The listenForMessages defaults to <code>false</code>.</p>
-      </td>
-    </tr>
+          <p>The listenForMessages defaults to <code>false</code>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>whitelistedOrigins</code> String / Array
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The whitelistedOrigins property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>whitelistedOrigins</code> String / Array
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The whitelistedOrigins property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
 
-        <p>Only messages sent from origins that are registered in the whitelistedOrigins array (or string if you only allow communication from one origin) will be picked up by the componentManager.</p>
+          <p>Only messages sent from origins that are registered in the whitelistedOrigins array (or string if you only allow communication from one origin) will be picked up by the componentManager.</p>
 
-        <p>In addition to setting the whitelistedOrigins property each message sent with the postMessage method must have the property &#39;recipient&#39; set to &#39;vigorjs.componentmanager&#39; to be forwarded to instances.</p>
+          <p>In addition to setting the whitelistedOrigins property each message sent with the postMessage method must have the property &#39;recipient&#39; set to &#39;vigorjs.componentmanager&#39; to be forwarded to instances.</p>
 
-        <p>The whitelistedOrigins defaults to <code>http://localhost:3000</code>.</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+          <p>The whitelistedOrigins defaults to <code>http://localhost:3000</code>.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <p>Example</p>
 <pre><code class="language-javascript">settings = {

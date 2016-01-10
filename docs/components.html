@@ -1,83 +1,85 @@
 <h3><a name="components"></a> Components</h3><p>The componentManager main purpose is to create and dispose instances of components. In this case a component is typically a View of some sort, either a Backbone.View or a view or class that exposes the interface of a larger component (see the <a href="/examples/example-app">example app</a> for examples of more complex components).</p>
 <p>There are some required properties and methods that needs to be exposed and some optional methods that will be called by the componentManager if they exists, see below.</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>$el</code> jQuery object (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        A jQuery object containing a reference to the main DOM element of the component.
-      </td>
-    </tr>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>$el</code> jQuery object (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          A jQuery object containing a reference to the main DOM element of the component.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>render</code> method (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        Typically the render method should update the this.$el element with the rendered state of the component
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>render</code> method (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          Typically the render method should update the this.$el element with the rendered state of the component
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>dispose</code> method (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The dispose method should clean up and remove the component. Typically it would remove all event listeners, variables and elements used within the component.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>dispose</code> method (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The dispose method should clean up and remove the component. Typically it would remove all event listeners, variables and elements used within the component.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>preRender</code> method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will be called before render if it is defined.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>preRender</code> method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will be called before render if it is defined.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>postRender</code> method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will be called after render if it is defined.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>postRender</code> method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will be called after render if it is defined.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>delegateEvents</code>  method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>Components might get reparented if you remove parent DOM elements without disposing the instance and add a new DOM element with the same class and call refresh on the componentManager.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>delegateEvents</code>  method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>Components might get reparented if you remove parent DOM elements without disposing the instance and add a new DOM element with the same class and call refresh on the componentManager.</p>
 
-        <p> In that case the existing instance would be added to the new DOM element and if the instance have a delegateEvents method it would be called to readd event listeners that was tied to the previous element.</p>
+          <p> In that case the existing instance would be added to the new DOM element and if the instance have a delegateEvents method it would be called to readd event listeners that was tied to the previous element.</p>
 
-        <p>This scenario could in most cases be avoided by not removing componentAreas without first removing the active instances in the componentManager by calling refresh with the new filter.</p>
+          <p>This scenario could in most cases be avoided by not removing componentAreas without first removing the active instances in the componentManager by calling refresh with the new filter.</p>
 
-        <p>See delegateEvents on <a href="http://backbonejs.org/#View-delegateEvents">Backbone.Views</a>.</p>
-      </td>
-    </tr>
+          <p>See delegateEvents on <a href="http://backbonejs.org/#View-delegateEvents">Backbone.Views</a>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>receiveMessage</code> method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will be called if you use the <code>postMessageToInstance</code> method on the componentManager. It will receive a message (can be anything) as argument.
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>receiveMessage</code> method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will be called if you use the <code>postMessageToInstance</code> method on the componentManager. It will receive a message (can be anything) as argument.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <p>A minimal component could be this:</p>
 <pre><code class="language-javascript">var FilterComponent = Backbone.View.extend({

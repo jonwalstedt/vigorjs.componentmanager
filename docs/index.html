@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><title>Vigorjs ComponentManager</title><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/atelier-cave.light.min.css" rel="stylesheet" type="text/css"><link href="http://jonwalstedt.github.io/vigorjs.componentmanager/css/main.css" rel="stylesheet" type="text/css"><meta name="viewport" content="initial-scale=1, maximum-scale=1"></head><body class="docs"><header class="header"><div class="header-content"><h1><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/" class="header__title">Vigorjs ComponentManager</a></h1><nav class="main-navigation"><ul class="main-navigation__list"><li class="main-navigation__list-item"><a href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="main-navigation__link">View on GitHub</a></li><li class="main-navigation__list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/docs" class="main-navigation__link main-navigation__link--active">Docs</a></li><li class="main-navigation__list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples" class="main-navigation__link ">Examples</a></li></ul></nav><button class="menu-toggle entypo-menu"><span>Toggle Menu</span></button></div></header><main class="content-wrapper"><div class="sidebar-wrapper"><aside class="sidebar"><div class="sidebar-content"><h4 class="sidebar__title">Introduction</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#introduction" class="sidebar__link">Introduction</a></li><li class="sidebar_list-item"><a href="#dependencies" class="sidebar__link">Dependencies</a></li><li class="sidebar_list-item"><a href="#getting-started" class="sidebar__link">Getting started</a></li><li class="sidebar_list-item"><a href="#components" class="sidebar__link">Components</a></li><li class="sidebar_list-item"><a href="#component-areas" class="sidebar__link">Component Areas</a></li><li class="sidebar_list-item"><a href="#component-definitions" class="sidebar__link">ComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#instance-definitions" class="sidebar__link">InstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#filter" class="sidebar__link">Filter</a></li></ul><h4 class="sidebar__title">Settings</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#settings" class="sidebar__link">Settings</a></li><li class="sidebar_list-item"><a href="#conditions" class="sidebar__link">Conditions</a></li><li class="sidebar_list-item"><a href="#other-settings" class="sidebar__link">Other settings</a></li></ul><h4 class="sidebar__title">Public methods</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#initialize" class="sidebar__link">initialize</a></li><li class="sidebar_list-item"><a href="#updateSettings" class="sidebar__link">updateSettings</a></li><li class="sidebar_list-item"><a href="#refresh" class="sidebar__link">refresh</a></li><li class="sidebar_list-item"><a href="#serialize" class="sidebar__link">serialize</a></li><li class="sidebar_list-item"><a href="#parse" class="sidebar__link">parse</a></li><li class="sidebar_list-item"><a href="#clear" class="sidebar__link">clear</a></li><li class="sidebar_list-item"><a href="#dispose" class="sidebar__link">dispose</a></li><li class="sidebar_list-item"><a href="#addListeners" class="sidebar__link">addListeners</a></li><li class="sidebar_list-item"><a href="#addConditions" class="sidebar__link">addConditions</a></li><li class="sidebar_list-item"><a href="#addComponentDefinitions" class="sidebar__link">addComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#addInstanceDefinitions" class="sidebar__link">addInstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#updateComponentDefinitions" class="sidebar__link">updateComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#updateInstanceDefinitions" class="sidebar__link">updateInstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#removeComponentDefinition" class="sidebar__link">removeComponentDefinition</a></li><li class="sidebar_list-item"><a href="#removeInstanceDefinition" class="sidebar__link">removeInstanceDefinition</a></li><li class="sidebar_list-item"><a href="#removeListeners" class="sidebar__link">removeListeners</a></li><li class="sidebar_list-item"><a href="#setContext" class="sidebar__link">setContext</a></li><li class="sidebar_list-item"><a href="#setComponentClassName" class="sidebar__link">setComponentClassName</a></li><li class="sidebar_list-item"><a href="#setTargetPrefix" class="sidebar__link">setTargetPrefix</a></li><li class="sidebar_list-item"><a href="#setWhitelistedOrigins" class="sidebar__link">setWhitelistedOrigins</a></li><li class="sidebar_list-item"><a href="#getContext" class="sidebar__link">getContext</a></li><li class="sidebar_list-item"><a href="#getComponentClassName" class="sidebar__link">getComponentClassName</a></li><li class="sidebar_list-item"><a href="#getTargetPrefix" class="sidebar__link">getTargetPrefix</a></li><li class="sidebar_list-item"><a href="#getActiveFilter" class="sidebar__link">getActiveFilter</a></li><li class="sidebar_list-item"><a href="#getConditions" class="sidebar__link">getConditions</a></li><li class="sidebar_list-item"><a href="#getComponentDefinitionById" class="sidebar__link">getComponentDefinitionById</a></li><li class="sidebar_list-item"><a href="#getInstanceDefinitionById" class="sidebar__link">getInstanceDefinitionById</a></li><li class="sidebar_list-item"><a href="#getComponentDefinitions" class="sidebar__link">getComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#getInstanceDefinitions" class="sidebar__link">getInstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#getActiveInstances" class="sidebar__link">getActiveInstances</a></li><li class="sidebar_list-item"><a href="#getActiveInstanceById" class="sidebar__link">getActiveInstanceById</a></li><li class="sidebar_list-item"><a href="#postMessageToInstance" class="sidebar__link">postMessageToInstance</a></li></ul><h4 class="sidebar__title">IframeComponent</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#iframe-component" class="sidebar__link">IframeComponent</a></li></ul><h4 class="sidebar__title">Events</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#component-definition-events" class="sidebar__link">ComponentDefinition events</a></li><li class="sidebar_list-item"><a href="#instance-definition-events" class="sidebar__link">InstanceDefinition events</a></li><li class="sidebar_list-item"><a href="#active-instance-events" class="sidebar__link">Active instance events</a></li></ul></div></aside></div><article class="content"><section class="main-section"><h2>Introduction</h2><section class="sub-section"><h3><a name="introduction"></a> Introduction</h3><p>The componentManager is a small UMD module that manages instances within your application. The main purpose of the componentManager is to help <strong>decouple large scale Backbone applications</strong> by letting it handle instantiation and disposal of components depending on different filters.</p>
+<!DOCTYPE html><html><head><title>Vigorjs ComponentManager</title><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/styles/atelier-cave.light.min.css" rel="stylesheet" type="text/css"><link href="/css/main.css" rel="stylesheet" type="text/css"><meta name="viewport" content="initial-scale=1, maximum-scale=1"></head><body class="docs"><header class="header"><div class="header-content"><h1><a href="/" class="header__title">Vigorjs ComponentManager</a></h1><nav class="main-navigation"><ul class="main-navigation__list"><li class="main-navigation__list-item"><a href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="main-navigation__link">View on GitHub</a></li><li class="main-navigation__list-item"><a href="/docs" class="main-navigation__link main-navigation__link--active">Docs</a></li><li class="main-navigation__list-item"><a href="/examples" class="main-navigation__link ">Examples</a></li></ul></nav><button class="menu-toggle entypo-menu"><span>Toggle Menu</span></button></div></header><main class="content-wrapper"><div class="sidebar-wrapper"><aside class="sidebar"><div class="sidebar-content"><h4 class="sidebar__title">Introduction</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#introduction" class="sidebar__link">Introduction</a></li><li class="sidebar_list-item"><a href="#dependencies" class="sidebar__link">Dependencies</a></li><li class="sidebar_list-item"><a href="#getting-started" class="sidebar__link">Getting started</a></li><li class="sidebar_list-item"><a href="#components" class="sidebar__link">Components</a></li><li class="sidebar_list-item"><a href="#component-areas" class="sidebar__link">Component Areas</a></li><li class="sidebar_list-item"><a href="#component-definitions" class="sidebar__link">ComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#instance-definitions" class="sidebar__link">InstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#filter" class="sidebar__link">Filter</a></li></ul><h4 class="sidebar__title">Settings</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#settings" class="sidebar__link">Settings</a></li><li class="sidebar_list-item"><a href="#conditions" class="sidebar__link">Conditions</a></li><li class="sidebar_list-item"><a href="#other-settings" class="sidebar__link">Other settings</a></li></ul><h4 class="sidebar__title">Public methods</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#initialize" class="sidebar__link">initialize</a></li><li class="sidebar_list-item"><a href="#updateSettings" class="sidebar__link">updateSettings</a></li><li class="sidebar_list-item"><a href="#refresh" class="sidebar__link">refresh</a></li><li class="sidebar_list-item"><a href="#serialize" class="sidebar__link">serialize</a></li><li class="sidebar_list-item"><a href="#parse" class="sidebar__link">parse</a></li><li class="sidebar_list-item"><a href="#clear" class="sidebar__link">clear</a></li><li class="sidebar_list-item"><a href="#dispose" class="sidebar__link">dispose</a></li><li class="sidebar_list-item"><a href="#addListeners" class="sidebar__link">addListeners</a></li><li class="sidebar_list-item"><a href="#addConditions" class="sidebar__link">addConditions</a></li><li class="sidebar_list-item"><a href="#addComponentDefinitions" class="sidebar__link">addComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#addInstanceDefinitions" class="sidebar__link">addInstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#updateComponentDefinitions" class="sidebar__link">updateComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#updateInstanceDefinitions" class="sidebar__link">updateInstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#removeComponentDefinition" class="sidebar__link">removeComponentDefinition</a></li><li class="sidebar_list-item"><a href="#removeInstanceDefinition" class="sidebar__link">removeInstanceDefinition</a></li><li class="sidebar_list-item"><a href="#removeListeners" class="sidebar__link">removeListeners</a></li><li class="sidebar_list-item"><a href="#setContext" class="sidebar__link">setContext</a></li><li class="sidebar_list-item"><a href="#setComponentClassName" class="sidebar__link">setComponentClassName</a></li><li class="sidebar_list-item"><a href="#setTargetPrefix" class="sidebar__link">setTargetPrefix</a></li><li class="sidebar_list-item"><a href="#setWhitelistedOrigins" class="sidebar__link">setWhitelistedOrigins</a></li><li class="sidebar_list-item"><a href="#getContext" class="sidebar__link">getContext</a></li><li class="sidebar_list-item"><a href="#getComponentClassName" class="sidebar__link">getComponentClassName</a></li><li class="sidebar_list-item"><a href="#getTargetPrefix" class="sidebar__link">getTargetPrefix</a></li><li class="sidebar_list-item"><a href="#getActiveFilter" class="sidebar__link">getActiveFilter</a></li><li class="sidebar_list-item"><a href="#getConditions" class="sidebar__link">getConditions</a></li><li class="sidebar_list-item"><a href="#getComponentDefinitionById" class="sidebar__link">getComponentDefinitionById</a></li><li class="sidebar_list-item"><a href="#getInstanceDefinitionById" class="sidebar__link">getInstanceDefinitionById</a></li><li class="sidebar_list-item"><a href="#getComponentDefinitions" class="sidebar__link">getComponentDefinitions</a></li><li class="sidebar_list-item"><a href="#getInstanceDefinitions" class="sidebar__link">getInstanceDefinitions</a></li><li class="sidebar_list-item"><a href="#getActiveInstances" class="sidebar__link">getActiveInstances</a></li><li class="sidebar_list-item"><a href="#getActiveInstanceById" class="sidebar__link">getActiveInstanceById</a></li><li class="sidebar_list-item"><a href="#postMessageToInstance" class="sidebar__link">postMessageToInstance</a></li></ul><h4 class="sidebar__title">IframeComponent</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#iframe-component" class="sidebar__link">IframeComponent</a></li></ul><h4 class="sidebar__title">Events</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="#component-definition-events" class="sidebar__link">ComponentDefinition events</a></li><li class="sidebar_list-item"><a href="#instance-definition-events" class="sidebar__link">InstanceDefinition events</a></li><li class="sidebar_list-item"><a href="#active-instance-events" class="sidebar__link">Active instance events</a></li></ul></div></aside></div><article class="content"><section class="main-section"><h2>Introduction</h2><section class="sub-section"><h3><a name="introduction"></a> Introduction</h3><p>The componentManager is a small UMD module that manages instances within your application. The main purpose of the componentManager is to help <strong>decouple large scale Backbone applications</strong> by letting it handle instantiation and disposal of components depending on different filters.</p>
 <p>A common approach when building a Backbone application is to have a router that decides which page views to create when the url changes. Then the page create instances of the components that should be rendered on that page, and the components might create subcomponents and so on. The problem with this approach is that, as the application grows, components and pages easily gets tightly coupled (the page might add eventlisteners to its components, pass data back and forth between instances and the page it self, etc.) and suddenly it is almost impossible to reuse a component in another part of the application.</p>
 <p>With the componentManager you can just call the refresh method and it will add the components in the correct place for you. No need to manually create instances on different pages, actually no need to have pages at all.</p>
 <p>The componentManager lets you configure <a href="#component-definitions">componentDefinitions</a> and <a href="#instance-definitions">instanceDefinitions</a> for your application and then creates instances and adds them to the DOM whenever they are needed. All you have to do is call the <a href="#refresh">refresh</a> method with your <a href="#filter">filter</a>. When a instance matches the filter it will be created and if not (if it previously was created) it will be properly disposed.</p>
@@ -18,84 +18,86 @@
 </ul>
 </section><section class="sub-section"><h3><a name="getting-started"></a> Getting started</h3></section><section class="sub-section"><h3><a name="components"></a> Components</h3><p>The componentManager main purpose is to create and dispose instances of components. In this case a component is typically a View of some sort, either a Backbone.View or a view or class that exposes the interface of a larger component (see the <a href="/examples/example-app">example app</a> for examples of more complex components).</p>
 <p>There are some required properties and methods that needs to be exposed and some optional methods that will be called by the componentManager if they exists, see below.</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>$el</code> jQuery object (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        A jQuery object containing a reference to the main DOM element of the component.
-      </td>
-    </tr>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>$el</code> jQuery object (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          A jQuery object containing a reference to the main DOM element of the component.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>render</code> method (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        Typically the render method should update the this.$el element with the rendered state of the component
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>render</code> method (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          Typically the render method should update the this.$el element with the rendered state of the component
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>dispose</code> method (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The dispose method should clean up and remove the component. Typically it would remove all event listeners, variables and elements used within the component.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>dispose</code> method (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The dispose method should clean up and remove the component. Typically it would remove all event listeners, variables and elements used within the component.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>preRender</code> method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will be called before render if it is defined.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>preRender</code> method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will be called before render if it is defined.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>postRender</code> method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will be called after render if it is defined.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>postRender</code> method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will be called after render if it is defined.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>delegateEvents</code>  method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>Components might get reparented if you remove parent DOM elements without disposing the instance and add a new DOM element with the same class and call refresh on the componentManager.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>delegateEvents</code>  method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>Components might get reparented if you remove parent DOM elements without disposing the instance and add a new DOM element with the same class and call refresh on the componentManager.</p>
 
-        <p> In that case the existing instance would be added to the new DOM element and if the instance have a delegateEvents method it would be called to readd event listeners that was tied to the previous element.</p>
+          <p> In that case the existing instance would be added to the new DOM element and if the instance have a delegateEvents method it would be called to readd event listeners that was tied to the previous element.</p>
 
-        <p>This scenario could in most cases be avoided by not removing componentAreas without first removing the active instances in the componentManager by calling refresh with the new filter.</p>
+          <p>This scenario could in most cases be avoided by not removing componentAreas without first removing the active instances in the componentManager by calling refresh with the new filter.</p>
 
-        <p>See delegateEvents on <a href="http://backbonejs.org/#View-delegateEvents">Backbone.Views</a>.</p>
-      </td>
-    </tr>
+          <p>See delegateEvents on <a href="http://backbonejs.org/#View-delegateEvents">Backbone.Views</a>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>receiveMessage</code> method (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will be called if you use the <code>postMessageToInstance</code> method on the componentManager. It will receive a message (can be anything) as argument.
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>receiveMessage</code> method (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will be called if you use the <code>postMessageToInstance</code> method on the componentManager. It will receive a message (can be anything) as argument.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <p>A minimal component could be this:</p>
 <pre><code class="language-javascript">var FilterComponent = Backbone.View.extend({
@@ -283,77 +285,79 @@ componentManager.initialize(settings);
   maxShowCount: 3
 }
 </code></pre>
-<h4>ComponentDefinition Properties</h4><table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>id</code> String (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The id property is required. It should be a uniqe identifier for the componentDefinition and it should be a string. InstanceDefinitions will reference this id to know what class to create the instance from.
-      </td>
-    </tr>
+<h4>ComponentDefinition Properties</h4><div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>id</code> String (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The id property is required. It should be a uniqe identifier for the componentDefinition and it should be a string. InstanceDefinitions will reference this id to know what class to create the instance from.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>src</code> String / Function (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The src property is also required and can be either a string or a constructor function. If it is a string it should either be a url (ex: <code>&#39;http://www.google.com&#39;</code>), a path that can be <code>required</code> by a AMD or CommonJS module loader (ex: <code>&#39;components/my-component&#39;</code>) or a namespace path to the class starting from the window object, leaving out the window object it self (ex: src: <code>&#39;app.components.Chart&#39;</code>).</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>src</code> String / Function (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The src property is also required and can be either a string or a constructor function. If it is a string it should either be a url (ex: <code>&#39;http://www.google.com&#39;</code>), a path that can be <code>required</code> by a AMD or CommonJS module loader (ex: <code>&#39;components/my-component&#39;</code>) or a namespace path to the class starting from the window object, leaving out the window object it self (ex: src: <code>&#39;app.components.Chart&#39;</code>).</p>
 
-        <p>If you are using a AMD ocr CommonJS module loader the string will always be required unless its a url. It will not try to find the class on the window object even if you send in a string like <code>&#39;app.components.Chart&#39;</code>.</p>
+          <p>If you are using a AMD ocr CommonJS module loader the string will always be required unless its a url. It will not try to find the class on the window object even if you send in a string like <code>&#39;app.components.Chart&#39;</code>.</p>
 
-        <p>If the string is a <code>url</code> (ex. <code>&#39;http://www.google.com&#39;</code>) the component manager will use the <a href="#iframe-component">IframeComponent</a> as a class for any instanceDefinition referencing this componentDefinition.</p>
-      </td>
-    </tr>
+          <p>If the string is a <code>url</code> (ex. <code>&#39;http://www.google.com&#39;</code>) the component manager will use the <a href="#iframe-component">IframeComponent</a> as a class for any instanceDefinition referencing this componentDefinition.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>args</code> Object
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The args property is an object containing any key value pairs you like. When an instanceDefinition reference this componentDefinition that instanceDefinitions args will extend this args object, it will then be passed as an argument to the created instance.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>args</code> Object
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The args property is an object containing any key value pairs you like. When an instanceDefinition reference this componentDefinition that instanceDefinitions args will extend this args object, it will then be passed as an argument to the created instance.</p>
 
-        <p>This means that all instanceDefinitions referencing a componentDefinition with an args object will get that object passed to its instance upon instantiation.</p>
+          <p>This means that all instanceDefinitions referencing a componentDefinition with an args object will get that object passed to its instance upon instantiation.</p>
 
-        <p>Each instanceDefinitions args object may override properties on the componentDefinitions args object.</p>
-      </td>
-    </tr>
+          <p>Each instanceDefinitions args object may override properties on the componentDefinitions args object.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>conditions</code> String / Array / Function
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>A condition for a componentDefinition or instanceDefinition should be a function returning true or false. One or multiple conditions can be used to help determine if an instance of the component should be created or not.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>conditions</code> String / Array / Function
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>A condition for a componentDefinition or instanceDefinition should be a function returning true or false. One or multiple conditions can be used to help determine if an instance of the component should be created or not.</p>
 
-        <p>Instead of a function you may also use a string that will be used as a key for a condition registered in the conditions property of the <a href="#settings">componentSettings</a> object (or conditions added using the addConditions method).</p>
+          <p>Instead of a function you may also use a string that will be used as a key for a condition registered in the conditions property of the <a href="#settings">componentSettings</a> object (or conditions added using the addConditions method).</p>
 
-        <p>You can mix both of these methods and pass an array containing functions or strings or both. All conditions will have to return true to have the instance created.</p>
+          <p>You can mix both of these methods and pass an array containing functions or strings or both. All conditions will have to return true to have the instance created.</p>
 
-        <p>If the instanceDefinition have conditions of its own both the conditions of the componentDefinition and the instanceDefinition will have to return true for the instance to be created.</p>
+          <p>If the instanceDefinition have conditions of its own both the conditions of the componentDefinition and the instanceDefinition will have to return true for the instance to be created.</p>
 
-        <p>Note that conditions defined on the componentDefinition will apply to all instances of that component.</p>
-      </td>
-    </tr>
+          <p>Note that conditions defined on the componentDefinition will apply to all instances of that component.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>maxShowCount</code> Number
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The property maxShowCount should be a number if defined. If used it will limit the number of times a instance of that component may be created. For an example you could set it to 1 if you want to display a component only one time - even if other filters pass.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>maxShowCount</code> Number
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The property maxShowCount should be a number if defined. If used it will limit the number of times a instance of that component may be created. For an example you could set it to 1 if you want to display a component only one time - even if other filters pass.
+        </td>
+      </tr>
 
-  </tbody>
-</table>
+    </tbody>
+  </table>
+</div>
 
 
 <h4>Example</h4><p>Here is an example of an componentDefinition:</p>
@@ -436,180 +440,184 @@ componentManager.initialize(settings);
 }
 </code></pre>
 <h4>InstanceDefinition Properties</h4><h5>Public properties</h5><p>These properties are used to decide what component to create the instance from, where to add it and what arguments to pass to it. See the descriptions for details.</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>id</code> String (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The id property is required. It should be a unique identifier for the instanceDefinition and it should be a string.
-      </td>
-    </tr>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>id</code> String (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The id property is required. It should be a unique identifier for the instanceDefinition and it should be a string.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>componentId</code> String (required)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The componentId property is required. It should be the uniqe identifier for the componentDefinition to create instances from and it should be a string.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>componentId</code> String (required)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The componentId property is required. It should be the uniqe identifier for the componentDefinition to create instances from and it should be a string.</p>
 
-        <p>This property links one or multiple instanceDefinitions to a componentDefinition.</p>
-      </td>
-    </tr>
+          <p>This property links one or multiple instanceDefinitions to a componentDefinition.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>args</code> Object
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The args property is an object containing any key value pairs you like. This args object will be merged to the args object on the componentDefinition (if any) and override any properties that exists in both objects.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>args</code> Object
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The args property is an object containing any key value pairs you like. This args object will be merged to the args object on the componentDefinition (if any) and override any properties that exists in both objects.</p>
 
-        <p>The merged args object will then be passed as an argument to the created instance constructor.</p>
-      </td>
-    </tr>
+          <p>The merged args object will then be passed as an argument to the created instance constructor.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>order</code> Number / &#39;top&#39; / &#39;bottom&#39;
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The order property should be a Number (int) ex: <code>order: 4</code> or the string <code>&#39;top&#39;</code> or <code>&#39;bottom&#39;</code>.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>order</code> Number / &#39;top&#39; / &#39;bottom&#39;
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The order property should be a Number (int) ex: <code>order: 4</code> or the string <code>&#39;top&#39;</code> or <code>&#39;bottom&#39;</code>.</p>
 
-        <p>The order property specifies in what order to add instances to the DOM. The order property is also read back from the DOM when adding instances so it will order instances around elements that is not handled by the componentManager as long as they have a data-order=&quot;&quot; attribute set on the element.</p>
+          <p>The order property specifies in what order to add instances to the DOM. The order property is also read back from the DOM when adding instances so it will order instances around elements that is not handled by the componentManager as long as they have a data-order=&quot;&quot; attribute set on the element.</p>
 
-        <p>If for example you specify the order to 4 on your instance definition and you have a static element already in the DOM with the data attribute data-order=&quot;3&quot; your instance will be added after that element.</p>
+          <p>If for example you specify the order to 4 on your instance definition and you have a static element already in the DOM with the data attribute data-order=&quot;3&quot; your instance will be added after that element.</p>
 
-        <p>If you have set order to &#39;top&#39; the element will be added first in the targeted component-area. If you instead set it to &#39;bottom&#39; it will be added last in the targeted component-area.</p>
+          <p>If you have set order to &#39;top&#39; the element will be added first in the targeted component-area. If you instead set it to &#39;bottom&#39; it will be added last in the targeted component-area.</p>
 
-        <p>See the example: <a href="/examples/reorder-components/">Reorder components</a> for more information.</p>
-      </td>
-    </tr>
+          <p>See the example: <a href="/examples/reorder-components/">Reorder components</a> for more information.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>targetName</code> String / jQuery object (required - depending on structure in the settingsObject)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>If the targetName is a string is a string it should be a class selector like <code>&#39;.component-area--sidebar&#39;</code> and it should have the prefix that you defined in your settings object (default prefix is &#39;component-area&#39;). If the prefix is not present it will be added for you so if you set the targetName to &#39;.header&#39; it will be changed to be &#39;.component-area--header&#39;. You would of course have to add the class &#39;component-area--header&#39; to your markup your self.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>targetName</code> String / jQuery object (required - depending on structure in the settingsObject)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>If the targetName is a string is a string it should be a class selector like <code>&#39;.component-area--sidebar&#39;</code> and it should have the prefix that you defined in your settings object (default prefix is &#39;component-area&#39;). If the prefix is not present it will be added for you so if you set the targetName to &#39;.header&#39; it will be changed to be &#39;.component-area--header&#39;. You would of course have to add the class &#39;component-area--header&#39; to your markup your self.</p>
 
-        <p>The targetName property could also be a jquey object like $(&#39;.my-element&#39;)</p>
+          <p>The targetName property could also be a jquey object like $(&#39;.my-element&#39;)</p>
 
-        <p>The <code>targetName</code> is required if you use the default setup with an instances array in your componentSettings object (not using the <a href="#alternative-structure">alternative structure</a>).</p>
-        <p>The targetName property is not needed if you are using the <a href="#alternative-structure">alternative sturcture</a> for your componentSettings object since it will be parsed from the object keys.</p>
-      </td>
-    </tr>
+          <p>The <code>targetName</code> is required if you use the default setup with an instances array in your componentSettings object (not using the <a href="#alternative-structure">alternative structure</a>).</p>
+          <p>The targetName property is not needed if you are using the <a href="#alternative-structure">alternative sturcture</a> for your componentSettings object since it will be parsed from the object keys.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>reInstantiate</code> Boolean
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The reInstantiate flag is a boolean which defaults to <code>false</code>. Setting this flag to true will cause the instance to be reInstantiated when matching two different filters after each other.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>reInstantiate</code> Boolean
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The reInstantiate flag is a boolean which defaults to <code>false</code>. Setting this flag to true will cause the instance to be reInstantiated when matching two different filters after each other.</p>
 
-        <p>If you for an example pass a filter with the url property set to &#39;foo/1&#39; and your instanceDefinition have the urlPattern &#39;foo/:id&#39; your component would pass the filter and be instantiated and added to the DOM. If you then do another refresh with the url set to &#39;foo/2&#39; the default behavior would be not to reInstantiate the instance since it&#39;s already created, rendered and added to the DOM. But with this flag set to true it will force the instance to be recreated and readded whenever the filter change (and it passes the filter).</p>
+          <p>If you for an example pass a filter with the url property set to &#39;foo/1&#39; and your instanceDefinition have the urlPattern &#39;foo/:id&#39; your component would pass the filter and be instantiated and added to the DOM. If you then do another refresh with the url set to &#39;foo/2&#39; the default behavior would be not to reInstantiate the instance since it&#39;s already created, rendered and added to the DOM. But with this flag set to true it will force the instance to be recreated and readded whenever the filter change (and it passes the filter).</p>
 
-        <p>To see this in action see the <a href="/examples/filter-by-url/#passing-arguments/news/political">Filter by url</a> example.</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+          <p>To see this in action see the <a href="/examples/filter-by-url/#passing-arguments/news/political">Filter by url</a> example.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <h5>Filter related properties on the instanceDefinition</h5><p>These properties are used to decide if the instance passes the filter or not.</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>filterString</code> String
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The filterString property is a string that you can match against the regexp you define in your filter object (by adding your regexp to one of these filter properties: includeIfMatch, excludeIfMatch, hasToMatch, cantMatch).
-      </td>
-    </tr>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>filterString</code> String
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The filterString property is a string that you can match against the regexp you define in your filter object (by adding your regexp to one of these filter properties: includeIfMatch, excludeIfMatch, hasToMatch, cantMatch).
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>includeIfFilterStringMatches</code> String / Regexp
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The includeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches the filterString the instance will be created. If includeIfFilterStringMatches is defined and does not match the filterString the instanceDefinition will not pass the filter.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>includeIfFilterStringMatches</code> String / Regexp
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The includeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches the filterString the instance will be created. If includeIfFilterStringMatches is defined and does not match the filterString the instanceDefinition will not pass the filter.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>excludeIfFilterStringMatches</code> String / Regexp
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The excludeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches filterString in the filter object the instance will be excluded.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>excludeIfFilterStringMatches</code> String / Regexp
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The excludeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches filterString in the filter object the instance will be excluded.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>conditions</code> Array / Function / String
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>A condition for a componentDefinition or instanceDefinition should be a function returning true or false. One or multiple conditions can be used to help determine if an instance of the component should be created or not.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>conditions</code> Array / Function / String
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>A condition for a componentDefinition or instanceDefinition should be a function returning true or false. One or multiple conditions can be used to help determine if an instance of the component should be created or not.</p>
 
-        <p>Instead of a function you may also use a string that will be used as a key for a condition registered in the conditions property of the <a href="#settings">componentSettings</a> object (or conditions added using the addConditions method).</p>
+          <p>Instead of a function you may also use a string that will be used as a key for a condition registered in the conditions property of the <a href="#settings">componentSettings</a> object (or conditions added using the addConditions method).</p>
 
-        <p>You can mix both of these methods and pass an array containing functions or strings or both. All conditions will have to return true to have the instance created.</p>
+          <p>You can mix both of these methods and pass an array containing functions or strings or both. All conditions will have to return true to have the instance created.</p>
 
-        <p>If the componentDefinition that the instanceDefinition references have conditions of its own both the conditions of the instanceDefinition and the componentDefinition will have to return true for the instance to be created.</p>
-      </td>
-    </tr>
+          <p>If the componentDefinition that the instanceDefinition references have conditions of its own both the conditions of the instanceDefinition and the componentDefinition will have to return true for the instance to be created.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>excludeIfFilterStringMatches</code> String / Regexp
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The excludeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches filterString in the filter object the instance will be excluded.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>excludeIfFilterStringMatches</code> String / Regexp
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The excludeIfFilterStringMatches property is a string or a regexp that will be matched against the filterString defined on the filter object. If the regexp matches filterString in the filter object the instance will be excluded.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>maxShowCount</code> Number
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The property maxShowCount should be a number if defined. The instanceDefinitions maxShowCount overrides the componentDefinitions maxShowCount property.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>maxShowCount</code> Number
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The property maxShowCount should be a number if defined. The instanceDefinitions maxShowCount overrides the componentDefinitions maxShowCount property.</p>
 
-        <p>If used it will limit the number of times a instance of that component may be created. For an example you could set it to 1 if you want to display a component only one time - even if other filters pass.</p>
-      </td>
-    </tr>
+          <p>If used it will limit the number of times a instance of that component may be created. For an example you could set it to 1 if you want to display a component only one time - even if other filters pass.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>urlPattern</code> String / Array
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The urlPattern property should be a string in the form of a Backbone url pattern / route or an array containing multiple url patterns.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>urlPattern</code> String / Array
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The urlPattern property should be a string in the form of a Backbone url pattern / route or an array containing multiple url patterns.</p>
 
-        <p>This pattern will be used when filtering with the url property on the filter object that is passed to the refresh method. If your instanceDefinitions urlPattern matches the url (and all other filters pass) your instance will be created.</p>
+          <p>This pattern will be used when filtering with the url property on the filter object that is passed to the refresh method. If your instanceDefinitions urlPattern matches the url (and all other filters pass) your instance will be created.</p>
 
-        <p>By passing multiple urlPatterns you can have the same instance active across multiple urls without reinstantiation. For an example: if you set the urlPattern to [&#39;home&#39;, &#39;products/:id&#39;] your instance would be created once when matching &#39;home&#39; and then still keep the same instance active when navigating to any page that matches the &#39;products/:id&#39; pattern (products/1, products/2 etc.)</p>
+          <p>By passing multiple urlPatterns you can have the same instance active across multiple urls without reinstantiation. For an example: if you set the urlPattern to [&#39;home&#39;, &#39;products/:id&#39;] your instance would be created once when matching &#39;home&#39; and then still keep the same instance active when navigating to any page that matches the &#39;products/:id&#39; pattern (products/1, products/2 etc.)</p>
 
-        <p>You can also set the urlPattern to <code>&#39;global&#39;</code> to have it match any url. This is useful if you want an instance of your component to always stay on page, like a header or a main menu.</p>
+          <p>You can also set the urlPattern to <code>&#39;global&#39;</code> to have it match any url. This is useful if you want an instance of your component to always stay on page, like a header or a main menu.</p>
 
-        <p>See the <a href="/examples/filter-by-url">Filter by url</a> example.</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+          <p>See the <a href="/examples/filter-by-url">Filter by url</a> example.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <h4>Custom Properties</h4><p>In addition to the default properties you can add any properties you like to a instanceDefinition. These custom properties can then be used to refine the filter and target specific instanceDefinitions. The custom properties would then also have to be used when creating the filter that would be passed to the refresh method. See example below.</p>
 <p>Custom properties on a instanceDefinition can override custom properties on it&#39;s componentDefinition.</p>
@@ -649,133 +657,135 @@ componentManager.initialize(settings);
 <p>See the section &#39;Custom properties&#39; on <a href="#component-definitions">componentDefinitions</a> for more information and examples.</p>
 </section><section class="sub-section"><h3><a name="filter"></a> Filter</h3><p>The componentManager works like a funnel, you start by defining components (componentDefinitions) and then a list of instances (instanceDefinitions) of those components. Each componentDefinition and each instanceDefinition may have different properties (ex. condition methods, filterString, showCount, urlPatterns etc.) that will be used to decide if it makes it through the funnel.</p>
 <p>The filter object can contain the following properties:</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>url</code> String (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The url property can be any valid <strong>url fragment</strong> (hash part of the url - whats returned by Backbone.history.fragment). It will be matched against the urlPattern property on any instanceDefinition that has it defined. Ex: the url <code>&#39;articles/2010/12/1&#39;</code> would match the urlPattern: <code>&#39;articles/:section(/:subsection)(/:id)&#39;</code>.</p>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>url</code> String (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The url property can be any valid <strong>url fragment</strong> (hash part of the url - whats returned by Backbone.history.fragment). It will be matched against the urlPattern property on any instanceDefinition that has it defined. Ex: the url <code>&#39;articles/2010/12/1&#39;</code> would match the urlPattern: <code>&#39;articles/:section(/:subsection)(/:id)&#39;</code>.</p>
 
-        <p>See the <a href="/examples/filter-by-url">Filter by url</a> examples.</p>
-      </td>
-    </tr>
+          <p>See the <a href="/examples/filter-by-url">Filter by url</a> examples.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>filterString</code> String (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The filterString can be any string and it is intended to be used together with the instanceDefinition properties includeIfFilterStringMatches (string / regexp) and excludeIfFilterStringMatches (string / regexp).</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>filterString</code> String (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The filterString can be any string and it is intended to be used together with the instanceDefinition properties includeIfFilterStringMatches (string / regexp) and excludeIfFilterStringMatches (string / regexp).</p>
 
-        <p>By passing a filterString together with your filter each instanceDefinition that has includeIfFilterStringMatches will check if that string or regular expression matches the filterString in the filter. If it matches the instance will be created (assuming all other filters passes), if it does not match it will not be created.</p>
+          <p>By passing a filterString together with your filter each instanceDefinition that has includeIfFilterStringMatches will check if that string or regular expression matches the filterString in the filter. If it matches the instance will be created (assuming all other filters passes), if it does not match it will not be created.</p>
 
-        <p>The excludeIfFilterStringMatches works the opposite way, if it the string or regular expression matches the filterString in the filter the instance will be excluded - even if other filters passes.</p>
+          <p>The excludeIfFilterStringMatches works the opposite way, if it the string or regular expression matches the filterString in the filter the instance will be excluded - even if other filters passes.</p>
 
-        <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
-      </td>
-    </tr>
+          <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>includeIfMatch</code> String / Regexp (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The includeIfMatch property of the filter should be a string or a regular expression and it is intended to use on filterStrings defined on instanceDefinitions (note that this is not the same filterString as the one described above).</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>includeIfMatch</code> String / Regexp (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The includeIfMatch property of the filter should be a string or a regular expression and it is intended to use on filterStrings defined on instanceDefinitions (note that this is not the same filterString as the one described above).</p>
 
-        <p>If a instanceDefiniton has a filterString and that string matches the string or regexp defined in the includeIfMatch property of the filter a instance will be created and added to the DOM.</p>
+          <p>If a instanceDefiniton has a filterString and that string matches the string or regexp defined in the includeIfMatch property of the filter a instance will be created and added to the DOM.</p>
 
-        <p>This filter property also allows the filterString on instanceDefinitions to be undefined. If they are undefined they will still pass this filter.</p>
+          <p>This filter property also allows the filterString on instanceDefinitions to be undefined. If they are undefined they will still pass this filter.</p>
 
-        <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
-      </td>
-    </tr>
+          <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>excludeIfMatch</code> String / Regexp (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The excludeIfMatch property of the filter should be a string or a regular expression and it is intended to use on filterStrings defined on instanceDefinitions.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>excludeIfMatch</code> String / Regexp (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The excludeIfMatch property of the filter should be a string or a regular expression and it is intended to use on filterStrings defined on instanceDefinitions.</p>
 
-        <p>If a instanceDefiniton has a filterString and that string matches the string or regexp defined in the excludeIfMatch property of the filter a instance will be excluded and will not be added to the DOM.</p>
+          <p>If a instanceDefiniton has a filterString and that string matches the string or regexp defined in the excludeIfMatch property of the filter a instance will be excluded and will not be added to the DOM.</p>
 
-        <p>This filter property also allows the filterString on instanceDefinitions to be undefined. If they are undefined they will still pass this filter.</p>
+          <p>This filter property also allows the filterString on instanceDefinitions to be undefined. If they are undefined they will still pass this filter.</p>
 
-        <p>This is intended to use in combination with other filters, ex: if a instanceDefinition has a urlPattern that passes but a filterString that says that it is in a specific language (say filterString: &#39;lang=en_GB&#39;) and you want to exclude that instance because the user is using another language. That could then be achieved by setting excludeIfMatch to &#39;lang=en_GB&#39;.</p>
+          <p>This is intended to use in combination with other filters, ex: if a instanceDefinition has a urlPattern that passes but a filterString that says that it is in a specific language (say filterString: &#39;lang=en_GB&#39;) and you want to exclude that instance because the user is using another language. That could then be achieved by setting excludeIfMatch to &#39;lang=en_GB&#39;.</p>
 
-        <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
-      </td>
-    </tr>
+          <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>hasToMatch</code> String / Regexp (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-         <p>This filter property works in the same way as <code>includeIfMatch</code>, you set it to a string or regular expression that should match the filterString on one or more instanceDefinitions.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>hasToMatch</code> String / Regexp (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+           <p>This filter property works in the same way as <code>includeIfMatch</code>, you set it to a string or regular expression that should match the filterString on one or more instanceDefinitions.</p>
 
-         <p>The difference between hasToMatch and includeIfMatch is that this property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter.</p>
+           <p>The difference between hasToMatch and includeIfMatch is that this property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter.</p>
 
-        <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
-      </td>
-    </tr>
+          <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>cantMatch</code> String / Regexp (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>This filter property works in the same way as <code>excludeIfMatch</code>, you set it to a string or regular expression that should match the filterString on one or more instanceDefinitions, if it matches the instancDefiniton will be excluded.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>cantMatch</code> String / Regexp (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>This filter property works in the same way as <code>excludeIfMatch</code>, you set it to a string or regular expression that should match the filterString on one or more instanceDefinitions, if it matches the instancDefiniton will be excluded.</p>
 
-        <p>This difference between cantMatch and excludeIfMatch is that this filter property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter (and in this case not be excluded).</p>
+          <p>This difference between cantMatch and excludeIfMatch is that this filter property does not allow the filterString on instanceDefinitions to be undefined. If they are undefined they will fail this filter (and in this case not be excluded).</p>
 
-        <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
-      </td>
-    </tr>
+          <p>See the <a href="/examples/filter-by-string">Filter by string</a> examples.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>options</code> Object (optional)
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The options object can contain five different properties: <code>add</code>, <code>remove</code>, <code>merge</code>, <code>invert</code> and <code>forceFilterStringMatching</code> (all options have boolean values).</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>options</code> Object (optional)
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The options object can contain five different properties: <code>add</code>, <code>remove</code>, <code>merge</code>, <code>invert</code> and <code>forceFilterStringMatching</code> (all options have boolean values).</p>
 
-        <pre><code class="language-javascript hljs">//defaults:
-options: {
-  add: true,
-  remove: true,
-  merge: true,
-  invert: false,
-  forceFilterStringMatching: false
-}</code></pre>
+          <pre><code class="language-javascript hljs">//defaults:
+  options: {
+    add: true,
+    remove: true,
+    merge: true,
+    invert: false,
+    forceFilterStringMatching: false
+  }</code></pre>
 
-        <p>The <code>add</code> property determines if matching instances should be added to the DOM or not.</p>
+          <p>The <code>add</code> property determines if matching instances should be added to the DOM or not.</p>
 
-        <p>The <code>remove</code> property determines if non matching instances should be removed from the DOM or not.</p>
+          <p>The <code>remove</code> property determines if non matching instances should be removed from the DOM or not.</p>
 
-        <p>As an example: By setting add to false and remove to true and then call refresh with your filter the componentManager will remove instances that does not match the filter but it will not add instances that does match the filter.</p>
+          <p>As an example: By setting add to false and remove to true and then call refresh with your filter the componentManager will remove instances that does not match the filter but it will not add instances that does match the filter.</p>
 
-        <p>And of course the opposite would happen if you set add to true and remove to false.</p>
+          <p>And of course the opposite would happen if you set add to true and remove to false.</p>
 
-        <p>The <code>merge</code> property determines if updates to the instanceDefinition should be allowed or not. Ex if you change the order property on a instanceDefinition and set merge to false the change will be ignored.</p>
+          <p>The <code>merge</code> property determines if updates to the instanceDefinition should be allowed or not. Ex if you change the order property on a instanceDefinition and set merge to false the change will be ignored.</p>
 
-        <p>The <code>invert</code> property will (if set to true) create and add instances of all instanceDefinitions that <strong>does not</strong> match the filter (the opposite of the default behavior).</p>
+          <p>The <code>invert</code> property will (if set to true) create and add instances of all instanceDefinitions that <strong>does not</strong> match the filter (the opposite of the default behavior).</p>
 
-        <p>The <code>forceFilterStringMatching</code> property will (if set to true) make all string filters be exclusive, instanceDefinitions that does not match the filter and instanceDefinitons that has an undefined filterString will not be created. Only instanceDefinitions with a direct match on the string filter will be created (even though other filters may pass).</p>
+          <p>The <code>forceFilterStringMatching</code> property will (if set to true) make all string filters be exclusive, instanceDefinitions that does not match the filter and instanceDefinitons that has an undefined filterString will not be created. Only instanceDefinitions with a direct match on the string filter will be created (even though other filters may pass).</p>
 
-        <p>See the <a href="/examples/filter-options">Filter options</a> for more examples.</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+          <p>See the <a href="/examples/filter-options">Filter options</a> for more examples.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <p>To actually filter on those properties you call the refresh method and pass a filter object. Calling the method without the filter will create all instances at once - assuming that their targets are available.</p>
 <p>The filtering process is inclusive, it always tries to include instanceDefinitions unless some filter fail. That means that if a instanceDefinition does not have the necessary property to match a certain filter it will, by default, still pass the filter (ex if you filter using the url property and a instanceDefinition does not have a urlPattern the url filter would be ignored and the instance would be created).</p>
@@ -1064,76 +1074,78 @@ componentManager.initialize(settings);
 <p>Both instanceDefinitions (&#39;user-profile-instance&#39; and &#39;message-alert-instance&#39;) could in turn have more conditions in their conditions property. The value of this property could be a string (the key of a method registered in the conditions object), or a function or an array with both strings and functions.</p>
 <p>See the <a href="#component-definitions">componentDefinition</a> and the <a href="#instance-definitions">instanceDefinition</a> specifications. For more examples see the <a href="/examples/filter-by-conditions">conditions example</a>.</p>
 </section><section class="sub-section"><h3><a name="other-settings"></a> Other settings</h3><p>The settings object can contain five properties except for the componentSettings object: context, componentClassName, targetPrefix, listenForMessages and whitelistedOrigins. See specifications and example below.</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>context</code> String / jQuery object
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The context property of the settings object should be either a element selector as a string (ex. &#39;#my-id&#39; or &#39;.my-class&#39;) or a jQuery object (ex $(&#39;.my-element&#39;)). The element will be used as context for the componentManager and all DOM related actions will be kept within that context.</p>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>context</code> String / jQuery object
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The context property of the settings object should be either a element selector as a string (ex. &#39;#my-id&#39; or &#39;.my-class&#39;) or a jQuery object (ex $(&#39;.my-element&#39;)). The element will be used as context for the componentManager and all DOM related actions will be kept within that context.</p>
 
-        <p>The context defaults to <code>&#39;body&#39;</code>.</p>
-      </td>
-    </tr>
+          <p>The context defaults to <code>&#39;body&#39;</code>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>componentClassName</code> String
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The componentClassName should be a string and it will be used as a class on each instance created by the componentManager.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>componentClassName</code> String
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The componentClassName should be a string and it will be used as a class on each instance created by the componentManager.</p>
 
-        <p>The componentClassName defaults to &#39;<code>vigor-component</code>&#39;.</p>
-      </td>
-    </tr>
+          <p>The componentClassName defaults to &#39;<code>vigor-component</code>&#39;.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>targetPrefix</code> String
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The targetPrefix should be a string and it should prefix all <a href="#component-areas">component-areas</a> that will receive instances by the componentManager. If you set your targetPrefix to be &#39;my-prefix&#39; your component areas should have class names like &#39;my-prefix--header&#39;, &#39;my-prefix--main&#39; etc.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>targetPrefix</code> String
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The targetPrefix should be a string and it should prefix all <a href="#component-areas">component-areas</a> that will receive instances by the componentManager. If you set your targetPrefix to be &#39;my-prefix&#39; your component areas should have class names like &#39;my-prefix--header&#39;, &#39;my-prefix--main&#39; etc.</p>
 
-        <p>The targetPrefix defaults to <code>&#39;component-area&#39;</code>.</p>
-      </td>
-    </tr>
+          <p>The targetPrefix defaults to <code>&#39;component-area&#39;</code>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>listenForMessages</code> Boolean
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The listenForMessages property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>listenForMessages</code> Boolean
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The listenForMessages property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
 
-        <p>By setting the listenForMessages to true the componentManager will start listening for incoming messages.</p>
+          <p>By setting the listenForMessages to true the componentManager will start listening for incoming messages.</p>
 
-        <p>The listenForMessages defaults to <code>false</code>.</p>
-      </td>
-    </tr>
+          <p>The listenForMessages defaults to <code>false</code>.</p>
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>whitelistedOrigins</code> String / Array
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        <p>The whitelistedOrigins property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>whitelistedOrigins</code> String / Array
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          <p>The whitelistedOrigins property is intended to be used when working with <a href="#iframe-component">IframeComponents</a> and cross-origin communication using the <code>postMessage</code> method.</p>
 
-        <p>Only messages sent from origins that are registered in the whitelistedOrigins array (or string if you only allow communication from one origin) will be picked up by the componentManager.</p>
+          <p>Only messages sent from origins that are registered in the whitelistedOrigins array (or string if you only allow communication from one origin) will be picked up by the componentManager.</p>
 
-        <p>In addition to setting the whitelistedOrigins property each message sent with the postMessage method must have the property &#39;recipient&#39; set to &#39;vigorjs.componentmanager&#39; to be forwarded to instances.</p>
+          <p>In addition to setting the whitelistedOrigins property each message sent with the postMessage method must have the property &#39;recipient&#39; set to &#39;vigorjs.componentmanager&#39; to be forwarded to instances.</p>
 
-        <p>The whitelistedOrigins defaults to <code>http://localhost:3000</code>.</p>
-      </td>
-    </tr>
-  </tbody>
-</table>
+          <p>The whitelistedOrigins defaults to <code>http://localhost:3000</code>.</p>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <p>Example</p>
 <pre><code class="language-javascript">settings = {
@@ -1551,87 +1563,89 @@ parent.postMessage(data, targetOrigin);
 <p>The targetOrigin needs to be registered within the whitelistedOrigins.
 To see this in action view the IframeComponent examples: <a href="/examples/iframe-components/">IframeComponent example</a></p>
 <p>The IframeComponent class exposes the following public methods:</p>
-<table class="docs-table">
-  <thead>
-    <tr>
-      <th class="docs-table__column docs-table__column-1">Property</th>
-      <th class="docs-table__column docs-table__column-2">Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>initialize</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The initialize method will call the addListeners method and set the this.src property if it was passed during instantiation.
-      </td>
-    </tr>
+<div class="docs-table-wrapper">
+  <table class="docs-table">
+    <thead>
+      <tr>
+        <th class="docs-table__column docs-table__column-1">Property</th>
+        <th class="docs-table__column docs-table__column-2">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>initialize</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The initialize method will call the addListeners method and set the this.src property if it was passed during instantiation.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>addListeners</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The addListeners method will add a listener for &#39;onload&#39; on the iframe and call onIframeLoaded as a callback when the iframe is finished loading.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>addListeners</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The addListeners method will add a listener for &#39;onload&#39; on the iframe and call onIframeLoaded as a callback when the iframe is finished loading.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>removeListeners</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The removeListeners method will remove the &#39;onload&#39; listener.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>removeListeners</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The removeListeners method will remove the &#39;onload&#39; listener.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>render</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The render method will set the src attribute on the iframe and start loading it&#39;s content. It returns the instance for chainability.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>render</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The render method will set the src attribute on the iframe and start loading it&#39;s content. It returns the instance for chainability.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>dispose</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        Dispose will call removeListeners and remove to remove event listeners and remove the element from the DOM.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>dispose</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          Dispose will call removeListeners and remove to remove event listeners and remove the element from the DOM.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>postMessageToIframe</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        This method will forward a message from the IframeComponent (Backbone.View) class into the contentWindow of the iframe using the postMessage api. It will also pass along the targetOrigin property of the IframeComponent.
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>postMessageToIframe</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          This method will forward a message from the IframeComponent (Backbone.View) class into the contentWindow of the iframe using the postMessage api. It will also pass along the targetOrigin property of the IframeComponent.
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>receiveMessage</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The default implementation is a noop
-      </td>
-    </tr>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>receiveMessage</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The default implementation is a noop
+        </td>
+      </tr>
 
-    <tr>
-      <td class="docs-table__column docs-table__column-1">
-        <code>onIframeLoaded</code>
-      </td>
-      <td class="docs-table__column docs-table__column-2">
-        The default implementation is a noop
-      </td>
-    </tr>
-  </tbody>
-</table>
+      <tr>
+        <td class="docs-table__column docs-table__column-1">
+          <code>onIframeLoaded</code>
+        </td>
+        <td class="docs-table__column docs-table__column-2">
+          The default implementation is a noop
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <p>See the <a href="/examples/iframe-components/">IframeComponent example</a>.</p>
 </section></section><section class="main-section"><h2>Events</h2><section class="sub-section"><h3><a name="component-definition-events"></a> ComponentDefinition Events</h3><p>The componentManager triggers events when adding, removing or changing componentDefinitions. To use these events listen for either <code>component-add</code>, <code>component-remove</code> or <code>component-change</code> on the componentManager instance. The callback will get the affected componentDefinition and an array with all registered componentDefinitions as arguments.</p>
@@ -1679,4 +1693,12 @@ componentManager.on(componentManager.EVENTS.CHANGE, function (changedInstance, a
 
 componentManager.on(componentManager.EVENTS.REMOVE, function (removedInstance, allActiveInstances) {});
 </code></pre>
-</section></section></article></main><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script><script src="http://jonwalstedt.github.io/vigorjs.componentmanager/js/vigorjs.componentmanager.js"></script><script src="http://jonwalstedt.github.io/vigorjs.componentmanager/js/main.js"></script></body></html>
+</section></section></article></main><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script><script src="/js/vigorjs.componentmanager.js"></script><script src="/js/main.js"></script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-21627223-4', 'auto');
+ga('send', 'pageview');
+
+</script></body></html>
