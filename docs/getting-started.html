@@ -1,1 +1,84 @@
-<h3><a name="getting-started"></a> Getting started</h3>
+<h3><a name="getting-started"></a> Getting started</h3><p>The componentManager is a simple way to handle the life cycle of instances of components within your application. By adding a settings object containing definitions of components and instances of those components the componentManager knows when and where to create and add the instances. All you need to do is call the refresh method with a filter that informs the componentManager of the state of the application.</p>
+<p>The most common use case would be to hook up the componentManager to the router and call refresh with a url filter every time the url changes. Or to create your own filter model and call refresh on the componentManager whenever any of the filters changes.</p>
+<p>When you call refresh with a filter the componentManager will filter out any matching <a href="#instance-definitions">instanceDefinitions</a> and create an instance of the <a href="#component-definitions">componentDefinition</a> that the instanceDefinition is referencing.</p>
+<p>As a part of the filtering process the componentManager checks that the <a href="#component-areas">componentArea</a> that the instanceDefinition targets is available, if not the instance will not be created.</p>
+<p>See the simple example below (in this example the component will be required from the path &#39;components/hello-world&#39;, too see how to do a AMD or CommonJS setup see the <a href="../examples/amd-requirejs/">AMD example</a> or <a href="../examples/commonjs-browserify/">CommonJS example</a>).</p>
+<p>The componentArea in the markup</p>
+<pre><code class="language-html">&lt;div class=&quot;my-app&quot;&gt;
+  &lt;section class=&quot;component-area--main&quot;&gt;&lt;/section&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Initialize the componentManager with the needed settings:</p>
+<pre><code class="language-javascript">define(function (require) {
+  &#39;use strict&#39;;
+
+  var Backbone = require(&#39;backbone&#39;),
+      componentManager = require(&#39;vigor&#39;).componentManager,
+      Router = require(&#39;./Router&#39;);
+
+  componentManager.initialize({
+    context: &#39;.my-app&#39;,
+    componentSettings: {
+      components: [{
+        id: &#39;hello-world-component&#39;,
+        src: &#39;components/hello-world&#39;
+      }],
+      instances: [{
+        id: &#39;hello-world-instance&#39;,
+        componentId: &#39;hello-world-component&#39;,
+        targetName: &#39;.component-area--main&#39;,
+        urlPattern: &#39;hello-world&#39;
+      }]
+    }
+  });
+
+  new Router();
+  Backbone.history.start();
+});
+</code></pre>
+<p>Hook up router to call refresh whenever the url updates.</p>
+<pre><code class="language-javascript">define (function (require) {
+  &#39;use strict&#39;;
+  var
+    Backbone = require(&#39;backbone&#39;),
+    componentManager = require(&#39;vigor&#39;).componentManager,
+    Router = Backbone.Router.extend({
+      routes: {
+        &#39;*action&#39;: &#39;_onAllRoutes&#39;,
+        &#39;*notFound&#39;: &#39;_onAllRoutes&#39;
+      },
+
+      _onAllRoutes: function () {
+        Vigor.componentManager.refresh({
+          url: Backbone.history.fragment
+        });
+      }
+  });
+  return Router;
+});
+</code></pre>
+<p>Our simple example component (to learn more about components view the <a href="#components">Components</a> section below):</p>
+<pre><code class="language-javascript">
+define (function (require) {
+  &#39;use strict&#39;;
+  var HelloWorld
+      Backbone = require(&#39;backbone&#39;);
+
+  HelloWorld = Backbone.View.extend({
+
+    render: function () {
+      this.$el.html(&#39;Hello World!&#39;);
+    },
+
+    dispose: function () {
+      this.remove();
+    }
+
+  });
+
+  return HelloWorld;
+});
+</code></pre>
+<p>After setting this up your hello-world component will be required in and instantiated whenever you go to the url &#39;<a href="http://yourdevserver/#hello-world">http://yourdevserver/#hello-world</a>&#39;. If you go to some other url that instance will be disposed and removed from the DOM.</p>
+<p>To scale this up is basically just to add your layout and expand your <a href="#settings">settings</a> object with more <a href="#component-definitions">componentDefinitions</a> and <a href="#instance-definitions">instanceDefinitions</a>. To see a more advanced example see the <a href="../examples/example-app">Example app</a>.</p>
+<p>To see it in action go to the <a href="../examples/hello-world">hello world</a> example.</p>
