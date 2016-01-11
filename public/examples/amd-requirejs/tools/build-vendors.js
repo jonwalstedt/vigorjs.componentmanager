@@ -8,7 +8,7 @@
     Handlebars: 'lib/handlebars',
     text: 'lib/text',
     hbars: 'lib/hbars',
-    vigor: '../../js/vigor.componentmanager',
+    vigor: '../../js/vigorjs.componentmanager',
   },
   // optimize: 'none',
   wrapShim: true,
