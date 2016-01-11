@@ -7,7 +7,7 @@ requirejs.config({
     Handlebars: '//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.4/handlebars',
     text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text',
     hbars: '//cdnjs.cloudflare.com/ajax/libs/requirejs-handlebars/0.0.2/hbars',
-    vigor: '/js/vigor.componentmanager',
+    vigor: '/js/vigorjs.componentmanager',
     app: './app',
     components: './components'
   },
