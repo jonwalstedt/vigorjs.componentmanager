@@ -88,7 +88,7 @@ There are some required properties and methods that needs to be exposed and some
 A minimal component could be this:
 
 ```javascript
-var FilterComponent = Backbone.View.extend({
+var ExampleComponent = Backbone.View.extend({
   render: function () {
     this.$el.html('hello world');
   },
