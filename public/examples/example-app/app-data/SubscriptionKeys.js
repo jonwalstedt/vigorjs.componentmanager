@@ -4,13 +4,9 @@ define(function (require) {
   Vigor = require('vigor');
 
   Vigor.SubscriptionKeys.extend({
-    ARTICLES: {
-      key: 'articles',
-      contract: []
-    },
 
-    FILTER: {
-      key: 'filter',
+    USER_PROFILE: {
+      key: 'user-profile',
       contract: []
     }
 

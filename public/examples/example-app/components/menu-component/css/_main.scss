@@ -1,33 +1,11 @@
-.menu-component {
-  ul {
-    list-style: none;
-  }
+.main-menu {
 
-  .menu {
-    padding: 0;
-    margin: 0;
-  }
 }
 
-.menu__sub {
-  padding-left: 0px;
-  .menu__link {
-    padding-left: 20px;
-  }
+.main-menu__list-item {
+
 }
 
-.menu__item {
-  padding: 0;
-  margin: 0;
-}
+.main-menu__link {
 
-.menu__link {
-  display: block;
-  color: white;
-  line-height: 40px;
-  text-indent: 20px;
-}
-
-.menu__link--active {
-  background-color: #4A7CD0;
 }

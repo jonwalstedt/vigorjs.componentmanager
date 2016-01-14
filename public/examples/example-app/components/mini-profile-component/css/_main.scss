@@ -1,0 +1,39 @@
+.mini-profile-component {
+  text-align: center;
+  color: white;
+}
+
+.mini-profile__profile-picture {
+  margin: 10px 0 0 0;
+}
+
+.mini-profile__image {
+  display: inline-block;
+  border: 3px solid white;
+  border-radius: 100%;
+}
+
+.mini-profile__user-name {
+  font-weight: bold;
+}
+
+.mini-profile__stats-header {
+  font-size: 14px;
+  font-weight: bold;
+  color: #777;
+}
+
+.mini-profile__stats-graph {
+  position: relative;
+  background: #333;
+  height: 4px;
+  margin: 0px 10px;
+}
+
+.mini-profile__stats-bar {
+  display: block;
+  height: 4px;
+  background: #888;
+  width: 0%;
+  transition: .6s;
+}

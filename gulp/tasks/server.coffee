@@ -4,7 +4,7 @@ harp = require 'harp'
 browserSync = require 'browser-sync'
 reload = browserSync.reload
 
-gulp.task 'server', ['coffee'], ->
+gulp.task 'server', ['coffee', 'json-server'], ->
   port = process.env.PORT || 7070
   harp.server '.',
     port: port

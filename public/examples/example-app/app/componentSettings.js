@@ -7,10 +7,6 @@ define(function (require) {
     components: [
 
       {
-        id: 'filter-component',
-        src: 'components/filter'
-      },
-      {
         id: 'barchart-component',
         src: 'components/chart',
         args: {
@@ -40,9 +36,13 @@ define(function (require) {
         src: 'components/header'
       },
       {
-        id: 'list-component',
-        src: 'components/list'
+        id: 'mini-profile-component',
+        src: 'components/mini-profile'
       },
+      // {
+      //   id: 'list-component',
+      //   src: 'components/list'
+      // },
       {
         id: 'banner-component',
         src: 'components/banner'
@@ -72,45 +72,43 @@ define(function (require) {
         //   urlPattern: 'global'
         // }
       ],
-      menu: [
+      sidebar: [
+        {
+          id: 'mini-profile',
+          componentId: 'mini-profile-component',
+          urlPattern: 'global'
+        },
         {
           id: 'menu',
           componentId: 'menu-component',
           urlPattern: 'global'
         }
       ],
-      'below-header': [
-        {
-          id: 'filter',
-          componentId: 'filter-component',
-          urlPattern: 'global'
-        }
-      ],
       main: [
-        // {
-        //   id: 'linechart',
-        //   componentId: 'linechart-component',
-        //   urlPattern: ''
-        // },
-        // {
-        //   id: 'barchart',
-        //   componentId: 'barchart-component',
-        //   urlPattern: ''
-        // },
-        // {
-        //   id: 'doughnutchart',
-        //   componentId: 'doughnutchart-component',
-        //   urlPattern: ''
-        // },
         {
-          id: 'article-list',
-          componentId: 'list-component',
-          args: {
-            subscriptionKey: SubscriptionKeys.ARTICLES
-          },
-          urlPattern: 'filter',
-          reInstantiate: true
+          id: 'linechart',
+          componentId: 'linechart-component',
+          urlPattern: ''
         },
+        {
+          id: 'barchart',
+          componentId: 'barchart-component',
+          urlPattern: ''
+        },
+        {
+          id: 'doughnutchart',
+          componentId: 'doughnutchart-component',
+          urlPattern: ''
+        },
+        // {
+        //   id: 'article-list',
+        //   componentId: 'list-component',
+        //   args: {
+        //     subscriptionKey: SubscriptionKeys.ARTICLES
+        //   },
+        //   urlPattern: 'filter',
+        //   reInstantiate: true
+        // },
         // {
         //   id: 'projects-list',
         //   componentId: 'list-component',

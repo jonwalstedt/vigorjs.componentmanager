@@ -46,6 +46,7 @@
     "gulp-if": "^2.0.0",
     "gulp-include": "^2.1.0",
     "gulp-istanbul": "^0.10.3",
+    "gulp-json-srv": "^0.1.1",
     "gulp-mocha": "^2.0.0",
     "gulp-rename": "^1.2.0",
     "gulp-rimraf": "^0.2.0",

@@ -26,7 +26,8 @@ requirejs.config({
     {name: 'components/chart', location: 'components/chart-component'},
     {name: 'components/header', location: 'components/header-component'},
     {name: 'components/list', location: 'components/list-component'},
-    {name: 'components/menu', location: 'components/menu-component'}
+    {name: 'components/menu', location: 'components/menu-component'},
+    {name: 'components/mini-profile', location: 'components/mini-profile-component'}
   ],
   shim: {
     Handlebars: {

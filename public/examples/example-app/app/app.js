@@ -99,24 +99,26 @@ define(function (require) {
       addMatchingComponents: function (route) {
         // Trigger filter change that will add components
         // whitout removing the old ones
+        var preload = true;
         this.filterComponents({
           url: route,
           options: {
             remove: false
           }
-        }, true);
+        }, preload);
       },
 
       removeNonMatchingComponents: function (route) {
         // This will only remove the components that no longer matches
         // the filter
+        var preload = false;
         this.filterComponents({
           url: route,
           options: {
             add: false,
             remove: true
           }
-        }, false);
+        }, preload);
       },
 
       // Callbacks

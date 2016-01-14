@@ -5,7 +5,7 @@ define(function (require) {
       $ = require('jquery'),
       _ = require('underscore'),
       Backbone = require('backbone'),
-      preloaderTemplate = require('hbars!templates/preloader-template');
+      preloaderTemplate = require('hbars!app/templates/preloader-template');
 
   Preloader = Backbone.View.extend({
 
