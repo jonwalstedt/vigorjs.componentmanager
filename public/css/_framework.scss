@@ -75,6 +75,9 @@ body {
   position: relative;
   margin: auto;
 }
+.examples .content, .docs .content {
+  margin: 0;
+}
 
 .sidebar-wrapper {
   order: -1;

@@ -29,14 +29,14 @@
 
 .sidebar__link {
   display: block;
-  color: white;
+  color: #aaa;
   font-size: 15px;
   text-decoration: none;
-  line-height: 40px;
+  line-height: 30px;
   padding: 4px 0px;
   text-indent: 20px;
 
   &:visited {
-    color: #aaa;
+    color: #777;
   }
 }
