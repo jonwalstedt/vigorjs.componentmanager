@@ -105,18 +105,33 @@ define(function (require) {
         //   urlPattern: '',
         //   args: {
         //     subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
-        //     colorStops: [
-        //       [{offset: 0, color: '#aaa'}, {offset: 1, color: '#888'}],
-        //       [{offset: 0, color: '#fff4f3'}, {offset: 1, color: '#ffcac3'}]
-        //     ],
-        //     backgroundColorStops: [{offset: 0, color: '#f7998e'}, {offset: 1, color: '#eb6c5b'}]
         //   }
         // },
+
+        {
+          id: 'movie-quota-circular-chart',
+          componentId: 'circularchart-component',
+          urlPattern: '',
+          args: {
+            title: 'Movies',
+            subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
+          }
+        },
+        {
+          id: 'photos-quota-circular-chart',
+          componentId: 'circularchart-component',
+          urlPattern: '',
+          args: {
+            title: 'Photos',
+            subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
+          }
+        },
         {
           id: 'music-quota-circular-chart',
           componentId: 'circularchart-component',
           urlPattern: '',
           args: {
+            title: 'Music',
             subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
           }
         },

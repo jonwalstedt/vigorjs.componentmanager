@@ -1,0 +1,46 @@
+.circular-chart-component {
+  position: relative;
+  width: 100%;
+
+  .chart-component__chart {
+    position: relative;
+    height: 370px;
+  }
+
+  .chart-component__used {
+    position: absolute;
+    color: white;
+    width: 100px;
+    left: 50%;
+    margin-left: -50px;
+    top: 50%;
+    margin-top: -20px;
+    text-align: center;
+    text-shadow: 4px 6px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .chart-component__used-value {
+    display: block;
+    font-weight: bold;
+    font-size: 40px;
+  }
+
+  .chart-component__used-suffix {
+    font-size: 20px;
+    display: block;
+    text-transform: lowercase;
+  }
+
+  .chart-component__title {
+    text-align: center;
+    font-size: 30px;
+    font-weight: normal;
+    color: white;
+  }
+
+  .chart-component__stats {
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+}

@@ -1,6 +1,15 @@
 <div class="chart-component__content">
-  <div class="chart-component__header">{{title}}</div>
   <div class="chart-component__chart">
+    <div class="chart-component__used">
+      <span class="chart-component__used-value"></span>
+      <span class="chart-component__used-suffix"></span>
+    </div>
     <canvas class="chart-component__canvas" width="300" height="260"></canvas>
-  <div>
+  </div>
+  <h3 class="chart-component__title"></h3>
+  <div class="chart-component__stats">
+    <span class="chart-component__stats-used"></span>
+    <span class="chart-component__stats-total"></span>
+    <span class="chart-component__stats-limit"></span>
+  </div>
 </div>

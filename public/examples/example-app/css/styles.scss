@@ -85,9 +85,6 @@
     background: $background;
     overflow-y: auto;
     @include clearfix;
-    .chart-component {
-      float: left;
-    }
     .vigor-component {
       visibility: hidden;
     }
@@ -101,4 +98,19 @@
     border: none;
   }
 
+  .chart-component {
+    float: left;
+  }
+}
+
+@media (min-width: 500px) {
+  .chart-component {
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .chart-component {
+    max-width: 33.3%;
+  }
 }

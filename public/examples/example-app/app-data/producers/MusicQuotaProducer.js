@@ -53,17 +53,16 @@ define(function (require) {
       var vals = [{
         id: 'total',
         // percent: totalQuota,
-        percent: Math.random()*100,
-        used: usedTotal,
+        percent: Math.random()*100, //totalQuota,
+        used: Math.random()*100, //usedTotal,
         usedSuffix: usedTotalSuffix,
         limit: formattedLimit.value,
         limitSuffix: formattedLimit.suffix
       },
       {
         id: 'music',
-        // percent: musicQuota,
-        percent: Math.random()*100,
-        used: usedByMusic,
+        percent: Math.random()*100, //musicQuota,
+        used: Math.random()*100, //usedByMusic,
         usedSuffix: usedByMusicSuffix,
         limit: formattedLimit.value,
         limitSuffix: formattedLimit.suffix

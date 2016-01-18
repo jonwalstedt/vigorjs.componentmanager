@@ -21,7 +21,7 @@ define(function (require) {
       ServiceRepository.prototype.initialize.call(this, arguments);
       setInterval(_.bind(function(){
         this.trigger('change', this.models[0]);
-      },this), 5000)
+      },this), 15000)
     },
 
     getBytesUsedByFileType: function (fileType) {

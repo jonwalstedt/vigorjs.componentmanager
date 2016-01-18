@@ -12,6 +12,7 @@ define(function (require) {
 
     startAngle:  MathUtil.degreesToRadians(-90),
 
+    title: undefined,
     duration: undefined,
     lineWidth: undefined,
     radius: undefined,
@@ -30,8 +31,10 @@ define(function (require) {
     arcsCollection: undefined,
 
     constructor: function (options) {
+      ComponentViewModel.prototype.constructor.apply(this, arguments);
       this.subscriptionKey = options.subscriptionKey;
 
+      this.title = options.title || 'Chart';
       this.duration = options.duration || 1;
       this.lineWidth = options.lineWidth || 35;
       this.radius = options.radius || 100;
@@ -44,7 +47,6 @@ define(function (require) {
       this.shadowBlur = options.shadowBlur || 50;
 
       this.arcsCollection = new ArcsCollection();
-      ComponentViewModel.prototype.constructor.apply(this, arguments);
     },
 
     getChartData: function () {
