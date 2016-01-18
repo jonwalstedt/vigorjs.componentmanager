@@ -4,7 +4,6 @@ define(function (require) {
 
   var MiniProfileView,
       $ = require('jquery'),
-      AccountTypes = require('app/AccountTypes'),
       ComponentViewBase = require('components/ComponentViewBase'),
       template = require('hbars!./templates/mini-profile-template');
 
@@ -18,10 +17,10 @@ define(function (require) {
 
     initialize: function (options) {
       ComponentViewBase.prototype.initialize.apply(this, arguments);
-      this.viewModel.userModel.on('change:profile_img', _.bind(this._onProfilePictureChange, this));
-      this.viewModel.userModel.on('change:first_name', _.bind(this._onProfileNameChange, this));
-      this.viewModel.userModel.on('change:last_name', _.bind(this._onProfileNameChange, this));
-      this.viewModel.userModel.on('change:bytes_used', _.bind(this._onBytesUsedChange, this));
+      this.viewModel.userModel.on('change:profileImg', _.bind(this._onProfilePictureChange, this));
+      this.viewModel.userModel.on('change:firstName', _.bind(this._onProfileNameChange, this));
+      this.viewModel.userModel.on('change:lastName', _.bind(this._onProfileNameChange, this));
+      this.viewModel.userModel.on('change:bytesUsed', _.bind(this._onBytesUsedChange, this));
     },
 
     renderStaticContent: function () {
@@ -48,17 +47,16 @@ define(function (require) {
     },
 
     _onProfileNameChange: function () {
-      var userName = this.viewModel.userModel.get('first_name') + ' ' + this.viewModel.userModel.get('last_name');
+      var userName = this.viewModel.userModel.get('firstName') + ' ' + this.viewModel.userModel.get('lastName');
       this.$profileUserName.html(userName);
     },
 
     _onProfilePictureChange: function () {
       var profilePicture = new Image();
       profilePicture.onload = _.bind(function () {
-        console.log('onsuccess');
         this._renderDeferred.resolve();
       }, this);
-      profilePicture.src = this.viewModel.userModel.get('profile_img');
+      profilePicture.src = this.viewModel.userModel.get('profileImg');
       profilePicture.className = 'mini-profile__image';
       profilePicture.width = 100;
       profilePicture.height = 100;
@@ -66,26 +64,14 @@ define(function (require) {
     },
 
     _onBytesUsedChange: function () {
-      var used = this.viewModel.userModel.get('bytes_used'),
-          limit = AccountTypes.premium.bytesLimit,
-          usedFormatted = this._formatBytes(used, 2),
-          limitFormatted = this._formatBytes(limit, 2),
-          usedPercentage = (used / limit) * 100;
+      var used = this.viewModel.userModel.get('bytesUsed'),
+          usedPercentage = this.viewModel.userModel.get('usedPercentage'),
+          usedFormatted = this.viewModel.userModel.get('usedFormatted'),
+          limitFormatted = this.viewModel.userModel.get('limitFormatted');
 
       this.$graphHeader.html(usedFormatted + ' of ' + limitFormatted + ' used');
       this.$graphBar.css('width', usedPercentage + '%');
-    },
-
-    _formatBytes: function (bytes, decimals) {
-      var k = 1000,
-          dm = decimals + 1 || 3,
-          sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-          i = Math.floor(Math.log(bytes) / Math.log(k));
-
-      if (bytes == 0) return '0 Byte';
-      return (bytes / Math.pow(k, i)).toPrecision(dm) + ' ' + sizes[i];
     }
-
   });
 
   return MiniProfileView;
