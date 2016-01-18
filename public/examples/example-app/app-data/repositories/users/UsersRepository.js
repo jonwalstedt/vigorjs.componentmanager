@@ -5,7 +5,7 @@ define(function (require) {
   var UsersRepository,
       UserModel = require('./UserModel'),
       ServiceRepository = require('vigor').ServiceRepository,
-      UsersService = require('services/UserService');
+      UsersService = require('services/UsersService');
 
   UsersRepository = ServiceRepository.extend({
 
@@ -17,16 +17,23 @@ define(function (require) {
     model: UserModel,
 
     initialize: function () {
-      UsersService.on(UsersService.USER_RECEIVED, _.bind(this._onUsersReceived, this));
+      UsersService.on(UsersService.USERS_RECEIVED, _.bind(this._onUsersReceived, this));
       ServiceRepository.prototype.initialize.call(this, arguments);
     },
 
     getLoggedInUser: function () {
-      return this.findWhere({logged_in: true});
+      var user = this.findWhere({loggedIn: true});
+
+      if (user)
+        user = user.toJSON()
+      else
+        user = UserModel.prototype.defaults;
+
+      return user;
     },
 
-    _onUsersReceived: function (user) {
-      this.set(user);
+    _onUsersReceived: function (users) {
+      this.set(users);
     }
   });
 

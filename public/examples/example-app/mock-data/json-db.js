@@ -24,7 +24,7 @@ function generateUser () {
     id: 1,
     first_name: 'Robert',
     last_name: 'Clark',
-    accout: 'premium',
+    account: 'premium',
     bytes_used: undefined,
     profile_img: 'https://unsplash.it/100/100',
     // profile_img: 'https://placeholdit.imgix.net/~text?txtsize=14&txt=logo&w=100&h=100&txttrack=0',

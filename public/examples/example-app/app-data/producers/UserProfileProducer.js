@@ -3,11 +3,13 @@ define(function (require) {
   'use strict';
 
   var UserProfileProducer,
-      Producer = require('vigor').Producer,
+      MathUtil = require('utils/MathUtil'),
+      AccountTypes = require('app/AccountTypes'),
+      BaseProducer = require('./BaseProducer'),
       UsersRepository = require('repositories/users/UsersRepository'),
       subscriptionKeys = require('SubscriptionKeys');
 
-  UserProfileProducer = Producer.extend({
+  UserProfileProducer = BaseProducer.extend({
 
     PRODUCTION_KEY: subscriptionKeys.USER_PROFILE,
     repositories: [UsersRepository],
@@ -15,7 +17,7 @@ define(function (require) {
     repoFetchSubscription: undefined,
 
     subscribeToRepositories: function () {
-      Producer.prototype.subscribeToRepositories.call(this);
+      BaseProducer.prototype.subscribeToRepositories.call(this);
 
       this.repoFetchSubscription = {
         pollingInterval: 1000 * 10,
@@ -26,17 +28,19 @@ define(function (require) {
     },
 
     unsubscribeFromRepositories: function () {
-      Producer.prototype.unsubscribeFromRepositories.call(this);
+      BaseProducer.prototype.unsubscribeFromRepositories.call(this);
       UsersRepository.removeSubscription(UsersRepository.ALL, this.repoFetchSubscription);
     },
 
     currentData: function () {
-      var loggedInUser = UsersRepository.getLoggedInUser();
-      if (loggedInUser) {
-        loggedInUser = loggedInUser.toJSON();
-      }
-      console.log('user: ', loggedInUser);
-      return loggedInUser;
+      var user = UsersRepository.getLoggedInUser(),
+          limit = AccountTypes.premium.bytesLimit;
+
+      user.usedPercentage = (user.bytesUsed / limit) * 100;
+      user.usedFormatted = MathUtil.formatBytes(user.bytesUsed, 2).string;
+      user.limitFormatted = MathUtil.formatBytes(limit, 2).string;
+
+      return user;
     }
 
   });

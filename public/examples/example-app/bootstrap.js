@@ -5,15 +5,16 @@ define(function (require) {
   var Vigor = require('vigor'),
       ProducerManager = Vigor.ProducerManager,
       UserProfileProducer = require('producers/UserProfileProducer'),
-      // ArticlesProducer = require('producers/ArticlesProducer'),
-      // FilterProducer = require('producers/FilterProducer'),
+      MusicQuotaProducer = require('producers/MusicQuotaProducer'),
       ExampleProject = require('app/app');
+
+  // Validate producer/component contracts
+  // Vigor.setup({validateContract: true});
 
   // Setup prodcers
   ProducerManager.registerProducers([
-    UserProfileProducer
-    // ArticlesProducer,
-    // FilterProducer
+    UserProfileProducer,
+    MusicQuotaProducer
   ]);
 
   new ExampleProject({

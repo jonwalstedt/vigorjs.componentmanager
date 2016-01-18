@@ -8,12 +8,12 @@ define(function (require) {
   UserModel = Backbone.Model.extend({
     defaults: {
       id: undefined,
-      first_name: undefined,
-      last_name: undefined,
-      accout: undefined,
-      bytes_used: undefined,
-      profile_img: undefined,
-      logged_in: false
+      firstName: undefined,
+      lastName: undefined,
+      account: 'free',
+      bytesUsed: 0,
+      profileImg: undefined,
+      loggedIn: false
     }
   });
 

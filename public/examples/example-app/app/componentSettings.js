@@ -1,7 +1,7 @@
 define(function (require) {
   'use strict';
   var componentSettings,
-    SubscriptionKeys = require('SubscriptionKeys');
+    subscriptionKeys = require('SubscriptionKeys');
 
   componentSettings = {
     components: [
@@ -26,6 +26,10 @@ define(function (require) {
         args: {
           type: 'doughnut-chart'
         }
+      },
+      {
+        id: 'circularchart-component',
+        src: 'components/circular-chart'
       },
       {
         id: 'menu-component',
@@ -85,26 +89,42 @@ define(function (require) {
         }
       ],
       main: [
+        // {
+        //   id: 'linechart',
+        //   componentId: 'linechart-component',
+        //   urlPattern: ''
+        // },
+        // {
+        //   id: 'barchart',
+        //   componentId: 'barchart-component',
+        //   urlPattern: ''
+        // },
+        // {
+        //   id: 'doughnutchart',
+        //   componentId: 'doughnutchart-component',
+        //   urlPattern: '',
+        //   args: {
+        //     subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
+        //     colorStops: [
+        //       [{offset: 0, color: '#aaa'}, {offset: 1, color: '#888'}],
+        //       [{offset: 0, color: '#fff4f3'}, {offset: 1, color: '#ffcac3'}]
+        //     ],
+        //     backgroundColorStops: [{offset: 0, color: '#f7998e'}, {offset: 1, color: '#eb6c5b'}]
+        //   }
+        // },
         {
-          id: 'linechart',
-          componentId: 'linechart-component',
-          urlPattern: ''
-        },
-        {
-          id: 'barchart',
-          componentId: 'barchart-component',
-          urlPattern: ''
-        },
-        {
-          id: 'doughnutchart',
-          componentId: 'doughnutchart-component',
-          urlPattern: ''
+          id: 'music-quota-circular-chart',
+          componentId: 'circularchart-component',
+          urlPattern: '',
+          args: {
+            subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
+          }
         },
         // {
         //   id: 'article-list',
         //   componentId: 'list-component',
         //   args: {
-        //     subscriptionKey: SubscriptionKeys.ARTICLES
+        //     subscriptionKey: subscriptionKeys.ARTICLES
         //   },
         //   urlPattern: 'filter',
         //   reInstantiate: true
@@ -113,7 +133,7 @@ define(function (require) {
         //   id: 'projects-list',
         //   componentId: 'list-component',
         //   args: {
-        //     subscriptionKey: SubscriptionKeys.ARTICLES
+        //     subscriptionKey: subscriptionKeys.ARTICLES
         //   },
         //   urlPattern: 'projects'
         // },
