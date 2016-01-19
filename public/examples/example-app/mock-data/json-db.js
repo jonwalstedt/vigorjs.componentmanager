@@ -36,7 +36,7 @@ function generateUser () {
 
 function generateFiles () {
   var files = [],
-      nrOfFiles = Math.round(Math.random()*120);
+      nrOfFiles = 220;
 
   for (var i = 0; i < nrOfFiles; i++) {
     files.push(getFile(i));

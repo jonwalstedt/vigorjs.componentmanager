@@ -36,10 +36,11 @@ define(function (require) {
 
       this.title = options.title || 'Chart';
       this.duration = options.duration || 1;
+      this.delay = options.delay || 0.5;
       this.lineWidth = options.lineWidth || 35;
       this.radius = options.radius || 100;
       this.backgroundArc.radius = this.radius;
-      this.colors = options.colors || ['#f7998e', '#aaa', '#fff4f3'];
+      this.colors = options.colors || ['#f7998e', '#fff4f3', '#f00'];
 
       this.shadowColor = options.shadowColor || "rgba(0,0,0,0.4)";
       this.shadowOffsetX = options.shadowOffsetX || 4;

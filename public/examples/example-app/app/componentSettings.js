@@ -114,7 +114,7 @@ define(function (require) {
           urlPattern: '',
           args: {
             title: 'Movies',
-            colors: ['#f00', '#0f0', '#00f'],
+            colors: ['#f7998e', '#fff4f3', '#7C87FA'],
             subscriptionKey: subscriptionKeys.VIDEO_QUOTA,
           }
         },
@@ -124,6 +124,7 @@ define(function (require) {
           urlPattern: '',
           args: {
             title: 'Photos',
+            colors: ['#f7998e', '#fff4f3', '#61d6eb'],
             subscriptionKey: subscriptionKeys.PHOTO_QUOTA,
           }
         },
@@ -133,6 +134,7 @@ define(function (require) {
           urlPattern: '',
           args: {
             title: 'Music',
+            colors: ['#f7998e', '#fff4f3', '#5DFFBE'],
             subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
           }
         },

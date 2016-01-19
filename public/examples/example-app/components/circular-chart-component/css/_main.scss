@@ -5,21 +5,27 @@
   .chart-component__chart {
     position: relative;
     height: 370px;
+    padding: 0;
+    margin: 0;
   }
 
-  .chart-component__used {
+  .chart-component__values {
     position: absolute;
     color: white;
-    width: 100px;
+    width: 180px;
     left: 50%;
-    margin-left: -50px;
+    margin-left: -90px;
     top: 50%;
-    margin-top: -20px;
+    height: 130px;
+    margin-top: -65px;
     text-align: center;
-    text-shadow: 4px 6px 8px rgba(0, 0, 0, 0.4);
+    text-shadow: 4px 6px 8px rgba(0,0,0,0.4);
+    cursor: pointer;
+    overflow: hidden;
   }
 
-  .chart-component__used-value {
+  .chart-component__used-value,
+  .chart-component__used-percentage {
     display: block;
     font-weight: bold;
     font-size: 40px;
@@ -29,6 +35,39 @@
     font-size: 20px;
     display: block;
     text-transform: lowercase;
+  }
+
+  .chart-component__slide-wrapper {
+    position: relative;
+    width: 200%;
+    height: 100%;
+    display: table;
+    transition: transform .3s ease-out;
+  }
+
+  .chart-component__slide-wrapper--active {
+    transform: translateX(-50%);
+
+    .chart-component__slide--first {
+      opacity: 0;
+    }
+
+    .chart-component__slide--second {
+      opacity: 1;
+    }
+  }
+
+  .chart-component__slide {
+    width: 50%;
+    height: 100%;
+    display: table-cell;
+    padding-top: 18px;
+    vertical-align: middle;
+    transition: opacity .3s ease-out;
+  }
+
+  .chart-component__slide--second {
+    opacity: 0;
   }
 
   .chart-component__title {

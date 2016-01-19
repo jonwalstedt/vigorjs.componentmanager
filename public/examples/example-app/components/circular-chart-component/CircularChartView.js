@@ -12,6 +12,9 @@ define(function (require) {
   CircularChartView = ComponentViewBase.extend({
 
     className: 'chart-component circular-chart-component',
+    events: {
+      'click .chart-component__values': '_onChartValuesClick'
+    },
 
     constructor: function () {
       Backbone.View.prototype.constructor.apply(this, arguments);
@@ -27,11 +30,14 @@ define(function (require) {
       this.$chart = $('.chart-component__chart', this.$el);
       this.$canvas = $('.chart-component__canvas', this.$el);
       this.$title = $('.chart-component__title', this.$el);
+      this.$slideWrapper = $('.chart-component__slide-wrapper', this.$el);
+
       this.$usedValue = $('.chart-component__used-value', this.$el);
       this.$usedSuffix = $('.chart-component__used-suffix', this.$el);
       this.$statsTotal = $('.chart-component__stats-total', this.$el);
       this.$statsUsed = $('.chart-component__stats-used', this.$el);
       this.$statsLimit = $('.chart-component__stats-limit', this.$el);
+      this.$usedPercentage = $('.chart-component__used-percentage', this.$el);
 
       this.$title.text(this.viewModel.title);
       this.canvas = this.$canvas.get(0);
@@ -72,7 +78,7 @@ define(function (require) {
           used: arc.targetUsed,
           onUpdate: _.bind(this._draw, this),
           onComplete: _.bind(this._onAnimationComplete, this),
-          delay: i
+          delay: i * this.viewModel.delay
         });
       };
     },
@@ -114,12 +120,14 @@ define(function (require) {
       var arc = this._arcs[1],
           arcTotal = this._arcs[0],
           usedValue = this._formatValue(arc.used, arc.usedSuffix),
+          usedPercentage = this._formatValue(arc.percent),
           total = this._formatValue(arcTotal.used, arcTotal.usedSuffix),
           totalSuffix = arcTotal.usedSuffix,
           usedSuffix = arc.usedSuffix;
 
       this.$usedValue.text(usedValue);
       this.$usedSuffix.text(usedSuffix);
+      this.$usedPercentage.text(usedPercentage);
 
       this.$statsTotal.text('total: ' + total + ' ' + totalSuffix);
       this.$statsUsed.text(arc.id + ': ' + usedValue + ' ' + usedSuffix);
@@ -151,7 +159,12 @@ define(function (require) {
 
     _onTargetAngleChanged: function (model) {
       this._animateArcs();
+    },
+
+    _onChartValuesClick: function () {
+      this.$slideWrapper.toggleClass('chart-component__slide-wrapper--active');
     }
+
   });
 
   return CircularChartView;
