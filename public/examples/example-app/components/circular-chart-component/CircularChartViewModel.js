@@ -66,7 +66,7 @@ define(function (require) {
     },
 
     _onChartDataChanged: function (data) {
-      this.arcsCollection.set(data, {parse: true});
+      this.arcsCollection.set(data);
     }
 
 

@@ -29,8 +29,8 @@ define(function (require) {
       this.$title = $('.chart-component__title', this.$el);
       this.$usedValue = $('.chart-component__used-value', this.$el);
       this.$usedSuffix = $('.chart-component__used-suffix', this.$el);
-      this.$statsTotal = $('.chart-component__stats-used', this.$el);
-      this.$statsUsed = $('.chart-component__stats-total', this.$el);
+      this.$statsTotal = $('.chart-component__stats-total', this.$el);
+      this.$statsUsed = $('.chart-component__stats-used', this.$el);
       this.$statsLimit = $('.chart-component__stats-limit', this.$el);
 
       this.$title.text(this.viewModel.title);
@@ -113,18 +113,26 @@ define(function (require) {
     _updateStats: function () {
       var arc = this._arcs[1],
           arcTotal = this._arcs[0],
-          usedValue = Math.round(arc.used),
-          total = Math.round(arcTotal.used),
+          usedValue = this._formatValue(arc.used, arc.usedSuffix),
+          total = this._formatValue(arcTotal.used, arcTotal.usedSuffix),
           totalSuffix = arcTotal.usedSuffix,
-          used = Math.round(arc.used),
           usedSuffix = arc.usedSuffix;
 
       this.$usedValue.text(usedValue);
       this.$usedSuffix.text(usedSuffix);
 
-      this.$statsTotal.text('files: ' + total + ' ' + totalSuffix);
-      this.$statsUsed.text(arc.id + ': ' + used + ' ' + usedSuffix);
+      this.$statsTotal.text('total: ' + total + ' ' + totalSuffix);
+      this.$statsUsed.text(arc.id + ': ' + usedValue + ' ' + usedSuffix);
       this.$statsLimit.text('limit:' + arc.limit + ' ' + arc.limitSuffix);
+    },
+
+    _formatValue: function (value, suffix) {
+      if (suffix == 'GB') {
+        value = value.toFixed(2);
+      } else {
+        value = Math.round(value);
+      }
+      return value;
     },
 
     _updateDimensions: function () {

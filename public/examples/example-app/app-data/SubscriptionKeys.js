@@ -21,6 +21,16 @@ define(function (require) {
     MUSIC_QUOTA: {
       key: 'music-quota',
       contract: {}
+    },
+
+    VIDEO_QUOTA: {
+      key: 'video-quota',
+      contract: {}
+    },
+
+    PHOTO_QUOTA: {
+      key: 'photo-quota',
+      contract: {}
     }
 
   });

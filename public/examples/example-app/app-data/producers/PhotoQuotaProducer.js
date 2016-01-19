@@ -2,28 +2,28 @@ define(function (require) {
 
   'use strict';
 
-  var MusicQuotaProducer,
+  var PhotoQuotaProducer,
       BaseQuotaProducer = require('./BaseQuotaProducer'),
       UsersRepository = require('repositories/users/UsersRepository'),
       FilesRepository = require('repositories/files/FilesRepository'),
       subscriptionKeys = require('SubscriptionKeys');
 
-  MusicQuotaProducer = BaseQuotaProducer.extend({
+  PhotoQuotaProducer = BaseQuotaProducer.extend({
 
-    PRODUCTION_KEY: subscriptionKeys.MUSIC_QUOTA,
+    PRODUCTION_KEY: subscriptionKeys.PHOTO_QUOTA,
 
     currentData: function () {
       return [{
         id: 'total',
         bytesUsed: UsersRepository.getLoggedInUser().bytesUsed
       }, {
-        id: 'music',
-        bytesUsed: FilesRepository.getBytesUsedByMusic()
+        id: 'photos',
+        bytesUsed: FilesRepository.getBytesUsedByPhotos()
       }];
     }
 
   });
 
-  return MusicQuotaProducer;
+  return PhotoQuotaProducer;
 
 });

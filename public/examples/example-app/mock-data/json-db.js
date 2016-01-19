@@ -11,8 +11,9 @@ module.exports = function() {
     totalSize += files[i].file_size;
   };
 
+  console.log('total file size: ', totalSize);
   data.users = generateUser();
-  data.files = generateFiles();
+  data.files = files;
 
   data.users[0].bytes_used = totalSize;
   return data
@@ -26,7 +27,8 @@ function generateUser () {
     last_name: 'Clark',
     account: 'premium',
     bytes_used: undefined,
-    profile_img: 'https://unsplash.it/100/100',
+    profile_img: 'http://lorempixel.com/100/100/animals/',
+    // profile_img: 'https://unsplash.it/100/100',
     // profile_img: 'https://placeholdit.imgix.net/~text?txtsize=14&txt=logo&w=100&h=100&txttrack=0',
     logged_in: true
   }]
@@ -56,7 +58,7 @@ function getFile (index) {
     name = exampleMovies[movieIndex].title;
     desc = exampleMovies[movieIndex].desc;
     year = exampleMovies[movieIndex].year;
-    fileSize = Math.round(Math.random() * 700000000);
+    fileSize = Math.round(Math.random() * 100000000);
   }
 
   return {

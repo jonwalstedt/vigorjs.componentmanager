@@ -6,6 +6,8 @@ define(function (require) {
       ProducerManager = Vigor.ProducerManager,
       UserProfileProducer = require('producers/UserProfileProducer'),
       MusicQuotaProducer = require('producers/MusicQuotaProducer'),
+      VideoQuotaProducer = require('producers/VideoQuotaProducer'),
+      PhotoQuotaProducer = require('producers/PhotoQuotaProducer'),
       ExampleProject = require('app/app');
 
   // Validate producer/component contracts
@@ -14,7 +16,9 @@ define(function (require) {
   // Setup prodcers
   ProducerManager.registerProducers([
     UserProfileProducer,
-    MusicQuotaProducer
+    MusicQuotaProducer,
+    PhotoQuotaProducer,
+    VideoQuotaProducer
   ]);
 
   new ExampleProject({

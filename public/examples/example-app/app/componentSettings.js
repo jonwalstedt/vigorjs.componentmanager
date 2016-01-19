@@ -114,7 +114,8 @@ define(function (require) {
           urlPattern: '',
           args: {
             title: 'Movies',
-            subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
+            colors: ['#f00', '#0f0', '#00f'],
+            subscriptionKey: subscriptionKeys.VIDEO_QUOTA,
           }
         },
         {
@@ -123,7 +124,7 @@ define(function (require) {
           urlPattern: '',
           args: {
             title: 'Photos',
-            subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
+            subscriptionKey: subscriptionKeys.PHOTO_QUOTA,
           }
         },
         {

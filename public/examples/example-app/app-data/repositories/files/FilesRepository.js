@@ -35,6 +35,14 @@ define(function (require) {
       return this.getBytesUsedByFileType('music');
     },
 
+    getBytesUsedByVideos: function () {
+      return this.getBytesUsedByFileType('video');
+    },
+
+    getBytesUsedByPhotos: function () {
+      return this.getBytesUsedByFileType('photo');
+    },
+
     _onFilesReceived: function (files) {
       this.set(files);
     }

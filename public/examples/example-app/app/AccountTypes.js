@@ -5,7 +5,7 @@ define(function (require) {
       bytesLimit: 1000000000
     },
     premium: {
-      bytesLimit: 50000000000
+      bytesLimit: 10000000000
     }
   }
 });
