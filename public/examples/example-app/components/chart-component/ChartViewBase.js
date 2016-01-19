@@ -25,8 +25,8 @@ define(function (require) {
           $canvas;
 
       this.$el.html(chartTemplate(templateData));
-      $canvas = $('.chart-component__canvas', this.$el);
-      this.ctx = $canvas.get(0).getContext('2d');
+      this.$canvas = $('.chart-component__canvas', this.$el);
+      this.ctx = this.$canvas.get(0).getContext('2d');
 
       this._renderDeferred.resolve();
       return this;

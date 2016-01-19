@@ -5,26 +5,11 @@ define(function (require) {
 
   componentSettings = {
     components: [
-
-      {
-        id: 'barchart-component',
-        src: 'components/chart',
-        args: {
-          type: 'bar-chart'
-        }
-      },
       {
         id: 'linechart-component',
         src: 'components/chart',
         args: {
           type: 'line-chart'
-        }
-      },
-      {
-        id: 'doughnutchart-component',
-        src: 'components/chart',
-        args: {
-          type: 'doughnut-chart'
         }
       },
       {
@@ -89,31 +74,18 @@ define(function (require) {
         }
       ],
       main: [
-        // {
-        //   id: 'linechart',
-        //   componentId: 'linechart-component',
-        //   urlPattern: ''
-        // },
-        // {
-        //   id: 'barchart',
-        //   componentId: 'barchart-component',
-        //   urlPattern: ''
-        // },
-        // {
-        //   id: 'doughnutchart',
-        //   componentId: 'doughnutchart-component',
-        //   urlPattern: '',
-        //   args: {
-        //     subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
-        //   }
-        // },
+        {
+          id: 'linechart',
+          componentId: 'linechart-component',
+          urlPattern: ''
+        },
 
         {
           id: 'movie-quota-circular-chart',
           componentId: 'circularchart-component',
           urlPattern: '',
           args: {
-            title: 'Movies',
+            title: 'Videos',
             colors: ['#f7998e', '#fff4f3', '#7C87FA'],
             subscriptionKey: subscriptionKeys.VIDEO_QUOTA,
           }

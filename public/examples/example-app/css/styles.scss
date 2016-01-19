@@ -107,10 +107,16 @@
   .chart-component {
     max-width: 50%;
   }
+  .linechart-component {
+    max-width: 100%;
+  }
 }
 
 @media (min-width: 1200px) {
   .chart-component {
     max-width: 33.3%;
+  }
+  .linechart-component {
+    max-width: 100%;
   }
 }

@@ -1,4 +1,10 @@
 .linechart-component {
+  position: relative;
   width: 100%;
+
+  .chart-component__chart {
+    height: 300px;
+  }
+
 }
 

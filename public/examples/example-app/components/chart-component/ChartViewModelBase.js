@@ -33,6 +33,7 @@ define(function (require) {
       ]);
 
       this._title = 'EXAMPLE, FIX ME';
+      this.colors = options.colors || ['#f7998e', '#fff4f3', '#f00'];
 
       this.subscriptionKey = options.subscriptionKey;
       ComponentViewModel.prototype.constructor.apply(this, arguments);
