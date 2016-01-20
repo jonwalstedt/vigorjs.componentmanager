@@ -6,6 +6,7 @@ define(function (require) {
       ColorUtil = require('utils/ColorUtil'),
       Backbone = require('backbone'),
       Chart = require('Chart'),
+      LineChartCustom = require('./LineChartCustom'),
       ChartViewBase = require('../ChartViewBase');
 
   LineChartView = ChartViewBase.extend({
@@ -31,24 +32,32 @@ define(function (require) {
 
     createChart: function () {
       var chartData = this.viewModel.getChartData();
+      this._tweakColors(chartData.datasets);
 
-      for (var i = 0; i < chartData.datasets.length; i++) {
-        var set = chartData.datasets[i],
+      this.chart = new Chart(this.ctx).LineCustom(chartData, this.chartOptions);
+    },
+
+    _tweakColors: function (datasets) {
+      for (var i = 0; i < datasets.length; i++) {
+        var set = datasets[i],
             linearGradient = this.ctx.createLinearGradient(0, 0, 0, this.$canvas.height()),
             colorObj = ColorUtil.sbcRip(set.fillColor),
-            color = 'rgba(' + colorObj[0] + ', ' + colorObj[1] + ', ' + colorObj[2] + ', 0.4)',
+            alpha = i == 0 ? 0.1 : 0.4,
+            darkenedAlpha = i == 0 ? 0.3 : 0.9,
+            lightenedAlpha = i == 0 ? 0.3 : 0.5,
+            color = 'rgba(' + colorObj[0] + ', ' + colorObj[1] + ', ' + colorObj[2] + ', ' + alpha +')',
             darkenedColorObj = ColorUtil.sbcRip(ColorUtil.shadeBlendConvert(-0.4, set.fillColor)),
-            darkenedColor = 'rgba(' + darkenedColorObj[0] + ', ' + darkenedColorObj[1] + ', ' + darkenedColorObj[2] + ', 0.9)';
+            lightenedColorObj = ColorUtil.sbcRip(ColorUtil.shadeBlendConvert(0.4, set.fillColor)),
+            darkenedColor = 'rgba(' + darkenedColorObj[0] + ', ' + darkenedColorObj[1] + ', ' + darkenedColorObj[2] + ', ' + darkenedAlpha +')',
+            lightenedColor = 'rgba(' + lightenedColorObj[0] + ', ' + lightenedColorObj[1] + ', ' + lightenedColorObj[2] + ', ' + lightenedAlpha +')';
 
         linearGradient.addColorStop(0, color);
         linearGradient.addColorStop(1, darkenedColor);
 
+        set.strokeColor = lightenedColor;
         set.fillColor = linearGradient;
       };
-
-
-      this.chart = new Chart(this.ctx).Line(chartData, this.chartOptions);
-    }
+    },
 
   });
 
