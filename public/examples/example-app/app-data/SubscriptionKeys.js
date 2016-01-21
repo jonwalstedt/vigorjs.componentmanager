@@ -31,8 +31,12 @@ define(function (require) {
     PHOTO_QUOTA: {
       key: 'photo-quota',
       contract: {}
-    }
+    },
 
+    DAILY_USAGE: {
+      key: 'daily-usage',
+      contract: {}
+    }
   });
 
   return Vigor.SubscriptionKeys;

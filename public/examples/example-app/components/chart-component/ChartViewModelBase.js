@@ -6,69 +6,41 @@ define(function (require) {
       Backbone = require('backbone'),
       ComponentViewModel = require('vigor').ComponentViewModel;
 
-    ChartViewModelBase = ComponentViewModel.extend({
+  ChartViewModelBase = ComponentViewModel.extend({
 
     title: undefined,
-    _labels: undefined,
-    _datasetCollection: undefined,
+    datasetCollection: undefined,
+    labels: undefined,
 
     constructor: function (options) {
-      this._labels = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July'
-      ];
-
-      this._datasetCollection = new Backbone.Collection([
-        {
-          label: 'Some random data',
-          fillColor: "rgba(250,149,2,1)",
-          highlightFill: "rgba(250,149,2,0.75)",
-          data: this._getRandomData(7)
-        }
-      ]);
-
-      this._title = 'EXAMPLE, FIX ME';
-      this.colors = options.colors || ['#f7998e', '#fff4f3', '#f00'];
-
       this.subscriptionKey = options.subscriptionKey;
-      ComponentViewModel.prototype.constructor.apply(this, arguments);
-    },
+      this.colors = options.colors || ['#f7998e', '#fff4f3', '#f00'];
+      this.title = options.title || 'EXAMPLE, FIX ME';
+      this.datasetCollection = new Backbone.Collection();
+      this.labels = new Backbone.Model({labels: []});
 
-    getTitle: function () {
-      return this._title;
+      ComponentViewModel.prototype.constructor.apply(this, arguments);
     },
 
     getChartData: function () {
       var data = {
-        labels: this._labels,
-        datasets: this._datasetCollection.toJSON()
+        labels: this.labels.toJSON().labels,
+        datasets: this.datasetCollection.toJSON()
       }
       return data;
     },
 
     addSubscriptions: function () {
-      // this.subscribe(this.subscriptionKey, _.bind(this._onChartDataChanged, this), {});
+      this.subscribe(this.subscriptionKey, _.bind(this.onChartDataChanged, this), {});
     },
 
     removeSubscriptions: function () {
-      // this.unsubscribe(this.subscriptionKey);
+      this.unsubscribe(this.subscriptionKey);
     },
 
-    _getRandomData: function (nrOfValues) {
-      var data = [];
-      for(var i = 0; i < nrOfValues; i++) {
-        data.push(Math.random()*100);
-      }
-      return data;
-    },
-
-    _onChartDataChanged: function () {
-      console.log('_onChartDataChanged');
+    onChartDataChanged: function (data) {
+      this.labels.set('labels', data.labels);
+      this.datasetCollection.set(data.datasets);
     }
   });
 

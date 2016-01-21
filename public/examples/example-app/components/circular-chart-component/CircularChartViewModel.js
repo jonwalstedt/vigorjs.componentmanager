@@ -42,7 +42,7 @@ define(function (require) {
       this.backgroundArc.radius = this.radius;
       this.colors = options.colors || ['#f7998e', '#fff4f3', '#f00'];
 
-      this.shadowColor = options.shadowColor || "rgba(0,0,0,0.4)";
+      this.shadowColor = options.shadowColor || 'rgba(0,0,0,0.4)';
       this.shadowOffsetX = options.shadowOffsetX || 4;
       this.shadowOffsetY = options.shadowOffsetY || 17;
       this.shadowBlur = options.shadowBlur || 50;

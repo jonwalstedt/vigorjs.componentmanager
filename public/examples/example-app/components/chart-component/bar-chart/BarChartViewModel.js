@@ -10,11 +10,11 @@ define(function (require) {
 
     constructor: function (options) {
       ChartViewModelBase.prototype.constructor.apply(this, arguments);
-      this._datasetCollection = new Backbone.Collection([
+      this.datasetCollection.set([
         {
           label: 'Some random data',
-          fillColor: "rgba(250,149,2,1)",
-          highlightFill: "rgba(250,149,2,0.75)",
+          fillColor: '#7C87FA',
+          highlightFill: 'rgba(250,149,2,0.75)',
           data: this._getRandomData(7)
         }
       ]);

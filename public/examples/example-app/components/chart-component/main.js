@@ -29,9 +29,7 @@ define(function (require) {
       ChartView = this._getChartView(this.type);
       ChartViewModel = this._getChartViewModel(this.type);
 
-      this._chartViewModel = new ChartViewModel({
-        subscriptionKey: options.subscriptionKey
-      });
+      this._chartViewModel = new ChartViewModel(options);
 
       this._chartView = new ChartView({
         viewModel: this._chartViewModel

@@ -13,15 +13,13 @@ define(function (require) {
     services: {
       'all': FileService,
     },
-
     model: FileModel,
+
+    comparator: 'uploaded',
 
     initialize: function () {
       FileService.on(FileService.FILES_RECEIVED, _.bind(this._onFilesReceived, this));
       ServiceRepository.prototype.initialize.call(this, arguments);
-      setInterval(_.bind(function(){
-        this.trigger('change', this.models[0]);
-      },this), 15000)
     },
 
     getBytesUsedByFileType: function (fileType) {
@@ -41,6 +39,14 @@ define(function (require) {
 
     getBytesUsedByPhotos: function () {
       return this.getBytesUsedByFileType('photo');
+    },
+
+    getFIlesUploadedTheLastNthMonths: function (nrOfMonths) {
+      var cutOffPoint = new Date();
+      cutOffPoint.setMonth(cutOffPoint.getMonth() - nrOfMonths);
+      return _.filter(this.models, function (model) {
+        return model.get('uploaded') > cutOffPoint;
+      });
     },
 
     _onFilesReceived: function (files) {

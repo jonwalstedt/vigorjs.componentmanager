@@ -77,9 +77,13 @@ define(function (require) {
         {
           id: 'linechart',
           componentId: 'linechart-component',
-          urlPattern: ''
+          urlPattern: '',
+          args: {
+            title: 'MB uploaded per month',
+            colors: ['#fff4f3', '#7C87FA', '#61d6eb', '#5DFFBE'],
+            subscriptionKey: subscriptionKeys.DAILY_USAGE
+          }
         },
-
         {
           id: 'movie-quota-circular-chart',
           componentId: 'circularchart-component',
@@ -87,7 +91,7 @@ define(function (require) {
           args: {
             title: 'Videos',
             colors: ['#f7998e', '#fff4f3', '#7C87FA'],
-            subscriptionKey: subscriptionKeys.VIDEO_QUOTA,
+            subscriptionKey: subscriptionKeys.VIDEO_QUOTA
           }
         },
         {
@@ -97,7 +101,7 @@ define(function (require) {
           args: {
             title: 'Photos',
             colors: ['#f7998e', '#fff4f3', '#61d6eb'],
-            subscriptionKey: subscriptionKeys.PHOTO_QUOTA,
+            subscriptionKey: subscriptionKeys.PHOTO_QUOTA
           }
         },
         {
@@ -107,7 +111,7 @@ define(function (require) {
           args: {
             title: 'Music',
             colors: ['#f7998e', '#fff4f3', '#5DFFBE'],
-            subscriptionKey: subscriptionKeys.MUSIC_QUOTA,
+            subscriptionKey: subscriptionKeys.MUSIC_QUOTA
           }
         },
         // {

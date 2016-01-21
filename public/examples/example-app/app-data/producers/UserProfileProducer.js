@@ -7,12 +7,13 @@ define(function (require) {
       AccountTypes = require('app/AccountTypes'),
       BaseProducer = require('./BaseProducer'),
       UsersRepository = require('repositories/users/UsersRepository'),
+      FilesRepository = require('repositories/files/FilesRepository'),
       subscriptionKeys = require('SubscriptionKeys');
 
   UserProfileProducer = BaseProducer.extend({
 
     PRODUCTION_KEY: subscriptionKeys.USER_PROFILE,
-    repositories: [UsersRepository],
+    repositories: [UsersRepository, FilesRepository],
 
     repoFetchSubscription: undefined,
 
@@ -34,7 +35,7 @@ define(function (require) {
 
     currentData: function () {
       var user = UsersRepository.getLoggedInUser(),
-          limit = AccountTypes.premium.bytesLimit;
+          limit = AccountTypes[user.account].bytesLimit;
 
       user.usedPercentage = (user.bytesUsed / limit) * 100;
       user.usedFormatted = MathUtil.formatBytes(user.bytesUsed, 2).string;
