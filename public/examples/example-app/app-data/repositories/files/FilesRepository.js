@@ -49,6 +49,14 @@ define(function (require) {
       });
     },
 
+    getCount: function () {
+      return this.models.length;
+    },
+
+    getCountByFileType: function (fileType) {
+      return this.where({fileType: fileType}).length;
+    },
+
     _onFilesReceived: function (files) {
       this.set(files);
     }

@@ -15,10 +15,12 @@ define(function (require) {
     currentData: function () {
       return [{
         id: 'total',
-        bytesUsed: UsersRepository.getLoggedInUser().bytesUsed
+        bytesUsed: UsersRepository.getLoggedInUser().bytesUsed,
+        targetFileCount: FilesRepository.getCount()
       }, {
         id: 'videos',
-        bytesUsed: FilesRepository.getBytesUsedByVideos()
+        bytesUsed: FilesRepository.getBytesUsedByVideos(),
+        targetFileCount: FilesRepository.getCountByFileType('video')
       }];
     }
 

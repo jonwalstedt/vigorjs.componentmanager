@@ -12,7 +12,8 @@ define(function (require) {
       artworkSmall: file.artwork_small,
       fileType: file.file_type,
       fileSize: file.file_size,
-      uploaded: file.uploaded
+      uploaded: file.uploaded,
+      uploadedReadable: file.uploaded_readable
     }
   },
 

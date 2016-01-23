@@ -24,9 +24,12 @@ define(function (require) {
 
       this.labels.set('labels', data.labels);
       this.datasetCollection.set(data.datasets);
+      this.trigger('data-changed');
     }
+
   });
 
+  _.extend(LineChartViewModel.prototype, Backbone.Events);
   return LineChartViewModel;
 
 });

@@ -34,9 +34,12 @@ define(function (require) {
 
       this.$usedValue = $('.chart-component__used-value', this.$el);
       this.$usedSuffix = $('.chart-component__used-suffix', this.$el);
+
+      this.$statsFiles= $('.chart-component__stats-files', this.$el);
       this.$statsTotal = $('.chart-component__stats-total', this.$el);
       this.$statsUsed = $('.chart-component__stats-used', this.$el);
       this.$statsLimit = $('.chart-component__stats-limit', this.$el);
+
       this.$usedPercentage = $('.chart-component__used-percentage', this.$el);
 
       this.$title.text(this.viewModel.title);
@@ -76,6 +79,7 @@ define(function (require) {
           angle: arc.targetAngle,
           percent: arc.targetPercent,
           used: arc.targetUsed,
+          fileCount: arc.targetFileCount,
           onUpdate: _.bind(this._draw, this),
           onComplete: _.bind(this._onAnimationComplete, this),
           delay: i * this.viewModel.delay
@@ -129,6 +133,7 @@ define(function (require) {
       this.$usedSuffix.text(usedSuffix);
       this.$usedPercentage.text(usedPercentage);
 
+      this.$statsFiles.text('files: ' + arc.fileCount);
       this.$statsTotal.text('total: ' + total + ' ' + totalSuffix);
       this.$statsUsed.text(arc.id + ': ' + usedValue + ' ' + usedSuffix);
       this.$statsLimit.text('limit:' + arc.limit + ' ' + arc.limitSuffix);

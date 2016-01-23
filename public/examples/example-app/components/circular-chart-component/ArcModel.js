@@ -16,7 +16,9 @@ define(function (require) {
       angle: 0,
       targetAngle: 0,
       limit: 0,
-      limitSuffix: 'Bytes'
+      limitSuffix: 'Bytes',
+      fileCount: 0,
+      targetFileCount: 0
     }
   })
 

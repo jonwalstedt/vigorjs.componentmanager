@@ -54,7 +54,7 @@ define(function (require) {
           months,
           files;
 
-      fileTypes.unshift('all');
+      fileTypes.unshift('total');
 
       files = _.map(filesUploadedTheLastSixMonths, function (file) {
         var file = file.toJSON();
@@ -86,7 +86,7 @@ define(function (require) {
         label: fileType.charAt(0).toUpperCase() + fileType.slice(1),
         data: _.map(months, function (month) {
           var fls, bytes, bytesUsed;
-          if (fileType == 'all')
+          if (fileType == 'total')
             fls = _.where(files, {monthName: month});
           else
             fls = _.where(files, {monthName: month, fileType: fileType});
@@ -100,8 +100,7 @@ define(function (require) {
           // Nr of files uploaded per month
           // return _.where(files, {monthName: month, fileType: 'music'}).length;
         })
-
-      }
+      };
     }
 
   });

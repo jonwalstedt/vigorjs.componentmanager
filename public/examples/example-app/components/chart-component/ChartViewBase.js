@@ -61,6 +61,7 @@ define(function (require) {
 
         set.strokeColor = lightenedColor;
         set.fillColor = linearGradient;
+        set.pointColor = color;
       };
     },
 
