@@ -8,9 +8,12 @@ define(function (require) {
 
   DoughnutChartViewModel = ChartViewModelBase.extend({
 
-    constructor: function (options) {
-      ChartViewModelBase.prototype.constructor.apply(this, arguments);
+    getChartData: function () {
+      return this.datasetCollection.toJSON();
+    },
 
+    onChartDataChanged: function (data) {
+      // Only mock data so far
       this.datasetCollection.set([
         {
             value: 100,
@@ -31,10 +34,6 @@ define(function (require) {
             label: 'Green'
         }
       ]);
-    },
-
-    getChartData: function () {
-      return this.datasetCollection.toJSON();
     }
 
   });

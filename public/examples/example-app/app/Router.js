@@ -42,9 +42,9 @@ define(function (require) {
         currentDepth++;
       }
 
-      if (previousDepth == 0 && route == '') {
-        previousDepth++;
-      }
+      // if (previousDepth == 0 && route == '') {
+      //   previousDepth++;
+      // }
 
       index = currentDepth - previousDepth;
 
@@ -55,6 +55,7 @@ define(function (require) {
         previousRoute: this.previousRoute,
         index: index
       }
+      console.log(routeInfo);
 
       EventBus.send(EventKeys.ROUTE_CHANGE, routeInfo);
       this.previousRoute = route;

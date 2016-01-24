@@ -1,8 +1,5 @@
 .sidebar {
+  padding: 0;
   background: $sidebarBackground;
   transform: none;
-  .component-area,
-  .vigor-component {
-    padding: 0;
-  }
 }

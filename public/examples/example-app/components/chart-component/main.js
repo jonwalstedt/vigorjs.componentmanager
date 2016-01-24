@@ -56,7 +56,7 @@ define(function (require) {
     },
 
     onPageReady: function () {
-      console.log('onPageReady');
+      console.log('chart onPageReady - creating chart');
       this._chartView.createChart();
     },
 

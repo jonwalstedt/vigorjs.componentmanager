@@ -30,9 +30,9 @@ define(function (require) {
       };
 
       $.when.apply($, this.promises).then(_.bind(function () {
-        setTimeout(_.bind (function () {
+        // setTimeout(_.bind (function () {
           this.trigger('loading-complete');
-        }, this), 400);
+        // }, this), 800);
       }, this));
     },
 

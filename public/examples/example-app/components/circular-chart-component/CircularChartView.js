@@ -123,6 +123,7 @@ define(function (require) {
     _updateStats: function () {
       var arc = this._arcs[1],
           arcTotal = this._arcs[0],
+          fileCount = this._formatValue(arc.fileCount),
           usedValue = this._formatValue(arc.used, arc.usedSuffix),
           usedPercentage = this._formatValue(arc.percent),
           total = this._formatValue(arcTotal.used, arcTotal.usedSuffix),
@@ -133,10 +134,10 @@ define(function (require) {
       this.$usedSuffix.text(usedSuffix);
       this.$usedPercentage.text(usedPercentage);
 
-      this.$statsFiles.text('files: ' + arc.fileCount);
-      this.$statsTotal.text('total: ' + total + ' ' + totalSuffix);
-      this.$statsUsed.text(arc.id + ': ' + usedValue + ' ' + usedSuffix);
-      this.$statsLimit.text('limit:' + arc.limit + ' ' + arc.limitSuffix);
+      this.$statsFiles.text(arc.fileCount + ' ' + arc.id);
+      this.$statsUsed.text('(' + usedValue + ' ' + usedSuffix + ')');
+      // this.$statsTotal.text('total: ' + total + ' ' + totalSuffix);
+      // this.$statsLimit.text('limit:' + arc.limit + ' ' + arc.limitSuffix);
     },
 
     _formatValue: function (value, suffix) {

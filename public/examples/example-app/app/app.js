@@ -29,7 +29,6 @@ define(function (require) {
       },
 
       $overlay: undefined,
-      $contentWrapper: undefined,
 
       initialize: function () {
         this.router = new Router();
@@ -45,11 +44,11 @@ define(function (require) {
         });
 
         this.$overlay = $('.overlay', this.$el);
-        this.$contentWrapper = $('.content-wrapper', this.$el);
         this.$menuToggle = $('.example-app__menu-toggle', this.$el);
 
         this.showOverlay();
 
+        this.pageView.on('transition-started', _.bind(this.onTransitionStarted, this));
         this.pageView.on('transition-complete', _.bind(this.onTransitionComplete, this));
         this.preloader.on('loading-complete', _.bind(this.onLoadingComplete, this));
         EventBus.subscribe(EventKeys.ROUTE_CHANGE, _.bind(this.onRouteChange, this));
@@ -59,23 +58,6 @@ define(function (require) {
       startApplication: function () {
         this.$overlay.html(this.preloader.render().$el);
         Backbone.history.start({root: '/examples/example-app/'});
-      },
-
-      filterComponents: function (filter, preload) {
-        if (typeof preload === 'undefined') {
-          preload = false;
-        }
-
-        if (preload) {
-          componentManager.refresh(filter).then(_.bind(function (activeInstancesObj) {
-            var activeInstances = activeInstancesObj.activeInstances,
-                promises = _.invoke(activeInstances, 'getRenderDonePromise');
-            this.preloader.preload(promises);
-          }, this));
-
-        } else {
-          componentManager.refresh(filter);
-        }
       },
 
       openMenu: function () {
@@ -96,54 +78,56 @@ define(function (require) {
         this.$overlay.removeClass('overlay--visible');
       },
 
-      addMatchingComponents: function (route) {
-        // Trigger filter change that will add components
+      addNewComponents: function (route) {
+        // Trigger filter change that will add new (matching) components
         // whitout removing the old ones
-        var preload = true;
-        this.filterComponents({
+        var promise = componentManager.refresh({
           url: route,
           options: {
             remove: false
           }
-        }, preload);
+        });
+
+        promise.then(_.bind(function (activeInstancesObj) {
+          var activeInstances = activeInstancesObj.activeInstances,
+              promises = _.invoke(activeInstances, 'getRenderDonePromise');
+          this.preloader.preload(promises);
+        }, this));
+
+        return promise;
       },
 
-      removeNonMatchingComponents: function (route) {
+      removeOldComponents: function (route) {
         // This will only remove the components that no longer matches
-        // the filter
-        var preload = false;
-        this.filterComponents({
+        return componentManager.refresh({
           url: route,
           options: {
             add: false,
             remove: true
           }
-        }, preload);
+        });
       },
 
       // Callbacks
       // --------------------------------------------
       onRouteChange: function (routeInfo) {
-        var index = routeInfo.index,
-            route = routeInfo.route;
-
-        // We need to wait to be sure that the class-names have been swapped
-        // before adding new components
-        // _.defer(_.bind(function () {
-        // }, this));
-        this.addMatchingComponents(route);
-
-        this.pageView.transitionPages(index, route);
+        this.pageView.transitionPages(routeInfo.index, routeInfo.route);
         this.closeMenu();
       },
 
+      onTransitionStarted: function (route) {
+        this.addNewComponents(route);
+      },
+
       onTransitionComplete: function($el, route) {
-        this.removeNonMatchingComponents(route);
+        this.removeOldComponents(route).then(_.bind(function () {
+          var $components = $('.main .vigor-component', this.$el);
+          TweenMax.staggerTo($components, 4, { autoAlpha: 1 }, 0.2 );
+          _.invoke(componentManager.getActiveInstances(), 'onPageReady');
+        }, this));
       },
 
       onMenuToggleClick: function (event) {
-        var $btn = $(event.currentTarget);
-
         if (this.$el.hasClass('menu-visible')) {
           this.closeMenu();
         } else {
@@ -152,26 +136,8 @@ define(function (require) {
       },
 
       onLoadingComplete: function () {
-        var $components = $('.main .vigor-component', this.$el);
-        _.invoke(componentManager.getActiveInstances(), 'onPageReady');
         this.hideOverlay();
-        TweenMax.staggerTo($components, 4, { autoAlpha: 1 }, 0.2 );
-      },
-
-      // new component-areas where added dynamically so we do another refresh to add
-      // components that might go into those component-areas. We set remove to false to
-      // not remove existing componetns in this case
-      // onComponentAreasAdded: function () {
-
-      //  this.filterComponents({
-      //     route: this.router.getRoute(),
-      //     options: {
-      //       add: true,
-      //       remove: false
-      //     }
-      //   },
-      //   true);
-      // }
+      }
 
     });
 

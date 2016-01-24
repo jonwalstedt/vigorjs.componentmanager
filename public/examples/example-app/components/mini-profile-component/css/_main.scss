@@ -1,6 +1,8 @@
 .mini-profile-component {
   text-align: center;
   color: white;
+  padding: 20px 10px;
+  background: #cc4d4d;
 }
 
 .mini-profile__profile-picture {
@@ -20,20 +22,20 @@
 .mini-profile__stats-header {
   font-size: 14px;
   font-weight: bold;
-  color: #777;
+  color: #FFC2C2;
 }
 
 .mini-profile__stats-graph {
   position: relative;
-  background: #333;
+  background: #A73F3F;
   height: 4px;
-  margin: 0px 10px;
+  margin: 10px 5px 0px;
 }
 
 .mini-profile__stats-bar {
   display: block;
   height: 4px;
-  background: #888;
+  background: #F6D1D1;
   width: 0%;
   transition: .6s;
 }

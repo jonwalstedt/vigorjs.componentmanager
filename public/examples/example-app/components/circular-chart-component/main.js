@@ -42,7 +42,7 @@ define(function (require) {
     },
 
     onPageReady: function () {
-      console.log('onPageReady creating Circualrchart');
+      console.log('CircularChart onPageReady creating chart');
       this._chartView.createChart();
     },
 

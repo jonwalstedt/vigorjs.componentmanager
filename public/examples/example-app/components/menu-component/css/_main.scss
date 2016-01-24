@@ -1,11 +1,25 @@
-.main-menu {
-
+.menu-component {
+  padding: 20px;
 }
 
-.main-menu__list-item {
-
+.menu__title {
+  border-bottom: 1px solid #383B45;
+  font-size: 16px;
+  text-transform: uppercase;
+  line-height: 32px;
 }
 
-.main-menu__link {
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 30px;
+}
 
+.menu__list-item {
+  line-height: 34px;
+}
+
+.menu__link {
+  color: white;
+  font-weight: bold;
 }

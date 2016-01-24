@@ -8,10 +8,6 @@ define(function (require) {
 
   LineChartViewModel = ChartViewModelBase.extend({
 
-    constructor: function (options) {
-      ChartViewModelBase.prototype.constructor.apply(this, arguments);
-    },
-
     onChartDataChanged: function (data) {
       // Add colors to the data sets
       for (var i = 0; i < data.datasets.length; i++) {
