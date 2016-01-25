@@ -4,14 +4,23 @@ define(function (require) {
 
   var Vigor = require('vigor'),
       ProducerManager = Vigor.ProducerManager,
-      ArticlesProducer = require('producers/ArticlesProducer'),
-      FilterProducer = require('producers/FilterProducer'),
+      UserProfileProducer = require('producers/UserProfileProducer'),
+      MusicQuotaProducer = require('producers/MusicQuotaProducer'),
+      VideoQuotaProducer = require('producers/VideoQuotaProducer'),
+      PhotoQuotaProducer = require('producers/PhotoQuotaProducer'),
+      DailyUsageProducer = require('producers/DailyUsageProducer'),
       ExampleProject = require('app/app');
+
+  // Validate producer/component contracts
+  // Vigor.setup({validateContract: true});
 
   // Setup prodcers
   ProducerManager.registerProducers([
-    ArticlesProducer,
-    FilterProducer
+    UserProfileProducer,
+    MusicQuotaProducer,
+    PhotoQuotaProducer,
+    VideoQuotaProducer,
+    DailyUsageProducer
   ]);
 
   new ExampleProject({

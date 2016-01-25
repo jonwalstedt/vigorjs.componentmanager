@@ -12,6 +12,7 @@ requirejs.config({
     vigor: './lib/vigor',
     componentManager: './lib/vigorjs.componentmanager',
     app: './app',
+    utils: './utils',
     components: './components',
     templates: './templates',
     services: './app-data/services',
@@ -24,9 +25,11 @@ requirejs.config({
     {name: 'components/filter', location: 'components/filter-component'},
     {name: 'components/banner', location: 'components/banner-component'},
     {name: 'components/chart', location: 'components/chart-component'},
+    {name: 'components/circular-chart', location: 'components/circular-chart-component'},
     {name: 'components/header', location: 'components/header-component'},
     {name: 'components/list', location: 'components/list-component'},
-    {name: 'components/menu', location: 'components/menu-component'}
+    {name: 'components/menu', location: 'components/menu-component'},
+    {name: 'components/mini-profile', location: 'components/mini-profile-component'}
   ],
   shim: {
     Handlebars: {

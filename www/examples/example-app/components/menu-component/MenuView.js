@@ -4,20 +4,22 @@ define(function (require) {
 
   var MenuView,
       $ = require('jquery'),
-      _ = require('underscore'),
       ComponentViewBase = require('components/ComponentViewBase'),
-      menuTemplate = require('hbars!./templates/menu-template'),
-      linksTemplate = require('hbars!./templates/links-template');
+      Backbone = require('backbone'),
+      menuTemplate = require('hbars!./templates/menu-template');
 
-  MenuView = ComponentViewBase.extend({
+  MenuView = Backbone.View.extend({
 
     className: 'menu-component',
-    $personalMenu: undefined,
-    $sectionsMenu: undefined,
+    _renderDeferred: undefined,
+    $mainMenu: undefined,
 
     initialize: function () {
-      ComponentViewBase.prototype.initialize.apply(this, arguments);
-      this.listenTo(this.viewModel.availableSections, 'reset', this._onAvailableSectionsReset);
+      this._renderDeferred = $.Deferred();
+    },
+
+    getRenderDonePromise: function () {
+      return this._renderDeferred.promise();
     },
 
     setActiveLink: function (url) {
@@ -26,39 +28,15 @@ define(function (require) {
       $activeLink.addClass('menu__link--active');
     },
 
-    renderStaticContent: function () {
-      var templateData = {
-        menuItems: this.viewModel.menuItems.toJSON()
-      }
-      this.$el.html(menuTemplate(templateData));
-      this.$personalMenu = $('.personal-menu', this.$el);
-      this.$sectionsMenu = $('.sections-menu', this.$el);
+    render: function () {
+      this.$el.html(menuTemplate());
+      this.$mainMenu = $('.main-menu', this.$el);
       this._renderDeferred.resolve();
       return this;
     },
 
-    renderDynamicContent: function () {
-      var sections = this.viewModel.availableSections.toJSON(),
-          templateData = {links: sections},
-          renderedSections = linksTemplate(templateData);
-
-      this.$sectionsMenu.html(renderedSections);
-    },
-
-    addSubscriptions: function () {
-      this.viewModel.addSubscriptions();
-    },
-
-    removeSubscriptions: function () {
-      this.viewModel.removeSubscriptions();
-    },
-
     dispose: function () {
-      ComponentViewBase.prototype.dispose.call(this, arguments);
-    },
-
-    _onAvailableSectionsReset: function () {
-      this.renderDynamicContent();
+      this.remove();
     }
 
   });
