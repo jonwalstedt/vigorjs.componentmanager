@@ -2,11 +2,11 @@ define(function (require) {
 
   'use strict';
 
-  var BaseProducer,
+  var ProducerBase,
       Producer = require('vigor').Producer,
 
-  BaseProducer = Producer.extend({
+  ProducerBase = Producer.extend({
   });
 
-  return BaseProducer;
+  return ProducerBase;
 });

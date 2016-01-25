@@ -3,12 +3,12 @@ define(function (require) {
   'use strict';
 
   var PhotoQuotaProducer,
-      BaseQuotaProducer = require('./BaseQuotaProducer'),
+      QuotaProducerBase = require('./QuotaProducerBase'),
       UsersRepository = require('repositories/users/UsersRepository'),
       FilesRepository = require('repositories/files/FilesRepository'),
       subscriptionKeys = require('SubscriptionKeys');
 
-  PhotoQuotaProducer = BaseQuotaProducer.extend({
+  PhotoQuotaProducer = QuotaProducerBase.extend({
 
     PRODUCTION_KEY: subscriptionKeys.PHOTO_QUOTA,
 
