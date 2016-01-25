@@ -36,6 +36,7 @@ define(function (require) {
     },
 
     dispose: function () {
+      this.$mainMenu = undefined;
       this.remove();
     }
 
