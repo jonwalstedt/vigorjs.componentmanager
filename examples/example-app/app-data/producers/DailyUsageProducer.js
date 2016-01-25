@@ -5,11 +5,11 @@ define(function (require) {
   var DailyUsageProducer,
       MathUtil = require('utils/MathUtil'),
       AccountTypes = require('app/AccountTypes'),
-      BaseProducer = require('./BaseProducer'),
+      ProducerBase = require('./ProducerBase'),
       FilesRepository = require('repositories/files/FilesRepository'),
       subscriptionKeys = require('SubscriptionKeys');
 
-  DailyUsageProducer = BaseProducer.extend({
+  DailyUsageProducer = ProducerBase.extend({
 
     PRODUCTION_KEY: subscriptionKeys.DAILY_USAGE,
     repositories: [FilesRepository],
@@ -32,7 +32,7 @@ define(function (require) {
     ],
 
     subscribeToRepositories: function () {
-      BaseProducer.prototype.subscribeToRepositories.call(this);
+      ProducerBase.prototype.subscribeToRepositories.call(this);
 
       this.repoFetchSubscription = {
         pollingInterval: 1000 * 10,
@@ -43,7 +43,7 @@ define(function (require) {
     },
 
     unsubscribeFromRepositories: function () {
-      BaseProducer.prototype.unsubscribeFromRepositories.call(this);
+      ProducerBase.prototype.unsubscribeFromRepositories.call(this);
       FilesRepository.removeSubscription(FilesRepository.ALL, this.repoFetchSubscription);
     },
 

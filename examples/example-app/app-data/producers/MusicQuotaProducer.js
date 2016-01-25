@@ -3,12 +3,12 @@ define(function (require) {
   'use strict';
 
   var MusicQuotaProducer,
-      BaseQuotaProducer = require('./BaseQuotaProducer'),
+      QuotaProducerBase = require('./QuotaProducerBase'),
       UsersRepository = require('repositories/users/UsersRepository'),
       FilesRepository = require('repositories/files/FilesRepository'),
       subscriptionKeys = require('SubscriptionKeys');
 
-  MusicQuotaProducer = BaseQuotaProducer.extend({
+  MusicQuotaProducer = QuotaProducerBase.extend({
 
     PRODUCTION_KEY: subscriptionKeys.MUSIC_QUOTA,
 
