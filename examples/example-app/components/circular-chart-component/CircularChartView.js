@@ -12,6 +12,19 @@ define(function (require) {
   CircularChartView = ComponentViewBase.extend({
 
     className: 'chart-component circular-chart-component',
+
+    $chart: undefined,
+    $canvas: undefined,
+    $title: undefined,
+    $slideWrapper: undefined,
+    $usedValue: undefined,
+    $usedSuffix: undefined,
+    $statsFile: undefined,
+    $statsTotal: undefined,
+    $statsUsed: undefined,
+    $statsLimit: undefined,
+    $usedPercentage: undefined,
+
     events: {
       'click .chart-component__values': '_onChartValuesClick'
     },
@@ -59,8 +72,19 @@ define(function (require) {
     },
 
     dispose: function () {
-      ComponentViewBase.prototype.dispose.apply(this, null);
       $(window).off('resize', _.bind(this._onResize, this));
+      this.$chart = undefined;
+      this.$canvas = undefined;
+      this.$title = undefined;
+      this.$slideWrapper = undefined;
+      this.$usedValue = undefined;
+      this.$usedSuffix = undefined;
+      this.$statsFile = undefined;
+      this.$statsTotal = undefined;
+      this.$statsUsed = undefined;
+      this.$statsLimit = undefined;
+      this.$usedPercentage = undefined;
+      ComponentViewBase.prototype.dispose.apply(this, null);
     },
 
     createChart: function () {
@@ -136,8 +160,8 @@ define(function (require) {
 
       this.$statsFiles.text(arc.fileCount + ' ' + arc.id);
       this.$statsUsed.text('(' + usedValue + ' ' + usedSuffix + ')');
-      // this.$statsTotal.text('total: ' + total + ' ' + totalSuffix);
-      // this.$statsLimit.text('limit:' + arc.limit + ' ' + arc.limitSuffix);
+      this.$statsTotal.text('total: ' + total + ' ' + totalSuffix);
+      this.$statsLimit.text('limit:' + arc.limit + ' ' + arc.limitSuffix);
     },
 
     _formatValue: function (value, suffix) {

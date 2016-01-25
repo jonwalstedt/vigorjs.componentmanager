@@ -43,6 +43,11 @@ define(function (require) {
     },
 
     dispose: function () {
+      this.viewModel.userModel.off();
+      this.$profilePicture = undefined;
+      this.$profileUserName = undefined;
+      this.$graphHeader = undefined;
+      this.$graphBar = undefined;
       ComponentViewBase.prototype.dispose.apply(this, null);
     },
 
