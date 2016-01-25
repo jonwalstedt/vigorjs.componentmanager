@@ -19,6 +19,7 @@ define(function (require) {
 
       $current.removeClass(COMPONENT_AREA_CLASS_NAME);
       $nextUp.addClass(COMPONENT_AREA_CLASS_NAME);
+      this.trigger('transition-started', route);
 
       if (index > 0) {
         this.scaleIn($nextUp, route);

@@ -3,6 +3,7 @@ define(function (require) {
   'use strict';
 
   var BarChartView,
+      BarChartCustom = require('./BarChartCustom'),
       Backbone = require('backbone'),
       Chart = require('Chart'),
       ChartViewBase = require('../ChartViewBase');
@@ -13,10 +14,10 @@ define(function (require) {
 
     chartOptions: {
       animation: true,
-      animationSteps: 360,
+      animationSteps: 60,
       maintainAspectRatio: false,
       scaleShowGridLines : false,
-      barShowStroke : false
+      barShowStroke : true
     },
 
     constructor: function () {
@@ -25,29 +26,9 @@ define(function (require) {
 
     createChart: function () {
       var chartData = this.viewModel.getChartData();
-      this.chart = new Chart(this.ctx).Bar(chartData, this.chartOptions);
-    },
-
-    // renderStaticContent: function () {
-    //   ChartViewBase.prototype.renderStaticContent.apply(this, arguments);
-    // },
-
-    // renderDynamicContent: function () {
-    //   ChartViewBase.prototype.renderDynamicContent.apply(this, arguments);
-    // },
-
-    // addSubscriptions: function () {
-    //   ChartViewBase.prototype.addSubscriptions.apply(this, arguments);
-    // },
-
-    // removeSubscriptions: function () {
-    //   ChartViewBase.prototype.removeSubscriptions.apply(this, arguments);
-    // },
-
-    // dispose: function () {
-    //   ChartViewBase.prototype.dispose.apply(this, arguments);
-    // }
-
+      this.tweakColors(chartData.datasets);
+      this.chart = new Chart(this.ctx).BarCustom(chartData, this.chartOptions);
+    }
   });
 
   return BarChartView;

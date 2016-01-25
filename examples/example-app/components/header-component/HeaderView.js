@@ -4,27 +4,29 @@ define(function (require) {
 
   var HeaderView,
       $ = require('jquery'),
-      ComponentViewBase = require('components/ComponentViewBase'),
+      Backbone = require('backbone'),
       headerTemplate = require('hbars!./templates/header-template');
 
-  HeaderView = ComponentViewBase.extend({
+  HeaderView = Backbone.View.extend({
 
     className: 'header-component',
 
-    renderStaticContent: function () {
+    initialize: function () {
+      this._renderDeferred = $.Deferred();
+    },
+
+    getRenderDonePromise: function () {
+      return this._renderDeferred.promise();
+    },
+
+    render: function () {
       this.$el.html(headerTemplate());
       this._renderDeferred.resolve();
       return this;
     },
 
-    renderDynamicContent: function () {},
-
-    addSubscriptions: function () {},
-
-    removeSubscriptions: function () {},
-
     dispose: function () {
-      ComponentViewBase.prototype.dispose.apply(this, arguments);
+      this.remove();
     }
 
   });

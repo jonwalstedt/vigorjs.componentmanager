@@ -3,23 +3,20 @@ define(function (require) {
   'use strict';
 
   var Menu,
+      $ = require('jquery'),
+      _ = require('underscore'),
       ComponentBase = require('components/ComponentBase'),
-      MenuView = require('./MenuView'),
-      MenuViewModel = require('./MenuViewModel');
+      MenuView = require('./MenuView');
 
   Menu = ComponentBase.extend({
     $el: undefined,
-    _menuViewModel: undefined,
     _menuView: undefined,
     _urlParamsModel: undefined,
 
     constructor: function (options) {
       // console.log('Menu initialized');
       this._urlParamsModel = options.urlParamsCollection.at(0);
-      this._menuViewModel = new MenuViewModel();
-      this._menuView = new MenuView({
-        viewModel: this._menuViewModel
-      });
+      this._menuView = new MenuView();
 
       this.$el = this._menuView.$el;
 
@@ -35,11 +32,8 @@ define(function (require) {
     },
 
     dispose: function () {
-      console.log('Menu disposed');
       this._menuView.dispose();
-      this._menuViewModel.dispose();
       this._menuView = undefined;
-      this._menuViewModel = undefined;
     },
 
     _setActiveLink: function () {

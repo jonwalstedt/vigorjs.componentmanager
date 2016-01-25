@@ -5,7 +5,7 @@ define(function (require) {
       $ = require('jquery'),
       _ = require('underscore'),
       Backbone = require('backbone'),
-      preloaderTemplate = require('hbars!templates/preloader-template');
+      preloaderTemplate = require('hbars!app/templates/preloader-template');
 
   Preloader = Backbone.View.extend({
 
@@ -30,9 +30,9 @@ define(function (require) {
       };
 
       $.when.apply($, this.promises).then(_.bind(function () {
-        setTimeout(_.bind (function () {
+        // setTimeout(_.bind (function () {
           this.trigger('loading-complete');
-        }, this), 400);
+        // }, this), 800);
       }, this));
     },
 

@@ -4,16 +4,39 @@ define(function (require) {
   Vigor = require('vigor');
 
   Vigor.SubscriptionKeys.extend({
-    ARTICLES: {
-      key: 'articles',
-      contract: []
+
+    USER_PROFILE: {
+      key: 'user-profile',
+      contract: {
+        id: undefined,
+        first_name: undefined,
+        last_name: undefined,
+        account: undefined,
+        bytes_used: undefined,
+        profile_img: undefined,
+        logged_in: false
+      }
     },
 
-    FILTER: {
-      key: 'filter',
-      contract: []
-    }
+    MUSIC_QUOTA: {
+      key: 'music-quota',
+      contract: {}
+    },
 
+    VIDEO_QUOTA: {
+      key: 'video-quota',
+      contract: {}
+    },
+
+    PHOTO_QUOTA: {
+      key: 'photo-quota',
+      contract: {}
+    },
+
+    DAILY_USAGE: {
+      key: 'daily-usage',
+      contract: {}
+    }
   });
 
   return Vigor.SubscriptionKeys;

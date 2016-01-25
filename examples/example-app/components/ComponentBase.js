@@ -3,6 +3,7 @@ define(function (require) {
   'use strict';
 
   var ComponentBase,
+      $ = require('jquery'),
       Vigor = require('vigor');
 
   ComponentBase = Vigor.ComponentBase.extend({
