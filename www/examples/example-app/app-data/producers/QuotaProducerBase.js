@@ -3,13 +3,13 @@ define(function (require) {
   'use strict';
 
   var BaseQuotaProducer,
-      BaseProducer = require('./BaseProducer'),
+      ProducerBase = require('./ProducerBase'),
       ArcDecorator = require('./decorators/ArcDecorator'),
       UsersRepository = require('repositories/users/UsersRepository'),
       FilesRepository = require('repositories/files/FilesRepository'),
       subscriptionKeys = require('SubscriptionKeys');
 
-  BaseQuotaProducer = BaseProducer.extend({
+  BaseQuotaProducer = ProducerBase.extend({
 
     repositories: [UsersRepository, FilesRepository],
     decorators: [ArcDecorator],
@@ -17,7 +17,7 @@ define(function (require) {
     repoFetchSubscription: undefined,
 
     subscribeToRepositories: function () {
-      BaseProducer.prototype.subscribeToRepositories.call(this);
+      ProducerBase.prototype.subscribeToRepositories.call(this);
 
       this.repoFetchSubscription = {
         pollingInterval: 1000 * 10,
@@ -28,7 +28,7 @@ define(function (require) {
     },
 
     unsubscribeFromRepositories: function () {
-      BaseProducer.prototype.unsubscribeFromRepositories.call(this);
+      ProducerBase.prototype.unsubscribeFromRepositories.call(this);
       FilesRepository.removeSubscription(FilesRepository.ALL, this.repoFetchSubscription);
     }
 

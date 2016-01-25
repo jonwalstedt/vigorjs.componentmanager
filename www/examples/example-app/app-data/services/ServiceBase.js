@@ -16,7 +16,7 @@ define(function (require) {
       this._isGHPages = this._window.location.hostname.indexOf('github') > -1;
 
       if (this._isGHPages) {
-        this._baseUrl = '/examples/example-app/';
+        this._baseUrl = 'examples/example-app/';
       }
     },
 
