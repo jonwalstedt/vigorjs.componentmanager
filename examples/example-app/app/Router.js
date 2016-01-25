@@ -11,42 +11,28 @@ define(function (require) {
     previousRoute: undefined,
 
     routes: {
-      '*action': '_onAllRoutes',
-      '*notFound': '_onAllRoutes'
+      '*action': '_triggerCustomRouteInfo',
+      '*notFound': '_triggerCustomRouteInfo'
     },
 
-    getRoute: function () {
-      return Backbone.history.fragment;
-    },
-
-    _onAllRoutes: function () {
-      this._triggerCustomRouteInfo();
-    },
-
+    // This method will catch all routes
     _triggerCustomRouteInfo: function (route) {
-      var route = this.getRoute(),
-          currentDepth,
-          previousDepth,
-          index,
+      var route = Backbone.history.fragment,
+          currentDepth = route.split('/').length - 1,
+          previousDepth = this.previousRoute == undefined ? 0 : this.previousRoute.split('/').length - 1,
+          index = currentDepth - previousDepth,
           routeInfo;
 
-      if (this.previousRoute == undefined) {
-        previousDepth = 0;
-      } else {
-        previousDepth = this.previousRoute.split('/').length - 1;
-      }
-
-      currentDepth = route.split('/').length - 1;
-
-      if (this.previousRoute == '' && currentDepth == 0) {
-        currentDepth++;
-      }
+      // if (this.previousRoute == '' && currentDepth == 0) {
+      //   console.log('currentDepth: ', currentDepth);
+      //   currentDepth++;
+      // }
 
       // if (previousDepth == 0 && route == '') {
       //   previousDepth++;
       // }
 
-      index = currentDepth - previousDepth;
+      // index = currentDepth - previousDepth;
 
       routeInfo = {
         currentDepth: currentDepth,
@@ -55,7 +41,6 @@ define(function (require) {
         previousRoute: this.previousRoute,
         index: index
       }
-      console.log(routeInfo);
 
       EventBus.send(EventKeys.ROUTE_CHANGE, routeInfo);
       this.previousRoute = route;
