@@ -15,6 +15,10 @@ define(function (require) {
     $preloaderTxt: undefined,
     $fill: undefined,
 
+    initialize: function () {
+      this.loadingComplete = $.Deferred();
+    },
+
     render: function () {
       this.$el.html(preloaderTemplate());
       this.$fill = $('.preloader__fill', this.$el);
