@@ -98,7 +98,7 @@ define(function (require) {
       },
 
       removeOldComponents: function (route) {
-        // This will only remove the components that no longer matches
+        // This will only remove the components that no longer matches (returns a promise)
         return componentManager.refresh({
           url: route,
           options: {
@@ -120,7 +120,10 @@ define(function (require) {
       },
 
       onTransitionComplete: function($el, route) {
-        this.removeOldComponents(route).then(_.bind(function () {
+        $.when.apply($, [
+          this.removeOldComponents(route),
+          this.preloader.getLoadingCompletePromise()
+        ]).then(_.bind(function () {
           var $components = $('.main .vigor-component', this.$el);
           TweenMax.staggerTo($components, 4, { autoAlpha: 1 }, 0.2 );
           _.invoke(componentManager.getActiveInstances(), 'onPageReady');
