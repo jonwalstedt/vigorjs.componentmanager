@@ -27,7 +27,6 @@ define(function (require) {
     },
 
     preload: function (promises) {
-      this.loadingComplete = $.Deferred();
       this.promisesCompleteCount = 0;
       this.promises = promises;
       for (var i = this.promises.length - 1; i >= 0; i--) {
