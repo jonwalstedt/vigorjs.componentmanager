@@ -70,7 +70,8 @@ function getFile (index) {
     artwork_small: artWorkSmall,
     file_type: fileType,
     file_size: fileSize,
-    uploaded: uploaded.getTime()
+    uploaded: uploaded.getTime(),
+    uploaded_readable: uploaded.toDateString()
   }
 }
 

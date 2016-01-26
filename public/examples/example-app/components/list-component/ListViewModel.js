@@ -3,17 +3,20 @@ define(function (require) {
   'use strict';
 
   var ListViewModel,
+      _ = require('underscore'),
       Backbone = require('backbone'),
-      ComponentViewModel = require('vigor').ComponentViewModel;
+      ComponentViewModel = require('vigor').ComponentViewModel,
+      ListItemsCollection = require('./ListItemsCollection');
 
   ListViewModel = ComponentViewModel.extend({
 
     listItems: undefined,
+    filesPerPage: 20,
 
     constructor: function (options) {
       ComponentViewModel.prototype.constructor.apply(this, arguments);
       this.subscriptionKey = options.subscriptionKey;
-      this.listItems = new Backbone.Collection();
+      this.listItems = new ListItemsCollection();
     },
 
     addSubscriptions: function () {
@@ -22,6 +25,10 @@ define(function (require) {
 
     removeSubscriptions: function () {
       this.unsubscribe(this.subscriptionKey);
+    },
+
+    paginateListItems: function (index) {
+      return this.listItems.paginate();
     },
 
     _onListItemsChanged: function (listItems) {
