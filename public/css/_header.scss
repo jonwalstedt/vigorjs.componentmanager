@@ -1,6 +1,8 @@
 .header {
   position: relative;
   height: $headerHeight;
+  background: $darkGray;
+  border-bottom: 1px solid white;
 }
 
 .header-content {
@@ -9,7 +11,8 @@
 
 .header h1 {
   $logoSize: 42px;
-  position: relative;
+  position: absolute;
+  display: none;
   margin: 2px 4px;
   padding: 0;
   width: $sidebarWidth;
@@ -48,9 +51,8 @@
 }
 
 .main-navigation {
-  position: absolute;
-  right: 0px;
-  top: 0px;
+  position: relative;
+  text-align: center;
 }
 
 .main-navigation__list {
@@ -60,12 +62,39 @@
 }
 
 .main-navigation__list-item {
-  float: left;
-  margin: 0 10px;
+  display: inline-block;
+  text-transform: uppercase;
+  margin: 0 20px;
 }
 
 .main-navigation__link {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 2px;
   line-height: $headerHeight;
+  display: inline-block;
+  &.entypo-github {
+    text-indent: -9999em;
+    width: 0;
+    &:before {
+      position: absolute;
+      left: 20px;
+      font-size: 20px;
+      text-indent: 0;
+    }
+  }
+}
+
+@media (min-width: 600px) {
+  .main-navigation__link {
+    &.entypo-github {
+      text-indent: 0;
+      width: auto;
+      &:before {
+        display: none;
+      }
+    }
+  }
 }
 
 .main-navigation__link--active {

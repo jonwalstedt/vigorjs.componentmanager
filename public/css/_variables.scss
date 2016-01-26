@@ -1,9 +1,14 @@
-$headerHeight: 50px;
+$headerHeight: 64px;
 $footerHeight: 40px;
 $sidebarWidth: 280px;
 $pageMaxWidth: 1400px;
 $breakpointLarge: 768px;
+$breakpointXLarge: 1200px;
 
-$linkColor: #005BFF;
-$visitedLinkColor: #9032C0;
+$linkColor: green;
+$visitedLinkColor: pink;
 $dashedBorderColor: #aaa;
+
+$textColor: white;
+$darkGray: #9b9b9b;
+$orange: #efc9b6;

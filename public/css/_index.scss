@@ -1,51 +1,90 @@
 .index {
-  .content-wrapper,
-  .content {
-    height: 100%;
+  a {
+    color: white;
   }
   .content {
     padding: 0;
-    justify-content: center;
     max-width: 100%;
+    margin: 0;
     display: flex;
     flex-direction: column;
   }
 }
 
 .hero-unit {
-  flex: 1;
+  flex: 2 1 auto;
+  max-height: 640px;
+  min-height: 310px;
+  &:before {
+    content: '';
+    display: block;
+    padding-bottom: 40%;
+  }
+
   display: flex;
-  background: #3AF;
+  background: $darkGray;
   text-align: center;
-
-  h1 {
-    line-height: 28px;
-    font-size: 22px;
-  }
-
-  p {
-    line-height: 22px;
-  }
+  padding: 20px;
 }
 
 .hero-unit__content {
-  max-width: 800px;
+  max-width: 840px;
   padding: 0 20px;
   margin: auto;
   flex: 1;
   height: 100%;
 }
 
-.hero-unit__links a {
+.hero-unit__title {
+  $logoSize: 69px;
+  position: relative;
+  display: inline-block;
+  line-height: 28px;
+  font-size: 22px;
+  text-align: left;
+  padding-left: $logoSize + 20;
+  font-weight: 500;
+  &:after {
+    position: absolute;
+    content: '';
+    display: block;
+    width: $logoSize;
+    height: $logoSize;
+    top: 10px;
+    left: 0;
+    background: url(../assets/img/logo.svg);
+    background-size: $logoSize $logoSize;
+  }
+}
+
+.hero-unit__desc {
+  max-width: 490px;
+  margin: 20px auto;
+  font-weight: 600;
+  line-height: 22px;
+  letter-spacing: 0.5px;
+}
+
+.hero-unit__link {
   transition: .5s;
   display: inline-block;
   margin: 0 4px;
+  font-size: 18px;
 }
 
 .about {
-  flex: 1;
-  max-width: $pageMaxWidth - $sidebarWidth;
-  margin: auto;
+  flex: 0 1 auto;
+  background: $orange;
+
+  h2 {
+    font-weight: 500;
+    font-size: 26px;
+  }
+
+  p {
+    font-size: 18px;
+    font-weight: 500;
+  }
 
   ul {
     margin: 60px 20px;
@@ -58,52 +97,56 @@
   }
 }
 
+.about__wrapper {
+  max-width: $pageMaxWidth - $sidebarWidth;
+  margin: auto;
+}
+
 @media (min-width: $breakpointLarge) {
   .hero-unit {
-    flex: 1.4;
-    h1 {
-      $logoSize: 80px;
-      display: inline-block;
-      position: relative;
-      font-size: 28px;
-      text-align: left;
-      line-height: $logoSize/2;
-      margin-bottom: 10px;
-      padding-left: ($logoSize+10);
-      &:after {
-        position: absolute;
-        content: '';
-        display: block;
-        width: $logoSize;
-        height: $logoSize;
-        top: 50%;
-        margin-top: -$logoSize/2 - 2px;
-        left: 0;
-        background: url(https://placeholdit.imgix.net/~text?txtsize=28&txt=logo&w=80&h=80&txttrack=0);
-      }
-    }
-
-    p {
-      font-size: 22px;
-      line-height: 38px;
-    }
-  }
-
-  .hero-unit__content {
     padding: 0;
   }
 
-  .hero-unit__links a {
+  .hero-unit__title {
+    $logoSize: 138px;
+    font-size: 28px;
+    line-height: 36px;
+    padding-top: 0;
+    padding-left: ($logoSize + 30);
+    margin: 60px 30px 30px;
+    &:after {
+      top: 50%;
+      margin-top: -$logoSize/2;
+      left: 0;
+      width: $logoSize;
+      height: $logoSize;
+      background-size: $logoSize $logoSize;
+    }
+  }
+
+  .hero-unit__desc {
+    font-size: 22px;
+    line-height: 30px;
+    max-width: 622px;
+    letter-spacing: 0.5px;
+    margin: 40px auto;
+  }
+
+  .hero-unit__links {
+    margin: 50px 0;
+  }
+
+  .hero-unit__link {
     display: inline-block;
-    margin: 20px;
-    background: #fff;
-    text-transform: uppercase;
-    border-radius: 8px;
-    font-size: 13px;
+    margin: 0 10px;
+    border: 3px solid #efc9b6;
+    border-radius: 100px;
+    font-size: 18px;
     font-weight: bold;
     color: #555;
-    line-height: 54px;
+    line-height: 60px;
     padding: 0 40px;
+    width: 200px;
     &:hover {
       background: #eee;
     }
@@ -119,6 +162,27 @@
       width: 33.3%;
       padding: 0px 26px;
     }
+  }
+}
+
+@media (min-width: $breakpointXLarge) {
+  .hero-unit__title {
+    margin: 90px;
+    font-size: 45px;
+    line-height: 50px;
+  }
+
+  .hero-unit__desc {
+    margin: 0px auto 90px;
+  }
+
+  .hero-unit__content {
+    padding: 0;
+  }
+
+  .hero-unit__link {
+    width: 246px;
+    line-height: 75px;
   }
 }
 
