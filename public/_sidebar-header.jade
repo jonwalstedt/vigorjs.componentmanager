@@ -1,0 +1,12 @@
+div.sidebar__header
+  h1.sidebar-header__tilte
+    a(href="#{base_url}/", class="sidebar-header__title-link vigorjs-logo") VigorJS <br/>Component <br/>Manager
+
+  nav.sidebar-navigation
+    ul.sidebar-navigation__list
+      li.sidebar-navigation__list-item
+        a(href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="sidebar-navigation__link") View on GitHub
+      li.sidebar-navigation__list-item
+        a(href="#{base_url}/docs" class="sidebar-navigation__link #{ current.path[0] == 'docs' ? 'sidebar-navigation__link--active' : '' }") Docs
+      li.sidebar-navigation__list-item
+        a(href="#{base_url}/examples" class="sidebar-navigation__link #{ current.path[0] == 'examples' ? 'sidebar-navigation__link--active' : '' }") Examples

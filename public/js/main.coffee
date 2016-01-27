@@ -13,7 +13,7 @@ class App
     @$sidebar = $ '.sidebar'
     @$sectionHeaders = $ '.sub-section > h3 > a'
     @origTop = 0
-    @_debouncedOnScroll = _.debounce @_onScroll, 10
+    # @_debouncedOnScroll = _.debounce @_onScroll, 10
     @_debouncedSetActiveSectionFromScrollPosition = _.debounce @_setActiveSectionFromScrollPosition, 100
     if @$sidebar.length
       @origTop = @$sidebar.offset().top
@@ -28,7 +28,7 @@ class App
     do @_updateActiveLinks
 
     @$window.on 'hashchange', @_updateActiveLinks
-    @$window.on 'scroll', @_debouncedOnScroll
+    # @$window.on 'scroll', @_debouncedOnScroll
     @$window.on 'scroll', @_debouncedSetActiveSectionFromScrollPosition
     @$window.trigger 'scroll'
     @$menuToggle.on 'click', @_onMenuToggleClick
@@ -79,18 +79,19 @@ class App
         @_scrollToTarget $target
       do event.preventDefault
 
-  _onScroll: (event) =>
-    scrollTop = document.documentElement.scrollTop || document.body.scrollTop
-    if @$sidebar.length
-      if scrollTop > @origTop
-        @$sidebarWrapper.height @$sidebar.height()
-        @$contentWrapper.addClass 'sidebar--fixed'
-      else
-        @$sidebarWrapper.removeAttr 'style'
-        @$contentWrapper.removeClass 'sidebar--fixed'
+  # _onScroll: (event) =>
+  #   scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+  #   if @$sidebar.length
+  #     if scrollTop > @origTop
+  #       @$sidebarWrapper.height @$sidebar.height()
+  #       @$contentWrapper.addClass 'sidebar--fixed'
+  #     else
+  #       @$sidebarWrapper.removeAttr 'style'
+  #       @$contentWrapper.removeClass 'sidebar--fixed'
 
   _onMenuToggleClick: =>
     @$menuToggle.toggleClass 'menu-toggle--active'
+    @$menuToggle.find('.menu-icon').toggleClass 'close'
     @$contentWrapper.toggleClass 'sidebar--visible'
 
 

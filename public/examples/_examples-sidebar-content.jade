@@ -1,0 +1,45 @@
+div.sidebar-content
+  h4.sidebar__title Features
+  ul.sidebar_list
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/hello-world/" class="sidebar__link #{ current.path[1] == 'hello-world' ? 'sidebar__link--active' : '' }") Hello World
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/filter-options/" class="sidebar__link #{ current.path[1] == 'filter-options' ? 'sidebar__link--active' : '' }") Filter options
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/filter-by-url/" class="sidebar__link #{ current.path[1] == 'filter-by-url' ? 'sidebar__link--active' : '' }") Filter by url
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/filter-by-string/" class="sidebar__link #{ current.path[1] == 'filter-by-string' ? 'sidebar__link--active' : '' }") Filter by string
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/filter-by-conditions/" class="sidebar__link #{ current.path[1] == 'filter-by-conditions' ? 'sidebar__link--active' : '' }") Filter by conditions
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/filter-by-custom-properties/" class="sidebar__link #{ current.path[1] == 'filter-by-custom-properties' ? 'sidebar__link--active' : '' }") Filter by custom properties
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/iframe-components/" class="sidebar__link #{ current.path[1] == 'iframe-components' ? 'sidebar__link--active' : '' }") Iframe Components
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/reorder-components/" class="sidebar__link #{ current.path[1] == 'reorder-components' ? 'sidebar__link--active' : '' }") Order/Reorder components
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/serialize/" class="sidebar__link #{ current.path[1] == 'serialize' ? 'sidebar__link--active' : '' }") Serialize
+
+  h4.sidebar__title Concepts
+  ul.sidebar_list
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/multiple-layouts/" class="sidebar__link #{ current.path[1] == 'multiple-layouts' ? 'sidebar__link--active' : '' }") Multiple layouts
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/example-app/" class="sidebar__link #{ current.path[1] == 'example-app' ? 'sidebar__link--active' : '' }") Example app
+
+  h4.sidebar__title Module loaders
+  ul.sidebar_list
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/amd-requirejs/" class="sidebar__link #{ current.path[1] == 'amd-requirejs' ? 'sidebar__link--active' : '' }") AMD - Requirejs
+
+    li.sidebar_list-item
+      a(href="#{base_url}/examples/commonjs-browserify/" class="sidebar__link #{ current.path[1] == 'commonjs-browserify' ? 'sidebar__link--active' : '' }") COMMONJS - Browserify

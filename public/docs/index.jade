@@ -1,11 +1,17 @@
 extends ../_custom_layout.jade
 
-block sidebar
+block header
+  button.menu-toggle
+    span.menu-text Toggle Menu
+    span.menu-icon
+      span.lines
 
+block sidebar
   - publicMethods = ['initialize', 'updateSettings', 'refresh', 'serialize', 'parse', 'clear', 'dispose', 'addListeners', 'addConditions', 'addComponentDefinitions', 'addInstanceDefinitions', 'updateComponentDefinitions', 'updateInstanceDefinitions', 'removeComponentDefinition', 'removeInstanceDefinition', 'removeListeners', 'setContext', 'setComponentClassName', 'setTargetPrefix', 'setWhitelistedOrigins', 'getContext', 'getComponentClassName', 'getTargetPrefix', 'getActiveFilter', 'getConditions', 'getComponentDefinitionById', 'getInstanceDefinitionById', 'getComponentDefinitions', 'getInstanceDefinitions', 'getActiveInstances', 'getActiveInstanceById', 'postMessageToInstance']
 
   div.sidebar-wrapper
     aside.sidebar
+      != partial("../_sidebar-header")
       div.sidebar-content
         h4.sidebar__title Introduction
         ul.sidebar_list

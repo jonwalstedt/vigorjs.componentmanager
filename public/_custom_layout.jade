@@ -13,24 +13,11 @@ html
     block includes
 
   body(class="#{current.path[0]}")
-    header.header
-      div.header-content
-        h1
-          a(href="#{base_url}/", class="header__title") Vigorjs ComponentManager
+    block header
+      button.menu-toggle.entypo-menu
+        span Toggle Menu
 
-        nav.main-navigation
-          ul.main-navigation__list
-            li.main-navigation__list-item
-              a(href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="main-navigation__link entypo-github") View on GitHub
-            li.main-navigation__list-item
-              a(href="#{base_url}/docs" class="main-navigation__link #{ current.path[0] == 'docs' ? 'main-navigation__link--active' : '' }") Docs
-            li.main-navigation__list-item
-              a(href="#{base_url}/examples" class="main-navigation__link #{ current.path[0] == 'examples' ? 'main-navigation__link--active' : '' }") Examples
-
-        button.menu-toggle.entypo-menu
-          span Toggle Menu
-
-    main.content-wrapper
+    main.content-wrapper.sidebar--fixed
       block sidebar
 
       article.content

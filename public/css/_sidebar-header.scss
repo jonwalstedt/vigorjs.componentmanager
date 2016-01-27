@@ -1,0 +1,37 @@
+.sidebar__header {
+  height: $sidebarWidth;
+  width: 100%;
+  background: $darkGray;
+  a {
+    color: white;
+    &:visited {
+      color: white;
+    }
+  }
+}
+
+.sidebar-header__tilte {
+  display: block;
+  width: 220px;
+  padding: 90px 0 62px;
+  margin: auto;
+}
+
+.sidebar-navigation__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.sidebar-navigation__list-item {
+  display: inline-block;
+  margin: 0 14px;
+}
+
+.sidebar-navigation__link {
+  font-size: 9px;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}

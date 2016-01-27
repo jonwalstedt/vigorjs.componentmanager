@@ -1,5 +1,11 @@
 extends ../index.jade
 
+block sidebar
+  div.sidebar-wrapper
+    aside.sidebar
+      != partial("../../_sidebar-header")
+      != partial("../_examples-sidebar-content")
+
 block content
   != partial("./reorder-components")
   != partial("../_components", {code: partial("./components"), conditions: '0', components: '1', instances: '5'})

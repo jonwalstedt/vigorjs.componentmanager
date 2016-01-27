@@ -6,19 +6,17 @@
 .sidebar {
   position: relative;
   width: $sidebarWidth;
-  background: #2a2d33;
-  color: #eee;
+  background: $orange;
+  color: #fff;
   flex: 1;
-  h4 {
-    text-indent: 10px;
-  }
+
   .link--active {
-    background: #222;
+    text-decoration: underline;
   }
 }
 
 .sidebar-content {
-  padding: 12px 0;
+  padding: 20px 30px;
 }
 
 .sidebar_list {
@@ -27,16 +25,31 @@
   margin: 0;
 }
 
+.sidebar__title {
+  margin-top: 38px;
+  font-size: 24px;
+  letter-spacing: 0.7px;
+}
+
 .sidebar__link {
   display: block;
   color: #aaa;
-  font-size: 15px;
+  font-size: 16px;
   text-decoration: none;
-  line-height: 30px;
-  padding: 4px 0px;
-  text-indent: 20px;
+  line-height: 29px;
+  font-weight: 900;
 
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  // &:visited {
+  //   color: #777;
+  // }
+
+  color: white;
   &:visited {
-    color: #777;
+    color: white;
   }
 }

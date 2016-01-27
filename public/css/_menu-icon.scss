@@ -1,0 +1,47 @@
+$icon-size : 1.4rem;
+$transition: .5s; // increase this to see the transformations in slow-motion
+$color: white;
+
+@mixin line {
+  display: inline-block;
+  width: $icon-size;
+  height: 2px;
+  background: $color;
+  transition: $transition;
+}
+
+.lines {
+  @include line;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -$icon-size / 2;
+  /* margin-top: -1px; */
+
+  &:before, &:after {
+    @include line;
+    position: absolute;
+    left: 0;
+    content: '';
+  }
+  &:before { top: 6px; }
+  &:after { top: -6px; }
+}
+
+
+.close .lines {
+  background: transparent;
+
+  &:before, &:after{
+    transform-origin: 50% 50%;
+    top:0;
+    width: $icon-size;
+  }
+
+  &:before {
+    transform: rotate3d(0,0,1,45deg);
+  }
+  &:after {
+    transform: rotate3d(0,0,1,-45deg);
+  }
+}
