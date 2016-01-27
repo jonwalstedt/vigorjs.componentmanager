@@ -22,7 +22,6 @@ requirejs.config({
     SubscriptionKeys: './app-data/SubscriptionKeys'
   },
   packages: [
-    {name: 'components/filter', location: 'components/filter-component'},
     {name: 'components/banner', location: 'components/banner-component'},
     {name: 'components/chart', location: 'components/chart-component'},
     {name: 'components/circular-chart', location: 'components/circular-chart-component'},

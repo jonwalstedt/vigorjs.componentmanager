@@ -28,10 +28,10 @@ define(function (require) {
         id: 'mini-profile-component',
         src: 'components/mini-profile'
       },
-      // {
-      //   id: 'list-component',
-      //   src: 'components/list'
-      // },
+      {
+        id: 'list-component',
+        src: 'components/list'
+      },
       {
         id: 'banner-component',
         src: 'components/banner'
@@ -114,35 +114,15 @@ define(function (require) {
             subscriptionKey: subscriptionKeys.MUSIC_QUOTA
           }
         },
-        // {
-        //   id: 'article-list',
-        //   componentId: 'list-component',
-        //   args: {
-        //     subscriptionKey: subscriptionKeys.ARTICLES
-        //   },
-        //   urlPattern: 'filter',
-        //   reInstantiate: true
-        // },
-        // {
-        //   id: 'projects-list',
-        //   componentId: 'list-component',
-        //   args: {
-        //     subscriptionKey: subscriptionKeys.ARTICLES
-        //   },
-        //   urlPattern: 'projects'
-        // },
-        // {
-        //   id: 'order-instance-4',
-        //   componentId: 'barchart-component',
-        //   order: 4,
-        //   urlPattern: 'link_one/:depth1'
-        // },
-        // {
-        //   id: 'order-instance-5',
-        //   componentId: 'barchart-component',
-        //   order: 5,
-        //   urlPattern: 'link_one/:depth1'
-        // }
+        {
+          id: 'file-list',
+          componentId: 'list-component',
+          args: {
+            subscriptionKey: subscriptionKeys.FILES
+          },
+          urlPattern: 'all-files(/)'
+          // reInstantiate: true
+        }
       ]
     }
   }

@@ -9,6 +9,7 @@ define(function (require) {
       VideoQuotaProducer = require('producers/VideoQuotaProducer'),
       PhotoQuotaProducer = require('producers/PhotoQuotaProducer'),
       DailyUsageProducer = require('producers/DailyUsageProducer'),
+      FilesProducer = require('producers/FilesProducer'),
       ExampleProject = require('app/app');
 
   // Validate producer/component contracts
@@ -20,6 +21,7 @@ define(function (require) {
     MusicQuotaProducer,
     PhotoQuotaProducer,
     VideoQuotaProducer,
+    FilesProducer,
     DailyUsageProducer
   ]);
 

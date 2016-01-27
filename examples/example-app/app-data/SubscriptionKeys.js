@@ -36,6 +36,11 @@ define(function (require) {
     DAILY_USAGE: {
       key: 'daily-usage',
       contract: {}
+    },
+
+    FILES: {
+      key: 'files',
+      contract: {}
     }
   });
 
