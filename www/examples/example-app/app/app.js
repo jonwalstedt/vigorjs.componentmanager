@@ -24,8 +24,8 @@ define(function (require) {
       router: undefined,
 
       events: {
-        'click .start-example-btn': 'startApplication',
-        'click .example-app__menu-toggle': 'onMenuToggleClick'
+        'click .start-example-btn': '_startApplication',
+        'click .example-app__menu-toggle': '_onMenuToggleClick'
       },
 
       $overlay: undefined,
@@ -46,39 +46,39 @@ define(function (require) {
         this.$overlay = $('.overlay', this.$el);
         this.$menuToggle = $('.example-app__menu-toggle', this.$el);
 
-        this.showOverlay();
+        this._showOverlay();
 
-        this.pageView.on('transition-started', _.bind(this.onTransitionStarted, this));
-        this.pageView.on('transition-complete', _.bind(this.onTransitionComplete, this));
-        this.preloader.on('loading-complete', _.bind(this.onLoadingComplete, this));
-        EventBus.subscribe(EventKeys.ROUTE_CHANGE, _.bind(this.onRouteChange, this));
+        this.pageView.on('transition-started', _.bind(this._onTransitionStarted, this));
+        this.pageView.on('transition-complete', _.bind(this._onTransitionComplete, this));
+        this.preloader.on('loading-complete', _.bind(this._onLoadingComplete, this));
+        EventBus.subscribe(EventKeys.ROUTE_CHANGE, _.bind(this._onRouteChange, this));
         // EventBus.subscribe(EventKeys.COMPONENT_AREAS_ADDED, _.bind(this.onComponentAreasAdded, this));
       },
 
-      startApplication: function () {
+      _startApplication: function () {
         this.$overlay.html(this.preloader.render().$el);
         Backbone.history.start({root: '/examples/example-app/'});
       },
 
-      openMenu: function () {
+      _openMenu: function () {
         this.$el.addClass('menu-visible');
         this.$menuToggle.addClass('close');
       },
 
-      closeMenu: function () {
+      _closeMenu: function () {
         this.$el.removeClass('menu-visible');
         this.$menuToggle.removeClass('close');
       },
 
-      showOverlay: function () {
+      _showOverlay: function () {
         this.$overlay.addClass('overlay--visible');
       },
 
-      hideOverlay: function () {
+      _hideOverlay: function () {
         this.$overlay.removeClass('overlay--visible');
       },
 
-      addNewComponents: function (route) {
+      _addNewComponents: function (route) {
         // Trigger filter change that will add new (matching) components
         // whitout removing the old ones
         var promise = componentManager.refresh({
@@ -97,7 +97,7 @@ define(function (require) {
         return promise;
       },
 
-      removeOldComponents: function (route) {
+      _removeOldComponents: function (route) {
         // This will only remove the components that no longer matches (returns a promise)
         return componentManager.refresh({
           url: route,
@@ -110,19 +110,19 @@ define(function (require) {
 
       // Callbacks
       // --------------------------------------------
-      onRouteChange: function (routeInfo) {
+      _onRouteChange: function (routeInfo) {
         this.pageView.transitionPages(routeInfo.index, routeInfo.route);
-        this.closeMenu();
+        this._closeMenu();
       },
 
-      onTransitionStarted: function (route) {
-        this.addNewComponents(route);
+      _onTransitionStarted: function (route) {
+        this._addNewComponents(route);
       },
 
-      onTransitionComplete: function($el, route) {
+      _onTransitionComplete: function($el, route) {
         $.when.apply($, [
-          this.removeOldComponents(route),
-          this.preloader.getLoadingCompletePromise()
+          this._removeOldComponents(route),
+          this.preloader.getLoadingPromise()
         ]).then(_.bind(function () {
           var $components = $('.main .vigor-component', this.$el);
           TweenMax.staggerTo($components, 4, { autoAlpha: 1 }, 0.2 );
@@ -130,16 +130,16 @@ define(function (require) {
         }, this));
       },
 
-      onMenuToggleClick: function (event) {
+      _onMenuToggleClick: function (event) {
         if (this.$el.hasClass('menu-visible')) {
-          this.closeMenu();
+          this._closeMenu();
         } else {
-          this.openMenu();
+          this._openMenu();
         }
       },
 
-      onLoadingComplete: function () {
-        this.hideOverlay();
+      _onLoadingComplete: function () {
+        this._hideOverlay();
       }
 
     });

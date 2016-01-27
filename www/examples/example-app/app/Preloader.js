@@ -12,12 +12,9 @@ define(function (require) {
     className: 'preloader preloader--visible',
     promises: [],
     promisesCompleteCount: 0,
+    loadingDeferred: undefined,
     $preloaderTxt: undefined,
     $fill: undefined,
-
-    initialize: function () {
-      this.loadingComplete = $.Deferred();
-    },
 
     render: function () {
       this.$el.html(preloaderTemplate());
@@ -27,25 +24,30 @@ define(function (require) {
     },
 
     preload: function (promises) {
+      this.loadingDeferred = $.Deferred();
       this.promisesCompleteCount = 0;
       this.promises = promises;
       for (var i = this.promises.length - 1; i >= 0; i--) {
-        $.when(this.promises[i]).then(_.bind(this.updateProgressBar, this));
+        $.when(this.promises[i]).then(_.bind(this._updateProgressBar, this));
       };
 
       $.when.apply($, this.promises).then(_.bind(function () {
-        this.loadingComplete.resolve();
+        this.loadingDeferred.resolve();
         this.trigger('loading-complete');
       }, this));
 
-      return this.getLoadingCompletePromise();
+      return this.getLoadingPromise();
     },
 
-    getLoadingCompletePromise: function () {
-      return this.loadingComplete.promise();
+    getLoadingPromise: function () {
+      if (!this.loadingDeferred) {
+        this.loadingDeferred = $.Deferred();
+        this.loadingDeferred.resolve();
+      }
+      return this.loadingDeferred.promise();
     },
 
-    updateProgressBar: function () {
+    _updateProgressBar: function () {
       var progress;
       this.promisesCompleteCount++;
       this.$preloaderTxt.text(this.promisesCompleteCount + '/' + this.promises.length + ' loaded');

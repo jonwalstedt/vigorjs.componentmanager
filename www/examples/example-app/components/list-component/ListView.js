@@ -13,6 +13,7 @@ define(function (require) {
 
     className: 'list-component',
     tagName: 'ul',
+    currentPage: 0,
 
     initialize: function (options) {
       ComponentViewBase.prototype.initialize.apply(this, arguments);
@@ -24,20 +25,10 @@ define(function (require) {
       return this;
     },
 
-    // TODO: do same approach as in hello-world example,
-    // this triggers once fore each item and will cause multiple rerenders
     renderDynamicContent: function () {
-      var templateData = {
-        listItems: this.viewModel.listItems.toJSON()
-      };
-      this.$el.html(listTemplate(templateData));
+      this.$el.html(listTemplate(this.viewModel.paginateListItems(this.currentPage)));
 
-      // tmp ugly fix
       this._renderDeferred.resolve();
-      if (this.viewModel.listItems.length === 0) {
-        this.$el.html('no posts to show');
-      }
-      // Vigor.EventBus.send(Vigor.EventKeys.COMPONENT_AREAS_ADDED);
       return this;
     },
 

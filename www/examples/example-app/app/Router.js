@@ -23,17 +23,6 @@ define(function (require) {
           index = currentDepth - previousDepth,
           routeInfo;
 
-      // if (this.previousRoute == '' && currentDepth == 0) {
-      //   console.log('currentDepth: ', currentDepth);
-      //   currentDepth++;
-      // }
-
-      // if (previousDepth == 0 && route == '') {
-      //   previousDepth++;
-      // }
-
-      // index = currentDepth - previousDepth;
-
       routeInfo = {
         currentDepth: currentDepth,
         previousDepth: previousDepth,
