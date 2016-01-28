@@ -36,7 +36,7 @@ define(function (require) {
 
       this.title = options.title || 'Chart';
       this.duration = options.duration || 1;
-      this.delay = options.delay || 0.5;
+      this.delay = options.delay || 0.2;
       this.lineWidth = options.lineWidth || 35;
       this.radius = options.radius || 100;
       this.backgroundArc.radius = this.radius;

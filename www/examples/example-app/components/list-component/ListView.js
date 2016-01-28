@@ -26,6 +26,7 @@ define(function (require) {
     },
 
     renderDynamicContent: function () {
+      console.log(this.viewModel.paginateListItems(this.currentPage));
       this.$el.html(listTemplate(this.viewModel.paginateListItems(this.currentPage)));
 
       this._renderDeferred.resolve();

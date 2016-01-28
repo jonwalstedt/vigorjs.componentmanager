@@ -124,8 +124,9 @@ define(function (require) {
           this._removeOldComponents(route),
           this.preloader.getLoadingPromise()
         ]).then(_.bind(function () {
+          console.log('running page ready');
           var $components = $('.main .vigor-component', this.$el);
-          TweenMax.staggerTo($components, 4, { autoAlpha: 1 }, 0.2 );
+          TweenMax.staggerFromTo($components, 4, { autoAlpha: 0 }, { autoAlpha: 1 }, 0.2 );
           _.invoke(componentManager.getActiveInstances(), 'onPageReady');
         }, this));
       },
