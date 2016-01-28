@@ -4,6 +4,14 @@ $leftColumnWidth: 290px;
   margin: 80px 0px;
   &:first-child {
     margin-top: 0;
+    h2:first-child {
+      margin-top: 0;
+    }
+  }
+  h2 {
+    font-size: 40px;
+    font-weight: bold;
+    margin: 120px 0 20px;
   }
 }
 
@@ -12,6 +20,8 @@ $leftColumnWidth: 290px;
     margin: 180px 0 0 0;
     border-bottom: 1px dashed #ccc;
     padding: 10px 0px;
+    font-size: 28px;
+    letter-spacing: 0.8px;
   }
   a {
     font-weight: bold;
@@ -55,7 +65,7 @@ $leftColumnWidth: 290px;
 .docs-table-wrapper {
   position: relative;
   max-width: 100%;
-  overflow-x: scroll;
+  overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
 

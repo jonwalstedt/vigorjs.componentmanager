@@ -25,21 +25,15 @@ block common-example-scripts
     </button>
 
     <p>This instance was created from the following instanceDefinition:</p>
-    <pre>
-    <%= instanceDefinition %>
-    </pre>
+    <pre><code><%= instanceDefinition %></code></pre>
 
     <p>This instance was created with the following arguments passed to the constructor:</p>
-    <pre>
-    arguments: <%= arguments %>
-    </pre>
+    <pre><code>arguments: <%= arguments %></code></pre>
 
     <div class="component-output"></div>
 
   script(type="text/template" class="active-filter-template").
-    <pre>
-    <%= activeFilter %>
-    </pre>
+    <pre><code><%= activeFilter %></code></pre>
 
   script(src="#{base_url}/js/vigorjs.componentmanager.js")
   script(type="text/javascript" src="#{base_url}/examples/jquery.flash.js")

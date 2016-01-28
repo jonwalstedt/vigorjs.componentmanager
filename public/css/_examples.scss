@@ -2,11 +2,6 @@
   display: block;
 }
 
-.example-info-wrapper {
-  background: #efecf4;
-  padding: .5em;
-}
-
 .examples-info {
   border: 1px solid #ccc;
   line-height: 20px;
@@ -31,10 +26,14 @@
     margin: 0 4px 4px 0;
   }
 
+  a {
+    text-decoration: underline;
+  }
+
   ul {
     @extend %clearfix;
     margin: 0;
-    padding: 10px;
+    padding: 0;
     border: 1px dashed $dashedBorderColor;
     max-height: 300px;
     overflow-y: auto;
@@ -42,12 +41,12 @@
 
   li {
     padding: 10px 20px;
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 16px;
+    line-height: 24px;
     list-style: none;
     transition: background-color 0.4s ease-out;
     &:hover {
-      background-color: #E9E8E8;
+      background-color: #778E96;
     }
   }
 

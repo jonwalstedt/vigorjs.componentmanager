@@ -1,3 +1,3 @@
-## Render done
+## Example app
 
 
