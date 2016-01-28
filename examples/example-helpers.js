@@ -53,7 +53,8 @@ var exampleHelpers = {
     this.$examplesInfo.html(msg);
 
     this.$activeFilter.each(function () {
-      hljs.highlightBlock(this);
+      var $pre = $(this).find('code');
+      hljs.highlightBlock($pre.get(0));
     });
   },
 

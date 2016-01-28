@@ -48,8 +48,15 @@ ExampleComponent = Backbone.View.extend({
   },
 
   render: function () {
+    var $pre;
     this.$el.html(this.template(this.templateData));
     this.$output = $(".component-output", this.$el);
+
+    $pre = this.$el.find('pre');
+    $pre.each(function () {
+      console.log(this);
+      hljs.highlightBlock(this);
+    });
     return this;
   },
 

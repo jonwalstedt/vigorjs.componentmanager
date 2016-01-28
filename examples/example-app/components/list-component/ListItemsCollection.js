@@ -17,7 +17,7 @@ define(function (require) {
       return {
         listItems: _.invoke(listItems, 'toJSON'),
         currentPage: index,
-        nrOfPages: Math.ceil(this.listItems.length / this.itemsPerPage)
+        nrOfPages: Math.ceil(this.length / this.itemsPerPage)
       }
     }
 
