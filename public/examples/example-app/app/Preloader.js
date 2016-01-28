@@ -16,6 +16,10 @@ define(function (require) {
     $preloaderTxt: undefined,
     $fill: undefined,
 
+    initialize: function () {
+      this.loadingDeferred = $.Deferred();
+    },
+
     render: function () {
       this.$el.html(preloaderTemplate());
       this.$fill = $('.preloader__fill', this.$el);
@@ -24,7 +28,9 @@ define(function (require) {
     },
 
     preload: function (promises) {
-      this.loadingDeferred = $.Deferred();
+      if (this.loadingDeferred.state() == 'resolved') {
+        this.loadingDeferred = $.Deferred();
+      }
       this.promisesCompleteCount = 0;
       this.promises = promises;
       for (var i = this.promises.length - 1; i >= 0; i--) {
@@ -40,10 +46,6 @@ define(function (require) {
     },
 
     getLoadingPromise: function () {
-      if (!this.loadingDeferred) {
-        this.loadingDeferred = $.Deferred();
-        this.loadingDeferred.resolve();
-      }
       return this.loadingDeferred.promise();
     },
 

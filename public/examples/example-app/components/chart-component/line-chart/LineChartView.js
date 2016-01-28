@@ -47,19 +47,25 @@ define(function (require) {
     },
 
     updateChart: function () {
-      var chartData = this.viewModel.getChartData(),
-          dimFirst = true;
-
       if (this.chart) {
-        this.tweakColors(chartData.datasets, dimFirst);
-        for (var i = 0; i < this.chart.datasets.length; i++) {
-          var dataset = this.chart.datasets[i];
-          for (var j = 0; j < dataset.points.length; j++) {
-            var point = dataset.points[j];
-            point.value = chartData.datasets[i].data[j];
-          };
-        };
-        this.chart.update();
+        if (!this.chart.datasets || this.chart.datasets.length < this.viewModel.getChartData().datasets.length) {
+          this.createChart();
+        } else {
+          var chartData = this.viewModel.getChartData(),
+              dimFirst = true;
+
+          if (this.chart) {
+            this.tweakColors(chartData.datasets, dimFirst);
+            for (var i = 0; i < this.chart.datasets.length; i++) {
+              var dataset = this.chart.datasets[i];
+              for (var j = 0; j < dataset.points.length; j++) {
+                var point = dataset.points[j];
+                point.value = chartData.datasets[i].data[j];
+              };
+            };
+            this.chart.update();
+          }
+        }
       }
     },
 

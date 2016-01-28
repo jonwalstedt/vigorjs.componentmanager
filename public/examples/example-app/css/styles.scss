@@ -6,12 +6,6 @@
   @import "sidebar";
   @import "menu-button";
   @import "components";
-  @import url(http://weloveiconfonts.com/api/?family=entypo);
-
-  /* entypo */
-  [class*="entypo-"]:before {
-    font-family: 'entypo', sans-serif;
-  }
 
   position: relative;
   min-height: $appMinHeight;

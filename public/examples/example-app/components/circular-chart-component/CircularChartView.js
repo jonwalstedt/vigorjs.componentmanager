@@ -174,6 +174,7 @@ define(function (require) {
     },
 
     _updateDimensions: function () {
+      this.viewModel.radius = this.$el.width() / 3;
       this.$canvas.attr('width', this.$chart.width());
       this.$canvas.attr('height', this.$chart.height());
     },
