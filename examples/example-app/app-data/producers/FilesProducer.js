@@ -5,6 +5,7 @@ define(function (require) {
   var FilesProducer,
       ProducerBase = require('./ProducerBase'),
       FilesRepository = require('repositories/files/FilesRepository'),
+      MathUtil = require('utils/MathUtil'),
       subscriptionKeys = require('SubscriptionKeys');
 
   FilesProducer = ProducerBase.extend({
@@ -31,7 +32,11 @@ define(function (require) {
     },
 
     currentData: function () {
-      return FilesRepository.toJSON();
+      var files = FilesRepository.toJSON();
+      for (var i = 0; i < files.length; i++) {
+        files[i].fileSizeReadable = MathUtil.formatBytes(files[i].fileSize, 2).string;
+      };
+      return files;
     }
 
   });

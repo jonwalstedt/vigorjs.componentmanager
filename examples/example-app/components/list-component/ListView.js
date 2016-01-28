@@ -12,7 +12,6 @@ define(function (require) {
   ListView = ComponentViewBase.extend({
 
     className: 'list-component',
-    tagName: 'ul',
     currentPage: 0,
 
     initialize: function (options) {
@@ -26,7 +25,6 @@ define(function (require) {
     },
 
     renderDynamicContent: function () {
-      console.log(this.viewModel.paginateListItems(this.currentPage));
       this.$el.html(listTemplate(this.viewModel.paginateListItems(this.currentPage)));
 
       this._renderDeferred.resolve();
