@@ -22,6 +22,10 @@ $leftColumnWidth: 290px;
     padding: 10px 0px;
     font-size: 28px;
     letter-spacing: 0.8px;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   a {
     font-weight: bold;

@@ -3,6 +3,8 @@ class App
   VIEWPORT_CUTOF: 200
   ACTIVE_LINK_CLASS: 'link--active'
 
+  _isMenuOpen: false
+
   constructor: ->
     @$window = $ window
     @$body = $ 'html, body'
@@ -43,6 +45,7 @@ class App
     $activeLinks = $ "[href='#{hash}'], [href='#{pathname}']"
     @$links.removeClass @ACTIVE_LINK_CLASS
     $activeLinks.addClass @ACTIVE_LINK_CLASS
+    do @_closeMenu
 
   _setActiveSectionFromScrollPosition: =>
     for el in @$sectionHeaders
@@ -89,10 +92,22 @@ class App
   #       @$sidebarWrapper.removeAttr 'style'
   #       @$contentWrapper.removeClass 'sidebar--fixed'
 
-  _onMenuToggleClick: =>
-    @$menuToggle.toggleClass 'menu-toggle--active'
-    @$menuToggle.find('.menu-icon').toggleClass 'close'
-    @$contentWrapper.toggleClass 'sidebar--visible'
+  _openMenu: =>
+    @$menuToggle.addClass 'menu-toggle--active'
+    @$contentWrapper.addClass 'sidebar--visible'
+    @$menuToggle.find('.menu-icon').addClass 'close'
+    @_isMenuOpen = true
 
+  _closeMenu: =>
+    @$menuToggle.removeClass 'menu-toggle--active'
+    @$contentWrapper.removeClass 'sidebar--visible'
+    @$menuToggle.find('.menu-icon').removeClass 'close'
+    @_isMenuOpen = false
+
+  _onMenuToggleClick: =>
+    if @_isMenuOpen
+      do @_closeMenu
+    else
+      do @_openMenu
 
 window.app = new App()
