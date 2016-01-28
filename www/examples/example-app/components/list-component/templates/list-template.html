@@ -1,13 +1,24 @@
-{{#each files}}
-  <li class="list-component__list-item">
+<ul>
+{{#each listItems}}
+  <li class="list-component__list-item list-component__list-item--{{fileType
+  }}">
     <div class="list-component__thumb-wrapper">
       <img class="list-component__thumb" src="{{artworkSmall}}"/>
     </div>
     <div class="list-component__conent">
       <a href="{{href}}" class="list-component__link">
         <h3 class="list-component__title">{{{name}}}</h3>
+        <p>{{{desc}}}</p>
+        <small class="list-component__file-size">{{fileSizeReadable}}</small>
         <small class="list-component__date">{{uploadedReadable}}</small>
       </a>
     </div>
   </li>
 {{/each}}
+</ul>
+
+<ul>
+{{#each pages}}
+  <a href="{{page}}">{{page}}</a>
+{{/each}}
+</ul>

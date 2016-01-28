@@ -27,8 +27,8 @@ define(function (require) {
       this.unsubscribe(this.subscriptionKey);
     },
 
-    paginateListItems: function (index) {
-      return this.listItems.paginate();
+    paginateListItems: function (currentPage) {
+      return this.listItems.paginate(currentPage);
     },
 
     _onListItemsChanged: function (listItems) {

@@ -12,12 +12,21 @@ define(function (require) {
     paginate: function (index) {
       var startIndex = index * this.itemsPerPage,
           endIndex = (index + 1) * this.itemsPerPage,
-          listItems = this.slice(startIndex, endIndex);
+          listItems = this.slice(startIndex, endIndex),
+          nrOfPages = Math.ceil(this.length / this.itemsPerPage),
+          pages = [];
+
+      for (var i = 0; i < nrOfPages; i++) {
+        pages.push({
+          page: i + 1,
+          value: i
+        });
+      };
 
       return {
         listItems: _.invoke(listItems, 'toJSON'),
         currentPage: index,
-        nrOfPages: Math.ceil(this.length / this.itemsPerPage)
+        pages: pages
       }
     }
 
