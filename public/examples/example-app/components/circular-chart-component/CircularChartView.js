@@ -24,6 +24,7 @@ define(function (require) {
     $statsUsed: undefined,
     $statsLimit: undefined,
     $usedPercentage: undefined,
+    tweens: undefined,
 
     events: {
       'click .chart-component__values': '_onChartValuesClick'
@@ -34,6 +35,7 @@ define(function (require) {
     },
 
     initialize: function () {
+      this.$window = $(window);
       ComponentViewBase.prototype.initialize.apply(this, arguments);
     },
 
@@ -72,7 +74,10 @@ define(function (require) {
     },
 
     dispose: function () {
-      $(window).off('resize', _.bind(this._onResize, this));
+      this.$window.off('resize');
+      for (var i = 0; i < this.tweens.length; i++) {
+        this.tweens[i].kill();
+      };
       this.$chart = undefined;
       this.$canvas = undefined;
       this.$title = undefined;
@@ -88,18 +93,19 @@ define(function (require) {
     },
 
     createChart: function () {
-      $(window).on('resize', _.bind(this._onResize, this));
+      this.$window.on('resize', _.bind(this._onResize, this));
       this.listenTo(this.viewModel.arcsCollection, 'change:targetAngle', _.bind(this._onTargetAngleChanged, this));
       this._updateDimensions();
       this._animateArcs();
     },
 
     _animateArcs: function () {
+      this.tweens = [];
       this._arcs = this.viewModel.arcsCollection.toJSON();
-
       for (var i = 0; i < this._arcs.length; i++) {
-        var arc = this._arcs[i];
-        TweenLite.to(arc, this.viewModel.duration, {
+        var arc = this._arcs[i],
+            tween;
+        tween = TweenLite.to(arc, this.viewModel.duration, {
           angle: arc.targetAngle,
           percent: arc.targetPercent,
           used: arc.targetUsed,
@@ -108,6 +114,8 @@ define(function (require) {
           onComplete: _.bind(this._onAnimationComplete, this),
           delay: i * this.viewModel.delay
         });
+
+        this.tweens.push(tween);
       };
     },
 

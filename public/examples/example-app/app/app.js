@@ -111,7 +111,13 @@ define(function (require) {
       // Callbacks
       // --------------------------------------------
       _onRouteChange: function (routeInfo) {
-        this.pageView.transitionPages(routeInfo.index, routeInfo.route);
+        if (!routeInfo.isSubPage)
+          this.pageView.transitionPages(routeInfo.index, routeInfo.route);
+        else
+          this._removeOldComponents(routeInfo.route),
+          this._addNewComponents(routeInfo.route);
+          _.invoke(componentManager.getActiveInstances(), 'onPageReady');
+
         this._closeMenu();
       },
 
@@ -124,7 +130,6 @@ define(function (require) {
           this._removeOldComponents(route),
           this.preloader.getLoadingPromise()
         ]).then(_.bind(function () {
-          console.log('running page ready');
           var $components = $('.main .vigor-component', this.$el);
           TweenMax.staggerFromTo($components, 4, { autoAlpha: 0 }, { autoAlpha: 1 }, 0.2 );
           _.invoke(componentManager.getActiveInstances(), 'onPageReady');
