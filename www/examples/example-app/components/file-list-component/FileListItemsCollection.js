@@ -2,15 +2,16 @@ define(function (require) {
 
   'use strict';
 
-  var ListItemsCollection,
+  var FileListItemsCollection,
       Backbone = require('backbone');
 
-  ListItemsCollection = Backbone.Collection.extend({
+  FileListItemsCollection = Backbone.Collection.extend({
 
-    itemsPerPage: 20,
+    itemsPerPage: 10,
 
     paginate: function (index) {
-      var startIndex = index * this.itemsPerPage,
+      var index = parseInt(index, 10),
+          startIndex = index * this.itemsPerPage,
           endIndex = (index + 1) * this.itemsPerPage,
           listItems = this.slice(startIndex, endIndex),
           nrOfPages = Math.ceil(this.length / this.itemsPerPage),
@@ -19,7 +20,8 @@ define(function (require) {
       for (var i = 0; i < nrOfPages; i++) {
         pages.push({
           page: i + 1,
-          value: i
+          value: i,
+          isActive: i == index
         });
       };
 
@@ -33,5 +35,5 @@ define(function (require) {
 
   });
 
-  return ListItemsCollection
+  return FileListItemsCollection
 });
