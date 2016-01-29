@@ -2,21 +2,21 @@ define(function (require) {
 
   'use strict';
 
-  var ListViewModel,
+  var FileListViewModel,
       _ = require('underscore'),
       Backbone = require('backbone'),
       ComponentViewModel = require('vigor').ComponentViewModel,
-      ListItemsCollection = require('./ListItemsCollection');
+      FileListItemsCollection = require('./FileListItemsCollection'),
+      subscriptionKeys = require('SubscriptionKeys');
 
-  ListViewModel = ComponentViewModel.extend({
+  FileListViewModel = ComponentViewModel.extend({
 
     listItems: undefined,
-    filesPerPage: 20,
+    subscriptionKey: subscriptionKeys.FILES,
 
     constructor: function (options) {
       ComponentViewModel.prototype.constructor.apply(this, arguments);
-      this.subscriptionKey = options.subscriptionKey;
-      this.listItems = new ListItemsCollection();
+      this.listItems = new FileListItemsCollection();
     },
 
     addSubscriptions: function () {
@@ -37,6 +37,6 @@ define(function (require) {
 
   });
 
-  return ListViewModel;
+  return FileListViewModel;
 
 });

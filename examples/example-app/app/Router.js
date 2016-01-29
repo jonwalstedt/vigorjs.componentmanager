@@ -21,14 +21,19 @@ define(function (require) {
           currentDepth = route.split('/').length - 1,
           previousDepth = this.previousRoute == undefined ? 0 : this.previousRoute.split('/').length - 1,
           index = currentDepth - previousDepth,
+          isSubPage = false,
           routeInfo;
+
+      if (this.previousRoute)
+        isSubPage = route.indexOf(this.previousRoute.split('/').shift()) > -1
 
       routeInfo = {
         currentDepth: currentDepth,
         previousDepth: previousDepth,
         route: route,
         previousRoute: this.previousRoute,
-        index: index
+        index: index,
+        isSubPage: isSubPage
       }
 
       EventBus.send(EventKeys.ROUTE_CHANGE, routeInfo);

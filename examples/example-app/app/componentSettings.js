@@ -29,8 +29,8 @@ define(function (require) {
         src: 'components/mini-profile'
       },
       {
-        id: 'list-component',
-        src: 'components/list'
+        id: 'file-list-component',
+        src: 'components/file-list'
       },
       {
         id: 'banner-component',
@@ -40,20 +40,6 @@ define(function (require) {
     ],
 
     targets: {
-      "list-pos3": [
-       // {
-       //    id: 'banner-1',
-       //    componentId: 'banner-component',
-       //    src: "components/ExtendedIframeComponent",
-       //    args: {
-       //      iframeAttributes:{
-       //        src: 'http://localhost:3000/examples/example-app/example-banners/banner-one/index.html?id=banner-1',
-       //        width: '100%',
-       //        height: 180
-       //      }
-       //    }
-       //  }
-      ],
       header: [
         // {
         //   id: 'header',
@@ -116,12 +102,8 @@ define(function (require) {
         },
         {
           id: 'file-list',
-          componentId: 'list-component',
-          args: {
-            subscriptionKey: subscriptionKeys.FILES
-          },
-          urlPattern: 'all-files(/)'
-          // reInstantiate: true
+          componentId: 'file-list-component',
+          urlPattern: 'files(/:filetype)(/:page)'
         }
       ]
     }
