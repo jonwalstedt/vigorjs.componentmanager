@@ -399,6 +399,9 @@ class ComponentManager
       activeInstanceDefinitionObjs = @_createActiveInstanceDefinitionObjects instanceDefinitions
 
       lastChange = @_activeInstancesCollection.set activeInstanceDefinitionObjs, options
+      lastChange = _.filter lastChange, (model) ->
+        return model instanceof ActiveInstanceDefinitionModel
+
       _.invoke lastChange, 'tryToReAddStraysToDom'
 
       returnData =
