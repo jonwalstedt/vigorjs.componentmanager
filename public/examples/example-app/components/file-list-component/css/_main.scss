@@ -1,5 +1,5 @@
 .file-list {
-  padding: 10px 30px;
+  padding: 0;
   .component-area {
     @include clearfix;
   }
@@ -12,35 +12,64 @@
 }
 
 .file-list__list-item {
-  padding: 10px 5px;
+  padding: 0;
   list-style: none;
   border-bottom: 1px dashed #383434;
   @include clearfix;
 }
 
 .file-list__list-item--video {
-  background: rgba(115, 125, 232, 0.2);
+  .file-list__thumb-wrapper:before {
+    background: rgba(115, 125, 232, 1);
+  }
 }
 
 .file-list__list-item--photo {
-  background: rgba(90, 199, 219, 0.2) ;
+  .file-list__thumb-wrapper:before {
+    background: rgba(90, 199, 219, 1) ;
+  }
 }
 
 .file-list__list-item--music {
-  background: rgba(102, 191, 206, 0.2);
-}
-
-.file-list__thumb-wrapper {
-  float: left;
-}
-
-.file-list__conent {
-  margin-left: 60px;
+  .file-list__thumb-wrapper:before {
+    background: rgba(87, 238, 177, 1);
+  }
 }
 
 .file-list__link {
-  display: block;
+  padding: 10px 0;
+  display: table;
+  width: 100%;
   color: #fff;
+  transition: .5s ease-out;
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+}
+
+.file-list__thumb-wrapper {
+  display: table-cell;
+  vertical-align: top;
+  padding: 4px 12px 0 26px;
+  width: 60px;
+  &:before {
+    content: '';
+    position: absolute;
+    display: block;
+    width: 15px;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    margin-right: 10px;
+  }
+}
+
+.file-list__conent {
+  display: table-cell;
+  vertical-align: top;
+  margin-left: 60px;
+  padding-top: 2px;
+  position: relative;
 }
 
 .file-list__title {
@@ -56,11 +85,17 @@
   margin: 0;
   color: #999;
 }
-.file-list__meta {
-  
-}
-
+.file-list__meta {}
 .file-list__date,
 .file-list__size {
   display: inline;
+}
+
+.file-list__pagination-link {
+  display: inline-block;
+  padding: 0 2px;
+}
+
+.file-list__pagination-link--is-active {
+  background: #cc4d4d;
 }

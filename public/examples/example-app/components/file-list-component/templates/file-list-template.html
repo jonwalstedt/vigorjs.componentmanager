@@ -2,7 +2,7 @@
 {{#each listItems}}
   <li class="file-list__list-item file-list__list-item--{{fileType
   }}">
-    <a href="{{href}}" class="file-list__link">
+    <a href="#file/{{fileType}}/{{id}}" class="file-list__link">
       <div class="file-list__thumb-wrapper">
         <img class="file-list__thumb" src="{{artworkSmall}}"/>
       </div>
@@ -21,6 +21,6 @@
 
 <ul>
 {{#each pages}}
-  <a href="{{../baseUrl}}/{{../fileType}}/{{page}}" class="pagination-link{{#if isActive}} pagination-link--is-active{{/if}}">{{page}}</a>
+  <a href="{{../baseUrl}}/{{../fileType}}/{{page}}" class="file-list__pagination-link{{#if isActive}} file-list__pagination-link--is-active{{/if}}">{{page}}</a>
 {{/each}}
 </ul>
