@@ -38,9 +38,7 @@ define(function (require) {
       var paginatedData = this.viewModel.paginateListItems(this.currentPage),
           duration = 0.3,
           delay = 0.1,
-          dirOne = -1,
-          dirTwo = 1,
-          yTarget = 80,
+          offset = 80,
           templateData = {
             listItems: paginatedData.listItems,
             pages: paginatedData.pages,
@@ -53,33 +51,47 @@ define(function (require) {
       if ($previousPageItems.length) {
         var previusPage = +this.urlParamsModel.previousAttributes().page;
         if (this.currentPage > previusPage) {
-          dirOne = 1;
-          dirTwo = -1;
+          TweenMax.staggerFromTo(
+            $previousPageItems,
+            duration,
+            { y: 0, autoAlpha: 1 },
+            { y: offset * -1, autoAlpha: 0, ease: Quint.easeIn },
+            delay,
+            function () {
+              this.$el.html(listTemplate(templateData));
+              TweenMax.staggerFromTo(
+                $('.file-list__list-item', this.$el).toArray().reverse(),
+                duration,
+                { y: offset, autoAlpha: 0},
+                { y: 0, autoAlpha: 1, ease: Quint.easeIn },
+                0.1
+              );
+          }, [], this);
+        } else {
+          TweenMax.staggerFromTo(
+            $previousPageItems.toArray().reverse(),
+            duration,
+            { y: 0, autoAlpha: 1 },
+            { y: offset, autoAlpha: 0, ease: Quint.easeIn },
+            delay,
+            function () {
+              this.$el.html(listTemplate(templateData));
+              TweenMax.staggerFromTo(
+                $('.file-list__list-item', this.$el).toArray().reverse(),
+                duration,
+                { y: offset * -1, autoAlpha: 0},
+                { y: 0, autoAlpha: 1, ease: Quint.easeIn },
+                0.1
+              );
+          }, [], this);
         }
-
-        TweenMax.staggerFromTo(
-          $previousPageItems.toArray().reverse(),
-          duration,
-          { y: 0, autoAlpha: 1 },
-          { y: yTarget * dirOne, autoAlpha: 0, ease: Quint.easeIn },
-          delay,
-          function () {
-            this.$el.html(listTemplate(templateData));
-            TweenMax.staggerFromTo(
-              $('.file-list__list-item', this.$el).toArray().reverse(),
-              duration,
-              { y: yTarget * dirTwo, autoAlpha: 0, ease: Quint.easeIn },
-              { y: 0, autoAlpha: 1 },
-              delay
-            );
-        }, [], this);
       } else {
         this.$el.html(listTemplate(templateData));
         TweenMax.staggerFromTo(
           $('.file-list__list-item', this.$el),
           duration * 4,
-          {y: yTarget, autoAlpha: 0, ease: Quint.easeIn},
-          {y: 0, autoAlpha: 1, ease: Quint.easeIn, ease: Quint.easeIn},
+          {y: offset, autoAlpha: 0, ease: Quint.easeIn},
+          {y: 0, autoAlpha: 1, ease: Quint.easeIn},
           delay
         );
       }
