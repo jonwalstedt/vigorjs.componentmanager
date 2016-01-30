@@ -21,7 +21,7 @@ define(function (require) {
         pages.push({
           page: i + 1,
           value: i,
-          isActive: i == index
+          isActive: i == (index - 1)
         });
       };
 

@@ -49,7 +49,7 @@ function getFile (index) {
   var fileType = fileTypes[Math.round(Math.random() * (fileTypes.length - 1))],
       fileSize = Math.round(Math.random() * 10000000),
       artWorkLarge = 'http://lorempixel.com/800/500/animals/',
-      artWorkSmall = 'http://lorempixel.com/50/50/animals/',
+      artWorkSmall = 'http://lorempixel.com/80/80/animals/',
       uploaded = randomDate(new Date(2014, 0, 1), new Date()),
       name, desc, year;
 
