@@ -132,7 +132,7 @@ define(function (require) {
           this.preloader.getLoadingPromise()
         ]).then(_.bind(function () {
           var $components = $('.main .vigor-component', this.$el);
-          TweenMax.staggerFromTo($components, 4, { autoAlpha: 0 }, { autoAlpha: 1 }, 0.2 );
+          TweenMax.staggerTo($components, 4, { autoAlpha: 1 }, 0.2 );
           _.invoke(componentManager.getActiveInstances(), 'onPageReady');
         }, this));
       },
