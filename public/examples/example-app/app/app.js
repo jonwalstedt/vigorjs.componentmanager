@@ -116,6 +116,7 @@ define(function (require) {
         else
           this._removeOldComponents(routeInfo.route),
           this._addNewComponents(routeInfo.route);
+          TweenMax.staggerTo($('.main .vigor-component', this.$el), 1, { autoAlpha: 1 }, 0.2 );
           _.invoke(componentManager.getActiveInstances(), 'onPageReady');
 
         this._closeMenu();

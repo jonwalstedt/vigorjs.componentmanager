@@ -1,0 +1,16 @@
+<li class="file-list__list-item file-list__list-item--{{fileType
+}}">
+  <a href="#file/{{fileType}}/{{id}}" class="file-list__link">
+    <div class="file-list__thumb-wrapper">
+      <img class="file-list__thumb" src="{{artworkSmall}}"/>
+    </div>
+    <div class="file-list__conent">
+        <h3 class="file-list__title">{{count}} {{{name}}}</h3>
+        <p class="file-list__desc">{{{desc}}}</p>
+        <div class="file-list__meta">
+          <small class="file-list__size">{{fileSizeReadable}}</small>
+          <small class="file-list__date">Uploaded {{uploadedReadable}}</small>
+        </div>
+    </div>
+  </a>
+</li>

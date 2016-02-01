@@ -91,6 +91,15 @@
   display: inline;
 }
 
+.file-list__pagination {
+  padding: 0;
+  margin: 20px;
+}
+
+.file-list__pagination-list-item {
+  display: inline-block;
+}
+
 .file-list__pagination-link {
   display: inline-block;
   padding: 0 2px;
