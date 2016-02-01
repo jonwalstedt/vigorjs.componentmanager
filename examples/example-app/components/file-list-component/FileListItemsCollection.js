@@ -9,12 +9,12 @@ define(function (require) {
 
     itemsPerPage: 10,
 
-    paginate: function (index) {
+    paginate: function (index, files) {
       var index = parseInt(index, 10),
           startIndex = index * this.itemsPerPage,
           endIndex = (index + 1) * this.itemsPerPage,
-          listItems = this.slice(startIndex, endIndex),
-          nrOfPages = Math.ceil(this.length / this.itemsPerPage),
+          listItems = files.slice(startIndex, endIndex),
+          nrOfPages = Math.round(files.length / this.itemsPerPage),
           pages = [];
 
       for (var i = 0; i < nrOfPages; i++) {

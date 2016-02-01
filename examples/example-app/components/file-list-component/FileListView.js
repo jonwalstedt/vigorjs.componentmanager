@@ -19,7 +19,7 @@ define(function (require) {
     fileType: undefined,
     currentPage: undefined,
     baseUrl: undefined,
-    currentPage: 0,
+    currentPage: 1,
     duration: 0.3,
     delay: 0.1,
     offset: 80,
@@ -34,10 +34,11 @@ define(function (require) {
 
       this.baseUrl = options.baseUrl || '#' + Backbone.history.fragment.split('/').shift();
       this.fileType = this.urlParamsModel.get('filetype');
-      this.currentPage = this.urlParamsModel.get('page') || 0;
+      this.currentPage = this.urlParamsModel.get('page') || 1;
 
       this.listenTo(this.viewModel.listItems, 'reset', this._onListItemsReset);
       this.listenTo(this.urlParamsCollection, 'change:page', _.bind(this._onPageChange, this));
+      this.listenTo(this.urlParamsCollection, 'change:filetype', _.bind(this._onFileTypeChange, this));
     },
 
     renderStaticContent: function () {
@@ -49,7 +50,7 @@ define(function (require) {
     },
 
     renderDynamicContent: function () {
-      var paginatedData = this.viewModel.paginateListItems(this.currentPage);
+      var paginatedData = this.viewModel.getPaginatedFiles(this.currentPage, this.fileType);
       this._renderListItems(paginatedData.listItems);
       this._renderPagination(paginatedData.pages);
       TweenMax.staggerFromTo(
@@ -133,19 +134,28 @@ define(function (require) {
       this.$fileListPagination.append($pagination);
     },
 
-    _onPageChange: function (model, value) {
+    _onPageChange: function (model, currentPage) {
       var paginatedData, $previousItems, previusPage;
 
-      this.currentPage = value;
-      paginatedData = this.viewModel.paginateListItems(this.currentPage),
-      $previousItems = $('.file-list__list-item', this.$el),
+      this.currentPage = currentPage;
+      paginatedData = this.viewModel.getPaginatedFiles(this.currentPage, this.fileType);
+      $previousItems = $('.file-list__list-item', this.$el);
       previusPage = +this.urlParamsModel.previousAttributes().page;
 
-      if (this.currentPage > previusPage) {
-        this._transitionListItemsToNext($previousItems, paginatedData.listItems);
+      if (!$previousItems.length) {
+        this.renderDynamicContent();
       } else {
-        this._transitionListItemsToPrev($previousItems, paginatedData.listItems);
+        if (this.currentPage > previusPage) {
+          this._transitionListItemsToNext($previousItems, paginatedData.listItems);
+        } else {
+          this._transitionListItemsToPrev($previousItems, paginatedData.listItems);
+        }
       }
+    },
+
+    _onFileTypeChange: function (model, fileType) {
+      this.fileType = fileType;
+      this.renderDynamicContent();
     },
 
     _onListItemsReset: function () {
