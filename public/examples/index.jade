@@ -13,7 +13,44 @@ block sidebar
       != partial("_examples-sidebar-content")
 
 block content
-  != partial("./examples")
+  h2 Examples
+
+  p Here are some examples of how to use the componentManager. Checkout the project and view the code or inspect it in the browser.
+
+  h3 Features
+  ul
+    li
+      a(href="#{base_url}/examples/hello-world") Hello World
+    li
+      a(href="#{base_url}/examples/filter-options") Filter options
+    li
+      a(href="#{base_url}/examples/filter-by-url") Filter by url
+    li
+      a(href="#{base_url}/examples/filter-by-string") Filter by string
+    li
+      a(href="#{base_url}/examples/filter-by-conditions") Filter by conditions
+    li
+      a(href="#{base_url}/examples/filter-by-custom-properties") Filter by custom properties
+    li
+      a(href="#{base_url}/examples/iframe-components") Iframe Components
+    li
+      a(href="#{base_url}/examples/reorder-components") Order/Reordercomponents
+    li
+      a(href="#{base_url}/examples/serialize") Serialize
+
+  h3 Concepts
+  ul
+    li
+      a(href="#{base_url}/examples/multiple-layouts") Multiple layouts
+    li
+      a(href="#{base_url}/examples/example-app") Example app
+
+  h3 Module loaders
+  ul
+    li
+      a(href="#{base_url}/examples/amd-requirejs") AMD - Requirejs
+    li
+      a(href="#{base_url}/examples/commonjs-browserify") COMMONJS - Browserify
 
 block common-example-scripts
   script(type="text/template" class="example-component-template").

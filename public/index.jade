@@ -17,3 +17,29 @@ block header
             a(href="#{base_url}/docs" class="main-navigation__link #{ current.path[0] == 'docs' ? 'main-navigation__link--active' : '' }") Docs
           li.main-navigation__list-item
             a(href="#{base_url}/examples" class="main-navigation__link #{ current.path[0] == 'examples' ? 'main-navigation__link--active' : '' }") Examples
+
+block content
+  section.hero-unit
+    div.hero-unit__content
+      h1.hero-unit__title.vigorjs-logo VigorJS <br/>Component <br/>Manager
+      p.hero-unit__desc The VigorJS ComponentManager is a small framework intended to help decouple and simplify the application structure of large scale #[a(href="http://backbonejs.org/") Backbone] applications.
+
+      div.hero-unit__links
+        a(href="#{base_url}/js/vigorjs.componentmanager.min.js" class="hero-unit__link") Download (#{version})
+        a(href="#{base_url}/docs/" class="hero-unit__link") Documentation
+        a(href="#{base_url}/examples/" class="hero-unit__link") Examples
+
+  section.about
+    div.about__wrapper
+      ul
+        li
+          h2 What does it do?
+          p After initializing the ComponentManager with your #[a(href="#{base_url}/docs/#settings") settings] it will load, instantiate and add all your components to the DOM simply by calling the #[a(href="#{base_url}/docs/#refresh") refresh] method with a #[a(href="#{base_url}/docs/#filter") filter]. Any components that doesn't match the passed filter will be disposed (depending on which #[a(href="#{base_url}/docs/#options") options] you use).
+
+        li
+          h2 Why?
+          p As a application grows in in size it's easy to let different parts of the application get tangled up into each other. Components that are tightly coupled with the application framework or other components are harder to reuse or extend. The ComponentManager tries to solve this by separating your components from the application logic itself.
+
+        li
+          h2 Getting started
+          p To get started head over to the #[a(href="#{base_url}/docs/#getting-started") getting-started] section or look through the #[a(href="#{base_url}/examples") getting-started] and their setup.
