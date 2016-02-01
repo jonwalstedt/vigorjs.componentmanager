@@ -1895,6 +1895,9 @@
             var activeInstanceDefinitionObjs, lastChange, returnData;
             activeInstanceDefinitionObjs = _this._createActiveInstanceDefinitionObjects(instanceDefinitions);
             lastChange = _this._activeInstancesCollection.set(activeInstanceDefinitionObjs, options);
+            lastChange = _.filter(lastChange, function(model) {
+              return model instanceof ActiveInstanceDefinitionModel;
+            });
             _.invoke(lastChange, 'tryToReAddStraysToDom');
             returnData = {
               filter: _this._filterModel.toJSON(),
