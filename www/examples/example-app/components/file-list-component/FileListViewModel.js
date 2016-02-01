@@ -27,8 +27,12 @@ define(function (require) {
       this.unsubscribe(this.subscriptionKey);
     },
 
-    paginateListItems: function (currentPage) {
-      return this.listItems.paginate(currentPage);
+    getPaginatedFiles: function (currentPage, fileType) {
+      var files = this.listItems.models;
+      if (fileType != 'all') {
+        files = this.listItems.where({fileType: fileType});
+      }
+      return this.listItems.paginate(currentPage, files);
     },
 
     _onListItemsChanged: function (listItems) {
