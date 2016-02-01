@@ -30,6 +30,11 @@ define(function (require) {
         currentPage: index,
         pages: pages
       }
+    },
+
+    set: function () {
+      Backbone.Collection.prototype.set.apply(this, arguments);
+      this.trigger('after-set');
     }
 
 
