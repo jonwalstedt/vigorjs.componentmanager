@@ -14,7 +14,7 @@ define(function (require) {
     _fileListView: undefined,
 
     constructor: function (options) {
-      console.log('FileList initialized', options);
+      console.log('FileList initialized');
       this._fileListViewModel = new FileListViewModel({subscriptionKey: options.subscriptionKey});
       options.viewModel = this._fileListViewModel;
 
