@@ -5,8 +5,7 @@ define(function (require) {
   var ProducerBase,
       Producer = require('vigor').Producer,
 
-  ProducerBase = Producer.extend({
-  });
+  ProducerBase = Producer.extend({});
 
   return ProducerBase;
 });

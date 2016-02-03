@@ -36,7 +36,7 @@ define(function (require) {
       for (var i = 0; i < files.length; i++) {
         files[i].fileSizeReadable = MathUtil.formatBytes(files[i].fileSize, 2).string;
       };
-      return files;
+      return files.reverse();
     }
 
   });

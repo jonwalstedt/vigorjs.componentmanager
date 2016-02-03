@@ -22,10 +22,15 @@ define(function (require) {
           previousDepth = this.previousRoute == undefined ? 0 : this.previousRoute.split('/').length - 1,
           index = currentDepth - previousDepth,
           isSubPage = false,
+          previousRootPage,
+          currentRootPage,
           routeInfo;
 
-      if (this.previousRoute)
-        isSubPage = route.indexOf(this.previousRoute.split('/').shift()) > -1
+      if (this.previousRoute) {
+        previousRootPage = this.previousRoute.split('/').shift();
+        currentRootPage = route.split('/').shift();
+        isSubPage = previousRootPage === currentRootPage;
+      }
 
       routeInfo = {
         currentDepth: currentDepth,
