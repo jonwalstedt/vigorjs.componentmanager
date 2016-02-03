@@ -2,7 +2,7 @@ requirejs.config({
   baseUrl: './',
   paths: {
     jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min',
-    underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min',
+    underscore: '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min',
     backbone: '//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone',
     Handlebars: '//cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.4/handlebars',
     text: '//cdnjs.cloudflare.com/ajax/libs/require-text/2.0.12/text',
@@ -22,13 +22,12 @@ requirejs.config({
     SubscriptionKeys: './app-data/SubscriptionKeys'
   },
   packages: [
-    {name: 'components/banner', location: 'components/banner-component'},
     {name: 'components/chart', location: 'components/chart-component'},
     {name: 'components/circular-chart', location: 'components/circular-chart-component'},
-    {name: 'components/header', location: 'components/header-component'},
     {name: 'components/file-list', location: 'components/file-list-component'},
     {name: 'components/menu', location: 'components/menu-component'},
-    {name: 'components/mini-profile', location: 'components/mini-profile-component'}
+    {name: 'components/mini-profile', location: 'components/mini-profile-component'},
+    {name: 'components/media-player', location: 'components/media-player-component'},
   ],
   shim: {
     Handlebars: {

@@ -111,13 +111,13 @@ define(function (require) {
       // Callbacks
       // --------------------------------------------
       _onRouteChange: function (routeInfo) {
-        if (!routeInfo.isSubPage) {
-          this.pageView.transitionPages(routeInfo.index, routeInfo.route);
-        } else {
+        if (routeInfo.isSubPage) {
           this._removeOldComponents(routeInfo.route),
           this._addNewComponents(routeInfo.route);
           TweenMax.staggerTo($('.main .vigor-component', this.$el), 1, { autoAlpha: 1 }, 0.2 );
           _.invoke(componentManager.getActiveInstances(), 'onPageReady');
+        } else {
+          this.pageView.transitionPages(routeInfo.index, routeInfo.route);
         }
 
         this._closeMenu();

@@ -37,8 +37,8 @@ define(function (require) {
       this.currentPage = this.urlParamsModel.get('page') || 1;
 
       this.listenTo(this.viewModel.listItems, 'reset', this._onListItemsReset);
-      this.listenTo(this.urlParamsCollection, 'change:page', _.bind(this._onPageChange, this));
-      this.listenTo(this.urlParamsCollection, 'change:filetype', _.bind(this._onFileTypeChange, this));
+      this.listenTo(this.urlParamsCollection, 'change:page', _.bind(this.renderDynamicContent, this));
+      this.listenTo(this.urlParamsCollection, 'change:filetype', _.bind(this.renderDynamicContent, this));
     },
 
     renderStaticContent: function () {
@@ -50,16 +50,37 @@ define(function (require) {
     },
 
     renderDynamicContent: function () {
-      var paginatedData = this.viewModel.getPaginatedFiles(this.currentPage, this.fileType);
-      this._renderListItems(paginatedData.listItems);
-      this._renderPagination(paginatedData.pages);
-      TweenMax.staggerFromTo(
-        $('.file-list__list-item', this.$el),
-        this.duration * 4,
-        {y: this.offset, autoAlpha: 0, ease: Quint.easeIn},
-        {y: 0, autoAlpha: 1, ease: Quint.easeIn},
-        this.delay
-      );
+      var paginatedData, previousAttributes, previusPage, previusFileType, $previousItems;
+
+      this.currentPage = this.urlParamsModel.get('page') || 1;
+      this.fileType = this.urlParamsModel.get('filetype') || 'all';
+
+      paginatedData = this.viewModel.getPaginatedFiles(this.currentPage, this.fileType);
+      previousAttributes = this.urlParamsModel.previousAttributes();
+      previusPage = +previousAttributes.page;
+      previusFileType = previousAttributes.fileType;
+      $previousItems = $('.file-list__list-item', this.$el);
+
+      if (previusFileType != this.fileType) {
+        this._renderPagination(paginatedData.pages);
+      }
+
+      if (!$previousItems.length) {
+        this._renderListItems(paginatedData.listItems);
+        TweenMax.staggerFromTo(
+          $('.file-list__list-item', this.$el),
+          this.duration * 4,
+          {y: this.offset, autoAlpha: 0, ease: Quint.easeIn},
+          {y: 0, autoAlpha: 1, ease: Quint.easeIn},
+          this.delay
+        );
+      } else {
+        if (this.currentPage > previusPage) {
+          this._transitionListItemsToNext($previousItems, paginatedData.listItems);
+        } else {
+          this._transitionListItemsToPrev($previousItems, paginatedData.listItems);
+        }
+      }
 
       return this;
     },
@@ -132,30 +153,6 @@ define(function (require) {
         $pagination.append(paginationTemplate(pageItem));
       }, this);
       this.$fileListPagination.append($pagination);
-    },
-
-    _onPageChange: function (model, currentPage) {
-      var paginatedData, $previousItems, previusPage;
-
-      this.currentPage = currentPage;
-      paginatedData = this.viewModel.getPaginatedFiles(this.currentPage, this.fileType);
-      $previousItems = $('.file-list__list-item', this.$el);
-      previusPage = +this.urlParamsModel.previousAttributes().page;
-
-      if (!$previousItems.length) {
-        this.renderDynamicContent();
-      } else {
-        if (this.currentPage > previusPage) {
-          this._transitionListItemsToNext($previousItems, paginatedData.listItems);
-        } else {
-          this._transitionListItemsToPrev($previousItems, paginatedData.listItems);
-        }
-      }
-    },
-
-    _onFileTypeChange: function (model, fileType) {
-      this.fileType = fileType;
-      this.renderDynamicContent();
     },
 
     _onListItemsReset: function () {

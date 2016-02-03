@@ -27,7 +27,8 @@ function generateUser () {
     last_name: 'Clark',
     account: 'premium',
     bytes_used: undefined,
-    profile_img: 'http://lorempixel.com/100/100/animals/',
+    // profile_img: 'http://lorempixel.com/100/100/animals/',
+    profile_img: 'https://unsplash.it/100/100/?random',
     // profile_img: 'https://unsplash.it/100/100',
     // profile_img: 'https://placeholdit.imgix.net/~text?txtsize=14&txt=logo&w=100&h=100&txttrack=0',
     logged_in: true
@@ -48,8 +49,8 @@ function generateFiles () {
 function getFile (index) {
   var fileType = fileTypes[Math.round(Math.random() * (fileTypes.length - 1))],
       fileSize = Math.round(Math.random() * 10000000),
-      artWorkLarge = 'http://lorempixel.com/800/500/animals/',
-      artWorkSmall = 'http://lorempixel.com/80/80/animals/',
+      artWorkLarge = 'https://unsplash.it/800/500/?image=' + index,
+      artWorkSmall = 'https://unsplash.it/80/80/?image=' + index,
       uploaded = randomDate(new Date(2014, 0, 1), new Date()),
       name, desc, year;
 
