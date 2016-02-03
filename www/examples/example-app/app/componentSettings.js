@@ -21,10 +21,6 @@ define(function (require) {
         src: 'components/menu'
       },
       {
-        id: 'header-component',
-        src: 'components/header'
-      },
-      {
         id: 'mini-profile-component',
         src: 'components/mini-profile'
       },
@@ -33,20 +29,13 @@ define(function (require) {
         src: 'components/file-list'
       },
       {
-        id: 'banner-component',
-        src: 'components/banner'
-      },
-
+        id: 'media-player-component',
+        src: 'components/media-player'
+      }
     ],
 
     targets: {
-      header: [
-        // {
-        //   id: 'header',
-        //   componentId: 'header-component',
-        //   urlPattern: 'global'
-        // }
-      ],
+      header: [],
       sidebar: [
         {
           id: 'mini-profile',
@@ -104,6 +93,11 @@ define(function (require) {
           id: 'file-list',
           componentId: 'file-list-component',
           urlPattern: 'files(/:filetype)(/:page)'
+        },
+        {
+          id: 'media-player',
+          componentId: 'media-player-component',
+          urlPattern: 'file/:filetype/:id'
         }
       ]
     }

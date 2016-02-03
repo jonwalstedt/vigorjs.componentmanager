@@ -53,8 +53,12 @@ define(function (require) {
       return this.models.length;
     },
 
+    getFilesByFileType: function (fileType) {
+      return this.where({fileType: fileType});
+    },
+
     getCountByFileType: function (fileType) {
-      return this.where({fileType: fileType}).length;
+      return this.getFilesByFileType(fileType).length;
     },
 
     _onFilesReceived: function (files) {
