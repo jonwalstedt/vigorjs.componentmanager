@@ -1,22 +1,20 @@
 <div class="media-player__content">
   <figure class="media-player__media">
-    <img src="{{artworkLarge}}" alt="" class="media-player__artwork">
+    <img src="{{artworkXSmall}}" alt="" class="media-player__artwork">
   </figure>
   <div class="media-player__info">
     <h1 class="media-player__title">{{name}}</h1>
+    {{#if prevFileId}}
+      <a href="#file/{{fileType}}/{{prevFileId}}" class="media-player__prev">Prev</a>
+    {{/if}}
+    {{#if nextFileId}}
+      <a href="#file/{{fileType}}/{{nextFileId}}" class="media-player__next">Next</a>
+    {{/if}}
     <p class="media-player__desc">{{{desc}}}</p>
-  </div>
-  <div class="media-player__meta">
-    <span class="media-player__uploaded">Uploaded: {{uploadedReadable}}</span>
-    <span class="media-player__file-size">File size: {{fileSizeReadable}}</span>
+    <div class="media-player__meta">
+      <span class="media-player__uploaded">Uploaded: {{uploadedReadable}}</span>
+      <span class="media-player__file-size">File size: {{fileSizeReadable}}</span>
+    </div>
   </div>
 </div>
 
-<div class="media-player__navigation">
-  {{#if prevFileId}}
-    <a href="#file/{{fileType}}/{{prevFileId}}" class="media-player__prev">Prev</a>
-  {{/if}}
-  {{#if nextFileId}}
-    <a href="#file/{{fileType}}/{{nextFileId}}" class="media-player__next">Next</a>
-  {{/if}}
-</div>
