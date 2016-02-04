@@ -13,6 +13,7 @@ define(function (require) {
       year: undefined,
       artworkLarge: undefined,
       artworkSmall: undefined,
+      artworkXSmall: undefined,
       fileType: undefined,
       fileSize: undefined,
       uploaded: undefined

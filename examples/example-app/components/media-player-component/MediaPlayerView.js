@@ -26,7 +26,23 @@ define(function (require) {
     },
 
     renderDynamicContent: function () {
-      this.$el.html(template(this.viewModel.fileModel.toJSON()));
+      var fileJSON = this.viewModel.fileModel.toJSON(),
+          artworkLargeSrc = fileJSON.artworkLarge,
+          artworkLarge = new Image(),
+          $artwork;
+
+      this.$el.html(template(fileJSON));
+      $artwork = $('.media-player__artwork', this.$el);
+
+      artworkLarge.onload = function () {
+        $artwork.attr('src', artworkLargeSrc);
+        $artwork.addClass('media-player__artwork--loaded');
+      };
+
+      if (artworkLargeSrc) {
+        artworkLarge.src = artworkLargeSrc;
+      }
+
     },
 
     addSubscriptions: function () {

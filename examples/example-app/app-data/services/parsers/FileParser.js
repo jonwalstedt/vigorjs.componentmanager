@@ -10,6 +10,7 @@ define(function (require) {
       year: file.year,
       artworkLarge: file.artwork_large,
       artworkSmall: file.artwork_small,
+      artworkXSmall: file.artwork_xsmall,
       fileType: file.file_type,
       fileSize: file.file_size,
       uploaded: file.uploaded,
