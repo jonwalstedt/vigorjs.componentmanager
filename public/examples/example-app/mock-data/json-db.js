@@ -51,6 +51,7 @@ function getFile (index) {
       fileSize = Math.round(Math.random() * 10000000),
       artWorkLarge = 'https://unsplash.it/800/500/?image=' + index,
       artWorkSmall = 'https://unsplash.it/80/80/?image=' + index,
+      artWorkXSmall = 'https://unsplash.it/32/20?image=' + index,
       uploaded = randomDate(new Date(2014, 0, 1), new Date()),
       name, desc, year;
 
@@ -69,6 +70,7 @@ function getFile (index) {
     year: year || 'year-' + index,
     artwork_large: artWorkLarge,
     artwork_small: artWorkSmall,
+    artwork_xsmall: artWorkXSmall,
     file_type: fileType,
     file_size: fileSize,
     uploaded: uploaded.getTime(),
