@@ -710,8 +710,7 @@
       ActiveInstanceDefinitionModel.prototype.dispose = function() {
         this._disposeInstance();
         this._updateTargetPopulatedState();
-        this.off();
-        return this.clear();
+        return this.off();
       };
 
       ActiveInstanceDefinitionModel.prototype._createInstance = function() {
@@ -1079,12 +1078,6 @@
           }
         }
         return exceedsShowCount;
-      };
-
-      InstanceDefinitionModel.prototype.dispose = function() {
-        return this.clear({
-          silent: true
-        });
       };
 
       InstanceDefinitionModel.prototype.isTargetAvailable = function($context, forceRefresh) {

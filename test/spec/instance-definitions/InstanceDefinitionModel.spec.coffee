@@ -495,13 +495,6 @@ describe 'InstanceDefinitionModel', ->
 
 
 
-  describe 'dispose', ->
-    it 'should call clear', ->
-      sandbox.spy instanceDefinitionModel, 'clear'
-      instanceDefinitionModel.dispose()
-      assert instanceDefinitionModel.clear.called
-
-
 
   describe 'isTargetAvailable', ->
     it 'should call getTarget', ->

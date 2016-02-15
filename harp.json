@@ -2,7 +2,7 @@
   "globals": {
     "title": "Vigorjs ComponentManager",
     "name": "Jon Wålstedt",
-    "base_url": "http://jonwalstedt.github.io/vigorjs.componentmanager",
+    "base_url": "",
     "version": "0.0.5"
   }
 }

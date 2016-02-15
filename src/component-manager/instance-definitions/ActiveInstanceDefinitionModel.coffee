@@ -47,7 +47,6 @@ class ActiveInstanceDefinitionModel extends BaseModel
     do @_disposeInstance
     do @_updateTargetPopulatedState
     do @off
-    do @clear
 
   _createInstance: ->
     componentClass = @get 'componentClass'

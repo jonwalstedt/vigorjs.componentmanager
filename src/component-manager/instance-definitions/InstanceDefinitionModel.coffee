@@ -145,9 +145,6 @@ class InstanceDefinitionModel extends BaseModel
 
     return exceedsShowCount
 
-  dispose: ->
-    @clear silent: true
-
   isTargetAvailable: ($context = $('body'), forceRefresh = true) ->
     return @getTarget($context, forceRefresh)?.length > 0
 

@@ -151,11 +151,6 @@ describe 'ActiveInstanceDefinitionModel', ->
       do activeInstanceDefinitionModel.dispose
       assert offSpy.called
 
-    it 'should call clear', ->
-      clearSpy = sandbox.spy activeInstanceDefinitionModel, 'clear'
-      do activeInstanceDefinitionModel.dispose
-      assert clearSpy.called
-
 
 
   describe '_createInstance', ->
