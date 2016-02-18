@@ -67,12 +67,12 @@ class ComponentDefinitionModel extends BaseModel
       else if _.isString(src)
         # AMD require asynchronous
         if (_.isString(src) and typeof define is "function" and define.amd)
-          require [src], (componentClass) =>
+          Vigor.require [src], (componentClass) =>
             resolveClassPromise componentClass
 
         # CommonJS require - synchronus
         else if (_.isString(src) and typeof exports is "object")
-          resolveClassPromise require src
+          resolveClassPromise Vigor.require src
 
         # try to find class through namespace path from the window object
         else

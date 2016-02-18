@@ -40,6 +40,9 @@
   #= include ./component-manager/instance-definitions/InstanceDefinitionsCollection.coffee
   #= include ./component-manager/instance-definitions/ActiveInstancesCollection.coffee
   #= include ./component-manager/index.coffee
+  Vigor.addRequireReference = (req) =>
+    Vigor.require = req
+    return req
 
   Vigor.componentManager = new Vigor.ComponentManager()
 

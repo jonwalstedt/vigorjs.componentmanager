@@ -331,6 +331,7 @@ class ComponentManager
     @setComponentClassName settings?.componentClassName
     @setTargetPrefix settings?.targetPrefix
     @setWhitelistedOrigins settings?.whitelistedOrigins
+    Vigor.require = settings.require or Vigor.require or require
 
     if settings?.componentSettings
       @_parseComponentSettings settings.componentSettings
