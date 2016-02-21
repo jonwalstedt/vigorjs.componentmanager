@@ -1,7 +1,7 @@
 {
   "name": "vigorjs.componentmanager",
   "description": "Helps you decouple Backbone applications",
-  "version": "0.0.5",
+  "version": "0.9.0",
   "homepage": "",
   "author": {
     "name": "Jon Wålstedt",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://stash.services.kambi.com/scm/bc/vigorjs.componentmanager.git"
+    "url": "http://jonwalstedt.github.io/vigorjs.componentmanager/"
   },
   "main": "./dist/vigor.componentmanager.js",
   "keywords": [

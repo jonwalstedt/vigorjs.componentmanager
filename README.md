@@ -14,3 +14,6 @@ All documentation can be found here: [documentation](http://jonwalstedt.github.i
 
 ## Examples
 And look through the examples here: [examples](http://jonwalstedt.github.io/vigorjs.componentmanager/examples/)
+
+## Thanks to
+Azin Ashourvan for the design and logo. [azin.se](http://www.azin.se)
