@@ -1,6 +1,6 @@
 /**
  * vigorjs.componentmanager - Helps you decouple Backbone applications
- * @version v0.0.5
+ * @version v0.9.0
  * @link 
  * @license MIT
  */
@@ -495,13 +495,13 @@
             resolveClassPromise(Vigor.IframeComponent);
           } else if (_.isString(src)) {
             if (_.isString(src) && typeof define === "function" && define.amd) {
-              require([src], (function(_this) {
+              Vigor.require([src], (function(_this) {
                 return function(componentClass) {
                   return resolveClassPromise(componentClass);
                 };
               })(this));
             } else if (_.isString(src) && typeof exports === "object") {
-              resolveClassPromise(require(src));
+              resolveClassPromise(Vigor.require(src));
             } else {
               obj = window;
               srcObjParts = src.split('.');
@@ -710,8 +710,7 @@
       ActiveInstanceDefinitionModel.prototype.dispose = function() {
         this._disposeInstance();
         this._updateTargetPopulatedState();
-        this.off();
-        return this.clear();
+        return this.off();
       };
 
       ActiveInstanceDefinitionModel.prototype._createInstance = function() {
@@ -1079,12 +1078,6 @@
           }
         }
         return exceedsShowCount;
-      };
-
-      InstanceDefinitionModel.prototype.dispose = function() {
-        return this.clear({
-          silent: true
-        });
       };
 
       InstanceDefinitionModel.prototype.isTargetAvailable = function($context, forceRefresh) {
@@ -1828,6 +1821,7 @@
         this.setComponentClassName(settings != null ? settings.componentClassName : void 0);
         this.setTargetPrefix(settings != null ? settings.targetPrefix : void 0);
         this.setWhitelistedOrigins(settings != null ? settings.whitelistedOrigins : void 0);
+        Vigor.require = (settings != null ? settings.require : void 0) || Vigor.require || require;
         if (settings != null ? settings.componentSettings : void 0) {
           this._parseComponentSettings(settings.componentSettings);
         } else {
@@ -2098,6 +2092,12 @@
 
     _.extend(ComponentManager.prototype, Backbone.Events);
     Vigor.ComponentManager = ComponentManager;
+    Vigor.addRequireReference = (function(_this) {
+      return function(req) {
+        Vigor.require = req;
+        return req;
+      };
+    })(this);
     Vigor.componentManager = new Vigor.ComponentManager();
     return Vigor;
   });
