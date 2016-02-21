@@ -1,7 +1,7 @@
 {
   "name": "vigorjs.componentmanager",
   "description": "Helps you decouple Backbone applications",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "homepage": "",
   "author": {
     "name": "Jon Wålstedt",
