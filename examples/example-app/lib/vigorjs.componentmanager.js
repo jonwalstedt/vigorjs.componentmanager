@@ -1821,7 +1821,11 @@
         this.setComponentClassName(settings != null ? settings.componentClassName : void 0);
         this.setTargetPrefix(settings != null ? settings.targetPrefix : void 0);
         this.setWhitelistedOrigins(settings != null ? settings.whitelistedOrigins : void 0);
-        Vigor.require = (settings != null ? settings.require : void 0) || Vigor.require || require;
+        if (settings != null ? settings.require : void 0) {
+          Vigor.require = (settings != null ? settings.require : void 0) || Vigor.require;
+        } else if (typeof require === "function") {
+          Vigor.require = require;
+        }
         if (settings != null ? settings.componentSettings : void 0) {
           this._parseComponentSettings(settings.componentSettings);
         } else {
