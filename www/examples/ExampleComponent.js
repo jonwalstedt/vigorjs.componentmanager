@@ -54,7 +54,6 @@ ExampleComponent = Backbone.View.extend({
 
     $pre = this.$el.find('pre');
     $pre.each(function () {
-      console.log(this);
       hljs.highlightBlock(this);
     });
     return this;
