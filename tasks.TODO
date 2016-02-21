@@ -44,19 +44,16 @@ Completed
  ✔ Add meta-tags @done (16-01-10 13:10)
  ✔ Write the "Getting started" section @done (16-01-11 14:26)
  ✔ Add documentation @done (16-01-11 14:26)
+ ✔ Get some designer help :) @done (16-02-21 13:45)
 
  In progress
  ☐ Add a full/advanced example that uses vigorjs (finish up the example-app)
 
  Next up
  ☐ Publish on npm
- ☐ Get some designer help :)
  ☐ Make the example component more prensentable and easier to understand
  ☐ Go through scss refactor/cleanup
 
  To consider
  ☐ rename componentDefinition and instanceDefinition to something shorter and more suitable
  ☐ Protected components?
-
- Potential problems
- ☐ Does fix for global stray components cause memory leak?
