@@ -331,7 +331,11 @@ class ComponentManager
     @setComponentClassName settings?.componentClassName
     @setTargetPrefix settings?.targetPrefix
     @setWhitelistedOrigins settings?.whitelistedOrigins
-    Vigor.require = settings?.require or Vigor.require or require
+
+    if settings?.require
+      Vigor.require = settings?.require or Vigor.require
+    else if typeof require is "function"
+      Vigor.require = require
 
     if settings?.componentSettings
       @_parseComponentSettings settings.componentSettings
