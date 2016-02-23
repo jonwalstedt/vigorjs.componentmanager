@@ -1,74 +1,107 @@
-<pre><code class="language-javascript">var componentSettings = {
-  conditions: {
-    withinTimeSpan: function () {
-      var today = new Date().getHours(),
-          startTime = 0,
-          endTime = 24,
-          allowed = (today &gt;= startTime &amp;&amp; today &lt;= endTime);
-      console.log(&#39;is within timespan: &#39;, allowed);
-      return allowed;
-    }
-  },
+<pre><code class="language-javascript">define(function (require) {
+  &#39;use strict&#39;;
+  var componentSettings,
+    subscriptionKeys = require(&#39;SubscriptionKeys&#39;);
 
-  components: [{
-    id: &#39;order-component&#39;,
-    src: &#39;app.components.FilterComponent&#39;,
-    conditions: [&#39;withinTimeSpan&#39;]
-  }],
-
-  targets: {
-    main: [
+  componentSettings = {
+    components: [
       {
-        id: &#39;order-instance-1&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 1,
+        id: &#39;linechart-component&#39;,
+        src: &#39;components/chart&#39;,
         args: {
-          order: &#39;1&#39;,
-          background: &#39;aqua&#39;
-        },
-        urlPattern: &#39;global&#39;
+          type: &#39;line-chart&#39;
+        }
       },
       {
-        id: &#39;order-instance-2&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 2,
-        args: {
-          order: &#39;2&#39;,
-          background: &#39;green&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;circularchart-component&#39;,
+        src: &#39;components/circular-chart&#39;
       },
       {
-        id: &#39;order-instance-3&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 3,
-        args: {
-          order: &#39;3&#39;,
-          background: &#39;silver&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;menu-component&#39;,
+        src: &#39;components/menu&#39;
       },
       {
-        id: &#39;order-instance-4&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 4,
-        args: {
-          order: &#39;4&#39;,
-          background: &#39;yellow&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;mini-profile-component&#39;,
+        src: &#39;components/mini-profile&#39;
       },
       {
-        id: &#39;order-instance-5&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 5,
-        args: {
-          order: &#39;5&#39;,
-          background: &#39;pink&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;file-list-component&#39;,
+        src: &#39;components/file-list&#39;
+      },
+      {
+        id: &#39;media-player-component&#39;,
+        src: &#39;components/media-player&#39;
       }
-    ]
+    ],
+
+    targets: {
+      header: [],
+      sidebar: [
+        {
+          id: &#39;mini-profile&#39;,
+          componentId: &#39;mini-profile-component&#39;,
+          urlPattern: &#39;global&#39;
+        },
+        {
+          id: &#39;menu&#39;,
+          componentId: &#39;menu-component&#39;,
+          urlPattern: &#39;global&#39;
+        }
+      ],
+      main: [
+        {
+          id: &#39;linechart&#39;,
+          componentId: &#39;linechart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;MB uploaded per month&#39;,
+            colors: [&#39;#fff4f3&#39;, &#39;#7C87FA&#39;, &#39;#61d6eb&#39;, &#39;#5DFFBE&#39;],
+            subscriptionKey: subscriptionKeys.DAILY_USAGE
+          }
+        },
+        {
+          id: &#39;movie-quota-circular-chart&#39;,
+          componentId: &#39;circularchart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;Videos&#39;,
+            colors: [&#39;#f7998e&#39;, &#39;#fff4f3&#39;, &#39;#7C87FA&#39;],
+            subscriptionKey: subscriptionKeys.VIDEO_QUOTA
+          }
+        },
+        {
+          id: &#39;photos-quota-circular-chart&#39;,
+          componentId: &#39;circularchart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;Photos&#39;,
+            colors: [&#39;#f7998e&#39;, &#39;#fff4f3&#39;, &#39;#61d6eb&#39;],
+            subscriptionKey: subscriptionKeys.PHOTO_QUOTA
+          }
+        },
+        {
+          id: &#39;music-quota-circular-chart&#39;,
+          componentId: &#39;circularchart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;Music&#39;,
+            colors: [&#39;#f7998e&#39;, &#39;#fff4f3&#39;, &#39;#5DFFBE&#39;],
+            subscriptionKey: subscriptionKeys.MUSIC_QUOTA
+          }
+        },
+        {
+          id: &#39;file-list&#39;,
+          componentId: &#39;file-list-component&#39;,
+          urlPattern: &#39;files(/:filetype)(/:page)&#39;
+        },
+        {
+          id: &#39;media-player&#39;,
+          componentId: &#39;media-player-component&#39;,
+          urlPattern: &#39;file/:filetype/:id&#39;
+        }
+      ]
+    }
   }
-}
+  return componentSettings;
+});
 </code></pre>
