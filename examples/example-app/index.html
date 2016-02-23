@@ -1,76 +1,112 @@
-<!DOCTYPE html><html><head><meta name="viewport" content="initial-scale=1, maximum-scale=1"><meta charset="UTF-8"><meta name="description" content="Vigorjs ComponentManager helps you decouple large scale Backbone applications"><meta name="keywords" content="vigorjs,component manager,componentManager,components,javascript,backbone,framework"><meta name="author" content="Jon Wålstedt"><title>Vigorjs ComponentManager</title><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/dark.min.css" rel="stylesheet" type="text/css"><link href="http://jonwalstedt.github.io/vigorjs.componentmanager/css/main.css" rel="stylesheet" type="text/css"><link rel="stylesheet" href="./css/styles.css"></head><body class="examples"><button class="menu-toggle"><span class="menu-text">Toggle Menu</span><span class="menu-icon"><span class="lines"></span></span></button><main class="content-wrapper sidebar--fixed"><div class="sidebar-wrapper"><aside class="sidebar"><div class="sidebar__header"><h1 class="sidebar-header__tilte"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/" class="sidebar-header__title-link vigorjs-logo">VigorJS <br/>Component <br/>Manager</a></h1><nav class="sidebar-navigation"><ul class="sidebar-navigation__list"><li class="sidebar-navigation__list-item"><a href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="sidebar-navigation__link">View on GitHub</a></li><li class="sidebar-navigation__list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/docs" class="sidebar-navigation__link ">Docs</a></li><li class="sidebar-navigation__list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples" class="sidebar-navigation__link sidebar-navigation__link--active">Examples</a></li></ul></nav></div><div class="sidebar-content"><h4 class="sidebar__title">Features</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/hello-world/" class="sidebar__link ">Hello World</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-options/" class="sidebar__link ">Filter options</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-url/" class="sidebar__link ">Filter by url</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-string/" class="sidebar__link ">Filter by string</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-conditions/" class="sidebar__link ">Filter by conditions</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-custom-properties/" class="sidebar__link ">Filter by custom properties</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/iframe-components/" class="sidebar__link ">Iframe Components</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/reorder-components/" class="sidebar__link ">Order/Reorder components</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/serialize/" class="sidebar__link ">Serialize</a></li></ul><h4 class="sidebar__title">Concepts</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/multiple-layouts/" class="sidebar__link ">Multiple layouts</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/example-app/" class="sidebar__link sidebar__link--active">Example app</a></li></ul><h4 class="sidebar__title">Module loaders</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/amd-requirejs/" class="sidebar__link ">AMD - Requirejs</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/commonjs-browserify/" class="sidebar__link ">COMMONJS - Browserify</a></li></ul></div></aside></div><article class="content"><h2>Example app</h2><div class="components-js"><p>Take a look at components.js to see component the setup for this example.</p><p><span>conditions:<strong>0</strong></span><span>components:<strong>1</strong></span><span>instances:<strong>5</strong></span></p><button class="components-js__toggle">Show components.js</button><div class="components-js__code"><pre><code class="language-javascript">var componentSettings = {
-  conditions: {
-    withinTimeSpan: function () {
-      var today = new Date().getHours(),
-          startTime = 0,
-          endTime = 24,
-          allowed = (today &gt;= startTime &amp;&amp; today &lt;= endTime);
-      console.log(&#39;is within timespan: &#39;, allowed);
-      return allowed;
-    }
-  },
+<!DOCTYPE html><html><head><meta name="viewport" content="initial-scale=1, maximum-scale=1"><meta charset="UTF-8"><meta name="description" content="Vigorjs ComponentManager helps you decouple large scale Backbone applications"><meta name="keywords" content="vigorjs,component manager,componentManager,components,javascript,backbone,framework"><meta name="author" content="Jon Wålstedt"><title>Vigorjs ComponentManager</title><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/dark.min.css" rel="stylesheet" type="text/css"><link href="http://jonwalstedt.github.io/vigorjs.componentmanager/css/main.css" rel="stylesheet" type="text/css"><link rel="stylesheet" href="./css/styles.css"></head><body class="examples"><button class="menu-toggle"><span class="menu-text">Toggle Menu</span><span class="menu-icon"><span class="lines"></span></span></button><main class="content-wrapper sidebar--fixed"><div class="sidebar-wrapper"><aside class="sidebar"><div class="sidebar__header"><h1 class="sidebar-header__tilte"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/" class="sidebar-header__title-link vigorjs-logo">VigorJS <br/>Component <br/>Manager</a></h1><nav class="sidebar-navigation"><ul class="sidebar-navigation__list"><li class="sidebar-navigation__list-item"><a href="https://github.com/jonwalstedt/vigorjs.componentmanager" class="sidebar-navigation__link">View on GitHub</a></li><li class="sidebar-navigation__list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/docs" class="sidebar-navigation__link ">Docs</a></li><li class="sidebar-navigation__list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples" class="sidebar-navigation__link sidebar-navigation__link--active">Examples</a></li></ul></nav></div><div class="sidebar-content"><h4 class="sidebar__title">Features</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/hello-world/" class="sidebar__link ">Hello World</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-options/" class="sidebar__link ">Filter options</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-url/" class="sidebar__link ">Filter by url</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-string/" class="sidebar__link ">Filter by string</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-conditions/" class="sidebar__link ">Filter by conditions</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/filter-by-custom-properties/" class="sidebar__link ">Filter by custom properties</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/iframe-components/" class="sidebar__link ">Iframe Components</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/reorder-components/" class="sidebar__link ">Order/Reorder components</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/serialize/" class="sidebar__link ">Serialize</a></li></ul><h4 class="sidebar__title">Concepts</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/multiple-layouts/" class="sidebar__link ">Multiple layouts</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/example-app/" class="sidebar__link sidebar__link--active">Example app</a></li></ul><h4 class="sidebar__title">Module loaders</h4><ul class="sidebar_list"><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/amd-requirejs/" class="sidebar__link ">AMD - Requirejs</a></li><li class="sidebar_list-item"><a href="http://jonwalstedt.github.io/vigorjs.componentmanager/examples/commonjs-browserify/" class="sidebar__link ">COMMONJS - Browserify</a></li></ul></div></aside></div><article class="content"><h2>Example app</h2><p>This example app has a bit more complex setup. For instance it uses transitions and the add and remove options on the filter to add new components just before the animation starts and remove old components when the animation finishes.</p>
+<p>The setup also uses the Vigor framework for its data layer to share data between the different components.</p>
+<p>This example app is still in development and will be fleshed out in time.</p>
+<div class="components-js"><p>Take a look at components.js to see component the setup for this example.</p><p><span>conditions:<strong>0</strong></span><span>components:<strong>6</strong></span><span>instances:<strong>8</strong></span></p><button class="components-js__toggle">Show components.js</button><div class="components-js__code"><pre><code class="language-javascript">define(function (require) {
+  &#39;use strict&#39;;
+  var componentSettings,
+    subscriptionKeys = require(&#39;SubscriptionKeys&#39;);
 
-  components: [{
-    id: &#39;order-component&#39;,
-    src: &#39;app.components.FilterComponent&#39;,
-    conditions: [&#39;withinTimeSpan&#39;]
-  }],
-
-  targets: {
-    main: [
+  componentSettings = {
+    components: [
       {
-        id: &#39;order-instance-1&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 1,
+        id: &#39;linechart-component&#39;,
+        src: &#39;components/chart&#39;,
         args: {
-          order: &#39;1&#39;,
-          background: &#39;aqua&#39;
-        },
-        urlPattern: &#39;global&#39;
+          type: &#39;line-chart&#39;
+        }
       },
       {
-        id: &#39;order-instance-2&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 2,
-        args: {
-          order: &#39;2&#39;,
-          background: &#39;green&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;circularchart-component&#39;,
+        src: &#39;components/circular-chart&#39;
       },
       {
-        id: &#39;order-instance-3&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 3,
-        args: {
-          order: &#39;3&#39;,
-          background: &#39;silver&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;menu-component&#39;,
+        src: &#39;components/menu&#39;
       },
       {
-        id: &#39;order-instance-4&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 4,
-        args: {
-          order: &#39;4&#39;,
-          background: &#39;yellow&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;mini-profile-component&#39;,
+        src: &#39;components/mini-profile&#39;
       },
       {
-        id: &#39;order-instance-5&#39;,
-        componentId: &#39;order-component&#39;,
-        order: 5,
-        args: {
-          order: &#39;5&#39;,
-          background: &#39;pink&#39;
-        },
-        urlPattern: &#39;global&#39;
+        id: &#39;file-list-component&#39;,
+        src: &#39;components/file-list&#39;
+      },
+      {
+        id: &#39;media-player-component&#39;,
+        src: &#39;components/media-player&#39;
       }
-    ]
+    ],
+
+    targets: {
+      header: [],
+      sidebar: [
+        {
+          id: &#39;mini-profile&#39;,
+          componentId: &#39;mini-profile-component&#39;,
+          urlPattern: &#39;global&#39;
+        },
+        {
+          id: &#39;menu&#39;,
+          componentId: &#39;menu-component&#39;,
+          urlPattern: &#39;global&#39;
+        }
+      ],
+      main: [
+        {
+          id: &#39;linechart&#39;,
+          componentId: &#39;linechart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;MB uploaded per month&#39;,
+            colors: [&#39;#fff4f3&#39;, &#39;#7C87FA&#39;, &#39;#61d6eb&#39;, &#39;#5DFFBE&#39;],
+            subscriptionKey: subscriptionKeys.DAILY_USAGE
+          }
+        },
+        {
+          id: &#39;movie-quota-circular-chart&#39;,
+          componentId: &#39;circularchart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;Videos&#39;,
+            colors: [&#39;#f7998e&#39;, &#39;#fff4f3&#39;, &#39;#7C87FA&#39;],
+            subscriptionKey: subscriptionKeys.VIDEO_QUOTA
+          }
+        },
+        {
+          id: &#39;photos-quota-circular-chart&#39;,
+          componentId: &#39;circularchart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;Photos&#39;,
+            colors: [&#39;#f7998e&#39;, &#39;#fff4f3&#39;, &#39;#61d6eb&#39;],
+            subscriptionKey: subscriptionKeys.PHOTO_QUOTA
+          }
+        },
+        {
+          id: &#39;music-quota-circular-chart&#39;,
+          componentId: &#39;circularchart-component&#39;,
+          urlPattern: &#39;&#39;,
+          args: {
+            title: &#39;Music&#39;,
+            colors: [&#39;#f7998e&#39;, &#39;#fff4f3&#39;, &#39;#5DFFBE&#39;],
+            subscriptionKey: subscriptionKeys.MUSIC_QUOTA
+          }
+        },
+        {
+          id: &#39;file-list&#39;,
+          componentId: &#39;file-list-component&#39;,
+          urlPattern: &#39;files(/:filetype)(/:page)&#39;
+        },
+        {
+          id: &#39;media-player&#39;,
+          componentId: &#39;media-player-component&#39;,
+          urlPattern: &#39;file/:filetype/:id&#39;
+        }
+      ]
+    }
   }
-}
+  return componentSettings;
+});
 </code></pre>
 </div></div><div class="app-wrapper example-app"><div class="overlay"><button class="start-example-btn">Start Application</button></div><aside class="sidebar component-area component-area--sidebar"></aside><main class="main"><header class="header component-area component-area--header"><button data-order="1" class="example-app__menu-toggle"><span class="lines"></span></button></header><div class="component-area--below-header"></div><section class="content"><div class="content-wrapper"><div class="page page--one current-page page--on-top component-area--main"></div><div class="page page--two"></div></div></section></main></div></article></main><script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script><script src="http://jonwalstedt.github.io/vigorjs.componentmanager/js/vigorjs.componentmanager.js"></script><script src="http://jonwalstedt.github.io/vigorjs.componentmanager/js/main.js"></script><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
