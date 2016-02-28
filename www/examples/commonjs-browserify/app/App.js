@@ -6,7 +6,9 @@ var App = function () {},
     MainLayoutView = require('./MainLayoutView');
 
 App.prototype.initialize = function () {
-  var componentManager;
+  var componentManager,
+      _isGHPages = window.location.hostname.indexOf('github') > -1,
+      _baseUrl = (_isGHPages ? '/vigorjs.componentmanager/examples/commonjs-browserify/' : '/examples/commonjs-browserify/');
 
   this.mainLayout = new MainLayoutView({
     el: '.app-wrapper'
@@ -18,7 +20,8 @@ App.prototype.initialize = function () {
   });
 
   this.router = new Router();
-  Backbone.history.start({root: '/examples/commonjs-browserify/'});
+
+  Backbone.history.start({root: _baseUrl});
 }
 
 module.exports = App;
