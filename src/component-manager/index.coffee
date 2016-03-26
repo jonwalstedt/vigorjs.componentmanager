@@ -508,7 +508,7 @@ class ComponentManager
   _filterInstanceDefinitionsByShowCount: (instanceDefinitions) ->
     _.filter instanceDefinitions, (instanceDefinition) =>
       componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
-      componentMaxShowCount = componentDefinition.get 'maxShowCount'
+      componentMaxShowCount = parseInt componentDefinition.get 'maxShowCount', 10
       return not instanceDefinition.exceedsMaximumShowCount componentMaxShowCount
 
   _filterInstanceDefinitionsByTargetAvailability: (instanceDefinitions) ->

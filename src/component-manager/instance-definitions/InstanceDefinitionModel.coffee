@@ -133,7 +133,7 @@ class InstanceDefinitionModel extends BaseModel
 
   exceedsMaximumShowCount: (componentMaxShowCount) ->
     showCount = @get 'showCount'
-    maxShowCount = @get 'maxShowCount'
+    maxShowCount = parseInt @get 'maxShowCount', 10
     exceedsShowCount = false
 
     unless maxShowCount
