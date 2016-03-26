@@ -49,25 +49,25 @@ describe 'InstanceDefinitionsCollection', ->
           {
             'id': 'instance-1',
             'componentId': 'component-id-1',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target1'
           },
           {
             'id': 'instance-2',
             'componentId': 'component-id-2',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target1'
           },
           {
             'id': 'instance-3',
             'componentId': 'component-id-3',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target2'
           },
           {
             'id': 'instance-4',
             'componentId': 'component-id-4',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target2'
           }
         ]
@@ -87,7 +87,7 @@ describe 'InstanceDefinitionsCollection', ->
         expectedResults =
           'id': 'instance-1',
           'componentId': 'component-id-1',
-          'urlPattern': ['*notFound', '*action'],
+          'urlPattern': 'global',
           'targetName': '.my-prefix--target1',
 
         parsedData = instanceDefinitionsCollection.parse data
@@ -128,25 +128,25 @@ describe 'InstanceDefinitionsCollection', ->
           {
             'id': 'instance-1',
             'componentId': 'component-id-1',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target1'
           },
           {
             'id': 'instance-2',
             'componentId': 'component-id-2',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target2'
           },
           {
             'id': 'instance-3',
             'componentId': 'component-id-3',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target3'
           },
           {
             'id': 'instance-4',
             'componentId': 'component-id-4',
-            'urlPattern': ['*notFound', '*action'],
+            'urlPattern': 'global',
             'targetName': '.my-prefix--target4'
           }
         ]
@@ -176,13 +176,13 @@ describe 'InstanceDefinitionsCollection', ->
         {
           'id': 'instance-1',
           'componentId': 'component-id-1',
-          'urlPattern': ['*notFound', '*action'],
+          'urlPattern': 'global',
           'targetName': '.my-prefix--target1'
         },
         {
           'id': 'instance-2',
           'componentId': 'component-id-2',
-          'urlPattern': ['*notFound', '*action'],
+          'urlPattern': 'global',
           'targetName': '.my-prefix--target2'
         }
       ]
@@ -206,48 +206,13 @@ describe 'InstanceDefinitionsCollection', ->
         {
           'id': 'instance-1',
           'componentId': 'component-id-1',
-          'urlPattern': ['*notFound', '*action'],
+          'urlPattern': 'global',
           'targetName': 'body'
         }
       ]
 
       parsedData = instanceDefinitionsCollection.parse data
       assert.deepEqual parsedData, expectedResults
-
-
-
-
-  describe 'parseInstanceDefinition', ->
-    it 'should add a new Backbone.Model as urlParamsModel', ->
-      instanceDefinition =
-        'id': 'instance-1',
-        'targetName': '.foo--target1',
-        'componentId': 'component-id-1',
-
-      expectedResults =
-        'id': 'instance-1',
-        'targetName': '.foo--target1',
-        'componentId': 'component-id-1'
-
-      parsedData = instanceDefinitionsCollection.parseInstanceDefinition instanceDefinition
-      assert.deepEqual parsedData, expectedResults
-
-    it 'should convert the urlPattern "global" to an array with *notFound and *action', ->
-      instanceDefinition =
-        'id': 'instance-1',
-        'targetName': '.foo--target1',
-        'componentId': 'component-id-1',
-        'urlPattern': 'global'
-
-      expectedResults =
-        'id': 'instance-1',
-        'targetName': '.foo--target1',
-        'componentId': 'component-id-1',
-        'urlPattern': ['*notFound', '*action']
-
-      parsedData = instanceDefinitionsCollection.parseInstanceDefinition instanceDefinition
-      assert.deepEqual parsedData, expectedResults
-
 
 
 

@@ -556,8 +556,15 @@ describe 'The componentManager', ->
         do componentManager.addListeners
         assert globalConditionsModelOnSpy.calledWith 'change', componentManager._updateActiveComponents
 
-        componentManager._globalConditionsModel.trigger 'change'
+        componentManager._globalConditionsModel.trigger 'change', new Backbone.Model()
         assert updateActiveComponentsSpy.called
+
+      it 'should proxy change event from the globalConditions model (EVENTS.CONDITIONS_CHANGED)', ->
+        conditionChangeSpy = sandbox.spy()
+        do componentManager.addListeners
+        componentManager.on componentManager.EVENTS.CONDITIONS_CHANGED, conditionChangeSpy
+        componentManager._globalConditionsModel.set 'myCondition', -> return 'mock'
+        assert conditionChangeSpy.called
 
       it 'should proxy add events from the _componentDefinitionsCollection (EVENTS.COMPONENT_ADD)', ->
         componentAddSpy = sandbox.spy()
