@@ -16,6 +16,10 @@ class ComponentManager
       WRONG_FORMAT: 'context should be a string or a jquery object'
 
   EVENTS:
+    INITIALIZED: 'initialized'
+    FILTER_CHANGE: 'filter-change'
+    CONDITIONS_CHANGED: 'conditions-changed'
+
     ADD: 'add'
     CHANGE: 'change'
     REMOVE: 'remove'
@@ -55,6 +59,7 @@ class ComponentManager
 
     do @addListeners
     @_parse settings
+    @trigger @EVENTS.INITIALIZED, @
     return @
 
   updateSettings: (settings) ->
@@ -63,7 +68,10 @@ class ComponentManager
 
   refresh: (filter) ->
     @_filterModel.set @_filterModel.parse(filter)
-    return @_updateActiveComponents()
+    promise = @_updateActiveComponents()
+    promise.then (returnData) =>
+      @trigger @EVENTS.FILTER_CHANGE, @getActiveFilter(), returnData
+    return promise
 
   serialize: ->
     componentSettings = {}
@@ -149,6 +157,9 @@ class ComponentManager
     @_activeInstancesCollection.on 'add', @_onActiveInstanceAdd
 
     # Propagate events
+    @_globalConditionsModel.on 'change', (model, options) =>
+      @trigger @EVENTS.CONDITIONS_CHANGED, model.toJSON()
+
     # Component definitions
     @_componentDefinitionsCollection.on 'add', (model, collection, options) =>
       @trigger @EVENTS.COMPONENT_ADD, model.toJSON(), collection.toJSON()
