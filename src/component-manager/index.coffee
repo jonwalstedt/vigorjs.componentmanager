@@ -450,12 +450,6 @@ class ComponentManager
     activeInstanceDefinitionObjs = _.map instanceDefinitions, (instanceDefinition) =>
       componentDefinition = @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
 
-      id = instanceDefinition.id
-      componentClass = componentDefinition.get 'componentClass'
-      target = instanceDefinition.getTarget $context
-      instanceArguments = @_getInstanceArguments instanceDefinition, componentDefinition
-      order = instanceDefinition.get 'order'
-      reInstantiate = instanceDefinition.get 'reInstantiate'
       urlPattern = instanceDefinition.get 'urlPattern'
       urlParams = undefined
 
@@ -467,14 +461,15 @@ class ComponentManager
           url: url
 
       activeInstanceObj =
-        id: id
-        componentClass: componentClass
-        target: target
+        id: instanceDefinition.id
+        componentClass: componentDefinition.get 'componentClass'
+        componentId: componentDefinition.get 'id'
+        target: instanceDefinition.getTarget $context
         targetPrefix: targetPrefix
         componentClassName: componentClassName
-        instanceArguments: instanceArguments
-        order: order
-        reInstantiate: reInstantiate
+        instanceArguments: @_getInstanceArguments instanceDefinition, componentDefinition
+        order: instanceDefinition.get 'order'
+        reInstantiate: instanceDefinition.get 'reInstantiate'
         urlParams: urlParams
         serializedFilter: serializedFilter
 
