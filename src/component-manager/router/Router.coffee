@@ -25,6 +25,7 @@ class Router extends Backbone.Router
     @_routeToRegExp urlPattern
 
   doesUrlPatternMatch: (urlPattern, url) ->
+    return true if urlPattern is 'global'
     routeRegEx = @routeToRegExp urlPattern
     return routeRegEx.test url
 
