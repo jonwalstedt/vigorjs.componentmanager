@@ -317,6 +317,10 @@ class ComponentManager
   getActiveInstances: ->
     return @_mapInstances @_activeInstancesCollection.models
 
+  getActiveInstancesByComponentId: (componentDefinitionId) ->
+    return _.compact _.map @_activeInstancesCollection.models, (model) =>
+      return @_mapInstances(model)[0] if model.get('componentId') is componentDefinitionId
+
   getActiveInstanceById: (instanceDefinitionId) ->
     return @_activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)?.get 'instance'
 
