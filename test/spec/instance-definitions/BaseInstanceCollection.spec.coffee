@@ -32,7 +32,7 @@ describe 'A BaseInstanceCollection', ->
       assert initializeSpy.called
 
 
-  describe 'getInstanceDefinition', ->
+  describe 'getInstanceDefinitionById', ->
     beforeEach ->
       collection = new BaseInstanceCollection [
         { id: 1, data: 'Data1'}, { id: 2, data: 'Data2'}, { id: 3, data: 'Data3'}
@@ -41,17 +41,17 @@ describe 'A BaseInstanceCollection', ->
     it 'should call get with passed id', ->
       getSpy = sinon.spy collection, 'get'
       id = 2
-      collection.getInstanceDefinition id
+      collection.getInstanceDefinitionById id
       assert getSpy.calledWith id
 
     it 'if no instanceDefinition can be found with the provided id it should thro an UNKNOWN_INSTANCE_DEFINITION error', ->
       id = 4
-      errorFn = -> collection.getInstanceDefinition id
+      errorFn = -> collection.getInstanceDefinitionById id
       assert.throws (-> errorFn()), collection.ERROR.UNKNOWN_INSTANCE_DEFINITION
 
     it 'should return the instanceDefinition', ->
       id = 1
-      model = collection.getInstanceDefinition id
+      model = collection.getInstanceDefinitionById id
       assert.equal model.get('id'), id
       assert model instanceof InstanceDefinitionModel
 

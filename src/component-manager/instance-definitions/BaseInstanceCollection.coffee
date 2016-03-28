@@ -9,7 +9,7 @@ class BaseInstanceCollection extends BaseCollection
     @on 'reset', @_onReset
     super
 
-  getInstanceDefinition: (instanceId) ->
+  getInstanceDefinitionById: (instanceId) ->
     instanceDefinition = @get instanceId
     unless instanceDefinition
       throw @ERROR.UNKNOWN_INSTANCE_DEFINITION

@@ -1567,8 +1567,8 @@ describe 'The componentManager', ->
 
         componentManager.initialize componentSettings
 
-      it 'should call _activeInstancesCollection.getInstanceDefinition with the passed id', ->
-        getInstanceDefinitionStub = sandbox.stub componentManager._activeInstancesCollection, 'getInstanceDefinition'
+      it 'should call _activeInstancesCollection.getInstanceDefinitionById with the passed id', ->
+        getInstanceDefinitionStub = sandbox.stub componentManager._activeInstancesCollection, 'getInstanceDefinitionById'
         id = 'instance-1'
         componentManager.getActiveInstanceById id
         assert getInstanceDefinitionStub.calledWith(id)

@@ -306,7 +306,7 @@ class ComponentManager
     return @_componentDefinitionsCollection.getComponentDefinitionById(componentDefinitionId).toJSON()
 
   getInstanceDefinitionById: (instanceDefinitionId) ->
-    return @_instanceDefinitionsCollection.getInstanceDefinition(instanceDefinitionId).toJSON()
+    return @_instanceDefinitionsCollection.getInstanceDefinitionById(instanceDefinitionId).toJSON()
 
   getComponentDefinitions: ->
     return @_componentDefinitionsCollection.toJSON()
@@ -322,7 +322,7 @@ class ComponentManager
       return @_mapInstances(model)[0] if model.get('componentId') is componentDefinitionId
 
   getActiveInstanceById: (instanceDefinitionId) ->
-    return @_activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)?.get 'instance'
+    return @_activeInstancesCollection.getInstanceDefinitionById(instanceDefinitionId)?.get 'instance'
 
   postMessageToInstance: (instanceDefinitionId, message) ->
     unless instanceDefinitionId
