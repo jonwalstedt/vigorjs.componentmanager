@@ -1803,7 +1803,7 @@
       ComponentManager.prototype.getComponentDefinitionByInstanceDefinitionId = function(instanceDefinitionId) {
         var instanceDefinition;
         instanceDefinition = this._instanceDefinitionsCollection.getInstanceDefinitionById(instanceDefinitionId);
-        return this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
+        return this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition).toJSON();
       };
 
       ComponentManager.prototype.getActiveInstances = function() {

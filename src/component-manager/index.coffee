@@ -316,7 +316,7 @@ class ComponentManager
 
   getComponentDefinitionByInstanceDefinitionId: (instanceDefinitionId) ->
     instanceDefinition = @_instanceDefinitionsCollection.getInstanceDefinitionById instanceDefinitionId
-    return @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition instanceDefinition
+    return @_componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition).toJSON()
 
   getActiveInstances: ->
     return @_mapInstances @_activeInstancesCollection.models
