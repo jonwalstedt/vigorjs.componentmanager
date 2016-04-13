@@ -1440,6 +1440,9 @@
       };
 
       ComponentManager.prototype.updateSettings = function(settings) {
+        if ((settings != null ? settings.listenForMessages : void 0) != null) {
+          this._listenForMessages = settings != null ? settings.listenForMessages : void 0;
+        }
         this._parse(settings);
         return this;
       };
@@ -1774,6 +1777,14 @@
 
       ComponentManager.prototype.getTargetPrefix = function() {
         return this._targetPrefix || TARGET_PREFIX;
+      };
+
+      ComponentManager.prototype.getListenForMessages = function() {
+        return this._listenForMessages;
+      };
+
+      ComponentManager.prototype.getWhitelistedOrigins = function() {
+        return this._whitelistedOrigins;
       };
 
       ComponentManager.prototype.getActiveFilter = function() {

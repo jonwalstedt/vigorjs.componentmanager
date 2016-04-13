@@ -63,6 +63,8 @@ class ComponentManager
     return @
 
   updateSettings: (settings) ->
+    if settings?.listenForMessages?
+      @_listenForMessages = settings?.listenForMessages
     @_parse settings
     return @
 
@@ -295,6 +297,12 @@ class ComponentManager
 
   getTargetPrefix: ->
     return @_targetPrefix or TARGET_PREFIX
+
+  getListenForMessages: ->
+    return @_listenForMessages
+
+  getWhitelistedOrigins: ->
+    return @_whitelistedOrigins
 
   getActiveFilter: ->
     return @_filterModel.toJSON()
