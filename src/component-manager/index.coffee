@@ -54,6 +54,9 @@ class ComponentManager
     @_globalConditionsModel = new Backbone.Model()
     @_filterModel = new FilterModel()
 
+    if settings and _.isString(settings)
+      settings = @parse settings
+
     if settings?.listenForMessages?
       @_listenForMessages = settings?.listenForMessages
 
