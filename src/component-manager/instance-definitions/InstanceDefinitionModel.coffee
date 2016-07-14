@@ -34,6 +34,8 @@ class InstanceDefinitionModel extends BaseModel
 
     # Private
     showCount: 0
+    vcmArgumentFields: undefined
+    vcmArgumentFieldValues: undefined
 
   _$target: undefined
 
@@ -211,7 +213,7 @@ class InstanceDefinitionModel extends BaseModel
         instanceConditions = [instanceConditions]
 
       for condition in instanceConditions
-        if _.isFunction(condition) and not condition(filter, @get('args'))
+        if _.isFunction(condition) and not condition(filter, @getArgs())
           shouldBeIncluded = false
           break
 
@@ -222,7 +224,7 @@ class InstanceDefinitionModel extends BaseModel
           unless globalConditions[condition]?
             throw @ERROR.MISSING_CONDITION condition
 
-          shouldBeIncluded = globalConditions[condition](filter, @get('args'))
+          shouldBeIncluded = globalConditions[condition](filter, @getArgs())
           if not shouldBeIncluded
             break
 

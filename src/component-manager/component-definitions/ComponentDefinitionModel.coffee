@@ -22,12 +22,14 @@ class ComponentDefinitionModel extends BaseModel
     args: undefined
     conditions: undefined
     maxShowCount: undefined
+    vcmArgumentFields: undefined
+    vcmArgumentFieldValues: undefined
 
   deferred: undefined
 
   initialize: ->
-    super
     @deferred = $.Deferred()
+    super
 
   validate: (attrs, options) ->
     unless attrs.id
@@ -111,7 +113,7 @@ class ComponentDefinitionModel extends BaseModel
         componentConditions = [componentConditions]
 
       for condition in componentConditions
-        if _.isFunction(condition) and not condition(filter, @get('args'))
+        if _.isFunction(condition) and not condition(filter, @getArgs())
           shouldBeIncluded = false
           break
 
@@ -119,7 +121,7 @@ class ComponentDefinitionModel extends BaseModel
           unless globalConditions[condition]?
             throw @ERROR.MISSING_CONDITION condition
 
-          shouldBeIncluded = !!globalConditions[condition](filter, @get('args'))
+          shouldBeIncluded = !!globalConditions[condition](filter, @getArgs())
           if not shouldBeIncluded
             break
 

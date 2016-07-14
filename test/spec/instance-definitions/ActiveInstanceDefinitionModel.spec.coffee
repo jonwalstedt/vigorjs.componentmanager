@@ -26,44 +26,44 @@ describe 'ActiveInstanceDefinitionModel', ->
 
   describe 'initialize', ->
     it 'should add a listener on "add" with _onAdd as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'add', activeInstanceDefinitionModel._onAdd
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'add', activeInstanceDefinitionModel._onAdd
 
     it 'should add a listener on "remove" with _onRemove as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'remove', activeInstanceDefinitionModel._onRemove
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'remove', activeInstanceDefinitionModel._onRemove
 
     it 'should add a listener on "change:instance" with _onInstanceChange as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'change:instance', activeInstanceDefinitionModel._onInstanceChange
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'change:instance', activeInstanceDefinitionModel._onInstanceChange
 
     it 'should add a listener on "change:urlParams" with _onUrlParamsChange as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'change:urlParams', activeInstanceDefinitionModel._onUrlParamsChange
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'change:urlParams', activeInstanceDefinitionModel._onUrlParamsChange
 
     it 'should add a listener on "change:order" with _onOrderChange as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'change:order', activeInstanceDefinitionModel._onOrderChange
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'change:order', activeInstanceDefinitionModel._onOrderChange
 
     it 'should add a listener on "change:target" with _onTargetChange as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'change:target', activeInstanceDefinitionModel._onTargetChange
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'change:target', activeInstanceDefinitionModel._onTargetChange
 
     it 'should add a listener on "change:componentClassName" with _onComponentClassNameChange as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'change:componentClassName', activeInstanceDefinitionModel._onComponentClassNameChange
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'change:componentClassName', activeInstanceDefinitionModel._onComponentClassNameChange
 
     it 'should add a listener on "change:serializedFilter" with _onSerializedFilterChange as callback', ->
-      onSpy = sandbox.spy activeInstanceDefinitionModel, 'on'
+      onSpy = sandbox.spy activeInstanceDefinitionModel, 'listenTo'
       do activeInstanceDefinitionModel.initialize
-      assert onSpy.calledWith 'change:serializedFilter', activeInstanceDefinitionModel._onSerializedFilterChange
+      assert onSpy.calledWith activeInstanceDefinitionModel, 'change:serializedFilter', activeInstanceDefinitionModel._onSerializedFilterChange
 
     it 'should add call _updateUrlParamsCollection', ->
       updateUrlParamsModelSpy = sandbox.spy activeInstanceDefinitionModel, '_updateUrlParamsCollection'
@@ -581,11 +581,14 @@ describe 'ActiveInstanceDefinitionModel', ->
   describe '_getInstanceArguments', ->
 
     beforeEach ->
+      sandbox.stub activeInstanceDefinitionModel, '_createInstance'
       activeInstanceDefinitionModel.set
         id: 'my-active-instance-definition'
         componentClass: MockComponent
-        urlParams: foo: 'bar'
-        instanceArguments: baz: 'qux'
+        urlParams:
+          foo: 'bar'
+        instanceArguments:
+          baz: 'qux'
 
     it 'should append urlParams to the returned (padded) instanceArguments', ->
       instanceArguments = activeInstanceDefinitionModel.get 'instanceArguments'

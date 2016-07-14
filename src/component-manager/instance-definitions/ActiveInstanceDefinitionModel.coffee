@@ -21,14 +21,15 @@ class ActiveInstanceDefinitionModel extends BaseModel
   initialize: ->
     super
     @set 'urlParamsCollection', new UrlParamsCollection(), silent: true
-    @on 'add', @_onAdd
-    @on 'remove', @_onRemove
-    @on 'change:instance', @_onInstanceChange
-    @on 'change:urlParams', @_onUrlParamsChange
-    @on 'change:order', @_onOrderChange
-    @on 'change:target', @_onTargetChange
-    @on 'change:componentClassName', @_onComponentClassNameChange
-    @on 'change:serializedFilter', @_onSerializedFilterChange
+    @listenTo @, 'add', @_onAdd
+    @listenTo @, 'remove', @_onRemove
+    @listenTo @, 'change:instance', @_onInstanceChange
+    @listenTo @, 'change:urlParams', @_onUrlParamsChange
+    @listenTo @, 'change:order', @_onOrderChange
+    @listenTo @, 'change:target', @_onTargetChange
+    @listenTo @, 'change:componentClassName', @_onComponentClassNameChange
+    @listenTo @, 'change:serializedFilter', @_onSerializedFilterChange
+    @listenTo @, 'change:instanceArguments', @_onArgumentChange
     do @_updateUrlParamsCollection
 
   tryToReAddStraysToDom: ->
@@ -46,6 +47,7 @@ class ActiveInstanceDefinitionModel extends BaseModel
   dispose: ->
     do @_disposeInstance
     do @_updateTargetPopulatedState
+    do @stopListening
     do @off
 
   _createInstance: ->
@@ -155,6 +157,13 @@ class ActiveInstanceDefinitionModel extends BaseModel
     if componentClassName isnt prevComponentClassName
       instance.$el.removeClass prevComponentClassName
     instance.$el.addClass componentClassName
+
+  _onArgumentChange: (model, value, options) ->
+    prevArguments = _.omit model.previousAttributes().instanceArguments, ['urlParams', 'urlParamsCollection']
+    currentArguments = _.omit model.toJSON().instanceArguments, ['urlParams', 'urlParamsCollection']
+    unless _.isEqual(prevArguments, currentArguments)
+      do @_disposeInstance
+      do @_createInstance
 
   _onComponentClassNameChange: ->
     do @_updateComponentClassNameOnInstance

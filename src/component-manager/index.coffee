@@ -534,8 +534,8 @@ class ComponentManager
     componentClass = componentDefinition.get 'componentClass'
     args = {}
 
-    componentArgs = componentDefinition.get 'args'
-    instanceArgs = instanceDefinition.get 'args'
+    componentArgs = componentDefinition.getArgs()
+    instanceArgs = instanceDefinition.getArgs()
 
     if componentArgs?.iframeAttributes? and instanceArgs?.iframeAttributes?
       instanceArgs.iframeAttributes = _.extend componentArgs.iframeAttributes, instanceArgs.iframeAttributes

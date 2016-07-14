@@ -177,6 +177,26 @@
         return BaseModel.__super__.constructor.apply(this, arguments);
       }
 
+      BaseModel.prototype.parse = function(data) {
+        var field, j, len, ref;
+        if ((data.vcmArgumentFields != null) && (data.vcmArgumentFieldValues == null)) {
+          data.vcmArgumentFieldValues = {};
+          ref = data.vcmArgumentFields;
+          for (j = 0, len = ref.length; j < len; j++) {
+            field = ref[j];
+            data.vcmArgumentFieldValues[field.id] = field["default"];
+          }
+        }
+        return data;
+      };
+
+      BaseModel.prototype.getArgs = function() {
+        var args, vcmArgs;
+        args = this.get('args') || {};
+        vcmArgs = this.get('vcmArgumentFieldValues') || {};
+        return _.extend({}, args, vcmArgs);
+      };
+
       BaseModel.prototype.getCustomProperties = function(ignorePropertiesWithUndefinedValues) {
         var blackListedKeys, customProperties, key, val;
         if (ignorePropertiesWithUndefinedValues == null) {
@@ -440,14 +460,16 @@
         componentClass: void 0,
         args: void 0,
         conditions: void 0,
-        maxShowCount: void 0
+        maxShowCount: void 0,
+        vcmArgumentFields: void 0,
+        vcmArgumentFieldValues: void 0
       };
 
       ComponentDefinitionModel.prototype.deferred = void 0;
 
       ComponentDefinitionModel.prototype.initialize = function() {
-        ComponentDefinitionModel.__super__.initialize.apply(this, arguments);
-        return this.deferred = $.Deferred();
+        this.deferred = $.Deferred();
+        return ComponentDefinitionModel.__super__.initialize.apply(this, arguments);
       };
 
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
@@ -546,14 +568,14 @@
           }
           for (j = 0, len = componentConditions.length; j < len; j++) {
             condition = componentConditions[j];
-            if (_.isFunction(condition) && !condition(filter, this.get('args'))) {
+            if (_.isFunction(condition) && !condition(filter, this.getArgs())) {
               shouldBeIncluded = false;
               break;
             } else if (_.isString(condition)) {
               if (globalConditions[condition] == null) {
                 throw this.ERROR.MISSING_CONDITION(condition);
               }
-              shouldBeIncluded = !!globalConditions[condition](filter, this.get('args'));
+              shouldBeIncluded = !!globalConditions[condition](filter, this.getArgs());
               if (!shouldBeIncluded) {
                 break;
               }
@@ -683,14 +705,15 @@
         this.set('urlParamsCollection', new UrlParamsCollection(), {
           silent: true
         });
-        this.on('add', this._onAdd);
-        this.on('remove', this._onRemove);
-        this.on('change:instance', this._onInstanceChange);
-        this.on('change:urlParams', this._onUrlParamsChange);
-        this.on('change:order', this._onOrderChange);
-        this.on('change:target', this._onTargetChange);
-        this.on('change:componentClassName', this._onComponentClassNameChange);
-        this.on('change:serializedFilter', this._onSerializedFilterChange);
+        this.listenTo(this, 'add', this._onAdd);
+        this.listenTo(this, 'remove', this._onRemove);
+        this.listenTo(this, 'change:instance', this._onInstanceChange);
+        this.listenTo(this, 'change:urlParams', this._onUrlParamsChange);
+        this.listenTo(this, 'change:order', this._onOrderChange);
+        this.listenTo(this, 'change:target', this._onTargetChange);
+        this.listenTo(this, 'change:componentClassName', this._onComponentClassNameChange);
+        this.listenTo(this, 'change:serializedFilter', this._onSerializedFilterChange);
+        this.listenTo(this, 'change:instanceArguments', this._onArgumentChange);
         return this._updateUrlParamsCollection();
       };
 
@@ -713,6 +736,7 @@
       ActiveInstanceDefinitionModel.prototype.dispose = function() {
         this._disposeInstance();
         this._updateTargetPopulatedState();
+        this.stopListening();
         return this.off();
       };
 
@@ -859,6 +883,16 @@
         return instance.$el.addClass(componentClassName);
       };
 
+      ActiveInstanceDefinitionModel.prototype._onArgumentChange = function(model, value, options) {
+        var currentArguments, prevArguments;
+        prevArguments = _.omit(model.previousAttributes().instanceArguments, ['urlParams', 'urlParamsCollection']);
+        currentArguments = _.omit(model.toJSON().instanceArguments, ['urlParams', 'urlParamsCollection']);
+        if (!_.isEqual(prevArguments, currentArguments)) {
+          this._disposeInstance();
+          return this._createInstance();
+        }
+      };
+
       ActiveInstanceDefinitionModel.prototype._onComponentClassNameChange = function() {
         return this._updateComponentClassNameOnInstance();
       };
@@ -936,7 +970,9 @@
         conditions: void 0,
         maxShowCount: void 0,
         urlPattern: void 0,
-        showCount: 0
+        showCount: 0,
+        vcmArgumentFields: void 0,
+        vcmArgumentFieldValues: void 0
       };
 
       InstanceDefinitionModel.prototype._$target = void 0;
@@ -1191,7 +1227,7 @@
           }
           for (j = 0, len = instanceConditions.length; j < len; j++) {
             condition = instanceConditions[j];
-            if (_.isFunction(condition) && !condition(filter, this.get('args'))) {
+            if (_.isFunction(condition) && !condition(filter, this.getArgs())) {
               shouldBeIncluded = false;
               break;
             } else if (_.isString(condition)) {
@@ -1201,7 +1237,7 @@
               if (globalConditions[condition] == null) {
                 throw this.ERROR.MISSING_CONDITION(condition);
               }
-              shouldBeIncluded = globalConditions[condition](filter, this.get('args'));
+              shouldBeIncluded = globalConditions[condition](filter, this.getArgs());
               if (!shouldBeIncluded) {
                 break;
               }
@@ -1430,6 +1466,9 @@
         this._activeInstancesCollection = new ActiveInstancesCollection();
         this._globalConditionsModel = new Backbone.Model();
         this._filterModel = new FilterModel();
+        if (settings && _.isString(settings)) {
+          settings = this.parse(settings);
+        }
         if ((settings != null ? settings.listenForMessages : void 0) != null) {
           this._listenForMessages = settings != null ? settings.listenForMessages : void 0;
         }
@@ -2062,8 +2101,8 @@
         var args, componentArgs, componentClass, instanceArgs;
         componentClass = componentDefinition.get('componentClass');
         args = {};
-        componentArgs = componentDefinition.get('args');
-        instanceArgs = instanceDefinition.get('args');
+        componentArgs = componentDefinition.getArgs();
+        instanceArgs = instanceDefinition.getArgs();
         if (((componentArgs != null ? componentArgs.iframeAttributes : void 0) != null) && ((instanceArgs != null ? instanceArgs.iframeAttributes : void 0) != null)) {
           instanceArgs.iframeAttributes = _.extend(componentArgs.iframeAttributes, instanceArgs.iframeAttributes);
         }
