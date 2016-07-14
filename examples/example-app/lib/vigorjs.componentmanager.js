@@ -1,6 +1,6 @@
 /**
  * vigorjs.componentmanager - Helps you decouple Backbone applications
- * @version v0.9.3
+ * @version v0.9.4
  * @link http://jonwalstedt.github.io/vigorjs.componentmanager/
  * @license MIT
  */
