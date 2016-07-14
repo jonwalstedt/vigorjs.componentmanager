@@ -1,6 +1,6 @@
 /**
  * vigorjs.componentmanager - Helps you decouple Backbone applications
- * @version v0.9.1
+ * @version v0.9.2
  * @link http://jonwalstedt.github.io/vigorjs.componentmanager/
  * @license MIT
  */
@@ -177,6 +177,26 @@
         return BaseModel.__super__.constructor.apply(this, arguments);
       }
 
+      BaseModel.prototype.parse = function(data) {
+        var field, j, len, ref;
+        if ((data.vcmArgumentFields != null) && (data.vcmArgumentFieldValues == null)) {
+          data.vcmArgumentFieldValues = {};
+          ref = data.vcmArgumentFields;
+          for (j = 0, len = ref.length; j < len; j++) {
+            field = ref[j];
+            data.vcmArgumentFieldValues[field.id] = field["default"];
+          }
+        }
+        return data;
+      };
+
+      BaseModel.prototype.getArgs = function() {
+        var args, vcmArgs;
+        args = this.get('args') || {};
+        vcmArgs = this.get('vcmArgumentFieldValues') || {};
+        return _.extend({}, args, vcmArgs);
+      };
+
       BaseModel.prototype.getCustomProperties = function(ignorePropertiesWithUndefinedValues) {
         var blackListedKeys, customProperties, key, val;
         if (ignorePropertiesWithUndefinedValues == null) {
@@ -237,6 +257,9 @@
 
       Router.prototype.doesUrlPatternMatch = function(urlPattern, url) {
         var routeRegEx;
+        if (urlPattern === 'global') {
+          return true;
+        }
         routeRegEx = this.routeToRegExp(urlPattern);
         return routeRegEx.test(url);
       };
@@ -437,14 +460,16 @@
         componentClass: void 0,
         args: void 0,
         conditions: void 0,
-        maxShowCount: void 0
+        maxShowCount: void 0,
+        vcmArgumentFields: void 0,
+        vcmArgumentFieldValues: void 0
       };
 
       ComponentDefinitionModel.prototype.deferred = void 0;
 
       ComponentDefinitionModel.prototype.initialize = function() {
-        ComponentDefinitionModel.__super__.initialize.apply(this, arguments);
-        return this.deferred = $.Deferred();
+        this.deferred = $.Deferred();
+        return ComponentDefinitionModel.__super__.initialize.apply(this, arguments);
       };
 
       ComponentDefinitionModel.prototype.validate = function(attrs, options) {
@@ -543,14 +568,14 @@
           }
           for (j = 0, len = componentConditions.length; j < len; j++) {
             condition = componentConditions[j];
-            if (_.isFunction(condition) && !condition(filter, this.get('args'))) {
+            if (_.isFunction(condition) && !condition(filter, this.getArgs())) {
               shouldBeIncluded = false;
               break;
             } else if (_.isString(condition)) {
               if (globalConditions[condition] == null) {
                 throw this.ERROR.MISSING_CONDITION(condition);
               }
-              shouldBeIncluded = !!globalConditions[condition](filter, this.get('args'));
+              shouldBeIncluded = !!globalConditions[condition](filter, this.getArgs());
               if (!shouldBeIncluded) {
                 break;
               }
@@ -680,14 +705,15 @@
         this.set('urlParamsCollection', new UrlParamsCollection(), {
           silent: true
         });
-        this.on('add', this._onAdd);
-        this.on('remove', this._onRemove);
-        this.on('change:instance', this._onInstanceChange);
-        this.on('change:urlParams', this._onUrlParamsChange);
-        this.on('change:order', this._onOrderChange);
-        this.on('change:target', this._onTargetChange);
-        this.on('change:componentClassName', this._onComponentClassNameChange);
-        this.on('change:serializedFilter', this._onSerializedFilterChange);
+        this.listenTo(this, 'add', this._onAdd);
+        this.listenTo(this, 'remove', this._onRemove);
+        this.listenTo(this, 'change:instance', this._onInstanceChange);
+        this.listenTo(this, 'change:urlParams', this._onUrlParamsChange);
+        this.listenTo(this, 'change:order', this._onOrderChange);
+        this.listenTo(this, 'change:target', this._onTargetChange);
+        this.listenTo(this, 'change:componentClassName', this._onComponentClassNameChange);
+        this.listenTo(this, 'change:serializedFilter', this._onSerializedFilterChange);
+        this.listenTo(this, 'change:instanceArguments', this._onArgumentChange);
         return this._updateUrlParamsCollection();
       };
 
@@ -710,6 +736,7 @@
       ActiveInstanceDefinitionModel.prototype.dispose = function() {
         this._disposeInstance();
         this._updateTargetPopulatedState();
+        this.stopListening();
         return this.off();
       };
 
@@ -856,6 +883,16 @@
         return instance.$el.addClass(componentClassName);
       };
 
+      ActiveInstanceDefinitionModel.prototype._onArgumentChange = function(model, value, options) {
+        var currentArguments, prevArguments;
+        prevArguments = _.omit(model.previousAttributes().instanceArguments, ['urlParams', 'urlParamsCollection']);
+        currentArguments = _.omit(model.toJSON().instanceArguments, ['urlParams', 'urlParamsCollection']);
+        if (!_.isEqual(prevArguments, currentArguments)) {
+          this._disposeInstance();
+          return this._createInstance();
+        }
+      };
+
       ActiveInstanceDefinitionModel.prototype._onComponentClassNameChange = function() {
         return this._updateComponentClassNameOnInstance();
       };
@@ -933,7 +970,9 @@
         conditions: void 0,
         maxShowCount: void 0,
         urlPattern: void 0,
-        showCount: 0
+        showCount: 0,
+        vcmArgumentFields: void 0,
+        vcmArgumentFieldValues: void 0
       };
 
       InstanceDefinitionModel.prototype._$target = void 0;
@@ -1067,7 +1106,7 @@
       InstanceDefinitionModel.prototype.exceedsMaximumShowCount = function(componentMaxShowCount) {
         var exceedsShowCount, maxShowCount, showCount;
         showCount = this.get('showCount');
-        maxShowCount = this.get('maxShowCount');
+        maxShowCount = parseInt(this.get('maxShowCount', 10));
         exceedsShowCount = false;
         if (!maxShowCount) {
           maxShowCount = componentMaxShowCount;
@@ -1188,7 +1227,7 @@
           }
           for (j = 0, len = instanceConditions.length; j < len; j++) {
             condition = instanceConditions[j];
-            if (_.isFunction(condition) && !condition(filter, this.get('args'))) {
+            if (_.isFunction(condition) && !condition(filter, this.getArgs())) {
               shouldBeIncluded = false;
               break;
             } else if (_.isString(condition)) {
@@ -1198,7 +1237,7 @@
               if (globalConditions[condition] == null) {
                 throw this.ERROR.MISSING_CONDITION(condition);
               }
-              shouldBeIncluded = globalConditions[condition](filter, this.get('args'));
+              shouldBeIncluded = globalConditions[condition](filter, this.getArgs());
               if (!shouldBeIncluded) {
                 break;
               }
@@ -1263,7 +1302,7 @@
         return BaseInstanceCollection.__super__.initialize.apply(this, arguments);
       };
 
-      BaseInstanceCollection.prototype.getInstanceDefinition = function(instanceId) {
+      BaseInstanceCollection.prototype.getInstanceDefinitionById = function(instanceId) {
         var instanceDefinition;
         instanceDefinition = this.get(instanceId);
         if (!instanceDefinition) {
@@ -1301,7 +1340,6 @@
               for (j = 0, len = instanceDefinitions.length; j < len; j++) {
                 instanceDefinition = instanceDefinitions[j];
                 instanceDefinition.targetName = this._formatTargetName(targetName, targetPrefix);
-                this.parseInstanceDefinition(instanceDefinition);
                 instanceDefinitionsArray.push(instanceDefinition);
               }
               parsedResponse = instanceDefinitionsArray;
@@ -1309,7 +1347,7 @@
               if (incomingInstanceDefinitions.targetName) {
                 incomingInstanceDefinitions.targetName = this._formatTargetName(incomingInstanceDefinitions.targetName, targetPrefix);
               }
-              parsedResponse = this.parseInstanceDefinition(incomingInstanceDefinitions);
+              parsedResponse = incomingInstanceDefinitions;
               break;
             }
           }
@@ -1319,18 +1357,11 @@
             if (instanceDefinition.targetName) {
               instanceDefinition.targetName = this._formatTargetName(instanceDefinition.targetName, targetPrefix);
             }
-            incomingInstanceDefinitions[i] = this.parseInstanceDefinition(instanceDefinition);
+            incomingInstanceDefinitions[i] = instanceDefinition;
           }
           parsedResponse = incomingInstanceDefinitions;
         }
         return parsedResponse;
-      };
-
-      InstanceDefinitionsCollection.prototype.parseInstanceDefinition = function(instanceDefinition) {
-        if (instanceDefinition.urlPattern === 'global') {
-          instanceDefinition.urlPattern = ['*notFound', '*action'];
-        }
-        return instanceDefinition;
       };
 
       InstanceDefinitionsCollection.prototype._formatTargetName = function(targetName, targetPrefix) {
@@ -1395,6 +1426,9 @@
       };
 
       ComponentManager.prototype.EVENTS = {
+        INITIALIZED: 'initialized',
+        FILTER_CHANGE: 'filter-change',
+        CONDITIONS_CHANGED: 'conditions-changed',
         ADD: 'add',
         CHANGE: 'change',
         REMOVE: 'remove',
@@ -1432,22 +1466,36 @@
         this._activeInstancesCollection = new ActiveInstancesCollection();
         this._globalConditionsModel = new Backbone.Model();
         this._filterModel = new FilterModel();
+        if (settings && _.isString(settings)) {
+          settings = this.parse(settings);
+        }
         if ((settings != null ? settings.listenForMessages : void 0) != null) {
           this._listenForMessages = settings != null ? settings.listenForMessages : void 0;
         }
         this.addListeners();
         this._parse(settings);
+        this.trigger(this.EVENTS.INITIALIZED, this);
         return this;
       };
 
       ComponentManager.prototype.updateSettings = function(settings) {
+        if ((settings != null ? settings.listenForMessages : void 0) != null) {
+          this._listenForMessages = settings != null ? settings.listenForMessages : void 0;
+        }
         this._parse(settings);
         return this;
       };
 
       ComponentManager.prototype.refresh = function(filter) {
+        var promise;
         this._filterModel.set(this._filterModel.parse(filter));
-        return this._updateActiveComponents();
+        promise = this._updateActiveComponents();
+        promise.then((function(_this) {
+          return function(returnData) {
+            return _this.trigger(_this.EVENTS.FILTER_CHANGE, _this.getActiveFilter(), returnData);
+          };
+        })(this));
+        return promise;
       };
 
       ComponentManager.prototype.serialize = function() {
@@ -1559,6 +1607,11 @@
         this._instanceDefinitionsCollection.on('throttled_diff', this._updateActiveComponents);
         this._globalConditionsModel.on('change', this._updateActiveComponents);
         this._activeInstancesCollection.on('add', this._onActiveInstanceAdd);
+        this._globalConditionsModel.on('change', (function(_this) {
+          return function(model, options) {
+            return _this.trigger(_this.EVENTS.CONDITIONS_CHANGED, model.toJSON());
+          };
+        })(this));
         this._componentDefinitionsCollection.on('add', (function(_this) {
           return function(model, collection, options) {
             return _this.trigger(_this.EVENTS.COMPONENT_ADD, model.toJSON(), collection.toJSON());
@@ -1765,6 +1818,14 @@
         return this._targetPrefix || TARGET_PREFIX;
       };
 
+      ComponentManager.prototype.getListenForMessages = function() {
+        return this._listenForMessages;
+      };
+
+      ComponentManager.prototype.getWhitelistedOrigins = function() {
+        return this._whitelistedOrigins;
+      };
+
       ComponentManager.prototype.getActiveFilter = function() {
         return this._filterModel.toJSON();
       };
@@ -1778,7 +1839,7 @@
       };
 
       ComponentManager.prototype.getInstanceDefinitionById = function(instanceDefinitionId) {
-        return this._instanceDefinitionsCollection.getInstanceDefinition(instanceDefinitionId).toJSON();
+        return this._instanceDefinitionsCollection.getInstanceDefinitionById(instanceDefinitionId).toJSON();
       };
 
       ComponentManager.prototype.getComponentDefinitions = function() {
@@ -1789,13 +1850,29 @@
         return this._instanceDefinitionsCollection.toJSON();
       };
 
+      ComponentManager.prototype.getComponentDefinitionByInstanceDefinitionId = function(instanceDefinitionId) {
+        var instanceDefinition;
+        instanceDefinition = this._instanceDefinitionsCollection.getInstanceDefinitionById(instanceDefinitionId);
+        return this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition).toJSON();
+      };
+
       ComponentManager.prototype.getActiveInstances = function() {
         return this._mapInstances(this._activeInstancesCollection.models);
       };
 
+      ComponentManager.prototype.getActiveInstancesByComponentId = function(componentDefinitionId) {
+        return _.compact(_.map(this._activeInstancesCollection.models, (function(_this) {
+          return function(model) {
+            if (model.get('componentId') === componentDefinitionId) {
+              return _this._mapInstances(model)[0];
+            }
+          };
+        })(this)));
+      };
+
       ComponentManager.prototype.getActiveInstanceById = function(instanceDefinitionId) {
         var ref;
-        return (ref = this._activeInstancesCollection.getInstanceDefinition(instanceDefinitionId)) != null ? ref.get('instance') : void 0;
+        return (ref = this._activeInstancesCollection.getInstanceDefinitionById(instanceDefinitionId)) != null ? ref.get('instance') : void 0;
       };
 
       ComponentManager.prototype.postMessageToInstance = function(instanceDefinitionId, message) {
@@ -1924,14 +2001,8 @@
         }
         activeInstanceDefinitionObjs = _.map(instanceDefinitions, (function(_this) {
           return function(instanceDefinition) {
-            var activeInstanceObj, componentClass, componentDefinition, id, instanceArguments, order, reInstantiate, target, urlParams, urlPattern;
+            var activeInstanceObj, componentDefinition, urlParams, urlPattern;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
-            id = instanceDefinition.id;
-            componentClass = componentDefinition.get('componentClass');
-            target = instanceDefinition.getTarget($context);
-            instanceArguments = _this._getInstanceArguments(instanceDefinition, componentDefinition);
-            order = instanceDefinition.get('order');
-            reInstantiate = instanceDefinition.get('reInstantiate');
             urlPattern = instanceDefinition.get('urlPattern');
             urlParams = void 0;
             if (urlPattern) {
@@ -1943,14 +2014,15 @@
               };
             }
             activeInstanceObj = {
-              id: id,
-              componentClass: componentClass,
-              target: target,
+              id: instanceDefinition.id,
+              componentClass: componentDefinition.get('componentClass'),
+              componentId: componentDefinition.get('id'),
+              target: instanceDefinition.getTarget($context),
               targetPrefix: targetPrefix,
               componentClassName: componentClassName,
-              instanceArguments: instanceArguments,
-              order: order,
-              reInstantiate: reInstantiate,
+              instanceArguments: _this._getInstanceArguments(instanceDefinition, componentDefinition),
+              order: instanceDefinition.get('order'),
+              reInstantiate: instanceDefinition.get('reInstantiate'),
               urlParams: urlParams,
               serializedFilter: serializedFilter
             };
@@ -2011,7 +2083,7 @@
           return function(instanceDefinition) {
             var componentDefinition, componentMaxShowCount;
             componentDefinition = _this._componentDefinitionsCollection.getComponentDefinitionByInstanceDefinition(instanceDefinition);
-            componentMaxShowCount = componentDefinition.get('maxShowCount');
+            componentMaxShowCount = parseInt(componentDefinition.get('maxShowCount', 10));
             return !instanceDefinition.exceedsMaximumShowCount(componentMaxShowCount);
           };
         })(this));
@@ -2029,8 +2101,8 @@
         var args, componentArgs, componentClass, instanceArgs;
         componentClass = componentDefinition.get('componentClass');
         args = {};
-        componentArgs = componentDefinition.get('args');
-        instanceArgs = instanceDefinition.get('args');
+        componentArgs = componentDefinition.getArgs();
+        instanceArgs = instanceDefinition.getArgs();
         if (((componentArgs != null ? componentArgs.iframeAttributes : void 0) != null) && ((instanceArgs != null ? instanceArgs.iframeAttributes : void 0) != null)) {
           instanceArgs.iframeAttributes = _.extend(componentArgs.iframeAttributes, instanceArgs.iframeAttributes);
         }
